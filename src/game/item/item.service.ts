@@ -72,7 +72,7 @@ export class ItemService {
     const result = await this.model.findOneAndUpdate(
       {trainer, type},
       {$inc: {amount}},
-      {upsert: true, new: true, setDefaultsOnInsert: true, rawResult: true},
+      {upsert: true, new: true, setDefaultsOnInsert: true, includeResultMetadata: true},
     );
     const item = result.value!;
     this.emit(result.lastErrorObject?.updatedExisting ? 'updated' : 'created', item);

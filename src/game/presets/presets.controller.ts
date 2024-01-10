@@ -59,7 +59,7 @@ export class PresetsController {
     content: {'image/png': {}}
   })
   @NotFound()
-  @Throttle(CHARACTER_RATE_LIMIT, environment.rateLimit.presetsTtl)
+  @Throttle({default: {limit: CHARACTER_RATE_LIMIT, ttl: environment.rateLimit.presetsTtl}})
   async getCharacter(
     @Param('filename') filename: string,
   ): Promise<StreamableFile> {
@@ -104,7 +104,7 @@ export class PresetsController {
     content: {'image/png': {}},
   })
   @NotFound()
-  @Throttle(ITEM_RATE_LIMIT, environment.rateLimit.presetsTtl)
+  @Throttle({default: {limit: ITEM_RATE_LIMIT, ttl: environment.rateLimit.presetsTtl}})
   getItemImage(
     @Param('id', ParseIntPipe) id: number,
   ): StreamableFile | undefined {
@@ -138,7 +138,7 @@ export class PresetsController {
     content: {'image/png': {}},
   })
   @NotFound()
-  @Throttle(MONSTER_RATE_LIMIT, environment.rateLimit.presetsTtl)
+  @Throttle({default: {limit: MONSTER_RATE_LIMIT, ttl: environment.rateLimit.presetsTtl}})
   async getMonsterImage(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<StreamableFile | undefined> {

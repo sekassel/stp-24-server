@@ -24,7 +24,7 @@ import {Integrations} from "@sentry/node";
     MongooseModule.forRoot(environment.mongo.uri, {
       ignoreUndefined: true,
     }),
-    ThrottlerModule.forRoot(environment.rateLimit),
+    ThrottlerModule.forRoot([environment.rateLimit]),
     EventEmitterModule.forRoot({
       wildcard: true,
     }),
