@@ -3,7 +3,6 @@ import {EventEmitterModule} from '@nestjs/event-emitter';
 import {MongooseModule} from '@nestjs/mongoose';
 import {ScheduleModule} from '@nestjs/schedule';
 import {ThrottlerModule} from '@nestjs/throttler';
-import {SocketModule} from './udp/socket.module';
 
 import {AuthModule} from './auth/auth.module';
 import {environment} from './environment';
@@ -43,7 +42,6 @@ import {Integrations} from "@sentry/node";
     }),
     AuthModule,
     EventModule,
-    SocketModule,
     UserModule,
     AchievementSummaryModule,
     AchievementModule,
