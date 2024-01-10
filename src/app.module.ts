@@ -11,7 +11,6 @@ import {EventModule} from './event/event.module';
 import {GameModule} from './game/game.module';
 import {GroupModule} from './group/group.module';
 import {MessageModule} from './message/message.module';
-import {RegionModule} from './region/region.module';
 import {UserModule} from './user/user.module';
 import {SentryInterceptor, SentryModule, SentryModuleOptions} from "@ntegral/nestjs-sentry";
 import {APP_INTERCEPTOR, HttpAdapterHost} from "@nestjs/core";
@@ -52,7 +51,6 @@ import {Integrations} from "@sentry/node";
     AchievementModule,
     GroupModule,
     MessageModule,
-    RegionModule,
     GameModule,
   ],
   providers: [
