@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { AuthModule } from '../auth/auth.module';
-import { environment } from '../environment';
-import { EventGateway } from './event.gateway';
-import { EventService } from './event.service';
+import {forwardRef, Module} from '@nestjs/common';
+import {ClientsModule, Transport} from '@nestjs/microservices';
+import {AuthModule} from '../auth/auth.module';
+import {environment} from '../environment';
+import {EventGateway} from './event.gateway';
+import {EventService} from './event.service';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { EventService } from './event.service';
         options: environment.nats,
       },
     ]),
-    AuthModule,
+    forwardRef(() => AuthModule),
   ],
   providers: [EventService, EventGateway],
   exports: [EventService],

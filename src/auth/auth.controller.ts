@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UnauthorizedException } from '@nestjs/common';
+import {Body, Controller, HttpCode, HttpStatus, Post, UnauthorizedException} from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -6,12 +6,12 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Auth, AuthUser } from '../auth/auth.decorator';
-import { Throttled } from '../util/throttled.decorator';
-import { Validated } from '../util/validated.decorator';
-import { LoginDto, LoginResult, RefreshDto } from './user.dto';
-import { User } from './user.schema';
-import { UserService } from './user.service';
+import {Auth, AuthUser} from './auth.decorator';
+import {Throttled} from '../util/throttled.decorator';
+import {Validated} from '../util/validated.decorator';
+import {LoginDto, LoginResult, RefreshDto} from '../user/user.dto';
+import {User} from '../user/user.schema';
+import {UserService} from '../user/user.service';
 
 @Controller('auth')
 @ApiTags('Authentication')
