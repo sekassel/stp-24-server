@@ -1,0 +1,51 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set Deployment Options
+        id: deployment
+        run: |
+          case "$GITHUB_REF" in
+            refs/tags/v*)
+              VERSION="${GITHUB_REF:11}"
+              PREFIX="${GITHUB_REF:11:1}"
+          ;;
+          esac
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "prefix=$PREFIX" >> "$GITHUB_OUTPUT"
+      - name: Build the Docker Image
+        uses: whoan/docker-build-with-cache-action@v6
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          image_name: stp/server-23
+          image_tag: ${{ steps.deployment.outputs.prefix }},${{ steps.deployment.outputs.version }}
+      - name: Rancher Deploy
+        uses: sekassel-research/actions-rancher-update@v3.0.0
+        with:
+          rancher_url: ${{ secrets.RANCHER_URL }}
+          rancher_token: ${{ secrets.RANCHER_TOKEN }}
+          cluster_id: ${{ secrets.CLUSTER_ID }}
+          project_id: ${{ secrets.PROJECT_ID }}
+          namespace: ${{ secrets.NAMESPACE }}
+          deployment: ${{ secrets.DEPLOYMENT }}-v${{ steps.deployment.outputs.prefix }}
+          docker_image: ${{ secrets.DOCKER_REGISTRY }}/stp/server-23:${{ steps.deployment.outputs.version }}
+      - name: Discord Notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: |
+            Eine neue Serverversion ist verfügbar: `${{ steps.deployment.outputs.version }}`
+            <https://stpmon.uniks.de/api/v${{ steps.deployment.outputs.prefix }}>
