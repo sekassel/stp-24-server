@@ -51,12 +51,9 @@ export class UserController {
   @ApiOperation({ description: 'Lists all online users.' })
   @ApiOkResponse({ type: [User] })
   async getUsers(
-    @Query() { status, ids }: QueryUsersDto,
+    @Query() { ids }: QueryUsersDto,
   ): Promise<User[]> {
     const filter: FilterQuery<User> = {};
-    if (status) {
-      filter.status = status;
-    }
     if (ids) {
       filter._id = { $in: ids };
     }

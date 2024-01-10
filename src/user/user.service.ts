@@ -32,7 +32,6 @@ export class UserService extends MongooseRepository<User> {
 
   async create(dto: CreateUserDto | Omit<User, keyof GlobalSchema>): Promise<UserDocument> {
     const hashed = await this.hash(dto);
-    hashed.status = 'offline';
     try {
       return await super.create(hashed as User);
     } catch (e: any) {

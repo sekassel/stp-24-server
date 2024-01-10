@@ -1,15 +1,16 @@
-import { ApiProperty, ApiPropertyOptional, OmitType, PickType } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsByteLength, IsIn, IsJWT, IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { environment } from '../environment';
-import { PartialType } from '../util/partial-type';
-import { Status, STATUS, User } from './user.schema';
+import {ApiProperty, ApiPropertyOptional, OmitType, PickType} from '@nestjs/swagger';
+import {Transform} from 'class-transformer';
+import {IsByteLength, IsIn, IsJWT, IsMongoId, IsNotEmpty, IsOptional, IsString} from 'class-validator';
+import {environment} from '../environment';
+import {PartialType} from '../util/partial-type';
+import {User} from './user.schema';
 
-class UserAndPassword extends PickType(User, [
-  'name',
-  'avatar',
-  'status',
-  'friends',
+class UserAndPassword extends OmitType(User, [
+  '_id',
+  'passwordHash',
+  'refreshKey',
+  'createdAt',
+  'updatedAt',
 ]) {
   @IsString()
   @IsNotEmpty()
@@ -18,7 +19,7 @@ class UserAndPassword extends PickType(User, [
   password: string;
 }
 
-export class CreateUserDto extends OmitType(UserAndPassword, ['status', 'friends'] as const) {
+export class CreateUserDto extends UserAndPassword {
 }
 
 export class UpdateUserDto extends PartialType(UserAndPassword) {
@@ -55,12 +56,4 @@ export class QueryUsersDto {
   @IsOptional()
   @IsMongoId({ each: true })
   ids?: string[];
-
-  @ApiPropertyOptional({
-    enum: STATUS,
-    description: 'When set, returns only users with this status',
-  })
-  @IsOptional()
-  @IsIn(STATUS)
-  status?: Status;
 }
