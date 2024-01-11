@@ -1,15 +1,12 @@
 const port = +(process.env.PORT || 3000);
-const udpPort = +(process.env.UDP_PORT || 3001);
 
 export const environment = {
   version: process.env.API_VERSION || 'v4',
   nodeEnv: process.env.NODE_ENV || 'development',
   port,
-  udpPort,
   baseUrl: process.env.BASE_URL || `http://localhost:${port}`,
-  udpAddress: process.env.UDP_ADDRESS || `localhost:${udpPort}`,
   mongo: {
-    uri: process.env.MONGO_URI || 'mongodb://localhost:27017/stp-23',
+    uri: process.env.MONGO_URI || 'mongodb://localhost:27017/stp-24',
   },
   auth: {
     secret: process.env.AUTH_SECRET || 'secret',
@@ -22,11 +19,9 @@ export const environment = {
     ttl: +(process.env.RATE_LIMIT_TTL || 60),
     limit: +(process.env.RATE_LIMIT || 60),
     presetsTtl: +(process.env.RATE_LIMIT_PRESETS_TTL || 60),
-    udpSubscriptionLimit: +(process.env.MAX_UDP_SUBSCRIPTIONS || 4),
   },
   passive: !!process.env.PASSIVE,
   cleanup: {
-    emptyGroupLifetimeHours: +(process.env.EMPTY_GROUP_LIFETIME_HOURS || 1),
     tempUserLifetimeHours: +(process.env.TEMP_USER_LIFETIME_HOURS || 1),
     tempUserNamePattern: process.env.TEMP_USER_NAME_PATTERN
       ? new RegExp(process.env.TEMP_USER_NAME_PATTERN)
@@ -40,10 +35,6 @@ export const environment = {
     spamMessagePattern: process.env.SPAM_MESSAGE_PATTERN
       ? new RegExp(process.env.SPAM_MESSAGE_PATTERN)
       : /^.$|(.{1,3})\1{2,}|^This message was deleted$/,
-    unprogressedTrainerLifetimeHours: +(process.env.UNPROGRESSED_TRAINER_LIFETIME_HOURS || 2),
-    opponentLifetimeMinutes: +(process.env.OPPONENT_LIFETIME_MINUTES || 10),
-    loiteringMinutes: +(process.env.LOITERING_MINUTES || 10),
-    udpLifetimeMinutes: +(process.env.UDP_LIFETIME_MINUTES || 5),
   },
   nats: {
     servers: process.env.NATS_URL || 'nats://localhost:4222',
