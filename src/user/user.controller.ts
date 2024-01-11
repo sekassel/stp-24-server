@@ -1,15 +1,4 @@
-import {
-  Body,
-  ConflictException,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, Query,} from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -19,14 +8,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
-import {NotFound} from '@mean-stream/nestx';
+import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Throttled} from '../util/throttled.decorator';
 import {Validated} from '../util/validated.decorator';
 import {CreateUserDto, QueryUsersDto, UpdateUserDto} from './user.dto';
 import {User} from './user.schema';
 import {UserService} from './user.service';
 import {FilterQuery, Types} from "mongoose";
-import {ObjectIdPipe} from "@mean-stream/nestx";
 
 @Controller('users')
 @ApiTags('Users')
@@ -80,13 +68,6 @@ export class UserController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() dto: UpdateUserDto,
   ): Promise<User | null> {
-    if (dto.name) {
-      const existing = await this.userService.findByName(dto.name);
-      if (existing && existing.id !== id) {
-        throw new ConflictException('Username already taken');
-      }
-    }
-
     if (!id.equals(user._id)) {
       throw new ForbiddenException('Cannot change someone else\'s user.');
     }

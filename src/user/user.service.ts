@@ -25,11 +25,6 @@ export class UserService extends MongooseRepository<User> {
   ) {
     super(model);
   }
-
-  async findByName(name: string): Promise<UserDocument | null> {
-    return this.model.findOne({ name }).exec();
-  }
-
   async create(dto: CreateUserDto | Omit<User, keyof GlobalSchema>): Promise<UserDocument> {
     const hashed = await this.hash(dto);
     try {
@@ -43,7 +38,14 @@ export class UserService extends MongooseRepository<User> {
   }
 
   async update(id: Types.ObjectId, dto: UpdateUserDto): Promise<UserDocument | null> {
-    return super.update(id, await this.hash(dto));
+    try {
+      return await super.update(id, await this.hash(dto));
+    } catch (e: any) {
+      if (e.code === 11000) {
+        throw new ConflictException('Username already taken');
+      }
+      throw e;
+    }
   }
 
   async deleteTempUsers(maxAgeMs: number): Promise<User[]> {
@@ -66,7 +68,7 @@ export class UserService extends MongooseRepository<User> {
   }
 
   async login({ name, password }: LoginDto): Promise<LoginResult | undefined> {
-    const user = await this.findByName(name);
+    const user = await this.findOne({name});
     if (!user) {
       return undefined;
     }
