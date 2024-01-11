@@ -19,7 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
-import {NotFound} from '../util/not-found.decorator';
+import {NotFound} from '@mean-stream/nestx';
 import {Throttled} from '../util/throttled.decorator';
 import {Validated} from '../util/validated.decorator';
 import {CreateUserDto, QueryUsersDto, UpdateUserDto} from './user.dto';
