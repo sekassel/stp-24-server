@@ -18,11 +18,11 @@ jobs:
           case "$GITHUB_REF" in
             refs/tags/v*)
               VERSION="${GITHUB_REF:11}"
-              PREFIX="${GITHUB_REF:11:1}"
+              MAJOR="${GITHUB_REF:11:1}"
           ;;
           esac
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "prefix=$PREFIX" >> "$GITHUB_OUTPUT"
+          echo "major=$MAJOR" >> "$GITHUB_OUTPUT"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
@@ -38,7 +38,7 @@ jobs:
           push: true
           tags:
             ${{ secrets.DOCKER_REGISTRY }}/stp/server-24:${{ steps.deployment.outputs.version }}
-            ${{ secrets.DOCKER_REGISTRY }}/stp/server-24:${{ steps.deployment.outputs.prefix }}
+            ${{ secrets.DOCKER_REGISTRY }}/stp/server-24:${{ steps.deployment.outputs.major }}
           cache-to: type=gha,mode=max
           cache-from: type=gha
       - name: Rancher Deploy
@@ -49,7 +49,7 @@ jobs:
           cluster_id: ${{ secrets.CLUSTER_ID }}
           project_id: ${{ secrets.PROJECT_ID }}
           namespace: ${{ secrets.NAMESPACE }}
-          deployment: ${{ secrets.DEPLOYMENT }}-v${{ steps.deployment.outputs.prefix }}
+          deployment: ${{ secrets.DEPLOYMENT }}-v${{ steps.deployment.outputs.major }}
           docker_image: ${{ secrets.DOCKER_REGISTRY }}/stp/server-24:${{ steps.deployment.outputs.version }}
       - name: Discord Notification
         env:
@@ -58,4 +58,4 @@ jobs:
         with:
           args: |
             Eine neue Serverversion ist verfügbar: `${{ steps.deployment.outputs.version }}`
-            <https://stpmon.uniks.de/api/v${{ steps.deployment.outputs.prefix }}>
+            <https://stpmon.uniks.de/api/v${{ steps.deployment.outputs.major }}>
