@@ -25,6 +25,7 @@ export class UserService extends MongooseRepository<User> {
   ) {
     super(model);
   }
+
   async create(dto: CreateUserDto | Omit<User, keyof GlobalSchema>): Promise<UserDocument> {
     const hashed = await this.hash(dto);
     try {
@@ -46,15 +47,6 @@ export class UserService extends MongooseRepository<User> {
       }
       throw e;
     }
-  }
-
-  async deleteTempUsers(maxAgeMs: number): Promise<User[]> {
-    const users = await this.model.find({
-      createdAt: { $lt: new Date(Date.now() - maxAgeMs) },
-      name: environment.cleanup.tempUserNamePattern,
-    });
-    await this.deleteAll(users);
-    return users;
   }
 
   private async hash(dto: UpdateUserDto): Promise<Partial<User>> {

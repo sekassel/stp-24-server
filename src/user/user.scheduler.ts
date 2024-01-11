@@ -15,9 +15,12 @@ export class UserScheduler {
   @Cron(CronExpression.EVERY_HOUR)
   async deleteTempUsers() {
     const maxAgeMs = environment.cleanup.tempUserLifetimeHours * 60 * 60 * 1000;
-    const users = await this.userService.deleteTempUsers(maxAgeMs);
-    if (users.length) {
-      this.logger.warn(`Deleted ${users.length} temporary users.`);
+    const users = await this.userService.deleteMany({
+      createdAt: { $lt: new Date(Date.now() - maxAgeMs) },
+      name: environment.cleanup.tempUserNamePattern,
+    });
+    if (users.deletedCount) {
+      this.logger.warn(`Deleted ${users.deletedCount} temporary users.`);
     }
   }
 }
