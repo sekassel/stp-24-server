@@ -1,9 +1,11 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsByteLength, IsDate, IsMongoId, IsNumber, IsOptional, IsString } from 'class-validator';
-import { Document } from 'mongoose';
-import { GLOBAL_SCHEMA_WITHOUT_ID_OPTIONS, GlobalSchemaWithoutID, MONGO_ID_FORMAT } from '../util/schema';
+import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
+import {Transform} from 'class-transformer';
+import {IsByteLength, IsDate, IsNumber, IsOptional, IsString} from 'class-validator';
+import {Document, Types} from 'mongoose';
+import {GLOBAL_SCHEMA_WITHOUT_ID_OPTIONS, GlobalSchemaWithoutID} from '../util/schema';
+import {Ref} from "@mean-stream/nestx";
+import {User} from "../user/user.schema";
 
 const MAX_ID_LENGTH = 32;
 
@@ -17,10 +19,8 @@ const MAX_ID_LENGTH = 32;
   },
 })
 export class Achievement extends GlobalSchemaWithoutID {
-  @Prop()
-  @ApiProperty(MONGO_ID_FORMAT)
-  @IsMongoId()
-  user: string;
+  @Ref(User.name)
+  user: Types.ObjectId;
 
   @Prop()
   @ApiProperty({ minLength: 1, maxLength: MAX_ID_LENGTH })

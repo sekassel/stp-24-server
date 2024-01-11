@@ -2,13 +2,13 @@ import {Body, Controller, Delete, ForbiddenException, Get, Param, Put} from '@ne
 import {ApiForbiddenResponse, ApiOkResponse, ApiTags} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
-import {NotFound} from '@mean-stream/nestx';
-import {ParseObjectIdPipe} from '../util/parse-object-id.pipe';
+import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Throttled} from '../util/throttled.decorator';
 import {Validated} from '../util/validated.decorator';
 import {UpdateAchievementDto} from './achievement.dto';
 import {Achievement} from './achievement.schema';
 import {AchievementService} from './achievement.service';
+import {Types} from 'mongoose';
 
 @Controller('users/:user/achievements')
 @ApiTags('Achievements')
@@ -24,7 +24,7 @@ export class AchievementController {
   @Get()
   @ApiOkResponse({ type: [Achievement] })
   async findAll(
-    @Param('user', ParseObjectIdPipe) user: string,
+    @Param('user', ObjectIdPipe) user: Types.ObjectId,
   ): Promise<Achievement[]> {
     return this.achievementService.findAll({user});
   }
@@ -33,7 +33,7 @@ export class AchievementController {
   @ApiOkResponse({ type: Achievement })
   @NotFound()
   async findOne(
-    @Param('user', ParseObjectIdPipe) user: string,
+    @Param('user', ObjectIdPipe) user: Types.ObjectId,
     @Param('id') id: string,
   ): Promise<Achievement | null> {
     return this.achievementService.findOne({user, id});
@@ -43,15 +43,15 @@ export class AchievementController {
   @ApiOkResponse({ type: Achievement })
   @ApiForbiddenResponse({ description: 'Adding an achievement to another user.' })
   async create(
-    @AuthUser() user: User,
-    @Param('user', ParseObjectIdPipe) userId: string,
+    @AuthUser() authUser: User,
+    @Param('user', ObjectIdPipe) user: Types.ObjectId,
     @Param('id') id: string,
     @Body() achievement: UpdateAchievementDto,
   ): Promise<Achievement> {
-    if (user._id.toString() !== userId) {
+    if (!authUser._id.equals(user)) {
       throw new ForbiddenException('Cannot add achievement for another user.');
     }
-    return this.achievementService.upsert({user: userId, id}, achievement);
+    return this.achievementService.upsert({user, id}, achievement);
   }
 
   @Delete(':id')
@@ -59,13 +59,13 @@ export class AchievementController {
   @ApiForbiddenResponse({ description: 'Attempt to delete achievement of another user.' })
   @NotFound()
   async delete(
-    @AuthUser() user: User,
-    @Param('user', ParseObjectIdPipe) userId: string,
+    @AuthUser() authUser: User,
+    @Param('user', ObjectIdPipe) user: Types.ObjectId,
     @Param('id') id: string,
   ): Promise<Achievement | null> {
-    if (user._id.toString() !== userId) {
+    if (!authUser._id.equals(user)) {
       throw new ForbiddenException('Cannot delete achievement of another user.');
     }
-    return this.achievementService.deleteOne({user: userId, id});
+    return this.achievementService.deleteOne({user, id});
   }
 }
