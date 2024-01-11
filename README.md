@@ -1,4 +1,4 @@
-# STP Server 2023
+# STP Server 2024
 
 ## Installation
 
