@@ -18,7 +18,6 @@ async function loadDescription(): Promise<string> {
   const contents$ = [
     'REST',
     'WebSocket',
-    'UDPSocket',
     'Changelog',
   ].map(fileName => readFile(`docs/${fileName}.md`).then(content => {
     const replacedContent = content.toString()
