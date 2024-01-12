@@ -43,7 +43,7 @@ export class UserController {
   ): Promise<User[]> {
     const filter: FilterQuery<User> = {};
     if (query.ids) {
-      filter._id = {$in: query.ids};
+      filter._id = {$in: query.ids.map(id => new Types.ObjectId(id))};
     }
     return this.userService.findAll(filter, {sort: '+name'});
   }
