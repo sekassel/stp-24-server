@@ -1,9 +1,9 @@
 import {ApiProperty, ApiPropertyOptional, OmitType, PickType} from '@nestjs/swagger';
-import {Transform} from 'class-transformer';
-import {IsByteLength, IsIn, IsJWT, IsMongoId, IsNotEmpty, IsOptional, IsString} from 'class-validator';
 import {environment} from '../environment';
 import {PartialType} from '../util/partial-type';
 import {User} from './user.schema';
+import {tags} from 'typia';
+import {MongoID} from '../util/tags';
 
 class UserAndPassword extends OmitType(User, [
   '_id',
@@ -12,11 +12,8 @@ class UserAndPassword extends OmitType(User, [
   'createdAt',
   'updatedAt',
 ]) {
-  @IsString()
-  @IsNotEmpty()
-  @IsByteLength(8, undefined, { message: 'Password must be at least 8 characters' })
   @ApiProperty({ minLength: 8 })
-  password: string;
+  password: string & tags.MinLength<8>;
 }
 
 export class CreateUserDto extends UserAndPassword {
@@ -30,8 +27,7 @@ export class LoginDto extends PickType(UserAndPassword, ['name', 'password'] as 
 
 export class RefreshDto {
   @ApiProperty({ format: 'jwt' })
-  @IsJWT()
-  refreshToken: string;
+  refreshToken: string; // FIXME & tags.Format<'jwt'>;
 }
 
 export class LoginResult extends User {
@@ -52,8 +48,5 @@ export class QueryUsersDto {
   @ApiPropertyOptional({
     description: 'A comma-separated list of IDs that should be included in the response.',
   })
-  @Transform(({ value }) => Array.isArray(value) ? value : value?.split(','))
-  @IsOptional()
-  @IsMongoId({ each: true })
-  ids?: string[];
+  ids?: (string & MongoID)[];
 }
