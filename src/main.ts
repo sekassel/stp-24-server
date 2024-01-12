@@ -11,6 +11,7 @@ import {ThrottlerExceptionFilter} from './util/throttler-exception.filter';
 import {Handlers} from '@sentry/node';
 
 import './polyfills';
+import {Logger} from '@nestjs/common';
 
 const globalPrefix = `api/${environment.version}`;
 
@@ -64,6 +65,8 @@ async function bootstrap() {
 
   await app.listen(environment.port);
   await app.startAllMicroservices();
+
+  new Logger('Main').log(`🚀 Server is running on ${environment.baseUrl}`);
 }
 
 bootstrap();
