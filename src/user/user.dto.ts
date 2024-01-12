@@ -1,9 +1,8 @@
-import {ApiProperty, ApiPropertyOptional, OmitType, PickType} from '@nestjs/swagger';
-import {environment} from '../environment';
+import {OmitType, PickType} from '@nestjs/swagger';
 import {PartialType} from '../util/partial-type';
 import {User} from './user.schema';
 import {tags} from 'typia';
-import {MongoID} from '../util/tags';
+import {JWT, MongoID} from '../util/tags';
 
 class UserAndPassword extends OmitType(User, [
   '_id',
@@ -12,7 +11,6 @@ class UserAndPassword extends OmitType(User, [
   'createdAt',
   'updatedAt',
 ]) {
-  @ApiProperty({ minLength: 8 })
   password: string & tags.MinLength<8>;
 }
 
@@ -26,27 +24,24 @@ export class LoginDto extends PickType(UserAndPassword, ['name', 'password'] as 
 }
 
 export class RefreshDto {
-  @ApiProperty({ format: 'jwt' })
-  refreshToken: string; // FIXME & tags.Format<'jwt'>;
+  refreshToken: string & JWT;
 }
 
 export class LoginResult extends User {
-  @ApiProperty({
-    format: 'jwt',
-    description: `Token for use with Bearer Authorization. Expires after ${environment.auth.expiry}.`,
-  })
-  accessToken: string;
+  /**
+   * Token for use with Bearer Authorization. Expires after ${environment.auth.expiry}.
+   */
+  accessToken: string & JWT;
 
-  @ApiProperty({
-    format: 'jwt',
-    description: `Token for use with the \`POST /api/${environment.version}/auth/refresh\` endpoint. Expires after ${environment.auth.refreshExpiry}.`,
-  })
+  /**
+   * Token for use with the `POST /api/${environment.version}/auth/refresh` endpoint. Expires after ${environment.auth.refreshExpiry}.
+   */
   refreshToken: string;
 }
 
 export class QueryUsersDto {
-  @ApiPropertyOptional({
-    description: 'A comma-separated list of IDs that should be included in the response.',
-  })
+  /**
+   * A comma-separated list of IDs that should be included in the response.
+   */
   ids?: (string & MongoID)[];
 }
