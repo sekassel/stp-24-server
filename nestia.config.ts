@@ -43,9 +43,9 @@ export default {
     },
     security: {
       bearer: {
-        type: 'apiKey',
-        name: 'Authorization',
-        in: 'header',
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
       },
     },
     servers: [
