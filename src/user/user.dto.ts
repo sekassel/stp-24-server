@@ -1,6 +1,6 @@
 import {OmitType, PickType} from '@nestjs/swagger';
 import {PartialType} from '../util/partial-type';
-import {User} from './user.schema';
+import {User, UserId} from './user.schema';
 import {tags} from 'typia';
 import {JWT, MongoID} from '../util/tags';
 
@@ -43,5 +43,5 @@ export class QueryUsersDto {
   /**
    * A comma-separated list of IDs that should be included in the response.
    */
-  ids?: (string & MongoID)[];
+  ids?: UserId[];
 }

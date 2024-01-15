@@ -1,17 +1,15 @@
-import {Body, Controller, Delete, ForbiddenException, Get, HttpStatus, Post} from '@nestjs/common';
+import {Body, Controller, Delete, ForbiddenException, Get, HttpStatus, Patch, Post} from '@nestjs/common';
 import {ApiTags} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {NotFound} from '@mean-stream/nestx';
 import {Throttled} from '../util/throttled.decorator';
 import {Validated} from '../util/validated.decorator';
 import {CreateUserDto, QueryUsersDto, UpdateUserDto} from './user.dto';
-import {User} from './user.schema';
+import {User, UserId} from './user.schema';
 import {UserService} from './user.service';
 import {FilterQuery} from 'mongoose';
-import {EncryptedRoute, TypedBody, TypedException, TypedParam, TypedQuery} from '@nestia/core';
-import {MongoID} from '../util/tags';
+import {TypedBody, TypedException, TypedParam, TypedQuery} from '@nestia/core';
 import {ErrorResponse} from '../util/error-response';
-import Patch = EncryptedRoute.Patch;
 
 @Controller('users')
 @ApiTags('Users')
@@ -57,7 +55,7 @@ export class UserController {
   @Auth()
   @NotFound()
   async getUser(
-    @TypedParam('id') id: string & MongoID,
+    @TypedParam('id') id: UserId,
   ): Promise<User | null> {
     return this.userService.find(id);
   }
@@ -75,7 +73,7 @@ export class UserController {
   @TypedException<ErrorResponse>(HttpStatus.FORBIDDEN, 'Cannot change someone else\'s user.')
   async update(
     @AuthUser() user: User,
-    @TypedParam('id') id: string & MongoID,
+    @TypedParam('id') id: UserId,
     @Body() dto: UpdateUserDto,
   ): Promise<User | null> {
     if (user._id !== id) {
@@ -95,7 +93,7 @@ export class UserController {
   @TypedException<ErrorResponse>(HttpStatus.FORBIDDEN, 'Cannot delete someone else\'s user.')
   async delete(
     @AuthUser() user: User,
-    @TypedParam('id') id: string & MongoID,
+    @TypedParam('id') id: UserId,
   ): Promise<User | null> {
     if (user._id != id) {
       throw new ForbiddenException('Cannot delete someone else\'s user.');

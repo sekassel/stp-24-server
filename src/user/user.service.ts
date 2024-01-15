@@ -10,13 +10,13 @@ import {JwtStrategy} from '../auth/jwt.strategy';
 import {environment} from '../environment';
 import {EventService} from '../event/event.service';
 import {CreateUserDto, LoginDto, LoginResult, RefreshDto, UpdateUserDto} from './user.dto';
-import {User, UserDocument} from './user.schema';
+import {User, UserDocument, UserId} from './user.schema';
 import {EventRepository, MongooseRepository} from "@mean-stream/nestx";
 import {GlobalSchema} from "../util/schema";
 
 @Injectable()
 @EventRepository()
-export class UserService extends MongooseRepository<User, string, UserDocument> {
+export class UserService extends MongooseRepository<User, UserId, UserDocument> {
   constructor(
     @InjectModel('users') model: Model<User>,
     private eventEmitter: EventService,
@@ -38,7 +38,7 @@ export class UserService extends MongooseRepository<User, string, UserDocument> 
     }
   }
 
-  async update(id: string, dto: UpdateUserDto): Promise<UserDocument | null> {
+  async update(id: UserId, dto: UpdateUserDto): Promise<UserDocument | null> {
     try {
       return await super.update(id, await this.hash(dto));
     } catch (e: any) {

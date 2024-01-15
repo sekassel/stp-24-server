@@ -6,3 +6,8 @@ export type JWT = tags.TagBase<{
   kind: 'jwt';
   value: undefined;
 }>;
+export type CustomTag<T extends string> = tags.TagBase<{
+  target: 'string';
+  kind: 'custom';
+  value: T;
+}>;
