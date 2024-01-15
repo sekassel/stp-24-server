@@ -42,6 +42,5 @@ export class GlobalSchemaWithoutID {
 
 export class GlobalSchema extends GlobalSchemaWithoutID {
   @ApiProperty(MONGO_ID_FORMAT)
-  @AsObjectId()
-  _id!: Types.ObjectId;
+  _id!: string;
 }

@@ -48,7 +48,7 @@ export class AchievementController {
     @Param('id') id: string,
     @Body() achievement: UpdateAchievementDto,
   ): Promise<Achievement> {
-    if (!authUser._id.equals(user)) {
+    if (!user.equals(authUser._id)) {
       throw new ForbiddenException('Cannot add achievement for another user.');
     }
     return this.achievementService.upsert({user, id}, achievement);
@@ -63,7 +63,7 @@ export class AchievementController {
     @Param('user', ObjectIdPipe) user: Types.ObjectId,
     @Param('id') id: string,
   ): Promise<Achievement | null> {
-    if (!authUser._id.equals(user)) {
+    if (!user.equals(authUser._id)) {
       throw new ForbiddenException('Cannot delete achievement of another user.');
     }
     return this.achievementService.deleteOne({user, id});

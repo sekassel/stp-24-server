@@ -1,4 +1,4 @@
-import {Body, Controller, ForbiddenException, HttpStatus} from '@nestjs/common';
+import {Body, Controller, Delete, ForbiddenException, Get, HttpStatus, Post} from '@nestjs/common';
 import {ApiTags} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {NotFound} from '@mean-stream/nestx';
@@ -7,10 +7,11 @@ import {Validated} from '../util/validated.decorator';
 import {CreateUserDto, QueryUsersDto, UpdateUserDto} from './user.dto';
 import {User} from './user.schema';
 import {UserService} from './user.service';
-import {FilterQuery, Types} from 'mongoose';
-import {TypedBody, TypedException, TypedParam, TypedQuery, TypedRoute} from '@nestia/core';
+import {FilterQuery} from 'mongoose';
+import {EncryptedRoute, TypedBody, TypedException, TypedParam, TypedQuery} from '@nestia/core';
 import {MongoID} from '../util/tags';
 import {ErrorResponse} from '../util/error-response';
+import Patch = EncryptedRoute.Patch;
 
 @Controller('users')
 @ApiTags('Users')
@@ -26,7 +27,7 @@ export class UserController {
    * Create a new user (sign up).
    * @param dto the new user data
    */
-  @TypedRoute.Post()
+  @Post()
   @TypedException<ErrorResponse>(HttpStatus.CONFLICT, 'Username was already taken.')
   async create(@TypedBody() dto: CreateUserDto): Promise<User> {
     return this.userService.create(dto);
@@ -36,14 +37,14 @@ export class UserController {
    * Lists all users.
    * @param query the filter query
    */
-  @TypedRoute.Get()
+  @Get()
   @Auth()
   async getUsers(
     @TypedQuery() query: QueryUsersDto,
   ): Promise<User[]> {
     const filter: FilterQuery<User> = {};
     if (query.ids) {
-      filter._id = {$in: query.ids.map(id => new Types.ObjectId(id))};
+      filter._id = query.ids;
     }
     return this.userService.findAll(filter, {sort: '+name'});
   }
@@ -52,13 +53,13 @@ export class UserController {
    * Informs about the user with the given ID.
    * @param id the ID of the user to get
    */
-  @TypedRoute.Get(':id')
+  @Get(':id')
   @Auth()
   @NotFound()
   async getUser(
     @TypedParam('id') id: string & MongoID,
   ): Promise<User | null> {
-    return this.userService.find(new Types.ObjectId(id));
+    return this.userService.find(id);
   }
 
   /**
@@ -67,7 +68,7 @@ export class UserController {
    * @param id the ID of the user to update
    * @param dto the new user data
    */
-  @TypedRoute.Patch(':id')
+  @Patch(':id')
   @Auth()
   @NotFound()
   @TypedException<ErrorResponse>(HttpStatus.CONFLICT, 'Username was already taken.')
@@ -77,10 +78,10 @@ export class UserController {
     @TypedParam('id') id: string & MongoID,
     @Body() dto: UpdateUserDto,
   ): Promise<User | null> {
-    if (!user._id.equals(id)) {
+    if (user._id !== id) {
       throw new ForbiddenException('Cannot change someone else\'s user.');
     }
-    return this.userService.update(new Types.ObjectId(id), dto);
+    return this.userService.update(id, dto);
   }
 
   /**
@@ -88,7 +89,7 @@ export class UserController {
    * @param user the authenticated user
    * @param id the ID of the user to delete
    */
-  @TypedRoute.Delete(':id')
+  @Delete(':id')
   @Auth()
   @NotFound()
   @TypedException<ErrorResponse>(HttpStatus.FORBIDDEN, 'Cannot delete someone else\'s user.')
@@ -96,9 +97,9 @@ export class UserController {
     @AuthUser() user: User,
     @TypedParam('id') id: string & MongoID,
   ): Promise<User | null> {
-    if (!user._id.equals(id)) {
+    if (user._id != id) {
       throw new ForbiddenException('Cannot delete someone else\'s user.');
     }
-    return this.userService.delete(new Types.ObjectId(id));
+    return this.userService.delete(id);
   }
 }

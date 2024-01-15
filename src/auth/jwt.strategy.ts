@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: UserToken): Promise<User> {
     const date = new Date(payload.iat * 1000);
     return {
-      _id: new Types.ObjectId(payload.sub),
+      _id: payload.sub,
       name: payload.preferred_username,
       createdAt: date,
       updatedAt: date,

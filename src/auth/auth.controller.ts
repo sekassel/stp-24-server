@@ -1,4 +1,4 @@
-import {Controller, HttpCode, HttpStatus, UnauthorizedException} from '@nestjs/common';
+import {Controller, HttpCode, HttpStatus, Post, UnauthorizedException} from '@nestjs/common';
 import {ApiTags} from '@nestjs/swagger';
 import {Auth, AuthUser} from './auth.decorator';
 import {Throttled} from '../util/throttled.decorator';
@@ -21,7 +21,7 @@ export class AuthController {
    * Log in with user credentials.
    * @param dto username and password
    */
-  @TypedRoute.Post('login')
+  @Post('login')
   @TypedException<ErrorResponse>(HttpStatus.UNAUTHORIZED, 'Invalid username or password')
   async login(
     @TypedBody() dto: LoginDto,
@@ -37,7 +37,7 @@ export class AuthController {
    * Log in with a refresh token.
    * @param dto refresh token
    */
-  @TypedRoute.Post('refresh')
+  @Post('refresh')
   @TypedException<ErrorResponse>(HttpStatus.UNAUTHORIZED, 'Invalid or expired refresh token')
   async refresh(@TypedBody() dto: RefreshDto): Promise<LoginResult> {
     const token = await this.userService.refresh(dto);
@@ -51,7 +51,7 @@ export class AuthController {
    * Log out the current user **everywhere** by invalidating the refresh token.
    * @param user
    */
-  @TypedRoute.Post('logout')
+  @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Auth()
   async logout(@AuthUser() user: User): Promise<void> {

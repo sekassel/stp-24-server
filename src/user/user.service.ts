@@ -16,7 +16,7 @@ import {GlobalSchema} from "../util/schema";
 
 @Injectable()
 @EventRepository()
-export class UserService extends MongooseRepository<User> {
+export class UserService extends MongooseRepository<User, string, UserDocument> {
   constructor(
     @InjectModel('users') model: Model<User>,
     private eventEmitter: EventService,
@@ -38,7 +38,7 @@ export class UserService extends MongooseRepository<User> {
     }
   }
 
-  async update(id: Types.ObjectId, dto: UpdateUserDto): Promise<UserDocument | null> {
+  async update(id: string, dto: UpdateUserDto): Promise<UserDocument | null> {
     try {
       return await super.update(id, await this.hash(dto));
     } catch (e: any) {
@@ -65,7 +65,7 @@ export class UserService extends MongooseRepository<User> {
       return undefined;
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+    const passwordMatch = await bcrypt.compare(password, user.passwordHash!);
     if (!passwordMatch) {
       return undefined;
     }
