@@ -1,15 +1,14 @@
-import {Body, Controller, Delete, ForbiddenException, Get, Param, Put} from '@nestjs/common';
+import {Controller, Delete, ForbiddenException, Get, Put} from '@nestjs/common';
 import {ApiForbiddenResponse, ApiOkResponse, ApiTags} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User, UserId} from '../user/user.schema';
-import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
+import {NotFound} from '@mean-stream/nestx';
 import {Throttled} from '../util/throttled.decorator';
 import {Validated} from '../util/validated.decorator';
 import {UpdateAchievementDto} from './achievement.dto';
-import {Achievement} from './achievement.schema';
+import {Achievement, AchievementId} from './achievement.schema';
 import {AchievementService} from './achievement.service';
-import {Types} from 'mongoose';
-import {TypedParam} from '@nestia/core';
+import {TypedBody, TypedParam} from '@nestia/core';
 
 @Controller('users/:user/achievements')
 @ApiTags('Achievements')
@@ -35,7 +34,7 @@ export class AchievementController {
   @NotFound()
   async findOne(
     @TypedParam('user') user: UserId,
-    @Param('id') id: string,
+    @TypedParam('id') id: AchievementId,
   ): Promise<Achievement | null> {
     return this.achievementService.findOne({user, id});
   }
@@ -46,8 +45,8 @@ export class AchievementController {
   async create(
     @AuthUser() authUser: User,
     @TypedParam('user') user: UserId,
-    @Param('id') id: string,
-    @Body() achievement: UpdateAchievementDto,
+    @TypedParam('id') id: AchievementId,
+    @TypedBody() achievement: UpdateAchievementDto,
   ): Promise<Achievement> {
     if (user !== authUser._id) {
       throw new ForbiddenException('Cannot add achievement for another user.');
@@ -62,7 +61,7 @@ export class AchievementController {
   async delete(
     @AuthUser() authUser: User,
     @TypedParam('user') user: UserId,
-    @Param('id') id: string,
+    @TypedParam('id') id: AchievementId,
   ): Promise<Achievement | null> {
     if (user !== authUser._id) {
       throw new ForbiddenException('Cannot delete achievement of another user.');
