@@ -43,8 +43,8 @@ import {Integrations} from "@sentry/node";
     AuthModule,
     EventModule,
     UserModule,
-    // AchievementSummaryModule,
-    // AchievementModule,
+    AchievementSummaryModule,
+    AchievementModule,
     GameModule,
   ],
   providers: [
