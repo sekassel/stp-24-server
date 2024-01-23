@@ -30,6 +30,7 @@ import {Transport} from '@nestjs/microservices';
     SentryModule.forRootAsync({
       inject: [HttpAdapterHost],
       useFactory: async (adapterHost: HttpAdapterHost) => ({
+        enabled: environment.nodeEnv !== 'development',
         dsn: environment.sentry.dsn,
         environment: environment.nodeEnv,
         release: environment.version,
