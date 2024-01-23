@@ -8,10 +8,9 @@ import {Model, Types} from 'mongoose';
 import {RefreshToken} from '../auth/auth.interface';
 import {JwtStrategy} from '../auth/jwt.strategy';
 import {environment} from '../environment';
-import {EventService} from '../event/event.service';
 import {CreateUserDto, LoginDto, LoginResult, RefreshDto, UpdateUserDto} from './user.dto';
 import {User, UserDocument} from './user.schema';
-import {EventRepository, MongooseRepository} from "@mean-stream/nestx";
+import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {GlobalSchema} from "../util/schema";
 
 @Injectable()

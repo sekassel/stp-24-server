@@ -1,12 +1,10 @@
 import {HttpException, Module} from '@nestjs/common';
-import {EventEmitterModule} from '@nestjs/event-emitter';
 import {MongooseModule} from '@nestjs/mongoose';
 import {ScheduleModule} from '@nestjs/schedule';
 import {ThrottlerModule} from '@nestjs/throttler';
 
 import {AuthModule} from './auth/auth.module';
 import {environment} from './environment';
-import {EventModule} from './event/event.module';
 import {GameModule} from './game/game.module';
 import {UserModule} from './user/user.module';
 import {SentryInterceptor, SentryModule, SentryModuleOptions} from "@ntegral/nestjs-sentry";
@@ -14,6 +12,8 @@ import {APP_INTERCEPTOR, HttpAdapterHost} from "@nestjs/core";
 import {AchievementModule} from "./achievement/achievement.module";
 import {AchievementSummaryModule} from "./achievement-summary/achievement-summary.module";
 import {Integrations} from "@sentry/node";
+import {EventModule} from '@mean-stream/nestx';
+import {Transport} from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -21,8 +21,10 @@ import {Integrations} from "@sentry/node";
       ignoreUndefined: true,
     }),
     ThrottlerModule.forRoot([environment.rateLimit]),
-    EventEmitterModule.forRoot({
-      wildcard: true,
+    EventModule.forRoot({
+      transport: Transport.NATS,
+      transportOptions: environment.nats,
+      userIdProvider: async (req) => 'u1',
     }),
     ScheduleModule.forRoot(),
     SentryModule.forRootAsync({
@@ -41,7 +43,6 @@ import {Integrations} from "@sentry/node";
       } satisfies SentryModuleOptions),
     }),
     AuthModule,
-    EventModule,
     UserModule,
     AchievementSummaryModule,
     AchievementModule,

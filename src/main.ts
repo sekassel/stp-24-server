@@ -12,6 +12,8 @@ import {Handlers} from '@sentry/node';
 
 import './polyfills';
 import {Logger} from '@nestjs/common';
+import {WebSocketGateway} from '@nestjs/websockets';
+import {EventGateway} from '@mean-stream/nestx';
 
 const globalPrefix = `api/${environment.version}`;
 
@@ -46,6 +48,7 @@ async function bootstrap() {
   app.useGlobalFilters(new ThrottlerExceptionFilter());
   app.use(Handlers.tracingHandler());
 
+  WebSocketGateway({ path: `/ws/${environment.version}/events` })(EventGateway)
   app.connectMicroservice({
     transport: Transport.NATS,
     options: environment.nats,

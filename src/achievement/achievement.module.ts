@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { EventModule } from '../event/event.module';
 import { UserModule } from '../user/user.module';
 import { AchievementController } from './achievement.controller';
 import { AchievementHandler } from './achievement.handler';
@@ -15,7 +14,6 @@ import { AchievementService } from './achievement.service';
       schema: AchievementSchema,
     }]),
     UserModule,
-    EventModule,
   ],
   controllers: [AchievementController],
   providers: [AchievementService, AchievementHandler],

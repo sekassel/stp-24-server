@@ -3,9 +3,8 @@ import {InjectModel} from '@nestjs/mongoose';
 import {FilterQuery, Model} from 'mongoose';
 import {AchievementSummary} from '../achievement-summary/achievement-summary.dto';
 
-import {EventService} from '../event/event.service';
 import {Achievement} from './achievement.schema';
-import {EventRepository, MongooseRepository} from "@mean-stream/nestx";
+import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 
 @Injectable()
 @EventRepository()
