@@ -14,6 +14,7 @@ import {Integrations} from "@sentry/node";
 import {EventModule} from '@mean-stream/nestx';
 import {Transport} from '@nestjs/microservices';
 import {GameModule} from './game/game.module';
+import {MemberModule} from './member/member.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import {GameModule} from './game/game.module';
     AuthModule,
     UserModule,
     GameModule,
+    MemberModule,
     AchievementSummaryModule,
     AchievementModule,
   ],
