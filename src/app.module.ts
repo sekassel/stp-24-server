@@ -5,7 +5,6 @@ import {ThrottlerModule} from '@nestjs/throttler';
 
 import {AuthModule} from './auth/auth.module';
 import {environment} from './environment';
-import {GameModule} from './game/game.module';
 import {UserModule} from './user/user.module';
 import {SentryInterceptor, SentryModule, SentryModuleOptions} from "@ntegral/nestjs-sentry";
 import {APP_INTERCEPTOR, HttpAdapterHost} from "@nestjs/core";
@@ -47,7 +46,6 @@ import {Transport} from '@nestjs/microservices';
     UserModule,
     AchievementSummaryModule,
     AchievementModule,
-    GameModule,
   ],
   providers: [
     {
