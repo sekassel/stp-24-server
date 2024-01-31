@@ -5,7 +5,7 @@ import {Member} from './member.schema';
 
 class MemberDto extends PickType(Member, [
   'ready',
-  'spectator',
+  'empire',
 ] as const) {
 }
 

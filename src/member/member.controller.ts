@@ -59,7 +59,7 @@ export class MemberController {
       throw new ForbiddenException('Incorrect password');
     }
 
-    if (gameDoc.started && !member.spectator) {
+    if (gameDoc.started && member.empire) {
       throw new ConflictException('Game already started');
     }
 
