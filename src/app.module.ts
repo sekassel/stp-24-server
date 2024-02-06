@@ -15,6 +15,7 @@ import {EventModule} from '@mean-stream/nestx';
 import {Transport} from '@nestjs/microservices';
 import {GameModule} from './game/game.module';
 import {MemberModule} from './member/member.module';
+import {SystemModule} from "./system/system.module";
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import {MemberModule} from './member/member.module';
     UserModule,
     GameModule,
     MemberModule,
+    SystemModule,
     AchievementSummaryModule,
     AchievementModule,
   ],
