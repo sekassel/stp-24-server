@@ -310,3 +310,16 @@ function generate_sequence(base_id: string, variable: Variable, variable_desc: s
     };
   }
 }
+
+export function getEffectiveTechnologies(techs: readonly Technology[]) {
+  const techIds = new Set(techs.map(tech => tech.id));
+  return techs.filter(tech => {
+    if (!tech) {
+      return false;
+    }
+    if (tech.precedes && tech.precedes.some(id => techIds.has(id))) {
+      return false;
+    }
+    return true;
+  });
+}
