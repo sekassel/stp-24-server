@@ -1,4 +1,3 @@
-import {applyEffects} from './variables';
 import type {Technology, Variable} from './types';
 
 export const TECHNOLOGIES: Record<string, Technology> = {

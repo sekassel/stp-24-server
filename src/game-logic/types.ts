@@ -36,13 +36,23 @@ export interface ExplainedVariable {
 }
 
 export interface Technology extends EffectSource {
-  id: string; // assigned later.
+  id: string;
   /** the cost in research points */
   cost: number;
   /** ids of other technologies that must be researched first. */
   requires?: readonly string[];
   /** If the empire has the specified technologies, this technology will be unlocked, but has no effect */
   precedes?: readonly string[];
+
+  effects: readonly Effect[];
+}
+
+export interface Trait extends EffectSource {
+  id: string;
+  /** the cost in trait points */
+  cost: number;
+  /** Cannot be selected if one of these traits is also present */
+  conflicts?: readonly string[];
 
   effects: readonly Effect[];
 }
