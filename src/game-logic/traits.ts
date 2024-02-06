@@ -1,4 +1,4 @@
-import type {Trait, Variable} from './types';
+import type {Trait} from './types';
 import {MAX_TRAIT_POINTS, MAX_TRAITS} from './constants';
 
 export function generateTraits(): string[] {
@@ -13,6 +13,26 @@ export function generateTraits(): string[] {
     }
   }
   return traits;
+}
+
+export function checkTraits(traitIds: string[]): string[] {
+  const result: string[] = [];
+  const traits = traitIds.map(id => TRAITS[id]);
+  const totalCost = traits.map(t => t.cost).sum();
+  if (totalCost > MAX_TRAIT_POINTS) {
+    result.push(`Maximum trait points exceeded (${totalCost}/${MAX_TRAIT_POINTS})`);
+  }
+  for (const trait of traits) {
+    if (!trait.conflicts) {
+      continue;
+    }
+    for (const conflict of trait.conflicts) {
+      if (traitIds.includes(conflict)) {
+        result.push(`Conflicting traits: ${trait.id} / ${conflict}`);
+      }
+    }
+  }
+  return result;
 }
 
 export const TRAITS: Record<string, Trait> = {

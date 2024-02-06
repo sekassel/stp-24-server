@@ -28,6 +28,7 @@ import {Member} from './member.schema';
 import {MemberService} from './member.service';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
+import {checkTraits} from '../game-logic/traits';
 
 @Controller('games/:game/members')
 @ApiTags('Game Members')
@@ -41,12 +42,22 @@ export class MemberController {
   ) {
   }
 
+  checkTraits(dto: CreateMemberDto | UpdateMemberDto) {
+    if (!dto.empire) {
+      return;
+    }
+    const result = checkTraits(dto.empire.traits);
+    if (result.length) {
+      throw new ConflictException(result, 'Invalid empire traits');
+    }
+  }
+
   @Post()
   @ApiOperation({description: 'Join a game with the current user.'})
   @ApiCreatedResponse({type: Member})
   @ApiNotFoundResponse({description: 'Game not found.'})
   @ApiForbiddenResponse({description: 'Incorrect password.'})
-  @ApiConflictResponse({description: 'Game already started or user already joined.'})
+  @ApiConflictResponse({description: 'Game already started, user already joined, or invalid empire traits.'})
   async create(
     @AuthUser() currentUser: User,
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
@@ -63,6 +74,7 @@ export class MemberController {
       throw new ConflictException('Game already started');
     }
 
+    this.checkTraits(member);
     try {
       return await this.memberService.create({
         ...member,
@@ -98,7 +110,7 @@ export class MemberController {
   @Patch(':user')
   @ApiOperation({description: 'Change game membership for the current user.'})
   @ApiOkResponse({type: Member})
-  @ApiConflictResponse({description: 'Game already started.'})
+  @ApiConflictResponse({description: 'Game already started or invalid empire traits.'})
   @ApiForbiddenResponse({description: 'Attempt to change membership of someone else.'})
   @NotFound('Game or membership not found.')
   async update(
@@ -114,6 +126,7 @@ export class MemberController {
     if (gameDoc.started) {
       throw new ConflictException('Game already started');
     }
+    this.checkTraits(dto);
     return this.memberService.updateOne({game, user}, dto);
   }
 
