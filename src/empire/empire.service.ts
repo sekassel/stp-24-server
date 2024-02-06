@@ -3,8 +3,10 @@ import {InjectModel} from '@nestjs/mongoose';
 import {Document, Model} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {Empire, EmpireDocument} from './empire.schema';
-import {ReadEmpireDto} from './empire.dto';
+import {EmpireTemplate, ReadEmpireDto} from './empire.dto';
 import {MemberService} from '../member/member.service';
+import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MAX_EMPIRES} from '../game-logic/constants';
+import {generateTraits} from '../game-logic/traits';
 
 @Injectable()
 @EventRepository()
@@ -15,6 +17,16 @@ export class EmpireService extends MongooseRepository<Empire> {
     private memberService: MemberService,
   ) {
     super(model);
+  }
+
+  generateTemplate(): EmpireTemplate {
+    return {
+      name: EMPIRE_PREFIX_PALETTE.random() + ' ' + EMPIRE_SUFFIX_PALETTE.random(),
+      color: COLOR_PALETTE.random(),
+      flag: Math.randInt(MAX_EMPIRES) + 1,
+      portrait: Math.randInt(MAX_EMPIRES) + 1,
+      traits: generateTraits(),
+    };
   }
 
   mask(empire: Empire | EmpireDocument): ReadEmpireDto {

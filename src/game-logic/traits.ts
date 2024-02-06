@@ -1,4 +1,19 @@
 import type {Trait, Variable} from './types';
+import {MAX_TRAIT_POINTS, MAX_TRAITS} from './constants';
+
+export function generateTraits(): string[] {
+  const traits: string[] = [];
+  let traitPoints = MAX_TRAIT_POINTS;
+
+  for (let i = 0; i < MAX_TRAITS * 2 && traits.length < MAX_TRAIT_POINTS; i++) {
+    const trait = Object.values(TRAITS).random();
+    if (traitPoints > trait.cost && !trait.conflicts?.some(c => traits.includes(c))) {
+      traits.push(trait.id);
+      traitPoints -= trait.cost;
+    }
+  }
+  return traits;
+}
 
 export const TRAITS: Record<string, Trait> = {
   strong: {
