@@ -2,11 +2,24 @@ import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {Doc, Ref} from '@mean-stream/nestx';
-import {BUILDINGS} from '../game-logic/buildings';
 import {ApiProperty} from '@nestjs/swagger';
-import {IsArray, IsHexColor, IsInt, IsNotEmpty, IsObject, IsString, Max, MaxLength, Min} from 'class-validator';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsHexColor,
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsObject,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 import {MAX_EMPIRES, MAX_TRAITS} from '../game-logic/constants';
 import {ResourceName, RESOURCES} from '../game-logic/resources';
+import {TRAITS} from '../game-logic/traits';
+import {TECHNOLOGIES} from '../game-logic/technologies';
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class Empire extends GlobalSchema {
@@ -55,7 +68,8 @@ export class Empire extends GlobalSchema {
   })
   @IsArray()
   @IsString({each: true})
-  @MaxLength(MAX_TRAITS)
+  @ArrayMaxSize(MAX_TRAITS)
+  @IsIn(Object.keys(TRAITS), {each: true})
   traits: string[];
 
   @Prop({type: Object, default: {}})
@@ -73,7 +87,7 @@ export class Empire extends GlobalSchema {
 
   @Prop()
   @IsArray()
-  @IsString({each: true})
+  @IsIn(Object.keys(TECHNOLOGIES), {each: true})
   technologies: string[];
 }
 
