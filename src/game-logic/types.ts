@@ -1,6 +1,7 @@
 import type {ResourceName} from './resources';
 import {EMPIRE_VARIABLES} from './empire-variables';
 import {BUILDINGS} from './buildings';
+import {ApiProperty} from '@nestjs/swagger';
 
 export type DeepNumberKeys<T> = T extends Record<string, any> ? {
   [K in keyof T]-?: T[K] extends object ? `${K & string}.${DeepNumberKeys<T[K]>}` : T[K] extends number ? K & string : never;
@@ -9,29 +10,48 @@ export type BuildingVariable = DeepNumberKeys<typeof BUILDINGS>;
 export type MiscVariable = DeepNumberKeys<typeof EMPIRE_VARIABLES>;
 export type Variable = BuildingVariable | MiscVariable;
 
-export interface Effect {
+export class Effect {
   /** a description of the effect. */
+  @ApiProperty({description: 'A description of the effect.'})
   description: string;
+
   /** the variable that is affected. */
+  @ApiProperty({description: 'The variable that is affected.'})
   variable: Variable;
+
   /** the additive to apply to the variable before multipliers */
+  @ApiProperty({description: 'The additive bonus to apply to the variable before multipliers.'})
   base?: number;
+
   /** the multiplier to apply to the variable. */
+  @ApiProperty({description: 'The multiplier to apply to the variable.'})
   multiplier?: number;
+
   /** the additive to apply to the variable after multipliers. */
+  @ApiProperty({description: 'The additive bonus to apply to the variable after multipliers.'})
   bonus?: number;
 }
 
-export interface EffectSource {
+export class EffectSource {
+  @ApiProperty()
   id: string;
+
   /** the effects that this source provides. */
+  @ApiProperty({description: 'The effects that this source provides.'})
   effects: readonly Effect[];
 }
 
-export interface ExplainedVariable {
+export class ExplainedVariable {
+  @ApiProperty()
   variable: string;
+
+  @ApiProperty({description: 'The initial value of the variable'})
   initial: number;
+
+  @ApiProperty({description: 'The effect sources that contribute to the variable.'})
   sources: EffectSource[];
+
+  @ApiProperty({description: 'The final value of the variable'})
   final: number;
 }
 

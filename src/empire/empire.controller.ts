@@ -9,6 +9,8 @@ import {Empire} from './empire.schema';
 import {EmpireService} from './empire.service';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
+import {ExplainedVariable, Variable} from '../game-logic/types';
+import {explainVariable, getEmpireEffectSources} from '../game-logic/variables';
 
 @Controller('games/:game/empires')
 @ApiTags('Game Empires')
@@ -59,5 +61,24 @@ export class EmpireController {
     }
     // TODO @simolse: implement resources trading and tech unlocks
     return this.empireService.update(id, dto);
+  }
+
+  @Get('variables/:variable')
+  @ApiOperation({summary: 'Get the value and explanation of an empire variable.'})
+  @ApiOkResponse({type: ExplainedVariable})
+  @ApiForbiddenResponse({description: 'Cannot view another user\'s empire variable.'})
+  @NotFound()
+  async getVariable(
+    @AuthUser() currentUser: User,
+    @Param('game', ObjectIdPipe) game: Types.ObjectId,
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Param('variable') variable: Variable,
+  ): Promise<ExplainedVariable> {
+    const empire = await this.empireService.find(id) ?? notFound(id);
+    if (!currentUser._id.equals(empire.user)) {
+      throw new ForbiddenException('Cannot view another user\'s empire variable.');
+    }
+    const effectSources = getEmpireEffectSources(empire);
+    return explainVariable(variable, 0, effectSources); // TODO initial
   }
 }
