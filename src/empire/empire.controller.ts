@@ -1,4 +1,4 @@
-import {Body, Controller, ForbiddenException, Get, Param, Patch} from '@nestjs/common';
+import {Body, Controller, ForbiddenException, Get, Param, ParseArrayPipe, Patch, Query} from '@nestjs/common';
 import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, refs} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
@@ -61,6 +61,24 @@ export class EmpireController {
     }
     // TODO @simolse: implement resources trading and tech unlocks
     return this.empireService.update(id, dto);
+  }
+
+  @Get('variables')
+  @ApiOperation({summary: 'Get the value and explanation of multiple empire variable.'})
+  @ApiOkResponse({type: [ExplainedVariable]})
+  @ApiForbiddenResponse({description: 'Cannot view another user\'s empire variables.'})
+  @NotFound()
+  async getVariables(
+    @AuthUser() currentUser: User,
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Query('variables', ParseArrayPipe) variable: Variable[],
+  ): Promise<ExplainedVariable[]> {
+    const empire = await this.empireService.find(id) ?? notFound(id);
+    if (!currentUser._id.equals(empire.user)) {
+      throw new ForbiddenException('Cannot view another user\'s empire variable.');
+    }
+    const effectSources = getEmpireEffectSources(empire);
+    return variable.map(v => explainVariable(v, effectSources));
   }
 
   @Get('variables/:variable')

@@ -58,14 +58,6 @@ function applyEffects(variables: Partial<Record<Variable, number>>, effects: rea
   }
 }
 
-export function explainVariables(variables: Record<Variable, number>, sources: EffectSource[]): Record<Variable, ExplainedVariable> {
-  const result = {} as Record<Variable, ExplainedVariable>;
-  for (const variable of Object.keys(variables) as Variable[]) {
-    result[variable] = explainVariable(variable, sources, variables[variable]);
-  }
-  return result;
-}
-
 export function explainVariable(variable: Variable, allSources: EffectSource[], initial = getInitialValue(variable)): ExplainedVariable {
   const sources = allSources
     .map(source => ({id: source.id, effects: source.effects.filter(effect => effect.variable === variable)}))
