@@ -4,10 +4,12 @@ import {getEffectiveTechnologies, TECHNOLOGIES} from './technologies';
 import {TRAITS} from './traits';
 import {BUILDINGS} from './buildings';
 import {EMPIRE_VARIABLES} from './empire-variables';
+import {RESOURCES} from './resources';
 
 export const VARIABLES = {
   buildings: BUILDINGS,
   empire: EMPIRE_VARIABLES,
+  resources: RESOURCES,
 } as const;
 
 export function getInitialValue(variable: Variable): number {
