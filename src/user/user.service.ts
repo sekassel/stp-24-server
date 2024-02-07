@@ -1,4 +1,4 @@
-import {ConflictException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import {InjectModel} from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
@@ -11,7 +11,7 @@ import {environment} from '../environment';
 import {CreateUserDto, LoginDto, LoginResult, RefreshDto, UpdateUserDto} from './user.dto';
 import {User, UserDocument} from './user.schema';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
-import {GlobalSchema} from "../util/schema";
+import {GlobalSchema} from '../util/schema';
 
 @Injectable()
 @EventRepository()
@@ -26,26 +26,11 @@ export class UserService extends MongooseRepository<User> {
   }
 
   async create(dto: CreateUserDto | Omit<User, keyof GlobalSchema>): Promise<UserDocument> {
-    const hashed = await this.hash(dto);
-    try {
-      return await super.create(hashed as User);
-    } catch (e: any) {
-      if (e.code === 11000) {
-        throw new ConflictException('Username already taken');
-      }
-      throw e;
-    }
+    return super.create(await this.hash(dto) as User);
   }
 
   async update(id: Types.ObjectId, dto: UpdateUserDto): Promise<UserDocument | null> {
-    try {
-      return await super.update(id, await this.hash(dto));
-    } catch (e: any) {
-      if (e.code === 11000) {
-        throw new ConflictException('Username already taken');
-      }
-      throw e;
-    }
+    return super.update(id, await this.hash(dto));
   }
 
   private async hash(dto: UpdateUserDto): Promise<Partial<User>> {

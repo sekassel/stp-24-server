@@ -29,6 +29,7 @@ import {MemberService} from './member.service';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {checkTraits} from '../game-logic/traits';
+import {UniqueConflict} from '../util/unique-conflict.decorator';
 
 @Controller('games/:game/members')
 @ApiTags('Game Members')
@@ -58,6 +59,7 @@ export class MemberController {
   @ApiNotFoundResponse({description: 'Game not found.'})
   @ApiForbiddenResponse({description: 'Incorrect password.'})
   @ApiConflictResponse({description: 'Game already started, user already joined, or invalid empire traits.'})
+  @UniqueConflict<Member>({game_user: 'User is already a member of this game.'})
   async create(
     @AuthUser() currentUser: User,
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
@@ -75,18 +77,11 @@ export class MemberController {
     }
 
     this.checkTraits(member);
-    try {
-      return await this.memberService.create({
-        ...member,
-        game,
-        user: currentUser._id,
-      });
-    } catch (e: any) {
-      if (e.code === 11000) {
-        throw new ConflictException('User already joined');
-      }
-      throw e;
-    }
+    return this.memberService.create({
+      ...member,
+      game,
+      user: currentUser._id,
+    });
   }
 
   @Get()
