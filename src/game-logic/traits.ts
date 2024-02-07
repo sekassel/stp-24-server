@@ -43,7 +43,7 @@ export const TRAITS: Record<string, Trait> = {
     effects: [
       {
         description: '+5% $minerals$ from $mine$',
-        variable: 'mine.production.minerals',
+        variable: 'buildings.mine.production.minerals',
         multiplier: 1.05,
       },
     ],
@@ -55,7 +55,7 @@ export const TRAITS: Record<string, Trait> = {
     effects: [
       {
         description: '-5% $minerals$ from $mine$',
-        variable: 'mine.production.minerals',
+        variable: 'buildings.mine.production.minerals',
         multiplier: 0.95,
       },
     ],
@@ -67,7 +67,7 @@ export const TRAITS: Record<string, Trait> = {
     effects: [
       {
         description: '+5% $research$ from $research_lab$',
-        variable: 'research_lab.production.research',
+        variable: 'buildings.research_lab.production.research',
         multiplier: 1.05,
       },
     ],
@@ -79,7 +79,7 @@ export const TRAITS: Record<string, Trait> = {
     effects: [
       {
         description: '+10% $research$ from $research_lab$',
-        variable: 'research_lab.production.research',
+        variable: 'buildings.research_lab.production.research',
         multiplier: 1.1,
       },
     ],

@@ -2,6 +2,13 @@ import {Effect, EffectSource, ExplainedVariable, Variable} from './types';
 import {Empire} from '../empire/empire.schema';
 import {getEffectiveTechnologies, TECHNOLOGIES} from './technologies';
 import {TRAITS} from './traits';
+import {BUILDINGS} from './buildings';
+import {EMPIRE_VARIABLES} from './empire-variables';
+
+export const VARIABLES = {
+  buildings: BUILDINGS,
+  empire: EMPIRE_VARIABLES,
+} as const;
 
 export function getEmpireEffectSources(empire: Empire): EffectSource[] {
   return [
