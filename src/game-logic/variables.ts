@@ -10,6 +10,15 @@ export const VARIABLES = {
   empire: EMPIRE_VARIABLES,
 } as const;
 
+export function getInitialValue(variable: Variable): number {
+  // deep key access
+  let value: any = VARIABLES;
+  for (const key of variable.split('.')) {
+    value = value[key];
+  }
+  return value;
+}
+
 export function getEmpireEffectSources(empire: Empire): EffectSource[] {
   return [
     ...empire.traits.map(t => TRAITS[t]),
@@ -17,8 +26,8 @@ export function getEmpireEffectSources(empire: Empire): EffectSource[] {
   ];
 }
 
-export function calculateVariable(variable: Variable, initial: number, empire: Empire): number {
-  const variables = {[variable]: initial};
+export function calculateVariable(variable: Variable, empire: Empire): number {
+  const variables = {[variable]: getInitialValue(variable)};
   calculateVariables(variables, empire);
   return variables[variable];
 }
@@ -50,12 +59,12 @@ function applyEffects(variables: Partial<Record<Variable, number>>, effects: rea
 export function explainVariables(variables: Record<Variable, number>, sources: EffectSource[]): Record<Variable, ExplainedVariable> {
   const result = {} as Record<Variable, ExplainedVariable>;
   for (const variable of Object.keys(variables) as Variable[]) {
-    result[variable] = explainVariable(variable, variables[variable], sources);
+    result[variable] = explainVariable(variable, sources, variables[variable]);
   }
   return result;
 }
 
-export function explainVariable(variable: Variable, initial: number, allSources: EffectSource[]): ExplainedVariable {
+export function explainVariable(variable: Variable, allSources: EffectSource[], initial = getInitialValue(variable)): ExplainedVariable {
   const sources = allSources
     .map(source => ({id: source.id, effects: source.effects.filter(effect => effect.variable === variable)}))
     .filter(source => source.effects.length > 0);

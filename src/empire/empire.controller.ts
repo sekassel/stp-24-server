@@ -70,7 +70,6 @@ export class EmpireController {
   @NotFound()
   async getVariable(
     @AuthUser() currentUser: User,
-    @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Param('variable') variable: Variable,
   ): Promise<ExplainedVariable> {
@@ -79,6 +78,6 @@ export class EmpireController {
       throw new ForbiddenException('Cannot view another user\'s empire variable.');
     }
     const effectSources = getEmpireEffectSources(empire);
-    return explainVariable(variable, 0, effectSources); // TODO initial
+    return explainVariable(variable, effectSources);
   }
 }
