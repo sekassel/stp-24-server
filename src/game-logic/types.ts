@@ -64,14 +64,14 @@ export interface Technology extends EffectSource {
   effects: readonly Effect[];
 }
 
-export interface Trait extends EffectSource {
-  id: string;
+export class Trait extends EffectSource {
   /** the cost in trait points */
+  @ApiProperty({description: 'The cost in trait points.'})
   cost: number;
-  /** Cannot be selected if one of these traits is also present */
-  conflicts?: readonly string[];
 
-  effects: readonly Effect[];
+  /** Cannot be selected if one of these traits is also present */
+  @ApiProperty({description: 'Cannot be selected if one of these traits is also present.'})
+  conflicts?: readonly string[];
 }
 
 export interface Resource {

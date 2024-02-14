@@ -16,6 +16,7 @@ import {Transport} from '@nestjs/microservices';
 import {GameModule} from './game/game.module';
 import {MemberModule} from './member/member.module';
 import {EmpireModule} from './empire/empire.module';
+import { PresetsModule } from './presets/presets.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import {EmpireModule} from './empire/empire.module';
     EmpireModule,
     AchievementSummaryModule,
     AchievementModule,
+    PresetsModule,
   ],
   providers: [
     {
