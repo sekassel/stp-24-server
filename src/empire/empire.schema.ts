@@ -59,6 +59,9 @@ export class Empire extends GlobalSchema {
     minimum: 1,
     maximum: MAX_EMPIRES,
   })
+  @IsInt()
+  @Min(1)
+  @Max(MAX_EMPIRES)
   portrait: number;
 
   @Prop()
