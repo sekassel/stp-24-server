@@ -60,6 +60,28 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
+  dumb: {
+    id: 'dumb',
+    cost: -1,
+    conflicts: ['smart', 'intelligent'],
+    effects: [
+      {
+        description: '-5% $research$ from $research_lab$',
+        variable: 'buildings.research_lab.production.research',
+        multiplier: 0.95,
+      },
+      {
+        description: '+0.5% $alloys$ from $foundry$',
+        variable: 'buildings.foundry.production.alloys',
+        multiplier: 1.005,
+      },
+      {
+        description: '+0.5% $fuel$ from $refinery$',
+        variable: 'buildings.refinery.production.fuel',
+        multiplier: 1.005,
+      },
+    ],
+  },
   smart: {
     id: 'smart',
     cost: 1,
@@ -76,6 +98,18 @@ export const TRAITS: Record<string, Trait> = {
     id: 'intelligent',
     cost: 3,
     conflicts: ['smart'],
+    effects: [
+      {
+        description: '+10% $research$ from $research_lab$',
+        variable: 'buildings.research_lab.production.research',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  cunning: {
+    id: 'cunning',
+    cost: 3,
+    conflicts: ['courageous'],
     effects: [
       {
         description: '+10% $research$ from $research_lab$',
