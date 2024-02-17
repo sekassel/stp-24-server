@@ -18,10 +18,10 @@ $ docker compose up database nats
 
 ## Running the app
 
-To run everything, use
+To run everything for non-development, use
 
 ```bash
-$ docker compose up database nats
+$ docker compose up
 ```
 
 Otherwise, choose one of the following:
