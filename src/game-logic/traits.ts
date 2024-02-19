@@ -250,4 +250,132 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
+  proficient: {
+    id: '_proficient',
+    cost: 2,
+    conflicts: ['_clumsy', '_incompetent'],
+    effects: [
+      {
+        description: '-10% initial $minerals$ for $power_plant$',
+        variable: 'buildings.power_plant.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% initial $minerals$ for $mine$',
+        variable: 'buildings.mine.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% initial $minerals$ for $research_lab$',
+        variable: 'buildings.power_plant.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% initial $minerals$ for $foundry$',
+        variable: 'buildings.foundry.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% initial $minerals$ for $refinery$',
+        variable: 'buildings.refinery.cost.minerals',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  skilled: {
+    id: '_skilled',
+    cost: 4,
+    conflicts: ['_clumsy', '_incompetent'],
+    effects: [
+      {
+        description: '-20% initial $minerals$ for $power_plant$',
+        variable: 'buildings.power_plant.cost.minerals',
+        multiplier: 0.8,
+      },
+      {
+        description: '-20% initial $minerals$ for $mine$',
+        variable: 'buildings.mine.cost.minerals',
+        multiplier: 0.8,
+      },
+      {
+        description: '-20% initial $minerals$ for $research_lab$',
+        variable: 'buildings.power_plant.cost.minerals',
+        multiplier: 0.8,
+      },
+      {
+        description: '-20% initial $minerals$ for $foundry$',
+        variable: 'buildings.foundry.cost.minerals',
+        multiplier: 0.8,
+      },
+      {
+        description: '-20% initial $minerals$ for $refinery$',
+        variable: 'buildings.refinery.cost.minerals',
+        multiplier: 0.8,
+      },
+    ],
+  },
+  clumsy: {
+    id: '_clumsy',
+    cost: 2,
+    conflicts: ['_proficient', '_skilled'],
+    effects: [
+      {
+        description: '10% initial $minerals$ for $power_plant$',
+        variable: 'buildings.power_plant.cost.minerals',
+        multiplier: 1.1,
+      },
+      {
+        description: '10% initial $minerals$ for $mine$',
+        variable: 'buildings.mine.cost.minerals',
+        multiplier: 1.1,
+      },
+      {
+        description: '10% initial $minerals$ for $research_lab$',
+        variable: 'buildings.power_plant.cost.minerals',
+        multiplier: 1.1,
+      },
+      {
+        description: '10% initial $minerals$ for $foundry$',
+        variable: 'buildings.foundry.cost.minerals',
+        multiplier: 1.1,
+      },
+      {
+        description: '10% initial $minerals$ for $refinery$',
+        variable: 'buildings.refinery.cost.minerals',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  incompetent: {
+    id: '_incompetent',
+    cost: -4,
+    conflicts: ['_proficient', '_skilled'],
+    effects: [
+      {
+        description: '20% initial $minerals$ for $power_plant$',
+        variable: 'buildings.power_plant.cost.minerals',
+        multiplier: 1.2,
+      },
+      {
+        description: '20% initial $minerals$ for $mine$',
+        variable: 'buildings.mine.cost.minerals',
+        multiplier: 1.2,
+      },
+      {
+        description: '20% initial $minerals$ for $research_lab$',
+        variable: 'buildings.power_plant.cost.minerals',
+        multiplier: 1.2,
+      },
+      {
+        description: '20% initial $minerals$ for $foundry$',
+        variable: 'buildings.foundry.cost.minerals',
+        multiplier: 1.2,
+      },
+      {
+        description: '20% initial $minerals$ for $refinery$',
+        variable: 'buildings.refinery.cost.minerals',
+        multiplier: 1.2,
+      },
+    ],
+  },
 };
