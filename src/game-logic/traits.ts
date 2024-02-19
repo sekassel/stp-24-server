@@ -381,7 +381,7 @@ export const TRAITS: Record<string, Trait> = {
   efficient: {
     id: '_efficient',
     cost: 3,
-    conflicts: [],
+    conflicts: ['_inefficient', '_baboon'],
     effects: [
       {
         description: '-5% $minerals$ for $power_plant$',
@@ -428,7 +428,7 @@ export const TRAITS: Record<string, Trait> = {
   engineer: {
     id: '_engineer',
     cost: 6,
-    conflicts: [],
+    conflicts: ['_inefficient', '_baboon'],
     effects: [
       {
         description: '-10% $minerals$ for $power_plant$',
@@ -475,7 +475,7 @@ export const TRAITS: Record<string, Trait> = {
   inefficient: {
     id: '_inefficient',
     cost: -3,
-    conflicts: [],
+    conflicts: ['_efficient', '_engineer'],
     effects: [
       {
         description: '5% $minerals$ for $power_plant$',
@@ -522,7 +522,7 @@ export const TRAITS: Record<string, Trait> = {
   baboon: {
     id: '_baboon',
     cost: -6,
-    conflicts: [],
+    conflicts: ['_efficient', '_engineer'],
     effects: [
       {
         description: '10% $minerals$ for $power_plant$',
@@ -563,6 +563,78 @@ export const TRAITS: Record<string, Trait> = {
         description: '10% $energy$ for $refinery$',
         variable: 'buildings.refinery.upkeep.energy',
         multiplier: 1.1,
+      },
+    ],
+  },
+  miner: {
+    id: '_miner',
+    cost: 1,
+    conflicts: ['settler', 'surface_operator', 'claustrophobic'],
+    effects: [
+      {
+        description: '10% $minerals$ from $mine$',
+        variable: 'buildings.mine.production.minerals',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  excavator: {
+    id: '_excavator',
+    cost: 3,
+    conflicts: ['settler', 'surface_operator', 'claustrophobic'],
+    effects: [
+      {
+        description: '20% $minerals$ from $mine$',
+        variable: 'buildings.mine.production.minerals',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  pitman: {
+    id: '_pitman',
+    cost: 5,
+    conflicts: ['settler', 'surface_operator', 'claustrophobic'],
+    effects: [
+      {
+        description: '30% $minerals$ from $mine$',
+        variable: 'buildings.mine.production.minerals',
+        multiplier: 1.3,
+      },
+    ],
+  },
+  settler: {
+    id: '_settler',
+    cost: -1,
+    conflicts: ['miner', 'excavator', 'pitman'],
+    effects: [
+      {
+        description: '-10% $minerals$ from $mine$',
+        variable: 'buildings.mine.production.minerals',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  surface_operator: {
+    id: '_surface_operator',
+    cost: -3,
+    conflicts: ['miner', 'excavator', 'pitman'],
+    effects: [
+      {
+        description: '-20% $minerals$ from $mine$',
+        variable: 'buildings.mine.production.minerals',
+        multiplier: 0.8,
+      },
+    ],
+  },
+  claustrophobic: {
+    id: '_claustrophobic',
+    cost: -5,
+    conflicts: ['miner', 'excavator', 'pitman'],
+    effects: [
+      {
+        description: '-30% $minerals$ from $mine$',
+        variable: 'buildings.mine.production.minerals',
+        multiplier: 0.7,
       },
     ],
   },
