@@ -85,7 +85,7 @@ export const TRAITS: Record<string, Trait> = {
   smart: {
     id: 'smart',
     cost: 1,
-    conflicts: ['intelligent'],
+    conflicts: ['dumb'],
     effects: [
       {
         description: '+5% $research$ from $research_lab$',
@@ -97,7 +97,7 @@ export const TRAITS: Record<string, Trait> = {
   intelligent: {
     id: 'intelligent',
     cost: 3,
-    conflicts: ['smart'],
+    conflicts: ['dumb'],
     effects: [
       {
         description: '+10% $research$ from $research_lab$',
@@ -136,6 +136,16 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['urban', 'gentrified'],
     effects: [
       {
+        description: 'Start with 200 additional $food$',
+        variable: 'resources.food.starting',
+        bonus: 200,
+      },
+      {
+        description: 'Start with 20 reduced $energy$',
+        variable: 'resources.energy.starting',
+        bonus: -20,
+      },
+      {
         description: '+5% $food$ from $farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.05,
@@ -150,7 +160,7 @@ export const TRAITS: Record<string, Trait> = {
       {
         description: '-5% $food$ from $farm$',
         variable: 'buildings.farm.production.food',
-        multiplier: 0.97,
+        multiplier: 0.95,
       },
     ],
   },
@@ -163,6 +173,11 @@ export const TRAITS: Record<string, Trait> = {
         description: '+10% $food$ from $farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.1,
+      },
+      {
+        description: 'Start with 20 additional $fuel$',
+        variable: 'resources.fuel.starting',
+        bonus: 20,
       },
     ],
   },
