@@ -79,8 +79,8 @@ export class System extends GlobalSchema {
   @ApiProperty({
     description: 'Distance to other systems that are connected to this one.',
     example: {
-      'system_id': 3,
-      'system_id2': 5,
+      '507f191e810c19729de860ea': 3,
+      '617f191e810a19729de860eb': 5,
     },
     type: 'object',
   })
