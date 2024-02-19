@@ -51,12 +51,8 @@ export class SystemController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() dto: UpdateSystemDto,
   ): Promise<System | null> {
-    let owner = dto.owner;
-
-    if(!owner){
-      const oldSystem = await this.systemService.find(id);
-      owner = oldSystem?.owner;
-    }
+    const oldSystem = await this.systemService.find(id);
+    const owner = oldSystem?.owner ?? dto.owner;
 
     if(!currentUser._id.equals(owner?._id)){
       throw new ForbiddenException('You are not the owner of this system.');

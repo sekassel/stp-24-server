@@ -2,9 +2,9 @@ import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {Doc, OptionalRef, Ref} from '@mean-stream/nestx';
-import {BuildingName} from "../game-logic/buildings";
+import {BuildingName, BUILDINGS} from "../game-logic/buildings";
 import {ApiProperty} from "@nestjs/swagger";
-import {IsInt, IsNumber, IsString, Max, Min} from "class-validator";
+import {IsInt, IsNumber, IsObject, IsString, Max, Min} from "class-validator";
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class System extends GlobalSchema {
@@ -16,16 +16,49 @@ export class System extends GlobalSchema {
   @IsString()
   type: string;
 
-  @Prop()
-  @ApiProperty()
+  @Prop({type: Object, default: {}})
+  @IsObject()
+  @ApiProperty({
+    description: 'The number of slots of some building types.',
+    example: {
+      'power_plant': 5,
+      'mine': 6,
+      'farm': 5,
+      'research_lab': 4,
+    },
+    type: 'object',
+    properties: Object.fromEntries(Object.keys(BUILDINGS).map(id => [id, {
+      type: 'integer',
+      default: 0,
+      minimum: 0,
+      required: false,
+    }])) as any,
+  })
   buildingSlots: Partial<Record<BuildingName, number>>;
 
-  @Prop()
-  @ApiProperty()
+  @Prop({type: Object, default: {}})
+  @IsObject()
+  @ApiProperty({
+    description: 'The number of existing buildings.',
+    example: {
+      'power_plant': 2,
+      'mine': 3,
+      'farm': 1
+    },
+    type: 'object',
+    properties: Object.fromEntries(Object.keys(BUILDINGS).map(id => [id, {
+      type: 'integer',
+      default: 0,
+      minimum: 0,
+      required: false,
+    }])) as any,
+  })
   buildings: Partial<Record<BuildingName, number>>;
 
   @Prop()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Total building capacity of the system.',
+  })
   @IsInt()
   @Min(0)
   capacity: number;
@@ -43,7 +76,14 @@ export class System extends GlobalSchema {
   upgrade: number;
 
   @Prop()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Distance to other systems that are connected to this one.',
+    example: {
+      'system_id': 3,
+      'system_id2': 5,
+    },
+    type: 'object',
+  })
   links: Record<string, number>;
 
   @Prop()
