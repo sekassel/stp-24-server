@@ -75,7 +75,7 @@ export class System extends GlobalSchema {
   @Max(2)
   upgrade: number;
 
-  @Prop()
+  @Prop({type: Object})
   @ApiProperty({
     description: 'Distance to other systems that are connected to this one.',
     example: {
