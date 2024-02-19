@@ -17,6 +17,7 @@ import {GameModule} from './game/game.module';
 import {MemberModule} from './member/member.module';
 import {EmpireModule} from './empire/empire.module';
 import { PresetsModule } from './presets/presets.module';
+import {SystemModule} from "./system/system.module";
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { PresetsModule } from './presets/presets.module';
     UserModule,
     GameModule,
     MemberModule,
+    SystemModule,
     EmpireModule,
     AchievementSummaryModule,
     AchievementModule,
