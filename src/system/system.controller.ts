@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Patch,} from '@nestjs/common';
+import {Body, Controller, ForbiddenException, Get, Param, Patch,} from '@nestjs/common';
 import {ApiOkResponse, ApiOperation, ApiTags,} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {GameService} from '../game/game.service';
@@ -51,7 +51,14 @@ export class SystemController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() dto: UpdateSystemDto,
   ): Promise<System | null> {
-    //TODO: Current user equals owner check
+    if(!dto.owner){
+      throw new ForbiddenException('You must specify an owner.');
+    }
+
+    if(currentUser._id == dto.owner._id){
+      throw new ForbiddenException('You are not the owner of this system.');
+    }
+
     return this.systemService.update(id, dto);
   }
 }
