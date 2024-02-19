@@ -363,7 +363,7 @@ export const TRAITS: Record<string, Trait> = {
       },
       {
         description: '20% initial $minerals$ for $research_lab$',
-        variable: 'buildings.power_plant.cost.minerals',
+        variable: 'buildings.research_lab.cost.minerals',
         multiplier: 1.2,
       },
       {
@@ -375,6 +375,194 @@ export const TRAITS: Record<string, Trait> = {
         description: '20% initial $minerals$ for $refinery$',
         variable: 'buildings.refinery.cost.minerals',
         multiplier: 1.2,
+      },
+    ],
+  },
+  efficient: {
+    id: '_efficient',
+    cost: 3,
+    conflicts: [],
+    effects: [
+      {
+        description: '-5% $minerals$ for $power_plant$',
+        variable: 'buildings.power_plant.upkeep.minerals',
+        multiplier: 0.95,
+      },
+      {
+        description: '-5% $energy$ for $mine$',
+        variable: 'buildings.mine.upkeep.energy',
+        multiplier: 0.95,
+      },
+      {
+        description: '-5% $energy$ for $farm$',
+        variable: 'buildings.farm.upkeep.energy',
+        multiplier: 0.95,
+      },
+      {
+        description: '-5% $energy$ for $research_lab$',
+        variable: 'buildings.research_lab.upkeep.energy',
+        multiplier: 0.95,
+      },
+      {
+        description: '-5% $minerals$ for $foundry$',
+        variable: 'buildings.foundry.upkeep.minerals',
+        multiplier: 0.95,
+      },
+      {
+        description: '-5% $energy$ for $foundry$',
+        variable: 'buildings.foundry.upkeep.energy',
+        multiplier: 0.95,
+      },
+      {
+        description: '-5% $minerals$ for $refinery$',
+        variable: 'buildings.refinery.upkeep.minerals',
+        multiplier: 0.95,
+      },
+      {
+        description: '-5% $energy$ for $refinery$',
+        variable: 'buildings.refinery.upkeep.energy',
+        multiplier: 0.95,
+      },
+    ],
+  },
+  engineer: {
+    id: '_engineer',
+    cost: 6,
+    conflicts: [],
+    effects: [
+      {
+        description: '-10% $minerals$ for $power_plant$',
+        variable: 'buildings.power_plant.upkeep.minerals',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $energy$ for $mine$',
+        variable: 'buildings.mine.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $energy$ for $farm$',
+        variable: 'buildings.farm.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $energy$ for $research_lab$',
+        variable: 'buildings.research_lab.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $minerals$ for $foundry$',
+        variable: 'buildings.foundry.upkeep.minerals',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $energy$ for $foundry$',
+        variable: 'buildings.foundry.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $minerals$ for $refinery$',
+        variable: 'buildings.refinery.upkeep.minerals',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $energy$ for $refinery$',
+        variable: 'buildings.refinery.upkeep.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  inefficient: {
+    id: '_inefficient',
+    cost: -3,
+    conflicts: [],
+    effects: [
+      {
+        description: '5% $minerals$ for $power_plant$',
+        variable: 'buildings.power_plant.upkeep.minerals',
+        multiplier: 1.05,
+      },
+      {
+        description: '5% $energy$ for $mine$',
+        variable: 'buildings.mine.upkeep.energy',
+        multiplier: 1.05,
+      },
+      {
+        description: '5% $energy$ for $farm$',
+        variable: 'buildings.farm.upkeep.energy',
+        multiplier: 1.05,
+      },
+      {
+        description: '5% $energy$ for $research_lab$',
+        variable: 'buildings.research_lab.upkeep.energy',
+        multiplier: 1.05,
+      },
+      {
+        description: '5% $minerals$ for $foundry$',
+        variable: 'buildings.foundry.upkeep.minerals',
+        multiplier: 1.05,
+      },
+      {
+        description: '5% $energy$ for $foundry$',
+        variable: 'buildings.foundry.upkeep.energy',
+        multiplier: 1.05,
+      },
+      {
+        description: '5% $minerals$ for $refinery$',
+        variable: 'buildings.refinery.upkeep.minerals',
+        multiplier: 1.05,
+      },
+      {
+        description: '5% $energy$ for $refinery$',
+        variable: 'buildings.refinery.upkeep.energy',
+        multiplier: 1.05,
+      },
+    ],
+  },
+  baboon: {
+    id: '_baboon',
+    cost: -6,
+    conflicts: [],
+    effects: [
+      {
+        description: '10% $minerals$ for $power_plant$',
+        variable: 'buildings.power_plant.upkeep.minerals',
+        multiplier: 1.1,
+      },
+      {
+        description: '10% $energy$ for $mine$',
+        variable: 'buildings.mine.upkeep.energy',
+        multiplier: 1.1,
+      },
+      {
+        description: '10% $energy$ for $farm$',
+        variable: 'buildings.farm.upkeep.energy',
+        multiplier: 1.1,
+      },
+      {
+        description: '10% $energy$ for $research_lab$',
+        variable: 'buildings.research_lab.upkeep.energy',
+        multiplier: 1.1,
+      },
+      {
+        description: '10% $minerals$ for $foundry$',
+        variable: 'buildings.foundry.upkeep.minerals',
+        multiplier: 1.1,
+      },
+      {
+        description: '10% $energy$ for $foundry$',
+        variable: 'buildings.foundry.upkeep.energy',
+        multiplier: 1.1,
+      },
+      {
+        description: '10% $minerals$ for $refinery$',
+        variable: 'buildings.refinery.upkeep.minerals',
+        multiplier: 1.1,
+      },
+      {
+        description: '10% $energy$ for $refinery$',
+        variable: 'buildings.refinery.upkeep.energy',
+        multiplier: 1.1,
       },
     ],
   },
