@@ -133,24 +133,120 @@ export const TRAITS: Record<string, Trait> = {
   agrarian: {
     id: '_agrarian',
     cost: 1,
-    conflicts: [],
+    conflicts: ['_urban', '_gentrified'],
     effects: [
       {
-        description: '+3% $food$ for $farm$',
+        description: '+5% $food$ from $farm$',
         variable: 'buildings.farm.production.food',
-        multiplier: 1.03,
+        multiplier: 1.05,
+      },
+    ],
+  },
+  urban: {
+    id: '_urban',
+    cost: -1,
+    conflicts: ['_agrarian', '_industrious'],
+    effects: [
+      {
+        description: '-5% $food$ from $farm$',
+        variable: 'buildings.farm.production.food',
+        multiplier: 0.97,
       },
     ],
   },
   industrious: {
     id: '_industrious',
     cost: 3,
+    conflicts: ['_urban', '_gentrified'],
+    effects: [
+      {
+        description: '+10% $food$ from $farm$',
+        variable: 'buildings.farm.production.food',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  gentrified: {
+    id: '_gentrified',
+    cost: -3,
+    conflicts: ['_agrarian', '_industrious'],
+    effects: [
+      {
+        description: '-10% $food$ from $farm$',
+        variable: 'buildings.farm.production.food',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  radioactive: {
+    id: '_radioactive',
+    cost: 1,
     conflicts: [],
     effects: [
       {
-        description: '+5% $food$ for $farm$',
-        variable: 'buildings.farm.production.food',
+        description: '+5% $energy$ from $power_plant$',
+        variable: 'buildings.power_plant.production.energy',
         multiplier: 1.05,
+      },
+    ],
+  },
+  chernobylian: {
+    id: '_chernobylian',
+    cost: 3,
+    conflicts: [],
+    effects: [
+      {
+        description: '+10% $energy$ from $power_plant$',
+        variable: 'buildings.power_plant.production.energy',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  tsaristic: {
+    id: '_tsaristic',
+    cost: 5,
+    conflicts: [],
+    effects: [
+      {
+        description: '+15% $energy$ from $power_plant$',
+        variable: 'buildings.power_plant.production.energy',
+        multiplier: 1.15,
+      },
+    ],
+  },
+  ecological: {
+    id: '_ecological',
+    cost: -1,
+    conflicts: ['_radioactive', '_chernobylian', '_tsaristic'],
+    effects: [
+      {
+        description: '-5% $energy$ from $power_plant$',
+        variable: 'buildings.power_plant.production.energy',
+        multiplier: 0.95,
+      },
+    ],
+  },
+  nature_loving: {
+    id: '_nature_loving',
+    cost: -3,
+    conflicts: ['_radioactive', '_chernobylian', '_tsaristic'],
+    effects: [
+      {
+        description: '-10% $energy$ from $power_plant$',
+        variable: 'buildings.power_plant.production.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  green: {
+    id: '_green',
+    cost: -5,
+    conflicts: ['_radioactive', '_chernobylian', '_tsaristic'],
+    effects: [
+      {
+        description: '-15% $energy$ from $power_plant$',
+        variable: 'buildings.power_plant.production.energy',
+        multiplier: 0.85,
       },
     ],
   },
