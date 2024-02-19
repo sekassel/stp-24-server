@@ -37,9 +37,9 @@ export function checkTraits(traitIds: string[]): string[] {
 
 export const TRAITS: Record<string, Trait> = {
   strong: {
-    id: 'strong',
+    id: '_strong',
     cost: 1,
-    conflicts: ['weak'],
+    conflicts: ['_weak'],
     effects: [
       {
         description: '+5% $minerals$ from $mine$',
@@ -49,9 +49,9 @@ export const TRAITS: Record<string, Trait> = {
     ],
   },
   weak: {
-    id: 'weak',
+    id: '_weak',
     cost: -1,
-    conflicts: ['strong'],
+    conflicts: ['_strong'],
     effects: [
       {
         description: '-5% $minerals$ from $mine$',
@@ -61,9 +61,9 @@ export const TRAITS: Record<string, Trait> = {
     ],
   },
   dumb: {
-    id: 'dumb',
+    id: '_dumb',
     cost: -1,
-    conflicts: ['smart', 'intelligent'],
+    conflicts: ['_smart', '_intelligent'],
     effects: [
       {
         description: '-5% $research$ from $research_lab$',
@@ -83,9 +83,9 @@ export const TRAITS: Record<string, Trait> = {
     ],
   },
   smart: {
-    id: 'smart',
+    id: '_smart',
     cost: 1,
-    conflicts: ['intelligent'],
+    conflicts: ['_intelligent'],
     effects: [
       {
         description: '+5% $research$ from $research_lab$',
@@ -95,9 +95,9 @@ export const TRAITS: Record<string, Trait> = {
     ],
   },
   intelligent: {
-    id: 'intelligent',
+    id: '_intelligent',
     cost: 3,
-    conflicts: ['smart'],
+    conflicts: ['_smart'],
     effects: [
       {
         description: '+10% $research$ from $research_lab$',
@@ -107,14 +107,50 @@ export const TRAITS: Record<string, Trait> = {
     ],
   },
   cunning: {
-    id: 'cunning',
+    id: '_cunning',
     cost: 3,
-    conflicts: ['courageous'],
+    conflicts: ['_courageous'],
     effects: [
       {
-        description: '+10% $research$ from $research_lab$',
-        variable: 'buildings.research_lab.production.research',
-        multiplier: 1.1,
+        description: '-5% $energy$ for $research_lab$',
+        variable: 'buildings.research_lab.upkeep.energy',
+        multiplier: 0.95,
+      },
+    ],
+  },
+  courageous: {
+    id: '_courageous',
+    cost: 3,
+    conflicts: ['_cunning'],
+    effects: [
+      {
+        description: '-5% $minerals$ for $foundry$',
+        variable: 'buildings.foundry.upkeep.minerals',
+        multiplier: 0.95,
+      },
+    ],
+  },
+  agrarian: {
+    id: '_agrarian',
+    cost: 1,
+    conflicts: [],
+    effects: [
+      {
+        description: '+3% $food$ for $farm$',
+        variable: 'buildings.farm.production.food',
+        multiplier: 1.03,
+      },
+    ],
+  },
+  industrious: {
+    id: '_industrious',
+    cost: 3,
+    conflicts: [],
+    effects: [
+      {
+        description: '+5% $food$ for $farm$',
+        variable: 'buildings.farm.production.food',
+        multiplier: 1.05,
       },
     ],
   },
