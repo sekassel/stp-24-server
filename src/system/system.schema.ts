@@ -9,14 +9,24 @@ export class System extends GlobalSchema {
   @Ref('Game')
   game: Types.ObjectId;
 
+  type: string;
+
+  buildingSlots: Partial<Record<BuildingName, number>>;
+
   buildings: Partial<Record<BuildingName, number>>;
+
+  capacity: number;
 
   upgrade: number;
 
+  links: Record<string, number>;
+
+  x: number;
+
+  y: number;
+
   @OptionalRef('Empire')
   owner?: Types.ObjectId;
-
-  //TODO: Implement like issue
 }
 
 export type SystemDocument = Doc<System>;
