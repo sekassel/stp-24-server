@@ -1,6 +1,6 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {ApiProperty} from '@nestjs/swagger';
-import {IsNotEmpty, IsString, MaxLength,} from 'class-validator';
+import {IsNotEmpty, IsString, MaxLength} from 'class-validator';
 import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 

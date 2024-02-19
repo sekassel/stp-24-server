@@ -1,12 +1,5 @@
-import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, Query,} from '@nestjs/common';
-import {
-  ApiConflictResponse,
-  ApiCreatedResponse,
-  ApiForbiddenResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, Query} from '@nestjs/common';
+import {ApiCreatedResponse, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Throttled} from '../util/throttled.decorator';
@@ -14,7 +7,8 @@ import {Validated} from '../util/validated.decorator';
 import {CreateUserDto, QueryUsersDto, UpdateUserDto} from './user.dto';
 import {User} from './user.schema';
 import {UserService} from './user.service';
-import {FilterQuery, Types} from "mongoose";
+import {FilterQuery, Types} from 'mongoose';
+import {UniqueConflict} from '../util/unique-conflict.decorator';
 
 @Controller('users')
 @ApiTags('Users')
@@ -29,7 +23,7 @@ export class UserController {
   @Post()
   @ApiOperation({ description: 'Create a new user (sign up).' })
   @ApiCreatedResponse({ type: User })
-  @ApiConflictResponse({ description: 'Username was already taken.' })
+  @UniqueConflict<User>({ name: 'Username is already taken.'})
   async create(@Body() dto: CreateUserDto): Promise<User> {
     return this.userService.create(dto);
   }
@@ -62,7 +56,7 @@ export class UserController {
   @NotFound()
   @ApiOkResponse({ type: User })
   @ApiForbiddenResponse({ description: 'Attempt to change someone else\'s user.' })
-  @ApiConflictResponse({ description: 'Username was already taken.' })
+  @UniqueConflict<User>({ name: 'Username is already taken.'})
   async update(
     @AuthUser() user: User,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
