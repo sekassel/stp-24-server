@@ -18,6 +18,7 @@ import {MemberModule} from './member/member.module';
 import {EmpireModule} from './empire/empire.module';
 import { PresetsModule } from './presets/presets.module';
 import {SystemModule} from "./system/system.module";
+import { GameLogicModule } from './game-logic/game-logic.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import {SystemModule} from "./system/system.module";
     AchievementSummaryModule,
     AchievementModule,
     PresetsModule,
+    GameLogicModule,
   ],
   providers: [
     {

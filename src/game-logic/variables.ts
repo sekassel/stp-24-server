@@ -14,6 +14,22 @@ export const VARIABLES = {
   resources: RESOURCES,
 } as const;
 
+export function getInitialVariables(): Record<Variable, number> {
+  const variables: any = {};
+  // recursively flatten the object
+  function flatten(obj: any, prefix = '') {
+    for (const [key, value] of Object.entries(obj)) {
+      if (typeof value === 'object') {
+        flatten(value, prefix + key + '.');
+      } else if (typeof value === 'number') {
+        variables[prefix + key] = value;
+      }
+    }
+  }
+  flatten(VARIABLES);
+  return variables;
+}
+
 export function getInitialValue(variable: Variable): number {
   // deep key access
   let value: any = VARIABLES;
