@@ -5,8 +5,10 @@ import {TRAITS} from './traits';
 import {BUILDINGS} from './buildings';
 import {EMPIRE_VARIABLES} from './empire-variables';
 import {RESOURCES} from './resources';
+import {DISTRICTS} from './districts';
 
 export const VARIABLES = {
+  districts: DISTRICTS,
   buildings: BUILDINGS,
   empire: EMPIRE_VARIABLES,
   resources: RESOURCES,

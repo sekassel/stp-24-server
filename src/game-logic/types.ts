@@ -1,6 +1,7 @@
 import type {ResourceName} from './resources';
 import {ApiProperty} from '@nestjs/swagger';
 import {VARIABLES} from './variables';
+import {SystemType} from './system-types';
 
 export type DeepNumberKeys<T> = T extends Record<string, any> ? {
   [K in keyof T]-?: T[K] extends object ? `${K & string}.${DeepNumberKeys<T[K]>}` : T[K] extends number ? K & string : never;
@@ -85,4 +86,8 @@ export interface Building {
   cost: Partial<Record<ResourceName, number>>;
   upkeep: Partial<Record<ResourceName, number>>;
   production: Partial<Record<ResourceName, number>>;
+}
+
+export interface District extends Building {
+  chance: Partial<Record<SystemType | 'default', number>>;
 }
