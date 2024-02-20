@@ -4,7 +4,8 @@ import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {Doc, OptionalRef, Ref} from '@mean-stream/nestx';
 import {DistrictName, DISTRICTS} from "../game-logic/districts";
 import {ApiProperty} from "@nestjs/swagger";
-import {IsInt, IsNumber, IsObject, IsString, Max, Min} from "class-validator";
+import {IsArray, IsIn, IsInt, IsNumber, IsObject, IsString, Max, Min} from 'class-validator';
+import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class System extends GlobalSchema {
@@ -62,6 +63,14 @@ export class System extends GlobalSchema {
   @IsInt()
   @Min(0)
   capacity: number;
+
+  @Prop()
+  @ApiProperty({
+    description: 'The extra buildings built in the system.'
+  })
+  @IsArray()
+  @IsIn(BUILDING_NAMES, {each: true})
+  buildings: BuildingName[];
 
   @Prop()
   @ApiProperty({
