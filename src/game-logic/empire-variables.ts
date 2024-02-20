@@ -15,8 +15,6 @@ export const EMPIRE_VARIABLES = {
   },
   system: {
     claim: {
-      /** Number of total building slots */
-      capacity: 10,
       cost: {
         minerals: 100, // cheap_claims tech tree
         energy: 100, // cheap_claims tech tree
@@ -28,7 +26,6 @@ export const EMPIRE_VARIABLES = {
       },
     },
     upgrade: {
-      capacity: 15,
       cost: {
         minerals: 100, // cheap_claims tech tree
         alloys: 100, // cheap_claims tech tree
