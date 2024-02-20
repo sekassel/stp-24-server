@@ -14,7 +14,7 @@ export const EMPIRE_VARIABLES = {
     },
   },
   system: {
-    claim: {
+    colonized: {
       cost: {
         minerals: 100, // cheap_claims tech tree
         energy: 100, // cheap_claims tech tree
@@ -25,7 +25,7 @@ export const EMPIRE_VARIABLES = {
         food: 1,
       },
     },
-    upgrade: {
+    upgraded: {
       cost: {
         minerals: 100, // cheap_claims tech tree
         alloys: 100, // cheap_claims tech tree
@@ -37,5 +37,17 @@ export const EMPIRE_VARIABLES = {
         alloys: 1, // upgraded systems provide defense that must be maintained
       },
     },
+    developed: {
+      cost: {
+        alloys: 200, // TODO cheap_claims tech tree
+        fuel: 100, // TODO cheap_claims tech tree
+      },
+      consumption: {
+        energy: 4,
+        fuel: 4,
+        food: 4,
+        alloys: 3,
+      },
+    }
   },
 } as const;

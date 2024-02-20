@@ -7,12 +7,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         description: '-25% $energy$ cost for $system$ claims',
-        variable: 'empire.system.claim.cost.energy',
+        variable: 'empire.system.colonized.cost.energy',
         multiplier: 0.75,
       },
       {
         description: '-25% $minerals$ cost for $system$ claims',
-        variable: 'empire.system.claim.cost.minerals',
+        variable: 'empire.system.colonized.cost.minerals',
         multiplier: 0.75,
       },
     ],
@@ -24,12 +24,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         description: '-15% $minerals$ cost for $system$ upgrades',
-        variable: 'empire.system.upgrade.cost.minerals',
+        variable: 'empire.system.upgraded.cost.minerals',
         multiplier: 0.85,
       },
       {
         description: '-15% $alloys$ cost for $system$ upgrades',
-        variable: 'empire.system.upgrade.cost.alloys',
+        variable: 'empire.system.upgraded.cost.alloys',
         multiplier: 0.85,
       },
     ],
