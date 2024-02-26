@@ -7,12 +7,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         description: '-25% $energy$ cost for $system$ claims',
-        variable: 'empire.system.claim.cost.energy',
+        variable: 'empire.system.colonized.cost.energy',
         multiplier: 0.75,
       },
       {
         description: '-25% $minerals$ cost for $system$ claims',
-        variable: 'empire.system.claim.cost.minerals',
+        variable: 'empire.system.colonized.cost.minerals',
         multiplier: 0.75,
       },
     ],
@@ -24,12 +24,29 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         description: '-15% $minerals$ cost for $system$ upgrades',
-        variable: 'empire.system.upgrade.cost.minerals',
+        variable: 'empire.system.upgraded.cost.minerals',
         multiplier: 0.85,
       },
       {
         description: '-15% $alloys$ cost for $system$ upgrades',
-        variable: 'empire.system.upgrade.cost.alloys',
+        variable: 'empire.system.upgraded.cost.alloys',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  cheap_claims_3: { // reduced system development costs
+    id: 'cheap_claims_3',
+    cost: 800,
+    requires: ['cheap_claims_2'],
+    effects: [
+      {
+        description: '-15% $alloys$ cost for $system$ development',
+        variable: 'empire.system.developed.cost.alloys',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $fuel$ cost for $system$ development',
+        variable: 'empire.system.developed.cost.fuel',
         multiplier: 0.85,
       },
     ],
@@ -215,7 +232,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 // special resources
 generate_sequence('pop_food_consumption', 'empire.pop.consumption.food', '$food$ per $pop$ per $time$', {multiplierIncrement: -0.05});
 // pop growth is already a multiplier, so it will be 1.05 -> 1.05 * 1.025 = 1.07625 -> 1.05 * 1.025^2 = 1.10390625
-generate_sequence('pop_growth', 'empire.pop.growth.developing', '$pop$ growth per $time$', {multiplierIncrement: +0.025});
+generate_sequence('pop_growth_colonized', 'empire.pop.growth.colonized', '$pop$ growth per $time$ on colonized $system$', {multiplierIncrement: +0.025});
+generate_sequence('pop_growth_upgraded', 'empire.pop.growth.upgraded', '$pop$ growth per $time$ on upgraded $system$', {multiplierIncrement: +0.025});
 generate_sequence('unemployed_pop_cost', 'empire.pop.consumption.credits.unemployed', '$credits$ per unemployed $pop$ per $time$', {
   multiplierIncrement: -0.05,
   exponentialBase: 3,

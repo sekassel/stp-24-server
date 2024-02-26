@@ -5,12 +5,30 @@ import {TRAITS} from './traits';
 import {BUILDINGS} from './buildings';
 import {EMPIRE_VARIABLES} from './empire-variables';
 import {RESOURCES} from './resources';
+import {DISTRICTS} from './districts';
 
 export const VARIABLES = {
+  districts: DISTRICTS,
   buildings: BUILDINGS,
   empire: EMPIRE_VARIABLES,
   resources: RESOURCES,
 } as const;
+
+export function getInitialVariables(): Record<Variable, number> {
+  const variables: any = {};
+  // recursively flatten the object
+  function flatten(obj: any, prefix = '') {
+    for (const [key, value] of Object.entries(obj)) {
+      if (typeof value === 'object') {
+        flatten(value, prefix + key + '.');
+      } else if (typeof value === 'number') {
+        variables[prefix + key] = value;
+      }
+    }
+  }
+  flatten(VARIABLES);
+  return variables;
+}
 
 export function getInitialValue(variable: Variable): number {
   // deep key access

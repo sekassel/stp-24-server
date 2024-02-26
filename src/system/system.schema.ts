@@ -2,9 +2,10 @@ import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {Doc, OptionalRef, Ref} from '@mean-stream/nestx';
-import {BuildingName, BUILDINGS} from "../game-logic/buildings";
+import {DistrictName, DISTRICTS} from "../game-logic/districts";
 import {ApiProperty} from "@nestjs/swagger";
-import {IsInt, IsNumber, IsObject, IsString, Max, Min} from "class-validator";
+import {IsArray, IsIn, IsInt, IsNumber, IsObject, IsString, Max, Min} from 'class-validator';
+import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class System extends GlobalSchema {
@@ -19,49 +20,57 @@ export class System extends GlobalSchema {
   @Prop({type: Object, default: {}})
   @IsObject()
   @ApiProperty({
-    description: 'The number of slots of some building types.',
+    description: 'The number of slots of some district types.',
     example: {
-      'power_plant': 5,
-      'mine': 6,
-      'farm': 5,
-      'research_lab': 4,
+      'energy': 5,
+      'mining': 6,
+      'agriculture': 5,
+      'research_site': 4,
     },
     type: 'object',
-    properties: Object.fromEntries(Object.keys(BUILDINGS).map(id => [id, {
+    properties: Object.fromEntries(Object.keys(DISTRICTS).map(id => [id, {
       type: 'integer',
       default: 0,
       minimum: 0,
       required: false,
     }])) as any,
   })
-  buildingSlots: Partial<Record<BuildingName, number>>;
+  districtSlots: Partial<Record<DistrictName, number>>;
 
   @Prop({type: Object, default: {}})
   @IsObject()
   @ApiProperty({
-    description: 'The number of existing buildings.',
+    description: 'The number of existing districts.',
     example: {
-      'power_plant': 2,
-      'mine': 3,
-      'farm': 1
+      'energy': 2,
+      'mining': 3,
+      'agriculture': 1
     },
     type: 'object',
-    properties: Object.fromEntries(Object.keys(BUILDINGS).map(id => [id, {
+    properties: Object.fromEntries(Object.keys(DISTRICTS).map(id => [id, {
       type: 'integer',
       default: 0,
       minimum: 0,
       required: false,
     }])) as any,
   })
-  buildings: Partial<Record<BuildingName, number>>;
+  districts: Partial<Record<DistrictName, number>>;
 
   @Prop()
   @ApiProperty({
-    description: 'Total building capacity of the system.',
+    description: 'Total district and building capacity of the system.',
   })
   @IsInt()
   @Min(0)
   capacity: number;
+
+  @Prop()
+  @ApiProperty({
+    description: 'The extra buildings built in the system.'
+  })
+  @IsArray()
+  @IsIn(BUILDING_NAMES, {each: true})
+  buildings: BuildingName[];
 
   @Prop()
   @ApiProperty({

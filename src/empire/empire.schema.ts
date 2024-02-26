@@ -75,7 +75,7 @@ export class Empire extends GlobalSchema {
   @IsIn(Object.keys(TRAITS), {each: true})
   traits: string[];
 
-  @Prop({type: Object, default: {}})
+  @Prop({type: Object})
   @IsObject()
   @ApiProperty({
     type: 'object',
@@ -83,10 +83,9 @@ export class Empire extends GlobalSchema {
       type: 'integer',
       default: 0,
       minimum: 0,
-      required: false,
     }])) as any,
   })
-  resources: Partial<Record<ResourceName, number>>;
+  resources: Record<ResourceName, number>;
 
   @Prop()
   @IsArray()
