@@ -6,6 +6,7 @@ import {GameDocument} from '../game/game.schema';
 import {EmpireDocument} from '../empire/empire.schema';
 import {SystemDocument} from '../system/system.schema';
 import {calculateVariables, getInitialVariables} from './variables';
+import {Variable} from './types';
 
 @Injectable()
 export class GameLogicService {
@@ -62,5 +63,29 @@ export class GameLogicService {
     const joblessPop = empire.resources.population - totalJobs;
     const joblessPopUpkeep = variables['empire.pop.consumption.credits.unemployed'] * joblessPop;
     empire.resources.credits = Math.max(0, empire.resources.credits - joblessPopUpkeep);
+
+    // spawn pops on systems
+    if (empire.resources.food) {
+      this.popGrowth(systems, variables);
+      empire.resources.population = systems.map(s => s.population).sum();
+    }
+  }
+
+  private popGrowth(systems: SystemDocument[], variables: Record<Variable, number>) {
+    for (const system of systems) {
+      const {population, capacity} = system;
+      let growthVariable: Variable = 'empire.pop.growth.developed';
+      if (population < capacity) {
+        switch (system.upgrade) {
+          case 2:
+            growthVariable = 'empire.pop.growth.colonized';
+            break;
+          case 3:
+            growthVariable = 'empire.pop.growth.upgraded';
+            break;
+        }
+      }
+      system.population = variables[growthVariable] * population;
+    }
   }
 }
