@@ -32,6 +32,7 @@ export class GameLogicService {
       this.updateGame(game, gameEmpires, gameSystems);
     }
     await this.empireService.saveAll(empires);
+    await this.systemService.saveAll(systems);
   }
 
   private updateGame(game: GameDocument, empires: EmpireDocument[], systems: SystemDocument[]) {
@@ -47,7 +48,7 @@ export class GameLogicService {
 
     // deduct pop upkeep
     const popUpkeep = variables['empire.pop.consumption.food'] * empire.resources.population;
-    empire.resources.food = Math.max(0, empire.resources.food - popUpkeep);
+    this.deductResource(empire, 'food', popUpkeep);
 
     // handle districts and buildings
     for (const system of systems) {
@@ -117,23 +118,24 @@ export class GameLogicService {
       }
     }
 
-    // deduct jobless pop upkeep
-    const totalJobs = systems.reduce((acc, system) => {
-      acc += system.buildings.length;
-      for (const count of Object.values(system.districts)) {
-        acc += count;
-      }
-      return acc;
-    }, 0);
-    const joblessPop = empire.resources.population - totalJobs;
-    const joblessPopUpkeep = variables['empire.pop.consumption.credits.unemployed'] * joblessPop;
-    empire.resources.credits = Math.max(0, empire.resources.credits - joblessPopUpkeep);
+    this.deductJoblessUpkeep(systems, empire, variables);
 
     // spawn pops on systems
     if (empire.resources.food) {
       this.popGrowth(systems, variables);
-      empire.resources.population = systems.map(s => s.population).sum();
     }
+
+    // ensure empire population is up to date
+    empire.resources.population = systems.map(s => s.population).sum();
+  }
+
+  private deductJoblessUpkeep(systems: SystemDocument[], empire: EmpireDocument, variables: Record<Variable, number>) {
+    const totalJobs = systems
+      .map(s => Object.values(s.districts).sum() + s.buildings.length)
+      .sum();
+    const joblessPops = empire.resources.population - totalJobs;
+    const joblessPopUpkeep = variables['empire.pop.consumption.credits.unemployed'] * joblessPops;
+    this.deductResource(empire, 'credits', joblessPopUpkeep);
   }
 
   private deductSystemUpkeep(upgrade: 'colonized' | 'upgraded' | 'developed', empire: EmpireDocument, variables: Record<Variable, number>) {
