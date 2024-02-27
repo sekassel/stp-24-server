@@ -84,6 +84,16 @@ export class System extends GlobalSchema {
   @Max(2)
   upgrade: number;
 
+  @Prop()
+  @ApiProperty({
+    type: 'integer',
+    minimum: 0,
+    default: 0,
+  })
+  @IsInt()
+  @Min(0)
+  population: number;
+
   @Prop({type: Object})
   @ApiProperty({
     description: 'Distance to other systems that are connected to this one.',
