@@ -4,7 +4,7 @@ import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {GameDocument} from '../game/game.schema';
 import {EmpireDocument} from '../empire/empire.schema';
-import {SystemDocument} from '../system/system.schema';
+import {SystemDocument, SystemUpgradeLevel, SystemUpgradeType} from '../system/system.schema';
 import {calculateVariables, getInitialVariables} from './variables';
 import {Variable} from './types';
 import {ResourceName} from './resources';
@@ -52,22 +52,12 @@ export class GameLogicService {
 
     // handle districts and buildings
     for (const system of systems) {
-      let upgrade: 'colonized' | 'upgraded' | 'developed';
-      switch (system.upgrade) {
-        case 2:
-          upgrade = 'colonized';
-          break;
-        case 3:
-          upgrade = 'upgraded';
-          break;
-        case 4:
-          upgrade = 'developed';
-          break;
-        default:
-          continue;
+      const upgradeType = SystemUpgradeLevel[system.upgrade] as SystemUpgradeType;
+      if (upgradeType === 'unexplored' || upgradeType === 'explored') {
+        continue;
       }
 
-      const systemUpkeepPaid = this.deductSystemUpkeep(upgrade, empire, variables);
+      const systemUpkeepPaid = this.deductSystemUpkeep(upgradeType, empire, variables);
       if (!systemUpkeepPaid) {
         continue;
       }
