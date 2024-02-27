@@ -25,9 +25,10 @@ Keep in mind that `ErrorResponse` may or may not include the `message` property 
 
 The following resources will be deleted automatically under certain conditions.
 
-| A...     | Will be deleted after...                                  | If...                                |
-|----------|-----------------------------------------------------------|--------------------------------------|
-| User     | ${environment.cleanup.tempUserLifetimeHours} h            | they seem to be for temporary use    |
+| A... | Will be deleted after...                       | If...                             |
+|------|------------------------------------------------|-----------------------------------|
+| User | ${environment.cleanup.tempUserLifetimeHours} h | they seem to be for temporary use |
+| Game | ${environment.cleanup.gameLifetimeHours} h     | -                                 |
 
 ## Cascading Deletes
 
@@ -35,9 +36,15 @@ The following table shows which delete operations trigger other deletes.
 Cascading deletes are transitive, meaning a cascading deletion can trigger more cascading deletions.
 All delete operations, whether manual, cleanup or cascading, trigger the same events.
 
-| Deleting a... | Also deletes...    |
-|---------------|--------------------|
-| User          | Their Achievements |
+| Deleting a... | Also deletes...            |
+|---------------|----------------------------|
+| User          | Their Achievements         |
+| User          | Their Games                |
+| User          | Their Empires in Games     |
+| User          | Their Memberships in Games |
+| Game          | All Empires                |
+| Game          | All Members                |
+| Game          | All Systems                |
 
 <!--
 Cascading deletes do not apply to some resources:
