@@ -9,6 +9,7 @@ declare global {
   }
 
   interface Math {
+    clamp(value: number, min: number, max: number): number;
     randInt(maxExclusive: number): number;
   }
 }
@@ -39,6 +40,10 @@ Array.prototype.maxBy = function(selector: (item: any) => number) {
 
 Array.prototype.countIf = function(predicate: (item: any) => boolean) {
   return this.reduce((a, c) => (predicate(c) ? a + 1 : a), 0);
+}
+
+Math.clamp = function(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
 }
 
 Math.randInt = function(maxExclusive: number) {

@@ -53,8 +53,31 @@ export class ExplainedVariable {
   final: number;
 }
 
+export const TECHNOLOGY_TAGS = [
+  'society',
+  'physics',
+  'engineering',
+  // society
+  'military', // for ships, weapons
+  'economy', // for credits, market
+  'state', // for population
+  'biology', // for food, population
+  // physics
+  'energy', // for power
+  'computing', // for research
+  'propulsion', // for fuel and speed
+  // engineering
+  'materials', // for alloys, armor
+  'construction', // for buildings, districts
+  'production', // for mining, industry
+  // special
+  'rare',
+] as const;
+export type TechnologyTag = typeof TECHNOLOGY_TAGS[number];
+
 export interface Technology extends EffectSource {
   id: string;
+  tags: readonly TechnologyTag[];
   /** the cost in research points */
   cost: number;
   /** ids of other technologies that must be researched first. */

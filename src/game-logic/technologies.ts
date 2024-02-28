@@ -1,9 +1,10 @@
-import type {Technology, Variable} from './types';
+import type {Technology, TechnologyTag, Variable} from './types';
 
 export const TECHNOLOGIES: Record<string, Technology> = {
   cheap_claims_1: { // reduced system claim costs
     id: 'cheap_claims_1',
     cost: 200,
+    tags: ['society', 'state'],
     effects: [
       {
         description: '-25% $energy$ cost for $system$ claims',
@@ -19,6 +20,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   cheap_claims_2: { // reduced system upgrade costs
     id: 'cheap_claims_2',
+    tags: ['society', 'state'],
     cost: 400,
     requires: ['cheap_claims_1'],
     effects: [
@@ -36,6 +38,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   cheap_claims_3: { // reduced system development costs
     id: 'cheap_claims_3',
+    tags: ['society', 'state'],
     cost: 800,
     requires: ['cheap_claims_2'],
     effects: [
@@ -53,6 +56,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   cheap_buildings_1: { // reduced basic building costs
     id: 'cheap_buildings_1',
+    tags: ['engineering', 'construction'],
     cost: 200,
     effects: [
       {
@@ -79,6 +83,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   cheap_buildings_2: { // reduced advanced building costs
     id: 'cheap_buildings_2',
+    tags: ['engineering', 'construction'],
     cost: 400,
     requires: ['cheap_buildings_1'],
     effects: [
@@ -101,6 +106,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   efficient_buildings_1: { // reduced basic building energy upkeep
     id: 'efficient_buildings_1',
+    tags: ['engineering', 'energy'],
     cost: 200,
     effects: [
       {
@@ -117,6 +123,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   efficient_buildings_2: { // reduced advanced building energy upkeep
     id: 'efficient_buildings_2',
+    tags: ['engineering', 'energy'],
     cost: 400,
     requires: ['efficient_buildings_1'],
     effects: [
@@ -139,6 +146,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   improved_production_1: { // generally increased basic building production
     id: 'improved_production_1',
+    tags: ['engineering', 'production'],
     cost: 200,
     precedes: ['improved_production_2'],
     effects: [
@@ -161,6 +169,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   improved_production_2: { // further increased basic building production
     id: 'improved_production_2',
+    tags: ['engineering', 'production'],
     cost: 400,
     requires: ['improved_production_1'],
     // NOT precedes: ["improved_production_3"], improved_production_3 switches to advanced buildings, so the basic buildings should still be improved
@@ -184,6 +193,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   improved_production_3: { // increased advanced building production
     id: 'improved_production_3',
+    tags: ['engineering', 'production'],
     cost: 800,
     requires: ['improved_production_2'],
     precedes: ['improved_production_4'],
@@ -207,6 +217,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   improved_production_4: { // further increased advanced building production
     id: 'improved_production_4',
+    tags: ['engineering', 'production'],
     cost: 1600,
     requires: ['improved_production_3'],
     effects: [
@@ -230,22 +241,22 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 };
 
 // special resources
-generate_sequence('pop_food_consumption', 'empire.pop.consumption.food', '$food$ per $pop$ per $time$', {multiplierIncrement: -0.05});
+generate_sequence('pop_food_consumption', ['society', 'biology'], 'empire.pop.consumption.food', '$food$ per $pop$ per $time$', {multiplierIncrement: -0.05});
 // pop growth is already a multiplier, so it will be 1.05 -> 1.05 * 1.025 = 1.07625 -> 1.05 * 1.025^2 = 1.10390625
-generate_sequence('pop_growth_colonized', 'empire.pop.growth.colonized', '$pop$ growth per $time$ on colonized $system$', {multiplierIncrement: +0.025});
-generate_sequence('pop_growth_upgraded', 'empire.pop.growth.upgraded', '$pop$ growth per $time$ on upgraded $system$', {multiplierIncrement: +0.025});
-generate_sequence('unemployed_pop_cost', 'empire.pop.consumption.credits.unemployed', '$credits$ per unemployed $pop$ per $time$', {
+generate_sequence('pop_growth_colonized', ['society', 'biology'], 'empire.pop.growth.colonized', '$pop$ growth per $time$ on colonized $system$', {multiplierIncrement: +0.025});
+generate_sequence('pop_growth_upgraded', ['society', 'biology'], 'empire.pop.growth.upgraded', '$pop$ growth per $time$ on upgraded $system$', {multiplierIncrement: +0.025});
+generate_sequence('unemployed_pop_cost', ['society', 'state'], 'empire.pop.consumption.credits.unemployed', '$credits$ per unemployed $pop$ per $time$', {
   multiplierIncrement: -0.05,
   exponentialBase: 3,
 }); // -5% -> -15% -> -45%
 // basic resources
-generate_sequence('energy_production', 'buildings.power_plant.production.energy', '$energy$ from $power_plant$ per $time$');
-generate_sequence('mineral_production', 'buildings.mine.production.minerals', '$minerals$ from $mine$ per $time$');
-generate_sequence('food_production', 'buildings.farm.production.food', '$food$ from $farm$ per $time$');
+generate_sequence('energy_production', ['physics', 'energy'], 'buildings.power_plant.production.energy', '$energy$ from $power_plant$ per $time$');
+generate_sequence('mineral_production', ['engineering', 'production'], 'buildings.mine.production.minerals', '$minerals$ from $mine$ per $time$');
+generate_sequence('food_production', ['society', 'biology'], 'buildings.farm.production.food', '$food$ from $farm$ per $time$');
 // advanced resources
-generate_sequence('research_production', 'buildings.research_lab.production.research', '$research$ from $research_lab$ per $time$');
-generate_sequence('alloy_production', 'buildings.foundry.production.alloys', '$alloys$ from $foundry$ per $time$');
-generate_sequence('fuel_production', 'buildings.refinery.production.fuel', '$fuel$ from $refinery$ per $time$');
+generate_sequence('research_production', ['physics', 'computing'], 'buildings.research_lab.production.research', '$research$ from $research_lab$ per $time$');
+generate_sequence('alloy_production', ['engineering', 'materials'], 'buildings.foundry.production.alloys', '$alloys$ from $foundry$ per $time$');
+generate_sequence('fuel_production', ['engineering', 'production'], 'buildings.refinery.production.fuel', '$fuel$ from $refinery$ per $time$');
 
 /**
  * Generates a sequence of technologies with increasing cost and effect.
@@ -305,7 +316,7 @@ generate_sequence('fuel_production', 'buildings.refinery.production.fuel', '$fue
  * @param count the number of steps, default 3
  * @param startCost the cost of the first step, default 100
  */
-function generate_sequence(base_id: string, variable: Variable, variable_desc: string,
+function generate_sequence(base_id: string, tags: TechnologyTag[], variable: Variable, variable_desc: string,
                            {multiplierIncrement = +0.05, exponentialBase = 2, count = 3, startCost = 100} = {},
 ) {
   for (let index = 1; index <= count; index++) {
@@ -315,6 +326,7 @@ function generate_sequence(base_id: string, variable: Variable, variable_desc: s
     const id = base_id + '_' + index;
     TECHNOLOGIES[id] = {
       id,
+      tags,
       cost,
       requires: index > 1 ? [base_id + '_' + (index - 1)] : undefined,
       precedes: index < count ? [base_id + '_' + (index + 1)] : undefined,

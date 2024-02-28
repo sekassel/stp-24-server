@@ -67,7 +67,7 @@ export class Empire extends GlobalSchema {
   @Prop()
   @ApiProperty({
     description: 'Starter traits that were selected for this empire.',
-    maxLength: MAX_TRAITS,
+    maxItems: MAX_TRAITS,
   })
   @IsArray()
   @IsString({each: true})
@@ -88,6 +88,9 @@ export class Empire extends GlobalSchema {
   resources: Record<ResourceName, number>;
 
   @Prop()
+  @ApiProperty({
+    description: 'Unlocked technologies.',
+  })
   @IsArray()
   @IsIn(Object.keys(TECHNOLOGIES), {each: true})
   technologies: string[];
