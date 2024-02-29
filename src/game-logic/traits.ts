@@ -61,7 +61,7 @@ export const TRAITS: Record<string, Trait> = {
     ],
   },
   dumb: {
-    id: '_dumb',
+    id: 'dumb',
     cost: -1,
     conflicts: ['smart', 'intelligent'],
     effects: [
@@ -201,12 +201,12 @@ export const TRAITS: Record<string, Trait> = {
       {
         description: '+10% $energy$ from $power_plant$',
         variable: 'buildings.power_plant.production.energy',
-        multiplier: 1.05,
+        multiplier: 1.1,
       },
       {
         description: '-3% $food$ from $farm$',
         variable: 'buildings.farm.production.food',
-        multiplier: 0.98,
+        multiplier: 0.97,
       },
     ],
   },
@@ -346,7 +346,7 @@ export const TRAITS: Record<string, Trait> = {
   },
   clumsy: {
     id: 'clumsy',
-    cost: 2,
+    cost: -2,
     conflicts: ['proficient', 'skilled'],
     effects: [
       {
@@ -642,6 +642,11 @@ export const TRAITS: Record<string, Trait> = {
         variable: 'buildings.mine.production.minerals',
         multiplier: 0.9,
       },
+      {
+        description: '2% $food$ from $farm$',
+        variable: 'buildings.farm.production.food',
+        multiplier: 1.02,
+      },
     ],
   },
   surface_operator: {
@@ -653,6 +658,11 @@ export const TRAITS: Record<string, Trait> = {
         description: '-20% $minerals$ from $mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 0.8,
+      },
+      {
+        description: '4% $food$ from $farm$',
+        variable: 'buildings.farm.production.food',
+        multiplier: 1.04,
       },
     ],
   },
@@ -666,6 +676,11 @@ export const TRAITS: Record<string, Trait> = {
         variable: 'buildings.mine.production.minerals',
         multiplier: 0.7,
       },
+      {
+        description: '6% $food$ from $farm$',
+        variable: 'buildings.farm.production.food',
+        multiplier: 1.06,
+      },
     ],
   },
   assistant_technician: {
@@ -673,6 +688,11 @@ export const TRAITS: Record<string, Trait> = {
     cost: 1,
     conflicts: ['amateur'],
     effects: [
+      {
+        description: 'Start with 100 additional $energy$',
+        variable: 'resources.energy.starting',
+        bonus: 100,
+      },
       {
         description: '5% $research$ from $research_lab$',
         variable: 'buildings.research_lab.production.research',
@@ -772,13 +792,18 @@ export const TRAITS: Record<string, Trait> = {
         multiplier: 0.96,
       },
       {
-        description: '-4% $research$ from $research_lab$',
-        variable: 'buildings.research_lab.production.research',
+        description: '-4% $energy$ from $power_plant$',
+        variable: 'buildings.power_plant.production.energy',
         multiplier: 0.96,
       },
       {
-        description: '-4% $fuel$ from $refinery$',
-        variable: 'buildings.refinery.production.fuel',
+        description: '-4% $minerals$ from $mine$',
+        variable: 'buildings.mine.production.minerals',
+        multiplier: 0.96,
+      },
+      {
+        description: '-4% $food$ from $farm$',
+        variable: 'buildings.farm.production.food',
         multiplier: 0.96,
       },
     ],
