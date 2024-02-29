@@ -1,4 +1,15 @@
-import {Body, Controller, ForbiddenException, Get, Param, ParseArrayPipe, Patch, Query} from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  NotFoundException,
+  Param,
+  ParseArrayPipe,
+  Patch,
+  Query
+} from '@nestjs/common';
 import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, refs} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
@@ -11,6 +22,8 @@ import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {ExplainedVariable, Variable} from '../game-logic/types';
 import {explainVariable, getEmpireEffectSources} from '../game-logic/variables';
+import {RESOURCES} from "../game-logic/resources";
+import {TECHNOLOGIES} from "../game-logic/technologies";
 
 @Controller('games/:game/empires')
 @ApiTags('Game Empires')
@@ -59,8 +72,39 @@ export class EmpireController {
     if (!currentUser._id.equals(empire.user)) {
       throw new ForbiddenException('Cannot modify another user\'s empire.');
     }
-    // TODO @simolse: implement resources trading and tech unlocks
-    return this.empireService.update(id, dto);
+    // Unlock technologies if the empire has the required resources and predecessor technologies
+    for (const technologyId of dto.technologies) {
+      const technology = TECHNOLOGIES[technologyId];
+      if (!technology) {
+        throw new NotFoundException(`Technology ${technologyId} not found.`);
+      }
+
+      // Check if all required technologies are unlocked
+      const hasAllRequiredTechnologies = technology.requires?.every(
+        (requiredTechnology: string) => empire.technologies.includes(requiredTechnology)
+      ) ?? true;
+
+      if (!hasAllRequiredTechnologies) {
+        throw new BadRequestException(`Missing required technologies for ${technologyId}.`);
+      }
+
+      if (empire.resources.research < technology.cost) {
+        throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
+      }
+
+      // Deduct research points and unlock technology
+      empire.resources.research -= technology.cost;
+      if (!empire.technologies.includes(technologyId)) {
+        empire.technologies.push(technologyId);
+      }
+    }
+    const updateDto = {
+      ...dto,
+      resources: empire.resources,
+      technologies: empire.technologies,
+    };
+    // TODO: implement resource trading
+    return this.empireService.update(id, updateDto);
   }
 
   @Get('variables')
