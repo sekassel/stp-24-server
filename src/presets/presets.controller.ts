@@ -1,12 +1,12 @@
-import {Controller, Get, Param} from '@nestjs/common';
+import {Controller, Get, NotFoundException, Param} from '@nestjs/common';
 import {ApiOkResponse, ApiTags} from "@nestjs/swagger";
 import {TRAITS} from "../game-logic/traits";
 import {Building, District, Technology, Trait} from "../game-logic/types";
 import {Throttled} from "../util/throttled.decorator";
 import {NotFound} from "@mean-stream/nestx";
-import {DISTRICT_NAMES, DistrictName, DISTRICTS} from "../game-logic/districts";
+import {DistrictName, DISTRICTS} from "../game-logic/districts";
 import {TECHNOLOGIES} from "../game-logic/technologies";
-import {BUILDING_NAMES, BuildingName, BUILDINGS} from "../game-logic/buildings";
+import {BuildingName, BUILDINGS} from "../game-logic/buildings";
 
 @Controller('presets')
 @ApiTags('Presets')
@@ -28,32 +28,39 @@ export class PresetsController {
   @Get('buildings')
   @ApiOkResponse({type: [Building]})
   getBuildings(): Building[] {
-    return Object.values(BUILDINGS);
+    return Object.entries(BUILDINGS).map(([key, value]) => ({
+      name: key,
+      ...value,
+    })) as Building[];
   }
 
-  @Get('buildings/:id')
+  @Get('buildings/:name')
   @ApiOkResponse({type: Building})
-  @NotFound()
-  getBuilding(@Param('name') name: string): Building | undefined {
-    if (BUILDING_NAMES.includes(name as BuildingName)) {
-      return BUILDINGS[name as BuildingName];
+  getBuilding(@Param('name') name: string): Building {
+    const building = BUILDINGS[name as BuildingName];
+    if (!building) {
+      throw new NotFoundException(`Building with name "${name}" not found.`);
     }
-    return undefined;
+    return {name, ...building} as unknown as Building;
   }
 
   @Get('districts')
   @ApiOkResponse({type: [District]})
   getDistricts(): District[] {
-    return Object.values(DISTRICTS);
+    return Object.entries(DISTRICTS).map(([name, details]) => ({
+      name,
+      ...details,
+    })) as District[];
   }
 
-  @Get('districts/:id')
+  @Get('districts/:name')
   @ApiOkResponse({type: District})
-  @NotFound()
-  getDistrict(@Param('name') name: string): District | undefined {
-    if (DISTRICT_NAMES.includes(name as DistrictName)) {
-      return DISTRICTS[name as DistrictName];
+  getDistrict(@Param('name') name: string): District {
+    const district = DISTRICTS[name as DistrictName];
+    if (!district) {
+      throw new NotFoundException(`District with name "${name}" not found.`);
     }
+    return {name, ...district} as unknown as District;
   }
 
   @Get('traits')
