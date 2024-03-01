@@ -75,16 +75,26 @@ export const TECHNOLOGY_TAGS = [
 ] as const;
 export type TechnologyTag = typeof TECHNOLOGY_TAGS[number];
 
-export interface Technology extends EffectSource {
+export class Technology {
+  @ApiProperty()
   id: string;
+
+  @ApiProperty({ enum: TECHNOLOGY_TAGS })
   tags: readonly TechnologyTag[];
+
   /** the cost in research points */
+  @ApiProperty()
   cost: number;
+
   /** ids of other technologies that must be researched first. */
+  @ApiProperty({ required: false })
   requires?: readonly string[];
+
   /** If the empire has the specified technologies, this technology will be unlocked, but has no effect */
+  @ApiProperty({ required: false })
   precedes?: readonly string[];
 
+  @ApiProperty({ type: [Effect] })
   effects: readonly Effect[];
 }
 
@@ -105,12 +115,21 @@ export interface Resource {
   credit_value?: number;
 }
 
-export interface Building {
+export class Building {
+  @ApiProperty()
   cost: Partial<Record<ResourceName, number>>;
+
+  @ApiProperty({ required: false })
   upkeep: Partial<Record<ResourceName, number>>;
+
+  @ApiProperty({ required: false })
   production: Partial<Record<ResourceName, number>>;
 }
 
-export interface District extends Building {
+export class District {
+  @ApiProperty({ required: false })
   chance: Partial<Record<SystemType | 'default', number>>;
+  cost: Partial<Record<ResourceName, number>>;
+  upkeep: Partial<Record<ResourceName, number>>;
+  production: Partial<Record<ResourceName, number>>;
 }
