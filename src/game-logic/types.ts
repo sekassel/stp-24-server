@@ -116,20 +116,44 @@ export interface Resource {
 }
 
 export class Building {
-  @ApiProperty()
+  @ApiProperty({
+    description: "The cost to construct the building, specified in various resources."
+  })
   cost: Partial<Record<ResourceName, number>>;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    description: "The ongoing upkeep of the building, specified in various resources, required to maintain operation."
+  })
   upkeep: Partial<Record<ResourceName, number>>;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    description: "The production output of the building, specified in various resources, that it contributes to the empire's economy."
+  })
   production: Partial<Record<ResourceName, number>>;
 }
 
 export class District {
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    description: "The chance of discovering specific resources or benefits when exploring or exploiting the district."
+  })
   chance: Partial<Record<SystemType | 'default', number>>;
+
+  @ApiProperty({
+    description: "The cost to establish the district, specified in various resources."
+  })
   cost: Partial<Record<ResourceName, number>>;
+
+  @ApiProperty({
+    description: "The ongoing upkeep of the district, specified in various resources, required to maintain its benefits."
+  })
   upkeep: Partial<Record<ResourceName, number>>;
+
+  @ApiProperty({
+    required: false,
+    description: "The production output of the district, specified in various resources, contributing to the empire's economy."
+  })
   production: Partial<Record<ResourceName, number>>;
 }
