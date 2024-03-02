@@ -4,6 +4,7 @@ import type {District} from './types';
 export const DISTRICTS = {
   // basic resource districts. cost should be around 75, upkeep around 5, production around 10
   energy: {
+    id: 'energy',
     chance: {
       energy: 5,
       ancient_technology: 3,
@@ -22,6 +23,7 @@ export const DISTRICTS = {
     },
   },
   mining: {
+    id: 'mining',
     chance: {
       mining: 5,
       ancient_industry: 3,
@@ -41,6 +43,7 @@ export const DISTRICTS = {
     },
   },
   agriculture: {
+    id: 'agriculture',
     chance: {
       agriculture: 5,
       default: 1,
@@ -57,6 +60,7 @@ export const DISTRICTS = {
   },
   // advanced resource districts. cost should be around 100, upkeep around 20, production around 10
   research_site: {
+    id: 'research_site',
     chance: {
       ancient_technology: 5,
       ancient_military: 2,
@@ -74,6 +78,7 @@ export const DISTRICTS = {
     },
   },
   ancient_foundry: {
+    id: 'ancient_foundry',
     chance: {
       ancient_military: 5,
       ancient_industry: 3,
@@ -92,6 +97,7 @@ export const DISTRICTS = {
     },
   },
   ancient_refinery: {
+    id: 'ancient_refinery',
     chance: {
       ancient_industry: 5,
       ancient_military: 3,

@@ -125,6 +125,9 @@ export interface Resource {
 }
 
 export class Building {
+  @ApiProperty()
+  id: string;
+
   @ApiProperty({
     description: "The cost to construct the building, specified in various resources."
   })
@@ -144,6 +147,9 @@ export class Building {
 }
 
 export class District {
+  @ApiProperty()
+  id: string;
+
   @ApiProperty({
     required: false,
     description: "The chance of discovering this district when exploring a given type of system."

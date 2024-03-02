@@ -3,6 +3,7 @@ import type {Building} from './types';
 export const BUILDINGS = {
   // basic resource buildings. cost should be around 75, upkeep around 5, production around 10
   power_plant: {
+    id: 'power_plant',
     cost: {
       minerals: 75, // silicon solar collectors // cheap_buildings tech tree
     },
@@ -14,6 +15,7 @@ export const BUILDINGS = {
     },
   },
   mine: {
+    id: 'mine',
     cost: {
       minerals: 50, // building the supporting structure // cheap_buildings tech tree
       energy: 25, // digging the mine // cheap_buildings tech tree
@@ -26,6 +28,7 @@ export const BUILDINGS = {
     },
   },
   farm: {
+    id: 'farm',
     cost: {
       energy: 75, // tilling the soil // cheap_buildings tech tree
     },
@@ -38,6 +41,7 @@ export const BUILDINGS = {
   },
   // advanced resource buildings. cost should be around 100, upkeep around 20, production around 10
   research_lab: {
+    id: 'research_lab',
     cost: {
       minerals: 100, // building the lab // cheap_buildings tech tree
     },
@@ -49,6 +53,7 @@ export const BUILDINGS = {
     },
   },
   foundry: {
+    id: 'foundry',
     cost: {
       minerals: 100, // building the foundry // cheap_buildings tech tree
     },
@@ -61,6 +66,7 @@ export const BUILDINGS = {
     },
   },
   refinery: {
+    id: 'refinery',
     cost: {
       minerals: 100, // building the refinery // cheap_buildings tech tree
     },

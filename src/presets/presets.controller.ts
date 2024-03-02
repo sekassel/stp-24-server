@@ -1,4 +1,4 @@
-import {Controller, Get, NotFoundException, Param} from '@nestjs/common';
+import {Controller, Get, Param} from '@nestjs/common';
 import {ApiOkResponse, ApiTags} from "@nestjs/swagger";
 import {TRAITS} from "../game-logic/traits";
 import {Building, District, Technology, Trait} from "../game-logic/types";
@@ -28,39 +28,27 @@ export class PresetsController {
   @Get('buildings')
   @ApiOkResponse({type: [Building]})
   getBuildings(): Building[] {
-    return Object.entries(BUILDINGS).map(([key, value]) => ({
-      name: key,
-      ...value,
-    })) as Building[];
+    return Object.values(BUILDINGS);
   }
 
-  @Get('buildings/:name')
+  @Get('buildings/:id')
   @ApiOkResponse({type: Building})
-  getBuilding(@Param('name') name: string): Building {
-    const building = BUILDINGS[name as BuildingName];
-    if (!building) {
-      throw new NotFoundException(`Building with name "${name}" not found.`);
-    }
-    return {name, ...building} as unknown as Building;
+  @NotFound()
+  getBuilding(@Param('id') id: string): Building | undefined {
+    return BUILDINGS[id as BuildingName];
   }
 
   @Get('districts')
   @ApiOkResponse({type: [District]})
   getDistricts(): District[] {
-    return Object.entries(DISTRICTS).map(([name, details]) => ({
-      name,
-      ...details,
-    })) as District[];
+    return Object.values(DISTRICTS);
   }
 
-  @Get('districts/:name')
+  @Get('districts/:id')
   @ApiOkResponse({type: District})
-  getDistrict(@Param('name') name: string): District {
-    const district = DISTRICTS[name as DistrictName];
-    if (!district) {
-      throw new NotFoundException(`District with name "${name}" not found.`);
-    }
-    return {name, ...district} as unknown as District;
+  @NotFound()
+  getDistrict(@Param('id') id: string): District | undefined {
+    return DISTRICTS[id as DistrictName];
   }
 
   @Get('traits')
