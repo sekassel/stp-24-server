@@ -79,32 +79,41 @@ export class Technology {
   @ApiProperty()
   id: string;
 
-  @ApiProperty({ enum: TECHNOLOGY_TAGS })
+  @ApiProperty({
+    enum: TECHNOLOGY_TAGS
+  })
   tags: readonly TechnologyTag[];
 
-  /** the cost in research points */
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The cost in research points.'
+  })
   cost: number;
 
-  /** ids of other technologies that must be researched first. */
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    description: 'Ids of other technologies that must be researched first.'
+  })
   requires?: readonly string[];
 
-  /** If the empire has the specified technologies, this technology will be unlocked, but has no effect */
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    description: 'If the empire has the specified technologies, this technology will be unlocked, but has no effect.'
+  })
   precedes?: readonly string[];
 
-  @ApiProperty({ type: [Effect] })
+  @ApiProperty({type: [Effect]})
   effects: readonly Effect[];
 }
 
 export class Trait extends EffectSource {
-  /** the cost in trait points */
-  @ApiProperty({description: 'The cost in trait points.'})
+  @ApiProperty({
+    description: 'The cost in trait points.'
+  })
   cost: number;
 
-  /** Cannot be selected if one of these traits is also present */
-  @ApiProperty({description: 'Cannot be selected if one of these traits is also present.'})
+  @ApiProperty({
+    description: 'Cannot be selected if one of these traits is also present.'
+  })
   conflicts?: readonly string[];
 }
 
@@ -137,7 +146,7 @@ export class Building {
 export class District {
   @ApiProperty({
     required: false,
-    description: "The chance of discovering specific resources or benefits when exploring or exploiting the district."
+    description: "The chance of discovering this district when exploring a given type of system."
   })
   chance: Partial<Record<SystemType | 'default', number>>;
 
