@@ -36,7 +36,9 @@ export function checkTraits(traitIds: string[]): string[] {
 }
 
 export const TRAITS: Record<string, Trait> = {
-  strong: {
+
+  /** mine: mineral production */
+  strong: { // minor mineral production bonus
     id: 'strong',
     cost: 1,
     conflicts: ['weak'],
@@ -48,7 +50,7 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  weak: {
+  weak: { // minor mineral production penalty
     id: 'weak',
     cost: -1,
     conflicts: ['strong'],
@@ -60,7 +62,9 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  dumb: {
+
+  /** research_lab: research production */
+  dumb: { // minor research penalty, tiny fuel and alloy production bonus
     id: 'dumb',
     cost: -1,
     conflicts: ['smart', 'intelligent'],
@@ -82,10 +86,10 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  smart: {
+  smart: { // minor research bonus
     id: 'smart',
     cost: 1,
-    conflicts: ['dumb'],
+    conflicts: ['dumb', 'intelligent'],
     effects: [
       {
         description: '+5% $research$ from $research_lab$',
@@ -94,10 +98,10 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  intelligent: {
+  intelligent: { // major research bonus
     id: 'intelligent',
     cost: 3,
-    conflicts: ['dumb'],
+    conflicts: ['dumb', 'smart'],
     effects: [
       {
         description: '+10% $research$ from $research_lab$',
@@ -106,31 +110,9 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  cunning: {
-    id: 'cunning',
-    cost: 3,
-    conflicts: ['courageous'],
-    effects: [
-      {
-        description: '-5% $energy$ for $research_lab$',
-        variable: 'buildings.research_lab.upkeep.energy',
-        multiplier: 0.95,
-      },
-    ],
-  },
-  courageous: {
-    id: 'courageous',
-    cost: 3,
-    conflicts: ['cunning'],
-    effects: [
-      {
-        description: '-5% $minerals$ for $foundry$',
-        variable: 'buildings.foundry.upkeep.minerals',
-        multiplier: 0.95,
-      },
-    ],
-  },
-  agrarian: {
+
+  /** farm: food production */
+  agrarian: { // minor food production bonus, minor initial energy penalty
     id: 'agrarian',
     cost: 1,
     conflicts: ['urban', 'gentrified'],
@@ -152,7 +134,7 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  urban: {
+  urban: { // minor food production penalty
     id: 'urban',
     cost: -1,
     conflicts: ['agrarian', 'industrious'],
@@ -164,7 +146,7 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  industrious: {
+  industrious: { // major food production bonus, minor initial fuel bonus
     id: 'industrious',
     cost: 3,
     conflicts: ['urban', 'gentrified'],
@@ -181,7 +163,7 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  gentrified: {
+  gentrified: { // major food production penalty
     id: 'gentrified',
     cost: -3,
     conflicts: ['agrarian', 'industrious'],
@@ -193,7 +175,9 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  radioactive: {
+
+  /** power_plant: energy production bonus */
+  radioactive: { // minor energy production bonus, minor food production penalty
     id: 'radioactive',
     cost: 1,
     conflicts: ['ecological', 'nature_loving', 'green'],
@@ -210,9 +194,9 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  chernobylian: {
+  chernobylian: { // moderate energy production bonus, moderate food production penalty
     id: 'chernobylian',
-    cost: 3,
+    cost: 2,
     conflicts: ['ecological', 'nature_loving', 'green'],
     effects: [
       {
@@ -227,9 +211,9 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  tsaristic: {
+  tsaristic: { // major energy production bonus, major food production penalty
     id: 'tsaristic',
-    cost: 5,
+    cost: 3,
     conflicts: ['ecological', 'nature_loving', 'green'],
     effects: [
       {
@@ -244,7 +228,9 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  ecological: {
+
+  /** power_plant: energy production penalty */
+  ecological: { // minor energy production penalty
     id: 'ecological',
     cost: -1,
     conflicts: ['radioactive', 'chernobylian', 'tsaristic'],
@@ -256,9 +242,9 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  nature_loving: {
+  nature_loving: { // moderate energy production penalty
     id: 'nature_loving',
-    cost: -3,
+    cost: -2,
     conflicts: ['radioactive', 'chernobylian', 'tsaristic'],
     effects: [
       {
@@ -268,9 +254,9 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  green: {
+  green: { // major energy production penalty
     id: '_green',
-    cost: -5,
+    cost: -3,
     conflicts: ['radioactive', 'chernobylian', 'tsaristic'],
     effects: [
       {
@@ -280,7 +266,9 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  proficient: {
+
+  /** all buildings: initial cost reduction */
+  proficient: { // minor initial cost reduction
     id: 'proficient',
     cost: 2,
     conflicts: ['clumsy', 'incompetent'],
@@ -297,7 +285,7 @@ export const TRAITS: Record<string, Trait> = {
       },
       {
         description: '-10% initial $minerals$ for $research_lab$',
-        variable: 'buildings.power_plant.cost.minerals',
+        variable: 'buildings.research_lab.cost.minerals',
         multiplier: 0.9,
       },
       {
@@ -312,7 +300,7 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  skilled: {
+  skilled: { // moderate initial cost reduction
     id: 'skilled',
     cost: 4,
     conflicts: ['clumsy', 'incompetent'],
@@ -344,118 +332,73 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  clumsy: {
+
+  /** all buildings: initial cost increase */
+  clumsy: { // minor initial cost increase
     id: 'clumsy',
     cost: -2,
     conflicts: ['proficient', 'skilled'],
     effects: [
       {
-        description: '10% initial $minerals$ for $power_plant$',
+        description: '+10% initial $minerals$ cost for $power_plant$',
         variable: 'buildings.power_plant.cost.minerals',
         multiplier: 1.1,
       },
       {
-        description: '10% initial $minerals$ for $mine$',
+        description: '+10% initial $minerals$ for $mine$',
         variable: 'buildings.mine.cost.minerals',
         multiplier: 1.1,
       },
       {
-        description: '10% initial $minerals$ for $research_lab$',
+        description: '+10% initial $minerals$ for $research_lab$',
         variable: 'buildings.power_plant.cost.minerals',
         multiplier: 1.1,
       },
       {
-        description: '10% initial $minerals$ for $foundry$',
+        description: '+10% initial $minerals$ for $foundry$',
         variable: 'buildings.foundry.cost.minerals',
         multiplier: 1.1,
       },
       {
-        description: '10% initial $minerals$ for $refinery$',
+        description: '+10% initial $minerals$ for $refinery$',
         variable: 'buildings.refinery.cost.minerals',
         multiplier: 1.1,
       },
     ],
   },
-  incompetent: {
+  incompetent: { // moderate initial cost increase
     id: 'incompetent',
     cost: -4,
     conflicts: ['proficient', 'skilled'],
     effects: [
       {
-        description: '20% initial $minerals$ for $power_plant$',
+        description: '+20% initial $minerals$ for $power_plant$',
         variable: 'buildings.power_plant.cost.minerals',
         multiplier: 1.2,
       },
       {
-        description: '20% initial $minerals$ for $mine$',
+        description: '+20% initial $minerals$ for $mine$',
         variable: 'buildings.mine.cost.minerals',
         multiplier: 1.2,
       },
       {
-        description: '20% initial $minerals$ for $research_lab$',
+        description: '+20% initial $minerals$ for $research_lab$',
         variable: 'buildings.research_lab.cost.minerals',
         multiplier: 1.2,
       },
       {
-        description: '20% initial $minerals$ for $foundry$',
+        description: '+20% initial $minerals$ for $foundry$',
         variable: 'buildings.foundry.cost.minerals',
         multiplier: 1.2,
       },
       {
-        description: '20% initial $minerals$ for $refinery$',
+        description: '+20% initial $minerals$ for $refinery$',
         variable: 'buildings.refinery.cost.minerals',
         multiplier: 1.2,
       },
     ],
   },
-  efficient: {
-    id: 'efficient',
-    cost: 3,
-    conflicts: ['inefficient', 'baboon'],
-    effects: [
-      {
-        description: '-5% $minerals$ for $power_plant$',
-        variable: 'buildings.power_plant.upkeep.minerals',
-        multiplier: 0.95,
-      },
-      {
-        description: '-5% $energy$ for $mine$',
-        variable: 'buildings.mine.upkeep.energy',
-        multiplier: 0.95,
-      },
-      {
-        description: '-5% $energy$ for $farm$',
-        variable: 'buildings.farm.upkeep.energy',
-        multiplier: 0.95,
-      },
-      {
-        description: '-5% $energy$ for $research_lab$',
-        variable: 'buildings.research_lab.upkeep.energy',
-        multiplier: 0.95,
-      },
-      {
-        description: '-5% $minerals$ for $foundry$',
-        variable: 'buildings.foundry.upkeep.minerals',
-        multiplier: 0.95,
-      },
-      {
-        description: '-5% $energy$ for $foundry$',
-        variable: 'buildings.foundry.upkeep.energy',
-        multiplier: 0.95,
-      },
-      {
-        description: '-5% $minerals$ for $refinery$',
-        variable: 'buildings.refinery.upkeep.minerals',
-        multiplier: 0.95,
-      },
-      {
-        description: '-5% $energy$ for $refinery$',
-        variable: 'buildings.refinery.upkeep.energy',
-        multiplier: 0.95,
-      },
-    ],
-  },
-  engineer: {
+  engineer: { // TODO upkeep as technology
     id: 'engineer',
     cost: 6,
     conflicts: ['inefficient', 'baboon'],
@@ -502,137 +445,142 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  inefficient: {
+  inefficient: { // TODO upkeep as technology
     id: 'inefficient',
     cost: -3,
     conflicts: ['efficient', 'engineer'],
     effects: [
       {
-        description: '5% $minerals$ for $power_plant$',
+        description: '+5% $minerals$ for $power_plant$',
         variable: 'buildings.power_plant.upkeep.minerals',
         multiplier: 1.05,
       },
       {
-        description: '5% $energy$ for $mine$',
+        description: '+5% $energy$ for $mine$',
         variable: 'buildings.mine.upkeep.energy',
         multiplier: 1.05,
       },
       {
-        description: '5% $energy$ for $farm$',
+        description: '+5% $energy$ for $farm$',
         variable: 'buildings.farm.upkeep.energy',
         multiplier: 1.05,
       },
       {
-        description: '5% $energy$ for $research_lab$',
+        description: '+5% $energy$ for $research_lab$',
         variable: 'buildings.research_lab.upkeep.energy',
         multiplier: 1.05,
       },
       {
-        description: '5% $minerals$ for $foundry$',
+        description: '+5% $minerals$ for $foundry$',
         variable: 'buildings.foundry.upkeep.minerals',
         multiplier: 1.05,
       },
       {
-        description: '5% $energy$ for $foundry$',
+        description: '+5% $energy$ for $foundry$',
         variable: 'buildings.foundry.upkeep.energy',
         multiplier: 1.05,
       },
       {
-        description: '5% $minerals$ for $refinery$',
+        description: '+5% $minerals$ for $refinery$',
         variable: 'buildings.refinery.upkeep.minerals',
         multiplier: 1.05,
       },
       {
-        description: '5% $energy$ for $refinery$',
+        description: '+5% $energy$ for $refinery$',
         variable: 'buildings.refinery.upkeep.energy',
         multiplier: 1.05,
       },
     ],
   },
-  baboon: {
+  baboon: { // TODO upkeep as technology
     id: 'baboon',
     cost: -6,
     conflicts: ['efficient', 'engineer'],
     effects: [
       {
-        description: '10% $minerals$ for $power_plant$',
+        description: '+10% $minerals$ for $power_plant$',
         variable: 'buildings.power_plant.upkeep.minerals',
         multiplier: 1.1,
       },
       {
-        description: '10% $energy$ for $mine$',
+        description: '+10% $energy$ for $mine$',
         variable: 'buildings.mine.upkeep.energy',
         multiplier: 1.1,
       },
       {
-        description: '10% $energy$ for $farm$',
+        description: '+10% $energy$ for $farm$',
         variable: 'buildings.farm.upkeep.energy',
         multiplier: 1.1,
       },
       {
-        description: '10% $energy$ for $research_lab$',
+        description: '+10% $energy$ for $research_lab$',
         variable: 'buildings.research_lab.upkeep.energy',
         multiplier: 1.1,
       },
       {
-        description: '10% $minerals$ for $foundry$',
+        description: '+10% $minerals$ for $foundry$',
         variable: 'buildings.foundry.upkeep.minerals',
         multiplier: 1.1,
       },
       {
-        description: '10% $energy$ for $foundry$',
+        description: '+10% $energy$ for $foundry$',
         variable: 'buildings.foundry.upkeep.energy',
         multiplier: 1.1,
       },
       {
-        description: '10% $minerals$ for $refinery$',
+        description: '+10% $minerals$ for $refinery$',
         variable: 'buildings.refinery.upkeep.minerals',
         multiplier: 1.1,
       },
       {
-        description: '10% $energy$ for $refinery$',
+        description: '+10% $energy$ for $refinery$',
         variable: 'buildings.refinery.upkeep.energy',
         multiplier: 1.1,
       },
     ],
   },
-  miner: {
+
+  /** mine: increased mineral production */
+  miner: { // minor mineral production bonus
     id: 'miner',
     cost: 1,
     conflicts: ['settler', 'surface_operator', 'claustrophobic'],
     effects: [
       {
-        description: '10% $minerals$ from $mine$',
+        description: '+10% $minerals$ from $mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 1.1,
       },
     ],
   },
-  excavator: {
+  excavator: { // moderate mineral production bonus
     id: 'excavator',
-    cost: 3,
+    cost: 2,
     conflicts: ['settler', 'surface_operator', 'claustrophobic'],
     effects: [
       {
-        description: '20% $minerals$ from $mine$',
+        description: '+20% $minerals$ from $mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 1.2,
       },
     ],
   },
-  pitman: {
+  pitman: { // major mineral production bonus
     id: 'pitman',
-    cost: 5,
+    cost: 3,
     conflicts: ['settler', 'surface_operator', 'claustrophobic'],
     effects: [
       {
-        description: '30% $minerals$ from $mine$',
+        description: '+30% $minerals$ from $mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 1.3,
       },
     ],
   },
-  settler: {
+
+  /** mine: reduced mineral production
+   * farm: increased food production */
+  settler: { // minor mineral production penalty; minor food production bonus
     id: 'settler',
     cost: -1,
     conflicts: ['miner', 'excavator', 'pitman'],
@@ -643,15 +591,15 @@ export const TRAITS: Record<string, Trait> = {
         multiplier: 0.9,
       },
       {
-        description: '2% $food$ from $farm$',
+        description: '+2% $food$ from $farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.02,
       },
     ],
   },
-  surface_operator: {
+  surface_operator: { // moderate mineral production penalty; moderate food production bonus
     id: 'surface_operator',
-    cost: -3,
+    cost: -2,
     conflicts: ['miner', 'excavator', 'pitman'],
     effects: [
       {
@@ -660,15 +608,15 @@ export const TRAITS: Record<string, Trait> = {
         multiplier: 0.8,
       },
       {
-        description: '4% $food$ from $farm$',
+        description: '+4% $food$ from $farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.04,
       },
     ],
   },
-  claustrophobic: {
+  claustrophobic: { // major mineral production penalty; major food production bonus
     id: 'claustrophobic',
-    cost: -5,
+    cost: -3,
     conflicts: ['miner', 'excavator', 'pitman'],
     effects: [
       {
@@ -677,13 +625,15 @@ export const TRAITS: Record<string, Trait> = {
         multiplier: 0.7,
       },
       {
-        description: '6% $food$ from $farm$',
+        description: '+6% $food$ from $farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.06,
       },
     ],
   },
-  assistant_technician: {
+
+  /** research_lab: increased research production; additional initial energy */
+  assistant_technician: { // minor research production bonus; minor initial energy bonus
     id: 'assistant_technician',
     cost: 1,
     conflicts: ['amateur'],
@@ -694,7 +644,7 @@ export const TRAITS: Record<string, Trait> = {
         bonus: 100,
       },
       {
-        description: '5% $research$ from $research_lab$',
+        description: '+5% $research$ from $research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 1.05,
       },
@@ -710,7 +660,7 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  technician: {
+  technician: { // major research production bonus; additional initial energy
     id: 'technician',
     cost: 3,
     conflicts: ['beginner', 'amateur'],
@@ -721,7 +671,7 @@ export const TRAITS: Record<string, Trait> = {
         bonus: 300,
       },
       {
-        description: '10% $research$ from $research_lab$',
+        description: '+10% $research$ from $research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 1.1,
       },
@@ -742,7 +692,7 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  beginner: {
+  beginner: { // minor fuel and research production penalty
     id: 'beginner',
     cost: -1,
     conflicts: ['technician'],
@@ -759,9 +709,9 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  amateur: {
+  amateur: { // moderate fuel and research production penalty
     id: 'amateur',
-    cost: -3,
+    cost: -2,
     conflicts: ['assistant_technician', 'technician'],
     effects: [
       {
@@ -776,33 +726,33 @@ export const TRAITS: Record<string, Trait> = {
       },
     ],
   },
-  dilettante: {
+  dilettante: { // minor production penalties for all resources
     id: 'dilettante',
-    cost: -7,
+    cost: -3,
     conflicts: ['assistant_technician', 'technician'],
     effects: [
       {
-        description: '-4% $research$ from $research_lab$',
+        description: '-2% $research$ from $research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 0.96,
       },
       {
-        description: '-4% $fuel$ from $refinery$',
+        description: '-2% $fuel$ from $refinery$',
         variable: 'buildings.refinery.production.fuel',
         multiplier: 0.96,
       },
       {
-        description: '-4% $energy$ from $power_plant$',
+        description: '-2% $energy$ from $power_plant$',
         variable: 'buildings.power_plant.production.energy',
         multiplier: 0.96,
       },
       {
-        description: '-4% $minerals$ from $mine$',
+        description: '-1% $minerals$ from $mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 0.96,
       },
       {
-        description: '-4% $food$ from $farm$',
+        description: '-1% $food$ from $farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 0.96,
       },
