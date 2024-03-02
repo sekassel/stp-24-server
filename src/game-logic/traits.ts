@@ -115,7 +115,7 @@ export const TRAITS: Record<string, Trait> = {
   agrarian: { // minor food production bonus, minor initial energy penalty
     id: 'agrarian',
     cost: 1,
-    conflicts: ['urban', 'gentrified'],
+    conflicts: ['urban', 'gentrified', 'industrious'],
     effects: [
       {
         description: 'Start with 200 additional $food$',
@@ -137,7 +137,7 @@ export const TRAITS: Record<string, Trait> = {
   urban: { // minor food production penalty
     id: 'urban',
     cost: -1,
-    conflicts: ['agrarian', 'industrious'],
+    conflicts: ['agrarian', 'industrious', 'gentrified'],
     effects: [
       {
         description: '-5% $food$ from $farm$',
@@ -149,7 +149,7 @@ export const TRAITS: Record<string, Trait> = {
   industrious: { // major food production bonus, minor initial fuel bonus
     id: 'industrious',
     cost: 3,
-    conflicts: ['urban', 'gentrified'],
+    conflicts: ['urban', 'gentrified', 'agrarian'],
     effects: [
       {
         description: '+10% $food$ from $farm$',
@@ -166,7 +166,7 @@ export const TRAITS: Record<string, Trait> = {
   gentrified: { // major food production penalty
     id: 'gentrified',
     cost: -3,
-    conflicts: ['agrarian', 'industrious'],
+    conflicts: ['agrarian', 'industrious', 'urban'],
     effects: [
       {
         description: '-10% $food$ from $farm$',
@@ -180,7 +180,7 @@ export const TRAITS: Record<string, Trait> = {
   radioactive: { // minor energy production bonus, minor food production penalty
     id: 'radioactive',
     cost: 1,
-    conflicts: ['ecological', 'nature_loving', 'green'],
+    conflicts: ['ecological', 'nature_loving', 'green', 'chernobylian', 'tsaristic'],
     effects: [
       {
         description: '+10% $energy$ from $power_plant$',
@@ -197,7 +197,7 @@ export const TRAITS: Record<string, Trait> = {
   chernobylian: { // moderate energy production bonus, moderate food production penalty
     id: 'chernobylian',
     cost: 2,
-    conflicts: ['ecological', 'nature_loving', 'green'],
+    conflicts: ['ecological', 'nature_loving', 'green', 'radioactive', 'tsaristic'],
     effects: [
       {
         description: '+20% $energy$ from $power_plant$',
@@ -214,7 +214,7 @@ export const TRAITS: Record<string, Trait> = {
   tsaristic: { // major energy production bonus, major food production penalty
     id: 'tsaristic',
     cost: 3,
-    conflicts: ['ecological', 'nature_loving', 'green'],
+    conflicts: ['ecological', 'nature_loving', 'green', 'radioactive', 'chernobylian'],
     effects: [
       {
         description: '+30% $energy$ from $power_plant$',
@@ -233,7 +233,7 @@ export const TRAITS: Record<string, Trait> = {
   ecological: { // minor energy production penalty
     id: 'ecological',
     cost: -1,
-    conflicts: ['radioactive', 'chernobylian', 'tsaristic'],
+    conflicts: ['radioactive', 'chernobylian', 'tsaristic', 'nature_loving', 'green'],
     effects: [
       {
         description: '-5% $energy$ from $power_plant$',
@@ -245,7 +245,7 @@ export const TRAITS: Record<string, Trait> = {
   nature_loving: { // moderate energy production penalty
     id: 'nature_loving',
     cost: -2,
-    conflicts: ['radioactive', 'chernobylian', 'tsaristic'],
+    conflicts: ['radioactive', 'chernobylian', 'tsaristic', 'ecological', 'green'],
     effects: [
       {
         description: '-10% $energy$ from $power_plant$',
@@ -257,7 +257,7 @@ export const TRAITS: Record<string, Trait> = {
   green: { // major energy production penalty
     id: '_green',
     cost: -3,
-    conflicts: ['radioactive', 'chernobylian', 'tsaristic'],
+    conflicts: ['radioactive', 'chernobylian', 'tsaristic', 'ecological', 'nature_loving'],
     effects: [
       {
         description: '-15% $energy$ from $power_plant$',
@@ -271,7 +271,7 @@ export const TRAITS: Record<string, Trait> = {
   proficient: { // minor initial cost reduction
     id: 'proficient',
     cost: 2,
-    conflicts: ['clumsy', 'incompetent'],
+    conflicts: ['clumsy', 'incompetent', 'skilled'],
     effects: [
       {
         description: '-10% initial $minerals$ for $power_plant$',
@@ -303,7 +303,7 @@ export const TRAITS: Record<string, Trait> = {
   skilled: { // moderate initial cost reduction
     id: 'skilled',
     cost: 4,
-    conflicts: ['clumsy', 'incompetent'],
+    conflicts: ['clumsy', 'incompetent', 'proficient'],
     effects: [
       {
         description: '-20% initial $minerals$ for $power_plant$',
@@ -337,7 +337,7 @@ export const TRAITS: Record<string, Trait> = {
   clumsy: { // minor initial cost increase
     id: 'clumsy',
     cost: -2,
-    conflicts: ['proficient', 'skilled'],
+    conflicts: ['proficient', 'skilled', 'incompetent'],
     effects: [
       {
         description: '+10% initial $minerals$ cost for $power_plant$',
@@ -544,7 +544,7 @@ export const TRAITS: Record<string, Trait> = {
   miner: { // minor mineral production bonus
     id: 'miner',
     cost: 1,
-    conflicts: ['settler', 'surface_operator', 'claustrophobic'],
+    conflicts: ['settler', 'surface_operator', 'claustrophobic', 'excavator', 'pitman'],
     effects: [
       {
         description: '+10% $minerals$ from $mine$',
@@ -556,7 +556,7 @@ export const TRAITS: Record<string, Trait> = {
   excavator: { // moderate mineral production bonus
     id: 'excavator',
     cost: 2,
-    conflicts: ['settler', 'surface_operator', 'claustrophobic'],
+    conflicts: ['settler', 'surface_operator', 'claustrophobic', 'miner', 'pitman'],
     effects: [
       {
         description: '+20% $minerals$ from $mine$',
@@ -568,7 +568,7 @@ export const TRAITS: Record<string, Trait> = {
   pitman: { // major mineral production bonus
     id: 'pitman',
     cost: 3,
-    conflicts: ['settler', 'surface_operator', 'claustrophobic'],
+    conflicts: ['settler', 'surface_operator', 'claustrophobic', 'miner', 'excavator'],
     effects: [
       {
         description: '+30% $minerals$ from $mine$',
@@ -583,7 +583,7 @@ export const TRAITS: Record<string, Trait> = {
   settler: { // minor mineral production penalty; minor food production bonus
     id: 'settler',
     cost: -1,
-    conflicts: ['miner', 'excavator', 'pitman'],
+    conflicts: ['miner', 'excavator', 'pitman', 'surface_operator', 'claustrophobic'],
     effects: [
       {
         description: '-10% $minerals$ from $mine$',
@@ -600,7 +600,7 @@ export const TRAITS: Record<string, Trait> = {
   surface_operator: { // moderate mineral production penalty; moderate food production bonus
     id: 'surface_operator',
     cost: -2,
-    conflicts: ['miner', 'excavator', 'pitman'],
+    conflicts: ['miner', 'excavator', 'pitman', 'settler', 'claustrophobic'],
     effects: [
       {
         description: '-20% $minerals$ from $mine$',
@@ -617,7 +617,7 @@ export const TRAITS: Record<string, Trait> = {
   claustrophobic: { // major mineral production penalty; major food production bonus
     id: 'claustrophobic',
     cost: -3,
-    conflicts: ['miner', 'excavator', 'pitman'],
+    conflicts: ['miner', 'excavator', 'pitman', 'settler', 'surface_operator'],
     effects: [
       {
         description: '-30% $minerals$ from $mine$',
@@ -636,7 +636,7 @@ export const TRAITS: Record<string, Trait> = {
   assistant_technician: { // minor research production bonus; minor initial energy bonus
     id: 'assistant_technician',
     cost: 1,
-    conflicts: ['amateur'],
+    conflicts: ['amateur', 'beginner', 'technician', 'dilettante'],
     effects: [
       {
         description: 'Start with 100 additional $energy$',
@@ -662,8 +662,8 @@ export const TRAITS: Record<string, Trait> = {
   },
   technician: { // major research production bonus; additional initial energy
     id: 'technician',
-    cost: 3,
-    conflicts: ['beginner', 'amateur'],
+    cost: 2,
+    conflicts: ['beginner', 'amateur', 'assistant_technician', 'dilettante'],
     effects: [
       {
         description: 'Start with 300 additional $energy$',
@@ -695,7 +695,7 @@ export const TRAITS: Record<string, Trait> = {
   beginner: { // minor fuel and research production penalty
     id: 'beginner',
     cost: -1,
-    conflicts: ['technician'],
+    conflicts: ['technician', 'assistant_technician', 'amateur', 'dilettante'],
     effects: [
       {
         description: '-2% $research$ from $research_lab$',
@@ -712,7 +712,7 @@ export const TRAITS: Record<string, Trait> = {
   amateur: { // moderate fuel and research production penalty
     id: 'amateur',
     cost: -2,
-    conflicts: ['assistant_technician', 'technician'],
+    conflicts: ['assistant_technician', 'technician', 'beginner', 'dilettante'],
     effects: [
       {
         description: '-4% $research$ from $research_lab$',
@@ -729,7 +729,7 @@ export const TRAITS: Record<string, Trait> = {
   dilettante: { // minor production penalties for all resources
     id: 'dilettante',
     cost: -3,
-    conflicts: ['assistant_technician', 'technician'],
+    conflicts: ['assistant_technician', 'technician', 'beginner', 'amateur'],
     effects: [
       {
         description: '-2% $research$ from $research_lab$',
