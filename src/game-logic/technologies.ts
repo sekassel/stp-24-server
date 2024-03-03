@@ -238,6 +238,52 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
+  efficient_resources_1: { // reduced basic building upkeep
+    id: 'efficient_resources_1',
+    tags: ['engineering', 'production'],
+    cost: 200,
+    precedes: ['efficient_resources_2'],
+    effects: [
+      {
+        description: '-10% $minerals$ upkeep for $power_plant$',
+        variable: 'buildings.power_plant.upkeep.minerals',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $minerals$ upkeep for $foundry$',
+        variable: 'buildings.foundry.upkeep.minerals',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $minerals$ upkeep for $refinery$',
+        variable: 'buildings.refinery.upkeep.minerals',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_resources_2: { // further increased advanced building production
+    id: 'efficient_resources_2',
+    tags: ['engineering', 'production'],
+    cost: 400,
+    requires: ['efficient_resources_1'],
+    effects: [
+      {
+        description: '-15% $minerals$ upkeep for $power_plant$',
+        variable: 'buildings.power_plant.upkeep.minerals',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $minerals$ upkeep for $foundry$',
+        variable: 'buildings.foundry.upkeep.minerals',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $minerals$ upkeep for $refinery$',
+        variable: 'buildings.refinery.upkeep.minerals',
+        multiplier: 0.85,
+      },
+    ],
+  },
 };
 
 // special resources

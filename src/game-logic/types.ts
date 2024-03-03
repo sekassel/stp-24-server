@@ -75,26 +75,45 @@ export const TECHNOLOGY_TAGS = [
 ] as const;
 export type TechnologyTag = typeof TECHNOLOGY_TAGS[number];
 
-export interface Technology extends EffectSource {
+export class Technology {
+  @ApiProperty()
   id: string;
+
+  @ApiProperty({
+    enum: TECHNOLOGY_TAGS
+  })
   tags: readonly TechnologyTag[];
-  /** the cost in research points */
+
+  @ApiProperty({
+    description: 'The cost in research points.'
+  })
   cost: number;
-  /** ids of other technologies that must be researched first. */
+
+  @ApiProperty({
+    required: false,
+    description: 'Ids of other technologies that must be researched first.'
+  })
   requires?: readonly string[];
-  /** If the empire has the specified technologies, this technology will be unlocked, but has no effect */
+
+  @ApiProperty({
+    required: false,
+    description: 'If the empire has the specified technologies, this technology will be unlocked, but has no effect.'
+  })
   precedes?: readonly string[];
 
+  @ApiProperty({type: [Effect]})
   effects: readonly Effect[];
 }
 
 export class Trait extends EffectSource {
-  /** the cost in trait points */
-  @ApiProperty({description: 'The cost in trait points.'})
+  @ApiProperty({
+    description: 'The cost in trait points.'
+  })
   cost: number;
 
-  /** Cannot be selected if one of these traits is also present */
-  @ApiProperty({description: 'Cannot be selected if one of these traits is also present.'})
+  @ApiProperty({
+    description: 'Cannot be selected if one of these traits is also present.'
+  })
   conflicts?: readonly string[];
 }
 
@@ -105,12 +124,51 @@ export interface Resource {
   credit_value?: number;
 }
 
-export interface Building {
+export class Building {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({
+    description: "The cost to construct the building, specified in various resources."
+  })
   cost: Partial<Record<ResourceName, number>>;
+
+  @ApiProperty({
+    required: false,
+    description: "The ongoing upkeep of the building, specified in various resources, required to maintain operation."
+  })
   upkeep: Partial<Record<ResourceName, number>>;
+
+  @ApiProperty({
+    required: false,
+    description: "The production output of the building, specified in various resources, that it contributes to the empire's economy."
+  })
   production: Partial<Record<ResourceName, number>>;
 }
 
-export interface District extends Building {
+export class District {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({
+    required: false,
+    description: "The chance of discovering this district when exploring a given type of system."
+  })
   chance: Partial<Record<SystemType | 'default', number>>;
+
+  @ApiProperty({
+    description: "The cost to establish the district, specified in various resources."
+  })
+  cost: Partial<Record<ResourceName, number>>;
+
+  @ApiProperty({
+    description: "The ongoing upkeep of the district, specified in various resources, required to maintain its benefits."
+  })
+  upkeep: Partial<Record<ResourceName, number>>;
+
+  @ApiProperty({
+    required: false,
+    description: "The production output of the district, specified in various resources, contributing to the empire's economy."
+  })
+  production: Partial<Record<ResourceName, number>>;
 }
