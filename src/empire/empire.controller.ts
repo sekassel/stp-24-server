@@ -1,10 +1,8 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   ForbiddenException,
   Get,
-  NotFoundException,
   Param,
   ParseArrayPipe,
   Patch,
@@ -22,8 +20,6 @@ import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {ExplainedVariable, Variable} from '../game-logic/types';
 import {explainVariable, getEmpireEffectSources} from '../game-logic/variables';
-import {TECHNOLOGIES} from "../game-logic/technologies";
-import {UserService} from "../user/user.service";
 
 @Controller('games/:game/empires')
 @ApiTags('Game Empires')
@@ -33,7 +29,6 @@ import {UserService} from "../user/user.service";
 export class EmpireController {
   constructor(
     private readonly empireService: EmpireService,
-    private readonly userService: UserService,
   ) {
   }
 
@@ -73,44 +68,7 @@ export class EmpireController {
     if (!currentUser._id.equals(empire.user)) {
       throw new ForbiddenException('Cannot modify another user\'s empire.');
     }
-    // Unlock technologies if the empire has the required resources and predecessor technologies
-    for (const technologyId of dto.technologies) {
-      const technology = TECHNOLOGIES[technologyId];
-      if (!technology) {
-        throw new NotFoundException(`Technology ${technologyId} not found.`);
-      }
-
-      // Check if all required technologies are unlocked
-      const hasAllRequiredTechnologies = technology.requires?.every(
-        (requiredTechnology: string) => empire.technologies.includes(requiredTechnology)
-      ) ?? true;
-
-      if (!hasAllRequiredTechnologies) {
-        throw new BadRequestException(`Missing required technologies for ${technologyId}.`);
-      }
-
-      // Calculate the technology cost based on the formula
-      const user = await this.userService.findUserById(empire.user);
-      const technologyCount = user.technologies?.[technologyId] || 0;
-      const technologyCost = technology.cost * Math.pow(0.95, Math.min(technologyCount, 10));
-
-      if (empire.resources.research < technologyCost) {
-        throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
-      }
-
-      // Deduct research points and unlock technology
-      empire.resources.research -= technologyCost;
-      if (!empire.technologies.includes(technologyId)) {
-        empire.technologies.push(technologyId);
-        if (!user.technologies) {
-          user.technologies = {};
-        }
-
-        // Increment the user's technology count by 1
-        // user.technologies[technologyId] = (user.technologies[technologyId] || 0) + 1;
-        await this.userService.update(user._id, {technologies: user.technologies});
-      }
-    }
+    await this.empireService.unlockTechnology(empire, dto.technologies);
     const updateDto = {
       ...dto,
       resources: empire.resources,
