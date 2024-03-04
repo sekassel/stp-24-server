@@ -46,7 +46,7 @@ export class SystemService extends MongooseRepository<System> {
       system.game = game._id;
       system.owner = game.owner;
       system.capacity = Math.floor(Math.random() * 100) + 100;
-      system.type = 'planet';
+      system.type = 'regular';
       system.links = {};
 
       const distance = Math.random() * radius;
