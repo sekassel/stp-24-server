@@ -1,4 +1,13 @@
-import {Body, Controller, ForbiddenException, Get, Param, ParseArrayPipe, Patch, Query} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  Param,
+  ParseArrayPipe,
+  Patch,
+  Query
+} from '@nestjs/common';
 import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, refs} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
@@ -59,8 +68,14 @@ export class EmpireController {
     if (!currentUser._id.equals(empire.user)) {
       throw new ForbiddenException('Cannot modify another user\'s empire.');
     }
-    // TODO @simolse: implement resources trading and tech unlocks
-    return this.empireService.update(id, dto);
+    await this.empireService.unlockTechnology(empire, dto.technologies);
+    const updateDto = {
+      ...dto,
+      resources: empire.resources,
+      technologies: empire.technologies,
+    };
+    // TODO: implement resource trading
+    return this.empireService.update(id, updateDto);
   }
 
   @Get('variables')
