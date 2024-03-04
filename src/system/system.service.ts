@@ -62,14 +62,12 @@ export class SystemService extends MongooseRepository<System> {
 
     //Connect systems as a spanning tree
     for(let i = 0; i < systems.length; i++) {
-      const visited: number[] = [];
       const start = Math.floor(Math.random() * systems.length);
 
       for(let add = 0; i < systems.length; i++) {
         const j = (start + add) % systems.length;
 
-        if(i != j && !visited.includes(j)){
-          visited.push(j);
+        if(i != j){
           this.connectSystems(systems[i], systems[j]);
 
           if(this.checkForCycles(systems, systems[i])) {
