@@ -22,7 +22,6 @@ import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {ExplainedVariable, Variable} from '../game-logic/types';
 import {explainVariable, getEmpireEffectSources} from '../game-logic/variables';
-import {RESOURCES} from "../game-logic/resources";
 import {TECHNOLOGIES} from "../game-logic/technologies";
 
 @Controller('games/:game/empires')
@@ -79,6 +78,9 @@ export class EmpireController {
         throw new NotFoundException(`Technology ${technologyId} not found.`);
       }
 
+      if (empire.resources.research < technology.cost) {
+        throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
+      }
       // Check if all required technologies are unlocked
       const hasAllRequiredTechnologies = technology.requires?.every(
         (requiredTechnology: string) => empire.technologies.includes(requiredTechnology)
@@ -86,10 +88,6 @@ export class EmpireController {
 
       if (!hasAllRequiredTechnologies) {
         throw new BadRequestException(`Missing required technologies for ${technologyId}.`);
-      }
-
-      if (empire.resources.research < technology.cost) {
-        throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
       }
 
       // Deduct research points and unlock technology
