@@ -1,8 +1,8 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
-import {Model} from 'mongoose';
+import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
-import {System} from './system.schema';
+import {System, SystemUpgradeLevel} from './system.schema';
 import {Game} from "../game/game.schema";
 
 @Injectable()
@@ -21,43 +21,54 @@ export class SystemService extends MongooseRepository<System> {
     const clusters: System[][] = [];
 
     //TODO: Generate multiple clusters
-    clusters.push(await this.createCluster(game, 10, 100, [0, 0]));
+    clusters.push(this.createCluster(game, 10, 100, [0, 0]));
 
     //TODO: Connect clusters
 
-    clusters.forEach(cluster => {
-      cluster.forEach(system => {
-        this.update(system._id, system);
-      });
-    })
+    await this.createMany(clusters.flat());
   }
 
   /**
    * Creates a cluster of systems and connects these systems
    */
-  private async createCluster(game: Game, count: number, radius: number, center: number[]): Promise<System[]> {
+  private createCluster(game: Game, count: number, radius: number, center: number[]): System[] {
     const systems: System[] = [];
 
     //Create systems
     const angleStep = 2 * Math.PI / count;
     let angle = 0;
     while(angle < 2 * Math.PI) {
-      const system = new System();
-      system.game = game._id;
-      system.owner = game.owner;
-      system.capacity = Math.floor(Math.random() * 100) + 100;
-      system.type = 'regular';
-      system.links = {};
+      // const system = new System();
+      // system.game = game._id;
+      // system.owner = game.owner;
+      // system.capacity = Math.floor(Math.random() * 100) + 100;
+      // system.type = 'regular';
+      // system.links = {};
 
       const distance = Math.random() * radius;
-      system.x = center[0] + distance * Math.cos(angle);
-      system.y = center[1] + distance * Math.sin(angle);
+      // system.x = center[0] + distance * Math.cos(angle);
+      // system.y = center[1] + distance * Math.sin(angle);
+
+      const system: System = {
+        _id: new Types.ObjectId(),
+        game: game._id,
+        owner: game.owner,
+        capacity: Math.floor(Math.random() * 100) + 100,
+        type: 'regular',
+        x: center[0] + distance * Math.cos(angle),
+        y: center[1] + distance * Math.sin(angle),
+        upgrade: SystemUpgradeLevel.unexplored,
+        links: {},
+        districtSlots: {},
+        districts: {},
+        buildings: [],
+        population: 0,
+        updatedAt: new Date(),
+        createdAt: new Date(),
+      };
 
       angle += angleStep;
-
-      await this.create(system).then(system => {
-        systems.push(system);
-      });
+      systems.push(system);
     }
 
     //Connect systems as a spanning tree
@@ -72,8 +83,7 @@ export class SystemService extends MongooseRepository<System> {
 
           if(this.checkForCycles(systems, systems[i])) {
             this.removeConnection(systems[i], systems[j]);
-          }
-          else{
+          } else{
             break;
           }
         }
@@ -81,12 +91,12 @@ export class SystemService extends MongooseRepository<System> {
     }
 
     //Add random cycle
-    const randomCycles = Math.floor(Math.random() * (count/10));
+    const randomCycles = Math.randInt(count/10);
     for(let i = 0; i < randomCycles; i++) {
-      const system1 = systems[Math.floor(Math.random() * systems.length)];
-      const system2 = systems[Math.floor(Math.random() * systems.length)];
+      const system1 = systems[Math.randInt(systems.length)];
+      const system2 = systems[Math.randInt(systems.length)];
 
-      this.connectSystems(system1, system2);
+      if(system1 != system2) this.connectSystems(system1, system2);
     }
 
     return systems;
