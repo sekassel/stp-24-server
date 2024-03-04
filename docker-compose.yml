@@ -6,6 +6,9 @@ services:
     depends_on:
       - database
       - nats
+    environment:
+      MONGO_URI: "mongodb://database:27017"
+      NATS_URL: "nats://nats:4222"
   nats:
     image: nats:2
     ports:
