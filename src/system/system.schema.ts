@@ -4,7 +4,7 @@ import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {Doc, OptionalRef, Ref} from '@mean-stream/nestx';
 import {DistrictName, DISTRICTS} from "../game-logic/districts";
 import {ApiProperty} from "@nestjs/swagger";
-import {IsArray, IsEnum, IsIn, IsInt, IsNumber, IsObject, IsString, Max, Min} from 'class-validator';
+import {IsArray, IsEnum, IsIn, IsInt, IsNumber, IsObject, IsString, Min} from 'class-validator';
 import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
 
 export enum SystemUpgradeLevel {

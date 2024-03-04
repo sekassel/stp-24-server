@@ -21,39 +21,21 @@ export class SystemService extends MongooseRepository<System> {
     const clusters: System[][] = [];
 
     //TODO: Generate multiple clusters
-    clusters.push(this.createCluster(10, 100, [0, 0]));
+    clusters.push(await this.createCluster(game, 10, 100, [0, 0]));
 
     //TODO: Connect clusters
 
-    //Add clusters
     clusters.forEach(cluster => {
       cluster.forEach(system => {
-        system.game = game._id;
-        system.owner = game.owner;
-        system.capacity = Math.floor(Math.random() * 100) + 100;
-        system.buildingSlots = this.createBuildingSlots(system.type);
-        this.create(system);
-        this.emit('created', system);
+        this.update(system._id, system);
       });
     })
   }
 
-  private createBuildingSlots(type: string): Record<string, number> {
-    //TODO: Random building slots depending on type
-    switch (type) {
-      case 'planet':
-        return {
-          power_plant: Math.floor(Math.random() * 5) + 1,
-          mine: Math.floor(Math.random() * 5) + 1,
-          farm: Math.floor(Math.random() * 5) + 1,
-          research_lab: Math.floor(Math.random() * 5) + 1,
-        }
-      default:
-        return {};
-    }
-  }
-
-  private createCluster(count: number, radius: number, center: number[]): System[] {
+  /**
+   * Creates a cluster of systems and connects these systems
+   */
+  private async createCluster(game: Game, count: number, radius: number, center: number[]): Promise<System[]> {
     const systems: System[] = [];
 
     //Create systems
@@ -61,21 +43,31 @@ export class SystemService extends MongooseRepository<System> {
     let angle = 0;
     while(angle < 2 * Math.PI) {
       const system = new System();
+      system.game = game._id;
+      system.owner = game.owner;
+      system.capacity = Math.floor(Math.random() * 100) + 100;
       system.type = 'planet';
+      system.links = {};
 
       const distance = Math.random() * radius;
       system.x = center[0] + distance * Math.cos(angle);
       system.y = center[1] + distance * Math.sin(angle);
 
       angle += angleStep;
+
+      await this.create(system).then(system => {
+        systems.push(system);
+      });
     }
 
     //Connect systems as a spanning tree
     for(let i = 0; i < systems.length; i++) {
       const visited: number[] = [];
-      let j = Math.floor(Math.random() * systems.length);
+      const start = Math.floor(Math.random() * systems.length);
 
-      while(true){
+      for(let add = 0; i < systems.length; i++) {
+        const j = (start + add) % systems.length;
+
         if(i != j && !visited.includes(j)){
           visited.push(j);
           this.connectSystems(systems[i], systems[j]);
@@ -87,8 +79,6 @@ export class SystemService extends MongooseRepository<System> {
             break;
           }
         }
-
-        j = (j + 1) % systems.length;
       }
     }
 
@@ -104,22 +94,42 @@ export class SystemService extends MongooseRepository<System> {
     return systems;
   }
 
+  /**
+   * Checks if a system is part of a cycle in a cluster of systems
+   * */
   private checkForCycles(systems: System[], start: System): boolean {
-    const visited: System[] = [];
-    const stack = [start];
+    const systemsCopy: System[] = [];
+    systems.forEach(system => {
+      const copy = new System();
+      copy._id = system._id;
+      copy.links = {...system.links};
+      systemsCopy.push(copy);
+    });
+
+    const startCopy = new System();
+    startCopy._id = start._id;
+    startCopy.links = {...start.links};
+
+    const stack:System[] = [];
+
+    for(const link in startCopy.links) {
+      const neighbors = systemsCopy.filter(system => system._id.toString() === link);
+      neighbors.forEach(neighbor => this.removeConnection(startCopy, neighbor));
+      stack.push(...neighbors);
+    }
 
     while(stack.length > 0) {
       const current = stack.pop();
       if(!current) break;
 
-      if(visited.includes(current)) return true;
+      if(current == start) return true;
 
-      visited.push(current);
       for(const link in current.links) {
-        stack.push(...systems.filter(system => system._id.toString() === link));
+        const neighbors = systemsCopy.filter(system => system._id.toString() === link);
+        neighbors.forEach(neighbor => this.removeConnection(current, neighbor));
+        stack.push(...neighbors);
       }
     }
-
     return false;
   }
 
