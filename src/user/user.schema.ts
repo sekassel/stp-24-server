@@ -21,7 +21,7 @@ export class User extends GlobalSchema {
   refreshKey?: string | null;
 
   @Prop({type: String, transform: () => undefined})
-  technologies?: Partial<Record<TechId, number>>;
+  technologies?: Partial<Record<TechId, number>> | null;
 }
 
 export type TechId = keyof typeof TECHNOLOGIES;
