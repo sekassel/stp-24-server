@@ -38,17 +38,7 @@ export class SystemService extends MongooseRepository<System> {
     const angleStep = 2 * Math.PI / count;
     let angle = 0;
     while(angle < 2 * Math.PI) {
-      // const system = new System();
-      // system.game = game._id;
-      // system.owner = game.owner;
-      // system.capacity = Math.floor(Math.random() * 100) + 100;
-      // system.type = 'regular';
-      // system.links = {};
-
       const distance = Math.random() * radius;
-      // system.x = center[0] + distance * Math.cos(angle);
-      // system.y = center[1] + distance * Math.sin(angle);
-
       const system: System = {
         _id: new Types.ObjectId(),
         game: game._id,
@@ -73,7 +63,7 @@ export class SystemService extends MongooseRepository<System> {
 
     //Connect systems as a spanning tree
     for(let i = 0; i < systems.length; i++) {
-      const start = Math.floor(Math.random() * systems.length);
+      const start = Math.randInt(systems.length);
 
       for(let add = 0; i < systems.length; i++) {
         const j = (start + add) % systems.length;
@@ -107,12 +97,12 @@ export class SystemService extends MongooseRepository<System> {
    * */
   private checkForCycles(systems: System[], start: System): boolean {
     const systemsCopy: System[] = [];
-    systems.forEach(system => {
+    for(const system of systems) {
       const copy = new System();
       copy._id = system._id;
       copy.links = {...system.links};
       systemsCopy.push(copy);
-    });
+    }
 
     const startCopy = new System();
     startCopy._id = start._id;
@@ -120,7 +110,7 @@ export class SystemService extends MongooseRepository<System> {
 
     const stack:System[] = [];
 
-    for(const link in startCopy.links) {
+    for(const link of Object.keys(startCopy.links)) {
       const neighbors = systemsCopy.filter(system => system._id.toString() === link);
       neighbors.forEach(neighbor => this.removeConnection(startCopy, neighbor));
       stack.push(...neighbors);
@@ -142,7 +132,7 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private connectSystems(system1: System, system2: System): void {
-    const distance = Math.sqrt(Math.pow(system1.x - system2.x, 2) + Math.pow(system1.y - system2.y, 2));
+    const distance = Math.hypot(system1.x - system2.x, system1.y - system2.y);
     system1.links[system2._id.toString()] = distance;
     system2.links[system1._id.toString()] = distance;
   }
