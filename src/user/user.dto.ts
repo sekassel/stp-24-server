@@ -14,8 +14,8 @@ class UserAndPassword extends OmitType(User, [
 ]) {
   @IsString()
   @IsNotEmpty()
-  @IsByteLength(8, undefined, { message: 'Password must be at least 8 characters' })
-  @ApiProperty({ minLength: 8 })
+  @IsByteLength(8, undefined, {message: 'Password must be at least 8 characters'})
+  @ApiProperty({minLength: 8})
   password: string;
 }
 
@@ -29,7 +29,7 @@ export class LoginDto extends PickType(UserAndPassword, ['name', 'password'] as 
 }
 
 export class RefreshDto {
-  @ApiProperty({ format: 'jwt' })
+  @ApiProperty({format: 'jwt'})
   @IsJWT()
   refreshToken: string;
 }
@@ -52,8 +52,8 @@ export class QueryUsersDto {
   @ApiPropertyOptional({
     description: 'A comma-separated list of IDs that should be included in the response.',
   })
-  @Transform(({ value }) => Array.isArray(value) ? value : value?.split(','))
+  @Transform(({value}) => Array.isArray(value) ? value : value?.split(','))
   @IsOptional()
-  @IsMongoId({ each: true })
+  @IsMongoId({each: true})
   ids?: string[];
 }

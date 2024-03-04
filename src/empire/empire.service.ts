@@ -57,19 +57,19 @@ export class EmpireService extends MongooseRepository<Empire> {
       const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
 
       // Check if all required technologies are unlocked
-      const hasAllRequiredTechnologies = technology.requires?.every(
+      const hasAllRequiredTechnologies = !technology.requires || technology.requires.every(
         (requiredTechnology: string) => empire.technologies.includes(requiredTechnology)
       );
 
       if (!hasAllRequiredTechnologies) {
         const missingTechnologies = findMissingTechnologies(technologyId);
-        throw new BadRequestException(`Missing required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
+        throw new BadRequestException(`Required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
       }
 
       // Calculate the technology cost based on the formula
-      const user = await this.userService.findUserById(empire.user);
+      const user = await this.userService.find(empire.user) ?? notFound(empire.user);
       const technologyCount = user.technologies?.[technologyId] || 0;
-      const technologyCost = technology.cost * Math.pow(0.95, Math.min(technologyCount, 10));
+      const technologyCost = technology.cost * 0.95 ** Math.min(technologyCount, 10);
 
       if (empire.resources.research < technologyCost) {
         throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
@@ -82,10 +82,12 @@ export class EmpireService extends MongooseRepository<Empire> {
         if (!user.technologies) {
           user.technologies = {};
         }
-
         // Increment the user's technology count by 1
         // user.technologies[technologyId] = (user.technologies[technologyId] || 0) + 1;
         await this.userService.update(user._id, {technologies: user.technologies});
+        /*await this.userService.update(user._id, {
+          $inc: {[`technologies.${technologyId}`]: 1}
+        });*/
       }
     }
   }

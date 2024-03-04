@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import {InjectModel} from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
@@ -92,14 +92,6 @@ export class UserService extends MongooseRepository<User> {
 
   async logout(user: User): Promise<UserDocument | null> {
     return this.model.findByIdAndUpdate(user._id, { refreshKey: null }).exec();
-  }
-
-  async findUserById(userId: Types.ObjectId): Promise<UserDocument> {
-    const user = await this.model.findById(userId).exec();
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
-    }
-    return user;
   }
 
   private emit(event: string, user: User) {

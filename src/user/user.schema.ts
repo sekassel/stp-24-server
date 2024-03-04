@@ -20,7 +20,7 @@ export class User extends GlobalSchema {
   @Prop({type: String, transform: () => undefined})
   refreshKey?: string | null;
 
-  @Prop({type: String, transform: () => undefined})
+  @Prop({type: Object})
   technologies?: Partial<Record<TechId, number>> | null;
 }
 
