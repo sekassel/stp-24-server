@@ -9,6 +9,7 @@ import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MAX_EMPIRES
 import {generateTraits} from '../game-logic/traits';
 import {TECHNOLOGIES} from "../game-logic/technologies";
 import {UserService} from "../user/user.service";
+import {UpdateUserDto} from "../user/user.dto";
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -79,15 +80,10 @@ export class EmpireService extends MongooseRepository<Empire> {
       empire.resources.research -= technologyCost;
       if (!empire.technologies.includes(technologyId)) {
         empire.technologies.push(technologyId);
-        if (!user.technologies) {
-          user.technologies = {};
-        }
         // Increment the user's technology count by 1
-        // user.technologies[technologyId] = (user.technologies[technologyId] || 0) + 1;
-        await this.userService.update(user._id, {technologies: user.technologies});
-        /*await this.userService.update(user._id, {
+        await this.userService.update(user._id, {
           $inc: {[`technologies.${technologyId}`]: 1}
-        });*/
+        } as UpdateUserDto);
       }
     }
   }
