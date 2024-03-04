@@ -1,9 +1,17 @@
-import type {Building} from './types';
+import type {District} from './types';
 
-export const BUILDINGS = {
-  // basic resource buildings. cost should be around 75, upkeep around 5, production around 10
-  power_plant: {
-    id: 'power_plant',
+// TODO adjust cost, upkeep, and production values
+export const DISTRICTS = {
+  // basic resource districts. cost should be around 75, upkeep around 5, production around 10
+  energy: {
+    id: 'energy',
+    chance: {
+      energy: 5,
+      ancient_technology: 3,
+      ancient_industry: 2,
+      ancient_military: 2,
+      default: 1,
+    },
     cost: {
       minerals: 75, // silicon solar collectors // cheap_buildings tech tree
     },
@@ -14,8 +22,15 @@ export const BUILDINGS = {
       energy: 10, // energy_production tech tree
     },
   },
-  mine: {
-    id: 'mine',
+  mining: {
+    id: 'mining',
+    chance: {
+      mining: 5,
+      ancient_industry: 3,
+      ancient_technology: 2,
+      ancient_military: 2,
+      default: 1,
+    },
     cost: {
       minerals: 50, // building the supporting structure // cheap_buildings tech tree
       energy: 25, // digging the mine // cheap_buildings tech tree
@@ -27,8 +42,12 @@ export const BUILDINGS = {
       minerals: 10, // mineral_production tech tree
     },
   },
-  farm: {
-    id: 'farm',
+  agriculture: {
+    id: 'agriculture',
+    chance: {
+      agriculture: 5,
+      default: 1,
+    },
     cost: {
       energy: 75, // tilling the soil // cheap_buildings tech tree
     },
@@ -39,9 +58,15 @@ export const BUILDINGS = {
       food: 10, // food_production tech tree
     },
   },
-  // advanced resource buildings. cost should be around 100, upkeep around 20, production around 10
-  research_lab: {
-    id: 'research_lab',
+  // advanced resource districts. cost should be around 100, upkeep around 20, production around 10
+  research_site: {
+    id: 'research_site',
+    chance: {
+      ancient_technology: 5,
+      ancient_military: 2,
+      ancient_industry: 2,
+      default: 1,
+    },
     cost: {
       minerals: 100, // building the lab // cheap_buildings tech tree
     },
@@ -52,8 +77,14 @@ export const BUILDINGS = {
       research: 10, // research_production tech tree
     },
   },
-  foundry: {
-    id: 'foundry',
+  ancient_foundry: {
+    id: 'ancient_foundry',
+    chance: {
+      ancient_military: 5,
+      ancient_industry: 3,
+      ancient_technology: 2,
+      default: 1,
+    },
     cost: {
       minerals: 100, // building the foundry // cheap_buildings tech tree
     },
@@ -65,8 +96,14 @@ export const BUILDINGS = {
       alloys: 10, // alloy_production tech tree
     },
   },
-  refinery: {
-    id: 'refinery',
+  ancient_refinery: {
+    id: 'ancient_refinery',
+    chance: {
+      ancient_industry: 5,
+      ancient_military: 3,
+      ancient_technology: 2,
+      default: 1,
+    },
     cost: {
       minerals: 100, // building the refinery // cheap_buildings tech tree
     },
@@ -78,6 +115,6 @@ export const BUILDINGS = {
       fuel: 10, // fuel_production tech tree
     },
   },
-} as const satisfies Record<string, Building>;
-export type BuildingName = keyof typeof BUILDINGS;
-export const BUILDING_NAMES = Object.keys(BUILDINGS) as BuildingName[];
+} as const satisfies Record<string, District>;
+export type DistrictName = keyof typeof DISTRICTS;
+export const DISTRICT_NAMES = Object.keys(DISTRICTS) as DistrictName[];

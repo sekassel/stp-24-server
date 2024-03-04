@@ -5,12 +5,29 @@ import {TRAITS} from './traits';
 import {BUILDINGS} from './buildings';
 import {EMPIRE_VARIABLES} from './empire-variables';
 import {RESOURCES} from './resources';
+import {DISTRICTS} from './districts';
 
 export const VARIABLES = {
+  districts: DISTRICTS,
   buildings: BUILDINGS,
   empire: EMPIRE_VARIABLES,
   resources: RESOURCES,
 } as const;
+
+export function getInitialVariables(): Record<Variable, number> {
+  return flatten(VARIABLES);
+}
+
+export function flatten(obj: any, prefix = '', into: any = {}): any {
+  for (const [key, value] of Object.entries(obj)) {
+    if (typeof value === 'object') {
+      flatten(value, prefix + key + '.', into);
+    } else if (typeof value === 'number') {
+      into[prefix + key] = value;
+    }
+  }
+  return into;
+}
 
 export function getInitialValue(variable: Variable): number {
   // deep key access
@@ -21,20 +38,22 @@ export function getInitialValue(variable: Variable): number {
   return value;
 }
 
-export function getEmpireEffectSources(empire: Empire): EffectSource[] {
+export type EmpireEffectSources = Pick<Empire, 'traits' | 'technologies'>;
+
+export function getEmpireEffectSources(empire: EmpireEffectSources): EffectSource[] {
   return [
     ...empire.traits.map(t => TRAITS[t]),
     ...getEffectiveTechnologies(empire.technologies.map(t => TECHNOLOGIES[t])),
   ];
 }
 
-export function calculateVariable(variable: Variable, empire: Empire): number {
+export function calculateVariable(variable: Variable, empire: EmpireEffectSources): number {
   const variables = {[variable]: getInitialValue(variable)};
   calculateVariables(variables, empire);
   return variables[variable];
 }
 
-export function calculateVariables(variables: Partial<Record<Variable, number>>, empire: Empire) {
+export function calculateVariables(variables: Partial<Record<Variable, number>>, empire: EmpireEffectSources) {
   const sources = getEmpireEffectSources(empire);
   applyEffects(variables, sources.flatMap(source => source.effects));
 }
