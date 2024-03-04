@@ -23,6 +23,7 @@ import {Types} from 'mongoose';
 import {ExplainedVariable, Variable} from '../game-logic/types';
 import {explainVariable, getEmpireEffectSources} from '../game-logic/variables';
 import {TECHNOLOGIES} from "../game-logic/technologies";
+import {UserService} from "../user/user.service";
 
 @Controller('games/:game/empires')
 @ApiTags('Game Empires')
@@ -32,6 +33,7 @@ import {TECHNOLOGIES} from "../game-logic/technologies";
 export class EmpireController {
   constructor(
     private readonly empireService: EmpireService,
+    private readonly userService: UserService,
   ) {
   }
 
@@ -78,9 +80,6 @@ export class EmpireController {
         throw new NotFoundException(`Technology ${technologyId} not found.`);
       }
 
-      if (empire.resources.research < technology.cost) {
-        throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
-      }
       // Check if all required technologies are unlocked
       const hasAllRequiredTechnologies = technology.requires?.every(
         (requiredTechnology: string) => empire.technologies.includes(requiredTechnology)
@@ -88,6 +87,12 @@ export class EmpireController {
 
       if (!hasAllRequiredTechnologies) {
         throw new BadRequestException(`Missing required technologies for ${technologyId}.`);
+      }
+
+      const user = await this.userService.findUserById(empire.user);
+
+      if (empire.resources.research < technology.cost) {
+        throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
       }
 
       // Deduct research points and unlock technology
