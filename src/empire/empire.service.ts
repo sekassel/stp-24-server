@@ -10,7 +10,8 @@ import {generateTraits} from '../game-logic/traits';
 import {TECHNOLOGIES} from "../game-logic/technologies";
 import {UserService} from "../user/user.service";
 import {UpdateUserDto} from "../user/user.dto";
-import {ResourceName} from "../game-logic/resources";
+import {ResourceName, RESOURCES} from "../game-logic/resources";
+import {Resource} from "../game-logic/types";
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -90,8 +91,32 @@ export class EmpireService extends MongooseRepository<Empire> {
   }
 
   async resourceTrading(empire: Empire, resources: Record<ResourceName, number>) {
-    if (resources.credits != 0 || resources.population != 0 || resources.research != 0) {
-      throw new BadRequestException('The empire\'s credits, population count and research points can\'t be changed manually.');
+    if (resources.credits !== 0 || resources.population !== 0 || resources.research !== 0) {
+      throw new BadRequestException('Empire credits, population count, and research points cannot be manually changed.');
+    }
+
+    for (const [resource, change] of Object.entries(resources)) {
+      if (['credits', 'population', 'research'].includes(resource)) {
+        continue;
+      }
+
+      if (change < 0) {
+        // Selling the resource
+        if (empire.resources[resource as keyof Empire['resources']] < Math.abs(change)) {
+          throw new BadRequestException(`The empire does not have enough ${resource} to sell.`);
+        }
+      } else if (change > 0) {
+        // Buying the resource
+        const resourceData = RESOURCES[resource as ResourceName] as Resource;
+        if (resourceData.credit_value === undefined) {
+          throw new BadRequestException(`The resource ${resource} cannot be bought.`);
+        }
+        const resourceCost = resourceData.credit_value * change;
+        console.log('resourceCost', resourceCost, 'empireCredits', empire.resources.credits);
+        if (resourceCost > empire.resources.credits) {
+          throw new BadRequestException(`Not enough credits to buy ${change} ${resource}.`);
+        }
+      }
     }
   }
 
