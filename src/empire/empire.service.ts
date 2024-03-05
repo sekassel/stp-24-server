@@ -10,6 +10,7 @@ import {generateTraits} from '../game-logic/traits';
 import {TECHNOLOGIES} from "../game-logic/technologies";
 import {UserService} from "../user/user.service";
 import {UpdateUserDto} from "../user/user.dto";
+import {ResourceName} from "../game-logic/resources";
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -85,6 +86,12 @@ export class EmpireService extends MongooseRepository<Empire> {
           $inc: {[`technologies.${technologyId}`]: 1}
         } as UpdateUserDto);
       }
+    }
+  }
+
+  async resourceTrading(empire: Empire, resources: Record<ResourceName, number>) {
+    if (resources.credits != 0 || resources.population != 0 || resources.research != 0) {
+      throw new BadRequestException('The empire\'s credits, population count and research points can\'t be changed manually.');
     }
   }
 
