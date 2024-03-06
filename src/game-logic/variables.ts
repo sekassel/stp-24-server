@@ -18,6 +18,10 @@ export function getInitialVariables(): Record<Variable, number> {
   return flatten(VARIABLES);
 }
 
+export function getVariables(prefix: keyof typeof VARIABLES): Record<Variable, number> {
+  return flatten(VARIABLES[prefix], prefix + '.');
+}
+
 export function flatten(obj: any, prefix = '', into: any = {}): any {
   for (const [key, value] of Object.entries(obj)) {
     if (typeof value === 'object') {

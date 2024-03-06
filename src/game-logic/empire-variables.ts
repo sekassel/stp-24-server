@@ -1,4 +1,7 @@
 export const EMPIRE_VARIABLES = {
+  market: {
+    fee: 0.3,
+  },
   pop: {
     growth: {
       colonized: 1.10, // pop_growth_colonized tech tree
