@@ -106,12 +106,12 @@ export class EmpireService extends MongooseRepository<Empire> {
 
       if (change < 0) {
         // Sell the resource
-        if (empire.resources[resource as keyof Empire['resources']] < resourceAmount) {
+        if (empire.resources[resource as ResourceName] < resourceAmount) {
           throw new BadRequestException(`The empire does not have enough ${resource} to sell.`);
         }
         // Update empire: get credits, subtract resource
         empire.resources.credits += resourceCost;
-        empire.resources[resource as keyof Empire['resources']] -= resourceAmount;
+        empire.resources[resource as ResourceName] -= resourceAmount;
       } else if (change > 0) {
         // Buy the resource
         if (resourceCost > empire.resources.credits) {
@@ -119,7 +119,7 @@ export class EmpireService extends MongooseRepository<Empire> {
         }
         // Update empire, subtract credits, add resource
         empire.resources.credits -= resourceCost;
-        empire.resources[resource as keyof Empire['resources']] += resourceAmount;
+        empire.resources[resource as ResourceName] += resourceAmount;
       }
     }
   }
