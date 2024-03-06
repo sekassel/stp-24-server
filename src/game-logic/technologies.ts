@@ -461,6 +461,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'empire.system.upgraded.consumption.food',
         multiplier: 0.95,
       },
+      {
+        description: '-5% $alloys$ upkeep for upgraded $system$',
+        variable: 'empire.system.upgraded.consumption.alloys',
+        multiplier: 0.95,
+      },
     ],
   },
   pandora_conqueror_2: { // further reduced upgraded system consumption
@@ -471,18 +476,23 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['pandora_conqueror_3'],
     effects: [
       {
-        description: '-10% $energy$ upkeep for developed $system$',
+        description: '-10% $energy$ upkeep for upgraded $system$',
         variable: 'empire.system.upgraded.consumption.energy',
         multiplier: 0.9,
       },
       {
-        description: '-10% $fuel$ upkeep for developed $system$',
+        description: '-10% $fuel$ upkeep for upgraded $system$',
         variable: 'empire.system.upgraded.consumption.fuel',
         multiplier: 0.95,
       },
       {
-        description: '-10% $food$ upkeep for developed $system$',
+        description: '-10% $food$ upkeep for upgraded $system$',
         variable: 'empire.system.upgraded.consumption.food',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $alloys$ upkeep for upgraded $system$',
+        variable: 'empire.system.upgraded.consumption.alloys',
         multiplier: 0.9,
       },
     ],
@@ -494,18 +504,23 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['pandora_conqueror_2'],
     effects: [
       {
-        description: '-15% $energy$ upkeep for developed $system$',
+        description: '-15% $energy$ upkeep for upgraded $system$',
         variable: 'empire.system.upgraded.consumption.energy',
         multiplier: 0.85,
       },
       {
-        description: '-15% $fuel$ upkeep for developed $system$',
+        description: '-15% $fuel$ upkeep for upgraded $system$',
         variable: 'empire.system.upgraded.consumption.fuel',
         multiplier: 0.85,
       },
       {
-        description: '-15% $food$ upkeep for developed $system$',
+        description: '-15% $food$ upkeep for upgraded $system$',
         variable: 'empire.system.upgraded.consumption.food',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $alloys$ upkeep for upgraded $system$',
+        variable: 'empire.system.upgraded.consumption.alloys',
         multiplier: 0.85,
       },
     ],
@@ -517,18 +532,23 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['pandora_conqueror_3'],
     effects: [
       {
-        description: '-20% $energy$ upkeep for developed $system$',
+        description: '-20% $energy$ upkeep for upgraded $system$',
         variable: 'empire.system.upgraded.consumption.energy',
         multiplier: 0.8,
       },
       {
-        description: '-20% $fuel$ upkeep for developed $system$',
+        description: '-20% $fuel$ upkeep for upgraded $system$',
         variable: 'empire.system.upgraded.consumption.fuel',
         multiplier: 0.8,
       },
       {
-        description: '-20% $food$ upkeep for developed $system$',
+        description: '-20% $food$ upkeep for upgraded $system$',
         variable: 'empire.system.upgraded.consumption.food',
+        multiplier: 0.8,
+      },
+      {
+        description: '-20% $alloys$ upkeep for upgraded $system$',
+        variable: 'empire.system.upgraded.consumption.alloys',
         multiplier: 0.8,
       },
     ],
@@ -556,6 +576,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'empire.system.developed.consumption.food',
         multiplier: 0.95,
       },
+      {
+        description: '-5% $alloys$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.alloys',
+        multiplier: 0.95,
+      },
     ],
   },
   galactus_2: { // further reduced developed system consumption
@@ -578,6 +603,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       {
         description: '-10% $food$ upkeep for developed $system$',
         variable: 'empire.system.developed.consumption.food',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $alloys$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.alloys',
         multiplier: 0.9,
       },
     ],
@@ -604,6 +634,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'empire.system.developed.consumption.food',
         multiplier: 0.85,
       },
+      {
+        description: '-15% $alloys$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.alloys',
+        multiplier: 0.85,
+      },
     ],
   },
   galactus_4: { // further reduced developed system consumption
@@ -627,8 +662,17 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'empire.system.developed.consumption.food',
         multiplier: 0.8,
       },
+      {
+        description: '-20% $alloys$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.alloys',
+        multiplier: 0.8,
+      },
     ],
   },
+
+  /**
+   * Technologies for buildings
+   * */
 
   /** buildings: reduce initial cost */
   cheap_buildings_1: { // reduced basic building costs
