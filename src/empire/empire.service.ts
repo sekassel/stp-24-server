@@ -97,20 +97,21 @@ export class EmpireService extends MongooseRepository<Empire> {
   }
 
   async resourceTrading(empire: Empire, resources: Record<ResourceName, number>) {
+    const resourceVariables = getVariables('resources');
+    calculateVariables(resourceVariables, empire);
+    const marketFee = calculateMarketFee(empire);
     for (const [resource, change] of Object.entries(resources)) {
       const resourceAmount = Math.abs(change);
 
       if (resourceAmount === 0) {
         continue;
       }
-      const resourceVariables = getVariables('resources');
-      calculateVariables(resourceVariables, empire);
       const creditValue  = resourceVariables[`resources.${resource}.credit_value` as Variable];
 
       if (creditValue === 0) {
         throw new BadRequestException(`The resource ${resource} cannot be bought or sold.`);
       }
-      const totalMarketFee = creditValue * calculateMarketFee(empire);
+      const totalMarketFee = creditValue * marketFee;
       const creditValueWithFee = creditValue + (change < 0 ? -totalMarketFee : totalMarketFee);
       const resourceCost = creditValueWithFee * resourceAmount;
 
