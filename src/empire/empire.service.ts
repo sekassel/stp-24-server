@@ -10,8 +10,9 @@ import {generateTraits} from '../game-logic/traits';
 import {TECHNOLOGIES} from "../game-logic/technologies";
 import {UserService} from "../user/user.service";
 import {UpdateUserDto} from "../user/user.dto";
-import {ResourceName, RESOURCES} from "../game-logic/resources";
-import {Resource} from "../game-logic/types";
+import {ResourceName} from "../game-logic/resources";
+import {Variable} from "../game-logic/types";
+import {calculateVariable, calculateVariables, getVariables} from "../game-logic/variables";
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -97,12 +98,14 @@ export class EmpireService extends MongooseRepository<Empire> {
       if (resourceAmount === 0) {
         continue;
       }
-      const resourceData = RESOURCES[resource as ResourceName] as Resource;
+      const resourceVariables = getVariables('resources');
+      calculateVariables(resourceVariables, empire);
+      const creditValue  = resourceVariables[`resources.${resource}.credit_value` as Variable];
 
-      if (resourceData.credit_value === undefined) {
+      if (creditValue === 0) {
         throw new BadRequestException(`The resource ${resource} cannot be bought or sold.`);
       }
-      const resourceCost = resourceData.credit_value * resourceAmount;
+      const resourceCost = creditValue * resourceAmount;
 
       if (change < 0) {
         // Sell the resource
