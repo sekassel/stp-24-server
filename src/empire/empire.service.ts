@@ -12,7 +12,7 @@ import {UserService} from "../user/user.service";
 import {UpdateUserDto} from "../user/user.dto";
 import {ResourceName} from "../game-logic/resources";
 import {Variable} from "../game-logic/types";
-import {calculateVariable, calculateVariables, getVariables} from "../game-logic/variables";
+import {calculateVariables, getVariables} from "../game-logic/variables";
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
