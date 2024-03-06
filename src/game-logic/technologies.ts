@@ -25,7 +25,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['society', 'state'],
     cost: 400,
     requires: ['cheap_claims_1'],
-    // TODO precedes: ['cheap_claims_3'], ???
     effects: [
       {
         description: '-15% $minerals$ cost for $system$ upgrades',
@@ -180,6 +179,62 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         description: '+15% $pop$ growth on developed $system$',
         variable: 'empire.pop.growth.developed',
         multiplier: 1.15,
+      },
+    ],
+  },
+
+  /** nutrition / pop food consumption */
+  nutrition_1: { // reduced pop food consumption
+    id: 'nutrition_1',
+    tags: ['society', 'biology'],
+    cost: 200,
+    precedes: ['nutrition_2'],
+    effects: [
+      {
+        description: '-5% $food$ consumption per $pop$',
+        variable: 'empire.pop.consumption.food',
+        multiplier: 0.95,
+      },
+    ],
+  },
+  nutrition_2: { // further reduced pop food consumption
+    id: 'nutrition_2',
+    tags: ['society', 'biology'],
+    cost: 400,
+    requires: ['nutrition_1'],
+    precedes: ['nutrition_3'],
+    effects: [
+      {
+        description: '-10% $food$ consumption per $pop$',
+        variable: 'empire.pop.consumption.food',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  nutrition_3: { // further reduced pop food consumption
+    id: 'nutrition_3',
+    tags: ['society', 'biology'],
+    cost: 800,
+    requires: ['nutrition_2'],
+    precedes: ['nutrition_4'],
+    effects: [
+      {
+        description: '-15% $food$ consumption per $pop$',
+        variable: 'empire.pop.consumption.food',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  nutrition_4: { // further reduced pop food consumption
+    id: 'nutrition_4',
+    tags: ['society', 'biology'],
+    cost: 1600,
+    requires: ['nutrition_3'],
+    effects: [
+      {
+        description: '-20% $food$ consumption per $pop$',
+        variable: 'empire.pop.consumption.food',
+        multiplier: 0.8,
       },
     ],
   },
