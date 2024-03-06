@@ -10,6 +10,61 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * Market technologies
    */
 
+  /** market fee reduction */
+  novice_trader: { // reduced market fee
+    id: 'novice_trader',
+    tags: ['economy'],
+    cost: 200,
+    precedes: ['advanced_trader'],
+    effects: [
+      {
+        description: '-5% market fee',
+        variable: 'empire.market.fee',
+        multiplier: 0.95,
+      },
+    ],
+  },
+  advanced_trader: { // further reduced market fee
+    id: 'advanced_trader',
+    tags: ['economy'],
+    cost: 400,
+    requires: ['novice_trader'],
+    precedes: ['always_gamble'],
+    effects: [
+      {
+        description: '-10% market fee',
+        variable: 'empire.market.fee',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  always_gamble: { // further reduced market fee
+    id: 'always_gamble',
+    tags: ['economy'],
+    cost: 800,
+    requires: ['advanced_trader'],
+    precedes: ['iron_bank_of_braavos'],
+    effects: [
+      {
+        description: '-15% market fee',
+        variable: 'empire.market.fee',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  iron_bank_of_braavos: { // further reduced market fee
+    id: 'iron_bank_of_braavos',
+    tags: ['economy'],
+    cost: 1600,
+    requires: ['always_gamble'],
+    effects: [
+      {
+        description: '-20% market fee',
+        variable: 'empire.market.fee',
+        multiplier: 0.8,
+      },
+    ],
+  },
 
   /**
    * Pop technologies
