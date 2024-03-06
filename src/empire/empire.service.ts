@@ -12,7 +12,7 @@ import {UserService} from "../user/user.service";
 import {UpdateUserDto} from "../user/user.dto";
 import {ResourceName} from "../game-logic/resources";
 import {Variable} from "../game-logic/types";
-import {calculateVariables, getVariables} from "../game-logic/variables";
+import {calculateVariable, calculateVariables, getVariables} from "../game-logic/variables";
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -24,6 +24,11 @@ function findMissingTechnologies(technologyId: string): string[] {
     }
   }
   return missingTechs;
+}
+
+function calculateMarketFee(empire: Empire): number {
+  const marketFeeVariable: Variable = 'empire.market.fee';
+  return calculateVariable(marketFeeVariable, empire);
 }
 
 @Injectable()
@@ -105,7 +110,9 @@ export class EmpireService extends MongooseRepository<Empire> {
       if (creditValue === 0) {
         throw new BadRequestException(`The resource ${resource} cannot be bought or sold.`);
       }
-      const resourceCost = creditValue * resourceAmount;
+      const totalMarketFee = creditValue * calculateMarketFee(empire);
+      const creditValueWithFee = creditValue + (change < 0 ? -totalMarketFee : totalMarketFee);
+      const resourceCost = creditValueWithFee * resourceAmount;
 
       if (change < 0) {
         // Sell the resource
