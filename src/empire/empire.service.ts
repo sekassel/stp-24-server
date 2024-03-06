@@ -100,22 +100,28 @@ export class EmpireService extends MongooseRepository<Empire> {
         continue;
       }
 
+      const resourceData = RESOURCES[resource as ResourceName] as Resource;
+      if (resourceData.credit_value === undefined) {
+        throw new BadRequestException(`The resource ${resource} cannot be bought.`);
+      }
+      const resourceCost = resourceData.credit_value * change;
+
       if (change < 0) {
-        // Selling the resource
+        // Sell the resource
         if (empire.resources[resource as keyof Empire['resources']] < Math.abs(change)) {
           throw new BadRequestException(`The empire does not have enough ${resource} to sell.`);
         }
+        // Update empire: get credits, subtract resource
+        empire.resources.credits += resourceCost;
+        empire.resources[resource as keyof Empire['resources']] -= change;
       } else if (change > 0) {
-        // Buying the resource
-        const resourceData = RESOURCES[resource as ResourceName] as Resource;
-        if (resourceData.credit_value === undefined) {
-          throw new BadRequestException(`The resource ${resource} cannot be bought.`);
-        }
-        const resourceCost = resourceData.credit_value * change;
-        console.log('resourceCost', resourceCost, 'empireCredits', empire.resources.credits);
+        // Buy the resource
         if (resourceCost > empire.resources.credits) {
           throw new BadRequestException(`Not enough credits to buy ${change} ${resource}.`);
         }
+        // Update empire, subtract credits, add resource
+        empire.resources.credits -= resourceCost;
+        empire.resources[resource as keyof Empire['resources']] += change;
       }
     }
   }
