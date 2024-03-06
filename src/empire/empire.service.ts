@@ -91,20 +91,17 @@ export class EmpireService extends MongooseRepository<Empire> {
   }
 
   async resourceTrading(empire: Empire, resources: Record<ResourceName, number>) {
-    if (resources.credits !== 0 || resources.population !== 0 || resources.research !== 0) {
-      throw new BadRequestException('Empire credits, population count, and research points cannot be manually changed.');
-    }
-
     for (const [resource, change] of Object.entries(resources)) {
-      if (['credits', 'population', 'research'].includes(resource)) {
+      const resourceAmount = Math.abs(change);
+
+      if (resourceAmount === 0) {
         continue;
       }
-
       const resourceData = RESOURCES[resource as ResourceName] as Resource;
+
       if (resourceData.credit_value === undefined) {
-        throw new BadRequestException(`The resource ${resource} cannot be bought.`);
+        throw new BadRequestException(`The resource ${resource} cannot be bought or sold.`);
       }
-      const resourceAmount = Math.abs(change);
       const resourceCost = resourceData.credit_value * resourceAmount;
 
       if (change < 0) {
