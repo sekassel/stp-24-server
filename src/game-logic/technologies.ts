@@ -295,6 +295,269 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  /** efficient colonizer: consumption reduction for colonized systems */
+  efficient_colonizer_1: { // reduced system consumption upkeep
+    id: 'efficient_colonizer_1',
+    tags: ['biology', 'energy', 'propulsion'],
+    cost: 200,
+    precedes: ['efficient_colonizer_2'],
+    effects: [
+      {
+        description: '-10% $energy$ upkeep for colonized $system$',
+        variable: 'empire.system.colonized.consumption.energy',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $fuel$ upkeep for colonized $system$',
+        variable: 'empire.system.colonized.consumption.fuel',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $food$ upkeep for colonized $system$',
+        variable: 'empire.system.colonized.consumption.food',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_colonizer_2: { // further reduced system consumption upkeep
+    id: 'efficient_colonizer_2',
+    tags: ['biology', 'energy', 'propulsion'],
+    cost: 400,
+    requires: ['efficient_colonizer_1'],
+    precedes: ['efficient_colonizer_3'],
+    effects: [
+      {
+        description: '-15% $energy$ upkeep for colonized $system$',
+        variable: 'empire.system.colonized.consumption.energy',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $fuel$ upkeep for colonized $system$',
+        variable: 'empire.system.colonized.consumption.fuel',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $food$ upkeep for colonized $system$',
+        variable: 'empire.system.colonized.consumption.food',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  efficient_colonizer_3: { // further reduced system consumption upkeep
+    id: 'efficient_colonizer_3',
+    tags: ['biology', 'energy', 'propulsion'],
+    cost: 800,
+    requires: ['efficient_colonizer_2'],
+    effects: [
+      {
+        description: '-20% $energy$ upkeep for colonized $system$',
+        variable: 'empire.system.colonized.consumption.energy',
+        multiplier: 0.8,
+      },
+      {
+        description: '-20% $fuel$ upkeep for colonized $system$',
+        variable: 'empire.system.colonized.consumption.fuel',
+        multiplier: 0.8,
+      },
+      {
+        description: '-20% $food$ upkeep for colonized $system$',
+        variable: 'empire.system.colonized.consumption.food',
+        multiplier: 0.8,
+      },
+    ],
+  },
+
+  /** pandora_conqueror: consumption reduction for upgraded systems */
+  pandora_conqueror_1: { // reduced upgraded system consumption
+    id: 'pandora_conqueror_1',
+    tags: ['biology', 'energy', 'propulsion'],
+    cost: 200,
+    precedes: ['pandora_conqueror_2'],
+    effects: [
+      {
+        description: '-5% $energy$ upkeep for upgraded $system$',
+        variable: 'empire.system.upgraded.consumption.energy',
+        multiplier: 0.95,
+      },
+      {
+        description: '-5% $fuel$ upkeep for upgraded $system$',
+        variable: 'empire.system.upgraded.consumption.fuel',
+        multiplier: 0.95,
+      },
+      {
+        description: '-5% $food$ upkeep for upgraded $system$',
+        variable: 'empire.system.upgraded.consumption.food',
+        multiplier: 0.95,
+      },
+    ],
+  },
+  pandora_conqueror_2: { // further reduced upgraded system consumption
+    id: 'pandora_conqueror_2',
+    tags: ['biology', 'energy', 'propulsion'],
+    cost: 400,
+    requires: ['pandora_conqueror_1'],
+    precedes: ['pandora_conqueror_3'],
+    effects: [
+      {
+        description: '-10% $energy$ upkeep for developed $system$',
+        variable: 'empire.system.upgraded.consumption.energy',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $fuel$ upkeep for developed $system$',
+        variable: 'empire.system.upgraded.consumption.fuel',
+        multiplier: 0.95,
+      },
+      {
+        description: '-10% $food$ upkeep for developed $system$',
+        variable: 'empire.system.upgraded.consumption.food',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  pandora_conqueror_3: { // further reduced upgraded system consumption
+    id: 'pandora_conqueror_3',
+    tags: ['biology', 'energy', 'propulsion'],
+    cost: 800,
+    requires: ['pandora_conqueror_2'],
+    effects: [
+      {
+        description: '-15% $energy$ upkeep for developed $system$',
+        variable: 'empire.system.upgraded.consumption.energy',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $fuel$ upkeep for developed $system$',
+        variable: 'empire.system.upgraded.consumption.fuel',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $food$ upkeep for developed $system$',
+        variable: 'empire.system.upgraded.consumption.food',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  pandora_conqueror_4: { // further upgraded system consumption
+    id: 'pandora_conqueror_4',
+    tags: ['biology', 'energy', 'propulsion'],
+    cost: 1600,
+    requires: ['pandora_conqueror_3'],
+    effects: [
+      {
+        description: '-20% $energy$ upkeep for developed $system$',
+        variable: 'empire.system.upgraded.consumption.energy',
+        multiplier: 0.8,
+      },
+      {
+        description: '-20% $fuel$ upkeep for developed $system$',
+        variable: 'empire.system.upgraded.consumption.fuel',
+        multiplier: 0.8,
+      },
+      {
+        description: '-20% $food$ upkeep for developed $system$',
+        variable: 'empire.system.upgraded.consumption.food',
+        multiplier: 0.8,
+      },
+    ],
+  },
+
+  /** galactus: developed system consumption reduction */
+  galactus_1: { // reduced developed system consumption
+    id: 'galactus_1',
+    tags: ['biology', 'energy', 'propulsion'],
+    cost: 200,
+    precedes: ['galactus_2'],
+    effects: [
+      {
+        description: '-5% $energy$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.energy',
+        multiplier: 0.95,
+      },
+      {
+        description: '-5% $fuel$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.fuel',
+        multiplier: 0.95,
+      },
+      {
+        description: '-5% $food$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.food',
+        multiplier: 0.95,
+      },
+    ],
+  },
+  galactus_2: { // further reduced developed system consumption
+    id: 'galactus_2',
+    tags: ['biology', 'energy', 'propulsion'],
+    cost: 400,
+    requires: ['galactus_1'],
+    precedes: ['galactus_3'],
+    effects: [
+      {
+        description: '-10% $energy$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.energy',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $fuel$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.fuel',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $food$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.food',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  galactus_3: { // further reduced developed system consumption
+    id: 'galactus_3',
+    tags: ['biology', 'energy', 'propulsion'],
+    cost: 800,
+    requires: ['galactus_2'],
+    precedes: ['galactus_4'],
+    effects: [
+      {
+        description: '-15% $energy$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.energy',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $fuel$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.fuel',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $food$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.food',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  galactus_4: { // further reduced developed system consumption
+    id: 'galactus_4',
+    tags: ['biology', 'energy', 'propulsion'],
+    cost: 1600,
+    requires: ['galactus_3'],
+    effects: [
+      {
+        description: '-20% $energy$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.energy',
+        multiplier: 0.8,
+      },
+      {
+        description: '-20% $fuel$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.fuel',
+        multiplier: 0.8,
+      },
+      {
+        description: '-20% $food$ upkeep for developed $system$',
+        variable: 'empire.system.developed.consumption.food',
+        multiplier: 0.8,
+      },
+    ],
+  },
+
   /** buildings: reduce initial cost */
   cheap_buildings_1: { // reduced basic building costs
     id: 'cheap_buildings_1',

@@ -21,7 +21,7 @@ export const EMPIRE_VARIABLES = {
         minerals: 100, // cheap_claims tech tree
         energy: 100, // cheap_claims tech tree
       },
-      consumption: {
+      consumption: { // efficient_colonizer tech tree
         energy: 1,
         fuel: 1,
         food: 1,
@@ -32,7 +32,7 @@ export const EMPIRE_VARIABLES = {
         minerals: 100, // cheap_claims tech tree
         alloys: 100, // cheap_claims tech tree
       },
-      consumption: {
+      consumption: { // pandora_conqueror tech tree
         energy: 2,
         fuel: 2,
         food: 2,
@@ -44,7 +44,7 @@ export const EMPIRE_VARIABLES = {
         alloys: 200, // TODO cheap_claims tech tree
         fuel: 100, // TODO cheap_claims tech tree
       },
-      consumption: {
+      consumption: { // galactus tech tree
         energy: 4,
         fuel: 4,
         food: 4,
