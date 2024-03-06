@@ -2,60 +2,18 @@ import type {Technology, TechnologyTag, Variable} from './types';
 
 export const TECHNOLOGIES: Record<string, Technology> = {
 
-  /** system claims: colonizing, upgrading and developing systems */
-  cheap_claims_1: { // reduced system claim costs
-    id: 'cheap_claims_1',
-    tags: ['society', 'state'],
-    cost: 200,
-    effects: [
-      {
-        description: '-25% $energy$ cost for $system$ claims',
-        variable: 'empire.system.colonized.cost.energy',
-        multiplier: 0.75,
-      },
-      {
-        description: '-25% $minerals$ cost for $system$ claims',
-        variable: 'empire.system.colonized.cost.minerals',
-        multiplier: 0.75,
-      },
-    ],
-  },
-  cheap_claims_2: { // reduced system upgrade costs
-    id: 'cheap_claims_2',
-    tags: ['society', 'state'],
-    cost: 400,
-    requires: ['cheap_claims_1'],
-    effects: [
-      {
-        description: '-15% $minerals$ cost for $system$ upgrades',
-        variable: 'empire.system.upgraded.cost.minerals',
-        multiplier: 0.85,
-      },
-      {
-        description: '-15% $alloys$ cost for $system$ upgrades',
-        variable: 'empire.system.upgraded.cost.alloys',
-        multiplier: 0.85,
-      },
-    ],
-  },
-  cheap_claims_3: { // reduced system development costs
-    id: 'cheap_claims_3',
-    tags: ['society', 'state'],
-    cost: 800,
-    requires: ['cheap_claims_2'],
-    effects: [
-      {
-        description: '-15% $alloys$ cost for $system$ development',
-        variable: 'empire.system.developed.cost.alloys',
-        multiplier: 0.85,
-      },
-      {
-        description: '-15% $fuel$ cost for $system$ development',
-        variable: 'empire.system.developed.cost.fuel',
-        multiplier: 0.85,
-      },
-    ],
-  },
+  /**
+   * Technologies for empire variables (market, pop, system)
+   * */
+
+  /**
+   * Market technologies
+   */
+
+
+  /**
+   * Pop technologies
+   */
 
   /** pop growth colonized */
   pop_growth_colonized_1: { // increased pop growth on colonized systems
@@ -183,7 +141,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** nutrition / pop food consumption */
+  /** pop food consumption / nutrition */
   nutrition_1: { // reduced pop food consumption
     id: 'nutrition_1',
     tags: ['society', 'biology'],
@@ -239,7 +197,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** social benefits / unemployed pop cost */
+  /** pop: unemployed cost / social benefits */
   social_benefits_1: { // reduced unemployed pop cost
     id: 'social_benefits_1',
     tags: ['society', 'state'],
@@ -291,6 +249,65 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         description: '-20% $credits$ per unemployed $pop$',
         variable: 'empire.pop.consumption.credits.unemployed',
         multiplier: 0.8,
+      },
+    ],
+  },
+
+  /**
+   * System technologies
+   */
+
+  /** system claims: colonizing, upgrading and developing systems */
+  cheap_claims_1: { // reduced system claim costs
+    id: 'cheap_claims_1',
+    tags: ['society', 'state'],
+    cost: 200,
+    effects: [
+      {
+        description: '-25% $energy$ cost for $system$ claims',
+        variable: 'empire.system.colonized.cost.energy',
+        multiplier: 0.75,
+      },
+      {
+        description: '-25% $minerals$ cost for $system$ claims',
+        variable: 'empire.system.colonized.cost.minerals',
+        multiplier: 0.75,
+      },
+    ],
+  },
+  cheap_claims_2: { // reduced system upgrade costs
+    id: 'cheap_claims_2',
+    tags: ['society', 'state'],
+    cost: 400,
+    requires: ['cheap_claims_1'],
+    effects: [
+      {
+        description: '-15% $minerals$ cost for $system$ upgrades',
+        variable: 'empire.system.upgraded.cost.minerals',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $alloys$ cost for $system$ upgrades',
+        variable: 'empire.system.upgraded.cost.alloys',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  cheap_claims_3: { // reduced system development costs
+    id: 'cheap_claims_3',
+    tags: ['society', 'state'],
+    cost: 800,
+    requires: ['cheap_claims_2'],
+    effects: [
+      {
+        description: '-15% $alloys$ cost for $system$ development',
+        variable: 'empire.system.developed.cost.alloys',
+        multiplier: 0.85,
+      },
+      {
+        description: '-15% $fuel$ cost for $system$ development',
+        variable: 'empire.system.developed.cost.fuel',
+        multiplier: 0.85,
       },
     ],
   },

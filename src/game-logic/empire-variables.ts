@@ -41,8 +41,8 @@ export const EMPIRE_VARIABLES = {
     },
     developed: {
       cost: {
-        alloys: 200, // TODO cheap_claims tech tree
-        fuel: 100, // TODO cheap_claims tech tree
+        alloys: 200, // cheap_claims tech tree
+        fuel: 100, // cheap_claims tech tree
       },
       consumption: { // galactus tech tree
         energy: 4,
