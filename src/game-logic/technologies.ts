@@ -5,8 +5,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** system claims: colonizing, upgrading and developing systems */
   cheap_claims_1: { // reduced system claim costs
     id: 'cheap_claims_1',
-    cost: 200,
     tags: ['society', 'state'],
+    cost: 200,
     effects: [
       {
         description: '-25% $energy$ cost for $system$ claims',
@@ -25,6 +25,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['society', 'state'],
     cost: 400,
     requires: ['cheap_claims_1'],
+    // TODO precedes: ['cheap_claims_3'], ???
     effects: [
       {
         description: '-15% $minerals$ cost for $system$ upgrades',
@@ -57,14 +58,138 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** empire.pop: growth */
-  
+  /** pop growth colonized */
+  pop_growth_colonized_1: { // increased pop growth on colonized systems
+    id: 'pop_growth_colonized_1',
+    tags: ['society', 'state'],
+    cost: 200,
+    precedes: ['pop_growth_colonized_2'],
+    effects: [
+      {
+        description: '+5% $pop$ growth on colonized $system$',
+        variable: 'empire.pop.growth.colonized',
+        multiplier: 1.05,
+      },
+    ],
+  },
+  pop_growth_colonized_2: { // further increased pop growth on colonized systems
+    id: 'pop_growth_colonized_2',
+    tags: ['society', 'state'],
+    cost: 400,
+    requires: ['pop_growth_colonized_1'],
+    precedes: ['pop_growth_colonized_3'],
+    effects: [
+      {
+        description: '+10% $pop$ growth on colonized $system$',
+        variable: 'empire.pop.growth.colonized',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  pop_growth_colonized_3: { // further increased pop growth on colonized systems
+    id: 'pop_growth_colonized_3',
+    tags: ['society', 'state'],
+    cost: 800,
+    requires: ['pop_growth_colonized_2'],
+    effects: [
+      {
+        description: '+15% $pop$ growth on colonized $system$',
+        variable: 'empire.pop.growth.colonized',
+        multiplier: 1.15,
+      },
+    ],
+  },
+
+  /** pop growth upgraded */
+  pop_growth_upgraded_1: { // increased pop growth on upgraded systems
+    id: 'pop_growth_upgraded_1',
+    tags: ['society', 'state'],
+    cost: 200,
+    precedes: ['pop_growth_upgraded_2'],
+    effects: [
+      {
+        description: '+5% $pop$ growth on upgraded $system$',
+        variable: 'empire.pop.growth.upgraded',
+        multiplier: 1.05,
+      },
+    ],
+  },
+  pop_growth_upgraded_2: { // further increased pop growth on upgraded systems
+    id: 'pop_growth_upgraded_2',
+    tags: ['society', 'state'],
+    cost: 400,
+    requires: ['pop_growth_upgraded_1'],
+    precedes: ['pop_growth_upgraded_3'],
+    effects: [
+      {
+        description: '+10% $pop$ growth on upgraded $system$',
+        variable: 'empire.pop.growth.upgraded',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  pop_growth_upgraded_3: { // further increased pop growth on upgraded systems
+    id: 'pop_growth_upgraded_3',
+    tags: ['society', 'state'],
+    cost: 800,
+    requires: ['pop_growth_upgraded_2'],
+    effects: [
+      {
+        description: '+15% $pop$ growth on upgraded $system$',
+        variable: 'empire.pop.growth.upgraded',
+        multiplier: 1.15,
+      },
+    ],
+  },
+
+  /** pop growth developed */
+  pop_growth_developed_1: { // increased pop growth on developed systems
+    id: 'pop_growth_developed_1',
+    tags: ['society', 'state'],
+    cost: 200,
+    precedes: ['pop_growth_developed_2'],
+    effects: [
+      {
+        description: '+5% $pop$ growth on developed $system$',
+        variable: 'empire.pop.growth.developed',
+        multiplier: 1.05,
+      },
+    ],
+  },
+  pop_growth_developed_2: { // further increased pop growth on developed systems
+    id: 'pop_growth_developed_2',
+    tags: ['society', 'state'],
+    cost: 400,
+    requires: ['pop_growth_developed_1'],
+    precedes: ['pop_growth_developed_3'],
+    effects: [
+      {
+        description: '+10% $pop$ growth on developed $system$',
+        variable: 'empire.pop.growth.developed',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  pop_growth_developed_3: { // further increased pop growth on developed systems
+    id: 'pop_growth_developed_3',
+    tags: ['society', 'state'],
+    cost: 800,
+    requires: ['pop_growth_developed_2'],
+    effects: [
+      {
+        description: '+15% $pop$ growth on developed $system$',
+        variable: 'empire.pop.growth.developed',
+        multiplier: 1.15,
+      },
+    ],
+  },
 
   /** buildings: reduce initial cost */
   cheap_buildings_1: { // reduced basic building costs
     id: 'cheap_buildings_1',
     tags: ['engineering', 'construction'],
     cost: 200,
+    precedes: ['cheap_buildings_2'],
     effects: [
       {
         description: '-15% $minerals$ cost for $power_plant$',
@@ -117,6 +242,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_buildings_1',
     tags: ['engineering', 'energy'],
     cost: 200,
+    precedes: ['efficient_buildings_2'],
     effects: [
       {
         description: '-15% $energy$ upkeep for $mine$',

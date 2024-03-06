@@ -6,7 +6,7 @@ export const EMPIRE_VARIABLES = {
     growth: {
       colonized: 1.10, // pop_growth_colonized tech tree
       upgraded: 1.05, // pop_growth_upgraded tech tree
-      developed: 1.01,
+      developed: 1.01, // pop_growth_developed tech tree
     },
     consumption: {
       food: 0.1, // nutrition tech tree
