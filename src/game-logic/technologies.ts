@@ -1,6 +1,8 @@
 import type {Technology, TechnologyTag, Variable} from './types';
 
 export const TECHNOLOGIES: Record<string, Technology> = {
+
+  /** system claims: colonizing, upgrading and developing systems */
   cheap_claims_1: { // reduced system claim costs
     id: 'cheap_claims_1',
     cost: 200,
@@ -54,6 +56,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
+
+  /** empire.pop: growth */
+  
+
+  /** buildings: reduce initial cost */
   cheap_buildings_1: { // reduced basic building costs
     id: 'cheap_buildings_1',
     tags: ['engineering', 'construction'],
@@ -104,6 +111,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
+
+  /** buildings: reduce energy upkeep */
   efficient_buildings_1: { // reduced basic building energy upkeep
     id: 'efficient_buildings_1',
     tags: ['engineering', 'energy'],
@@ -144,6 +153,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
+
+  /** buildings: increase production */
   improved_production_1: { // generally increased basic building production
     id: 'improved_production_1',
     tags: ['engineering', 'production'],
@@ -238,6 +249,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
+
+  /** buildings: reduce mineral upkeep */
   efficient_resources_1: { // reduced basic building upkeep
     id: 'efficient_resources_1',
     tags: ['engineering', 'production'],
