@@ -26,11 +26,6 @@ function findMissingTechnologies(technologyId: string): string[] {
   return missingTechs;
 }
 
-function calculateMarketFee(empire: Empire): number {
-  const marketFeeVariable: Variable = 'empire.market.fee';
-  return calculateVariable(marketFeeVariable, empire);
-}
-
 @Injectable()
 @EventRepository()
 export class EmpireService extends MongooseRepository<Empire> {
@@ -99,7 +94,7 @@ export class EmpireService extends MongooseRepository<Empire> {
   async resourceTrading(empire: Empire, resources: Record<ResourceName, number>) {
     const resourceVariables = getVariables('resources');
     calculateVariables(resourceVariables, empire);
-    const marketFee = calculateMarketFee(empire);
+    const marketFee = calculateVariable('empire.market.fee', empire);
     for (const [resource, change] of Object.entries(resources)) {
       const resourceAmount = Math.abs(change);
 
