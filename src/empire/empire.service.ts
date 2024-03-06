@@ -10,6 +10,9 @@ import {generateTraits} from '../game-logic/traits';
 import {TECHNOLOGIES} from "../game-logic/technologies";
 import {UserService} from "../user/user.service";
 import {UpdateUserDto} from "../user/user.dto";
+import {ResourceName} from "../game-logic/resources";
+import {Variable} from "../game-logic/types";
+import {calculateVariable, calculateVariables, getVariables} from "../game-logic/variables";
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -84,6 +87,45 @@ export class EmpireService extends MongooseRepository<Empire> {
         await this.userService.update(user._id, {
           $inc: {[`technologies.${technologyId}`]: 1}
         } as UpdateUserDto);
+      }
+    }
+  }
+
+  async resourceTrading(empire: Empire, resources: Record<ResourceName, number>) {
+    const resourceVariables = getVariables('resources');
+    calculateVariables(resourceVariables, empire);
+    const marketFee = calculateVariable('empire.market.fee', empire);
+    for (const [resource, change] of Object.entries(resources)) {
+      const resourceAmount = Math.abs(change);
+
+      if (resourceAmount === 0) {
+        continue;
+      }
+      const creditValue  = resourceVariables[`resources.${resource}.credit_value` as Variable];
+
+      if (creditValue === 0) {
+        throw new BadRequestException(`The resource ${resource} cannot be bought or sold.`);
+      }
+      const totalMarketFee = creditValue * marketFee;
+      const creditValueWithFee = creditValue + (change < 0 ? -totalMarketFee : totalMarketFee);
+      const resourceCost = creditValueWithFee * resourceAmount;
+
+      if (change < 0) {
+        // Sell the resource
+        if (empire.resources[resource as ResourceName] < resourceAmount) {
+          throw new BadRequestException(`The empire does not have enough ${resource} to sell.`);
+        }
+        // Update empire: get credits, subtract resource
+        empire.resources.credits += resourceCost;
+        empire.resources[resource as ResourceName] -= resourceAmount;
+      } else if (change > 0) {
+        // Buy the resource
+        if (resourceCost > empire.resources.credits) {
+          throw new BadRequestException(`Not enough credits to buy ${change} ${resource}.`);
+        }
+        // Update empire, subtract credits, add resource
+        empire.resources.credits -= resourceCost;
+        empire.resources[resource as ResourceName] += resourceAmount;
       }
     }
   }

@@ -13,7 +13,6 @@ import {
   IsObject,
   IsString,
   Max,
-  MaxLength,
   Min,
 } from 'class-validator';
 import {MAX_EMPIRES, MAX_TRAITS} from '../game-logic/constants';
