@@ -68,14 +68,7 @@ export class EmpireController {
     if (!currentUser._id.equals(empire.user)) {
       throw new ForbiddenException('Cannot modify another user\'s empire.');
     }
-    await this.empireService.unlockTechnology(empire, dto.technologies);
-    await this.empireService.resourceTrading(empire, dto.resources);
-    const updateDto = {
-      ...dto,
-      resources: empire.resources,
-      technologies: empire.technologies,
-    };
-    return this.empireService.update(id, updateDto);
+    return this.empireService.updateEmpire(empire, dto);
   }
 
   @Get(':empire/variables')

@@ -3,7 +3,7 @@ import {InjectModel} from '@nestjs/mongoose';
 import {Document, Model} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository, notFound} from '@mean-stream/nestx';
 import {Empire, EmpireDocument} from './empire.schema';
-import {EmpireTemplate, ReadEmpireDto} from './empire.dto';
+import {EmpireTemplate, ReadEmpireDto, UpdateEmpireDto} from './empire.dto';
 import {MemberService} from '../member/member.service';
 import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MAX_EMPIRES} from '../game-logic/constants';
 import {generateTraits} from '../game-logic/traits';
@@ -56,7 +56,19 @@ export class EmpireService extends MongooseRepository<Empire> {
     return rest;
   }
 
-  async unlockTechnology(empire: Empire, technologies: string[]) {
+  async updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto): Promise<EmpireDocument> {
+    if (dto.technologies) {
+      await this.unlockTechnology(empire, dto.technologies);
+    }
+    if (dto.resources) {
+      this.resourceTrading(empire, dto.resources);
+    }
+    await this.saveAll([empire]); // emits update event
+    return empire;
+  }
+
+  private async unlockTechnology(empire: Empire, technologies: string[]) {
+    const user = await this.userService.find(empire.user) ?? notFound(empire.user);
     for (const technologyId of technologies) {
       const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
 
@@ -71,7 +83,6 @@ export class EmpireService extends MongooseRepository<Empire> {
       }
 
       // Calculate the technology cost based on the formula
-      const user = await this.userService.find(empire.user) ?? notFound(empire.user);
       const technologyCount = user.technologies?.[technologyId] || 0;
       const technologyCost = technology.cost * 0.95 ** Math.min(technologyCount, 10);
 
@@ -84,14 +95,14 @@ export class EmpireService extends MongooseRepository<Empire> {
       if (!empire.technologies.includes(technologyId)) {
         empire.technologies.push(technologyId);
         // Increment the user's technology count by 1
-        await this.userService.update(user._id, {
-          $inc: {[`technologies.${technologyId}`]: 1}
-        } as UpdateUserDto);
+        user.$inc(`technologies.${technologyId}`, 1);
       }
     }
+
+    await this.userService.saveAll([user]);
   }
 
-  async resourceTrading(empire: Empire, resources: Record<ResourceName, number>) {
+  private resourceTrading(empire: Empire, resources: Record<ResourceName, number>) {
     const resourceVariables = getVariables('resources');
     calculateVariables(resourceVariables, empire);
     const marketFee = calculateVariable('empire.market.fee', empire);
