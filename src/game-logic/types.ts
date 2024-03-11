@@ -1,5 +1,5 @@
 import type {ResourceName} from './resources';
-import {ApiProperty} from '@nestjs/swagger';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {VARIABLES} from './variables';
 import {SystemType} from './system-types';
 
@@ -117,10 +117,10 @@ export class Trait extends EffectSource {
   conflicts?: readonly string[];
 }
 
-export interface Resource {
-  /** how many of this resource an empire starts with */
+export class Resource {
+  @ApiPropertyOptional({description: 'how many of this resource an empire starts with'})
   starting?: number;
-  /** how many credits for one unit of this resource */
+  @ApiPropertyOptional({description: 'how many credits for one unit of this resource'})
   credit_value?: number;
 }
 
