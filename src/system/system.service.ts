@@ -2,8 +2,9 @@ import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
-import {System} from './system.schema';
+import {System, SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
+import {UpdateSystemDto} from './system.dto';
 
 @Injectable()
 @EventRepository()
@@ -13,6 +14,28 @@ export class SystemService extends MongooseRepository<System> {
     private eventEmitter: EventService,
   ) {
     super(model);
+  }
+
+  async updateSystem(oldSystem: SystemDocument, dto: UpdateSystemDto): Promise<SystemDocument | null> {
+    if (dto.upgrade) {
+      // TODO @Giulcoo: https://github.com/sekassel-research/stp-24-server/issues/7
+      oldSystem.upgrade = dto.upgrade;
+    }
+    if (dto.districts) {
+      // TODO @Giulcoo: https://github.com/sekassel-research/stp-24-server/issues/15
+      //   - Check costs and resources
+      //   - Check if districts don't exceed capacity
+      //   - Check if districts don't exceed slots
+      for (const [district, amount] of Object.entries(dto.districts)) {
+        oldSystem.$inc(`districts.${district}`, amount);
+      }
+    }
+    if (dto.buildings) {
+      // TODO @Giulcoo: https://github.com/sekassel-research/stp-24-server/issues/17
+      oldSystem.buildings = dto.buildings;
+    }
+    await this.saveAll([oldSystem]) // emits update events
+    return oldSystem;
   }
 
   async generateMap(game: Game): Promise<void> {
