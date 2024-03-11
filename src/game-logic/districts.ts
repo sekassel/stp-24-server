@@ -13,13 +13,13 @@ export const DISTRICTS = {
       default: 1,
     },
     cost: {
-      minerals: 75, // silicon solar collectors // cheap_buildings tech tree
+      minerals: 75, // TODO silicon solar collectors // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 5, // maintenance
+      minerals: 5, // TODO maintenance
     },
     production: {
-      energy: 10, // energy_production tech tree
+      energy: 10, // energetic_terraforming tech tree
     },
   },
   mining: {
@@ -32,14 +32,14 @@ export const DISTRICTS = {
       default: 1,
     },
     cost: {
-      minerals: 50, // building the supporting structure // cheap_buildings tech tree
-      energy: 25, // digging the mine // cheap_buildings tech tree
+      minerals: 50, // TODO building the supporting structure // cheap_buildings tech tree
+      energy: 25, // TODO digging the mine // cheap_buildings tech tree
     },
     upkeep: {
-      energy: 5, // powering the mine // efficient_buildings tech tree
+      energy: 5, // TODO powering the mine // efficient_buildings tech tree
     },
     production: {
-      minerals: 10, // mineral_production tech tree
+      minerals: 10, // TODO mineral_production tech tree
     },
   },
   agriculture: {

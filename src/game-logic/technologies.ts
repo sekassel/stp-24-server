@@ -2,9 +2,7 @@ import type {Technology, TechnologyTag, Variable} from './types';
 
 export const TECHNOLOGIES: Record<string, Technology> = {
 
-  /**
-   * Technologies for empire variables (market, pop, system)
-   * */
+  /** Technologies for empire variables (market, pop, system) */
 
   /**
    * Market technologies
@@ -913,6 +911,99 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
+
+  /**
+   * District technologies // TODO
+   */
+
+  /** energy district: chance */
+
+  /** energy district: reduce initial mineral cost */
+
+  /** energy district: reduce mineral upkeep */
+
+  /** energy district: increase energy production */
+  energetic_terraforming_1: { // further increased advanced building production
+    id: 'energetic_terraforming_1',
+    tags: ['energy'],
+    cost: 200,
+    precedes: ['energetic_terraforming_2'],
+    effects: [
+      {
+        description: '+5% $energy$ production from $energy$ $district$',
+        variable: 'districts.energy.production.energy',
+        multiplier: 1.05,
+      },
+    ],
+  },
+  energetic_terraforming_2: { // further increased advanced building production
+    id: 'energetic_terraforming_2',
+    tags: ['energy'],
+    cost: 400,
+    requires: ['energetic_terraforming_1'],
+    precedes: ['energetic_terraforming_3'],
+    effects: [
+      {
+        description: '+10% $energy$ production from $energy$ $district$',
+        variable: 'districts.energy.production.energy',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  energetic_terraforming_3: { // further increased advanced building production
+    id: 'energetic_terraforming_3',
+    tags: ['energy'],
+    cost: 800,
+    requires: ['energetic_terraforming_2'],
+    effects: [
+      {
+        description: '+15% $energy$ production from $energy$ $district$',
+        variable: 'districts.energy.production.energy',
+        multiplier: 1.15,
+      },
+    ],
+  },
+
+  /** mining district: chance */
+
+  /** mining district: reduce initial mineral and energy cost */
+
+  /** mining district: reduce energy upkeep */
+
+  /** mining district: increase mineral production */
+
+  /** agricultural district: chance */
+
+  /** agricultural district: reduce initial energy cost */
+
+  /** agricultural district: reduce energy upkeep */
+
+  /** agricultural district: increase food production */
+
+  /** research site: chance */
+
+  /** research site: reduce initial mineral cost */
+
+  /** research site: reduce energy upkeep */
+
+  /** research site: increase research production */
+
+  /** ancient_foundry: chance */
+
+  /** ancient_foundry: reduce initial mineral cost */
+
+  /** ancient_foundry: reduce energy and mineral upkeep */
+
+  /** ancient_foundry: increase alloy production */
+
+  /** ancient_refinery: chance */
+
+  /** ancient_refinery: reduce initial mineral cost */
+
+  /** ancient_refinery: reduce energy and mineral upkeep */
+
+  /** ancient_refinery: increase fuel production */
+
 };
 
 // special resources
