@@ -4,6 +4,7 @@ import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {System, SystemUpgradeLevel} from './system.schema';
 import {Game} from "../game/game.schema";
+import {GRIDS} from "../game-logic/gridtypes";
 
 @Injectable()
 @EventRepository()
@@ -21,7 +22,7 @@ export class SystemService extends MongooseRepository<System> {
     const clusters: System[][] = [];
 
     //TODO: Generate multiple clusters
-    clusters.push(this.createCluster(game, 10, 100, [0, 0]));
+    clusters.push(this.createCluster(game, 15, [-40, -40]));
 
     //TODO: Connect clusters
 
@@ -31,57 +32,47 @@ export class SystemService extends MongooseRepository<System> {
   /**
    * Creates a cluster of systems and connects these systems
    */
-  private createCluster(game: Game, count: number, radius: number, center: number[]): System[] {
+  // private createCluster(game: Game, count: number, radius: number, center: number[]): System[] {
+  private createCluster(game: Game, scaling: number, offset: number[]): System[] {
     const systems: System[] = [];
 
     //Create systems
-    const angleStep = 2 * Math.PI / count;
-    let angle = 0;
-    while(angle < 2 * Math.PI) {
-      const distance = Math.random() * radius;
-      const system: System = {
-        _id: new Types.ObjectId(),
-        game: game._id,
-        owner: game.owner,
-        capacity: Math.floor(Math.random() * 100) + 100,
-        type: 'regular',
-        x: center[0] + distance * Math.cos(angle),
-        y: center[1] + distance * Math.sin(angle),
-        upgrade: SystemUpgradeLevel.unexplored,
-        links: {},
-        districtSlots: {},
-        districts: {},
-        buildings: [],
-        population: 0,
-        updatedAt: new Date(),
-        createdAt: new Date(),
-      };
+    const grid:number[][] = GRIDS[Math.randInt(GRIDS.length)].sort(() => Math.random() - 0.5).slice(0, 10);
 
-      angle += angleStep;
-      systems.push(system);
+    for(const [x, y] of grid) {
+      systems.push(this.createSystem(game, (x + Math.random()*0.25) * scaling + offset[0], (y + Math.random()*0.25) * scaling + offset[1]));
     }
 
     //Connect systems as a spanning tree
-    for(let i = 0; i < systems.length; i++) {
-      const start = Math.randInt(systems.length);
+    const visitedSystems: System[] = [systems[0]];
+    while(visitedSystems.length < systems.length) {
+      let nextSystem: System | undefined = undefined;
+      for(const system of this.edgesSortedSystems(visitedSystems)){
+        if(Math.random() < 0.3){
+          nextSystem = system;
+          break;
+        }
+      }
 
-      for(let add = 0; i < systems.length; i++) {
-        const j = (start + add) % systems.length;
+      if(!nextSystem) nextSystem = visitedSystems[Math.randInt(visitedSystems.length)];
 
-        if(i != j){
-          this.connectSystems(systems[i], systems[j]);
+      const candidates = this.distanceSortedSystems(systems.filter(s => !visitedSystems.includes(s)), nextSystem);
 
-          if(this.checkForCycles(systems, systems[i])) {
-            this.removeConnection(systems[i], systems[j]);
-          } else{
-            break;
-          }
+      for(const otherSystem of candidates) {
+        this.connectSystems(nextSystem, otherSystem);
+
+        if(this.checkForCycles(systems, nextSystem)) {
+          this.removeConnection(nextSystem, otherSystem);
+        } else{
+          visitedSystems.push(otherSystem);
+          break;
         }
       }
     }
 
     //Add random cycle
-    const randomCycles = Math.randInt(count/10);
+    //const randomCycles = Math.randInt(count/10);
+    const randomCycles = 0;
     for(let i = 0; i < randomCycles; i++) {
       const system1 = systems[Math.randInt(systems.length)];
       const system2 = systems[Math.randInt(systems.length)];
@@ -131,6 +122,18 @@ export class SystemService extends MongooseRepository<System> {
     return false;
   }
 
+  private distanceSortedSystems(systems: System[], system: System): System[] {
+    return systems.sort((a, b) => {
+      const distanceA = Math.hypot(a.x - system.x, a.y - system.y);
+      const distanceB = Math.hypot(b.x - system.x, b.y - system.y);
+      return distanceA - distanceB;
+    }).filter(s => s != system);
+  }
+
+  private edgesSortedSystems(systems: System[]): System[] {
+    return systems.sort((a, b) => Object.keys(a.links).length - Object.keys(b.links).length);
+  }
+
   private connectSystems(system1: System, system2: System): void {
     const distance = Math.hypot(system1.x - system2.x, system1.y - system2.y);
     system1.links[system2._id.toString()] = distance;
@@ -140,6 +143,26 @@ export class SystemService extends MongooseRepository<System> {
   private removeConnection(system1: System, system2: System): void {
     delete system1.links[system2._id.toString()];
     delete system2.links[system1._id.toString()];
+  }
+
+  private createSystem(game: Game, x: number, y: number): System {
+    return {
+      _id: new Types.ObjectId(),
+      game: game._id,
+      owner: game.owner,
+      capacity: Math.floor(Math.random() * 100) + 100,
+      type: 'regular',
+      x: x,
+      y: y,
+      upgrade: SystemUpgradeLevel.unexplored,
+      links: {},
+      districtSlots: {},
+      districts: {},
+      buildings: [],
+      population: 0,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+    };
   }
 
   private emit(event: string, system: System): void {

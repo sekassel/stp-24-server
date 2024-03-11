@@ -13,6 +13,7 @@ export class SystemHandler {
   @OnEvent('games.*.updated')
   async onGameUpdated(game: Game): Promise<void> {
     await this.systemService.generateMap(game);
+
   }
 
   @OnEvent('games.*.deleted')
