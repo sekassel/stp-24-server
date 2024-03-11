@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
-import {System, SystemUpgradeLevel} from './system.schema';
+import {System} from './system.schema';
 import {Game} from "../game/game.schema";
 
 @Injectable()
@@ -47,7 +47,7 @@ export class SystemService extends MongooseRepository<System> {
         type: 'regular',
         x: center[0] + distance * Math.cos(angle),
         y: center[1] + distance * Math.sin(angle),
-        upgrade: SystemUpgradeLevel.unexplored,
+        upgrade: 'unexplored',
         links: {},
         districtSlots: {},
         districts: {},

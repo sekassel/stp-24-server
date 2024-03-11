@@ -1,7 +1,7 @@
 import {Controller, Get, Param} from '@nestjs/common';
 import {ApiExtraModels, ApiOkResponse, ApiTags, getSchemaPath, refs} from '@nestjs/swagger';
 import {TRAITS} from "../game-logic/traits";
-import {Building, District, Resource, Technology, Trait} from '../game-logic/types';
+import {Building, District, Resource, SystemUpgrade, Technology, Trait} from '../game-logic/types';
 import {Throttled} from "../util/throttled.decorator";
 import {NotFound} from "@mean-stream/nestx";
 import {DistrictName, DISTRICTS} from "../game-logic/districts";
@@ -9,10 +9,11 @@ import {TECHNOLOGIES} from "../game-logic/technologies";
 import {BuildingName, BUILDINGS} from "../game-logic/buildings";
 import {RESOURCES} from '../game-logic/resources';
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
+import {SYSTEM_UPGRADES} from '../game-logic/system-upgrade';
 
 @Controller('presets')
 @ApiTags('Presets')
-@ApiExtraModels(Resource)
+@ApiExtraModels(Resource, SystemUpgrade)
 @Throttled()
 export class PresetsController {
   @Get('resources')
@@ -23,6 +24,16 @@ export class PresetsController {
   })
   getResources(): typeof RESOURCES {
     return RESOURCES;
+  }
+
+  @Get('system-upgrades')
+  @ApiOkResponse({
+    schema: {
+      properties: Object.fromEntries(Object.keys(SYSTEM_UPGRADES).map(k => [k, {$ref: getSchemaPath(SystemUpgrade)}])),
+    },
+  })
+  getSystemUpgrades(): typeof SYSTEM_UPGRADES {
+    return SYSTEM_UPGRADES;
   }
 
   @Get('empire-variables')

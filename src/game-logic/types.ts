@@ -124,6 +124,26 @@ export class Resource {
   credit_value?: number;
 }
 
+export class SystemUpgrade {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({
+    description: 'The population growth rate of the system.'
+  })
+  pop_growth: number;
+
+  @ApiProperty({
+    description: "The cost to upgrade the system, specified in various resources."
+  })
+  cost: Partial<Record<ResourceName, number>>;
+
+  @ApiProperty({
+    description: "The ongoing upkeep of the system, specified in various resources, required to maintain its benefits."
+  })
+  upkeep: Partial<Record<ResourceName, number>>;
+}
+
 export class Building {
   @ApiProperty()
   id: string;
