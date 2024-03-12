@@ -68,6 +68,11 @@ export class EmpireService extends MongooseRepository<Empire> {
 
   private async unlockTechnology(empire: Empire, technologies: string[]) {
     const user = await this.userService.find(empire.user) ?? notFound(empire.user);
+
+    //const technologyVariables = getVariables('technologies');
+    //calculateVariables(technologyVariables, empire);
+    // const technologyValue = technologyVariables[`technologies.${technology}.value` as Variable];
+
     for (const technologyId of technologies) {
       const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
 
@@ -87,7 +92,7 @@ export class EmpireService extends MongooseRepository<Empire> {
 
       // Calculate the technology cost based on the formula
       const technologyCount = user.technologies?.[technologyId] || 0;
-      const technologyCost = technology.cost * 0.95 ** Math.min(technologyCount, 10);
+      const technologyCost = Math.round(technology.cost * 0.95 ** Math.min(technologyCount, 10));
 
       if (empire.resources.research < technologyCost) {
         throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
@@ -115,7 +120,7 @@ export class EmpireService extends MongooseRepository<Empire> {
       if (resourceAmount === 0) {
         continue;
       }
-      const creditValue  = resourceVariables[`resources.${resource}.credit_value` as Variable];
+      const creditValue = resourceVariables[`resources.${resource}.credit_value` as Variable];
 
       if (creditValue === 0) {
         throw new BadRequestException(`The resource ${resource} cannot be bought or sold.`);
