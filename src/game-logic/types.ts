@@ -1,5 +1,5 @@
 import type {ResourceName} from './resources';
-import {ApiProperty} from '@nestjs/swagger';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {VARIABLES} from './variables';
 import {SystemType} from './system-types';
 
@@ -117,11 +117,31 @@ export class Trait extends EffectSource {
   conflicts?: readonly string[];
 }
 
-export interface Resource {
-  /** how many of this resource an empire starts with */
+export class Resource {
+  @ApiPropertyOptional({description: 'how many of this resource an empire starts with'})
   starting?: number;
-  /** how many credits for one unit of this resource */
+  @ApiPropertyOptional({description: 'how many credits for one unit of this resource'})
   credit_value?: number;
+}
+
+export class SystemUpgrade {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({
+    description: 'The population growth rate of the system.'
+  })
+  pop_growth: number;
+
+  @ApiProperty({
+    description: "The cost to upgrade the system, specified in various resources."
+  })
+  cost: Partial<Record<ResourceName, number>>;
+
+  @ApiProperty({
+    description: "The ongoing upkeep of the system, specified in various resources, required to maintain its benefits."
+  })
+  upkeep: Partial<Record<ResourceName, number>>;
 }
 
 export class Building {

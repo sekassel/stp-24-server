@@ -6,15 +6,7 @@ import {DistrictName, DISTRICTS} from "../game-logic/districts";
 import {ApiProperty} from "@nestjs/swagger";
 import {IsArray, IsEnum, IsIn, IsInt, IsNumber, IsObject, IsString, Min} from 'class-validator';
 import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
-
-export enum SystemUpgradeLevel {
-  unexplored = 0,
-  explored = 1,
-  colonized = 2,
-  upgraded = 3,
-  developed = 4,
-}
-export type SystemUpgradeType = keyof typeof SystemUpgradeLevel;
+import {SYSTEM_UPGRADE_NAMES, SystemUpgradeName} from '../game-logic/system-upgrade';
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class System extends GlobalSchema {
@@ -81,12 +73,10 @@ export class System extends GlobalSchema {
   @IsIn(BUILDING_NAMES, {each: true})
   buildings: BuildingName[];
 
-  @Prop({enum: SystemUpgradeLevel})
-  @ApiProperty({
-    enum: SystemUpgradeLevel,
-  })
-  @IsEnum(SystemUpgradeLevel)
-  upgrade: SystemUpgradeLevel;
+  @Prop({type: String, enum: SYSTEM_UPGRADE_NAMES})
+  @ApiProperty({enum: SYSTEM_UPGRADE_NAMES})
+  @IsEnum(SYSTEM_UPGRADE_NAMES)
+  upgrade: SystemUpgradeName;
 
   @Prop()
   @ApiProperty({

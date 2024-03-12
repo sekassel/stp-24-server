@@ -6,6 +6,7 @@ import {EmpireHandler} from './empire.handler';
 import {Empire, EmpireSchema} from './empire.schema';
 import {EmpireService} from './empire.service';
 import {MemberModule} from '../member/member.module';
+import {UserModule} from "../user/user.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import {MemberModule} from '../member/member.module';
     }]),
     GameModule,
     MemberModule,
+    UserModule,
   ],
   controllers: [EmpireController],
   providers: [EmpireService, EmpireHandler],

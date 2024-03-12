@@ -8,7 +8,7 @@ import {Validated} from '../util/validated.decorator';
 import {UpdateSystemDto} from './system.dto';
 import {System} from './system.schema';
 import {SystemService} from './system.service';
-import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
+import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 
 @Controller('games/:game/systems')
@@ -51,13 +51,13 @@ export class SystemController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() dto: UpdateSystemDto,
   ): Promise<System | null> {
-    const oldSystem = await this.systemService.find(id);
-    const owner = oldSystem?.owner ?? dto.owner;
+    const oldSystem = await this.systemService.find(id) ?? notFound(id);
+    const owner = oldSystem.owner ?? dto.owner;
 
     if(!currentUser._id.equals(owner?._id)){
       throw new ForbiddenException('You are not the owner of this system.');
     }
 
-    return this.systemService.update(id, dto);
+    return this.systemService.updateSystem(oldSystem, dto);
   }
 }

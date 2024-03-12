@@ -6,16 +6,22 @@ import {BUILDINGS} from './buildings';
 import {EMPIRE_VARIABLES} from './empire-variables';
 import {RESOURCES} from './resources';
 import {DISTRICTS} from './districts';
+import {SYSTEM_UPGRADES} from './system-upgrade';
 
 export const VARIABLES = {
   districts: DISTRICTS,
   buildings: BUILDINGS,
   empire: EMPIRE_VARIABLES,
+  systems: SYSTEM_UPGRADES,
   resources: RESOURCES,
 } as const;
 
 export function getInitialVariables(): Record<Variable, number> {
   return flatten(VARIABLES);
+}
+
+export function getVariables(prefix: keyof typeof VARIABLES): Record<Variable, number> {
+  return flatten(VARIABLES[prefix], prefix + '.');
 }
 
 export function flatten(obj: any, prefix = '', into: any = {}): any {
