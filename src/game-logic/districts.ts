@@ -13,10 +13,10 @@ export const DISTRICTS = {
       default: 1,
     },
     cost: {
-      minerals: 75, // TODO silicon solar collectors // cheap_buildings tech tree
+      minerals: 75, // quantum_cost_reduction tech tree
     },
     upkeep: {
-      minerals: 5, // TODO maintenance
+      minerals: 5,
     },
     production: {
       energy: 10, // energetic_terraforming tech tree
@@ -32,14 +32,14 @@ export const DISTRICTS = {
       default: 1,
     },
     cost: {
-      minerals: 50, // TODO building the supporting structure // cheap_buildings tech tree
-      energy: 25, // TODO digging the mine // cheap_buildings tech tree
+      minerals: 50, // nano_excavator_optimization tech tree
+      energy: 25, // nano_excavator_optimization tech tree
     },
     upkeep: {
-      energy: 5, // TODO powering the mine // efficient_buildings tech tree
+      energy: 5,
     },
     production: {
-      minerals: 10, // TODO mineral_production tech tree
+      minerals: 10,
     },
   },
   agriculture: {
@@ -49,13 +49,13 @@ export const DISTRICTS = {
       default: 1,
     },
     cost: {
-      energy: 75, // tilling the soil // cheap_buildings tech tree
+      energy: 75, // TODO tilling the soil // cheap_buildings tech tree
     },
     upkeep: {
-      energy: 5, // watering the crops // efficient_buildings tech tree
+      energy: 5, // TODO watering the crops // efficient_buildings tech tree
     },
     production: {
-      food: 10, // food_production tech tree
+      food: 10, // TODO food_production tech tree
     },
   },
   // advanced resource districts. cost should be around 100, upkeep around 20, production around 10
@@ -68,13 +68,13 @@ export const DISTRICTS = {
       default: 1,
     },
     cost: {
-      minerals: 100, // building the lab // cheap_buildings tech tree
+      minerals: 100, // effective_lab_building tech tree
     },
     upkeep: {
-      energy: 20, // powering the lab // efficient_buildings tech tree
+      energy: 20, // TODO powering the lab // efficient_buildings tech tree
     },
     production: {
-      research: 10, // research_production tech tree
+      research: 10, // TODO research_production tech tree
     },
   },
   ancient_foundry: {
@@ -86,14 +86,14 @@ export const DISTRICTS = {
       default: 1,
     },
     cost: {
-      minerals: 100, // building the foundry // cheap_buildings tech tree
+      minerals: 100, // ancient_crafting_techniques tech tree
     },
     upkeep: {
-      minerals: 10, // the processed materials
-      energy: 10, // powering the foundry // efficient_buildings tech tree
+      minerals: 10, // TODO the processed materials
+      energy: 10, // TODO powering the foundry // efficient_buildings tech tree
     },
     production: {
-      alloys: 10, // alloy_production tech tree
+      alloys: 10, // TODO alloy_production tech tree
     },
   },
   ancient_refinery: {
@@ -105,14 +105,14 @@ export const DISTRICTS = {
       default: 1,
     },
     cost: {
-      minerals: 100, // building the refinery // cheap_buildings tech tree
+      minerals: 100, // traditional_refining_wisdom tech tree
     },
     upkeep: {
-      minerals: 10, // the crude oil
-      energy: 10, // powering the refinery // efficient_buildings tech tree
+      minerals: 10, // TODO the crude oil
+      energy: 10, // TODO powering the refinery // efficient_buildings tech tree
     },
     production: {
-      fuel: 10, // fuel_production tech tree
+      fuel: 10, // TODO fuel_production tech tree
     },
   },
 } as const satisfies Record<string, District>;
