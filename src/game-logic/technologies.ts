@@ -2,8 +2,6 @@ import type {Technology, TechnologyTag, Variable} from './types';
 
 export const TECHNOLOGIES: Record<string, Technology> = {
 
-  // TODO adapt tags
-
   /** Technologies for empire variables (market, pop, system) */
 
   /**
@@ -440,7 +438,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** buildings: reduce mineral upkeep */
   efficient_resources_1: { // reduced basic building upkeep
     id: 'efficient_resources_1',
-    tags: ['engineering', 'production'],
+    tags: ['engineering', 'energy'],
     cost: 200,
     precedes: ['efficient_resources_2'],
     effects: [
@@ -463,7 +461,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   efficient_resources_2: { // further increased advanced building production
     id: 'efficient_resources_2',
-    tags: ['engineering', 'production'],
+    tags: ['engineering', 'energy'],
     cost: 400,
     requires: ['efficient_resources_1'],
     effects: [
@@ -492,7 +490,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** all districts: chance for ancient military */
   timeless_warfare_1: {
     id: 'timeless_warfare_1',
-    tags: ['energy'],
+    tags: ['military'],
     cost: 400,
     precedes: ['timeless_warfare_2'],
     effects: [
@@ -525,7 +523,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   timeless_warfare_2: {
     id: 'timeless_warfare_2',
-    tags: ['energy'],
+    tags: ['military'],
     cost: 800,
     requires: ['timeless_warfare_1'],
     precedes: ['timeless_warfare_3'],
@@ -559,7 +557,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   timeless_warfare_3: {
     id: 'timeless_warfare_3',
-    tags: ['energy'],
+    tags: ['military'],
     cost: 1600,
     requires: ['timeless_warfare_2'],
     effects: [
@@ -594,7 +592,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** all districts: chance for ancient industry */
   primordial_industrial_secrets_1: {
     id: 'primordial_industrial_secrets_1',
-    tags: ['energy'],
+    tags: ['production'],
     cost: 400,
     precedes: ['primordial_industrial_secrets_2'],
     effects: [
@@ -627,7 +625,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   primordial_industrial_secrets_2: {
     id: 'primordial_industrial_secrets_2',
-    tags: ['energy'],
+    tags: ['production'],
     cost: 800,
     requires: ['primordial_industrial_secrets_1'],
     effects: [
@@ -660,7 +658,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   primordial_industrial_secrets_3: {
     id: 'primordial_industrial_secrets_3',
-    tags: ['energy'],
+    tags: ['production'],
     cost: 1600,
     requires: ['primordial_industrial_secrets_2'],
     effects: [
@@ -695,7 +693,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** all districts: chance for ancient technology */
   wisdom_reclamation_1: {
     id: 'wisdom_reclamation_1',
-    tags: ['energy'],
+    tags: ['computing', 'engineering'],
     cost: 400,
     precedes: ['wisdom_reclamation_2'],
     effects: [
@@ -728,7 +726,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   wisdom_reclamation_2: {
     id: 'wisdom_reclamation_2',
-    tags: ['energy'],
+    tags: ['computing', 'engineering'],
     cost: 800,
     requires: ['wisdom_reclamation_1'],
     effects: [
@@ -761,7 +759,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   wisdom_reclamation_3: {
     id: 'wisdom_reclamation_3',
-    tags: ['energy'],
+    tags: ['computing', 'engineering'],
     cost: 1600,
     requires: ['wisdom_reclamation_2'],
     effects: [
@@ -880,7 +878,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** energy district: increase energy production */
   energetic_terraforming_1: {
     id: 'energetic_terraforming_1',
-    tags: ['energy'],
+    tags: ['energy', 'production'],
     cost: 200,
     precedes: ['energetic_terraforming_2'],
     effects: [
@@ -893,7 +891,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   energetic_terraforming_2: {
     id: 'energetic_terraforming_2',
-    tags: ['energy'],
+    tags: ['energy', 'production'],
     cost: 400,
     requires: ['energetic_terraforming_1'],
     precedes: ['energetic_terraforming_3'],
@@ -907,7 +905,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   energetic_terraforming_3: {
     id: 'energetic_terraforming_3',
-    tags: ['energy'],
+    tags: ['energy', 'production'],
     cost: 800,
     requires: ['energetic_terraforming_2'],
     effects: [
@@ -919,12 +917,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** mining district: chance */
-
   /** mining district: reduce initial mineral and energy cost */
   nano_excavator_optimization_1: {
     id: 'nano_excavator_optimization_1',
-    tags: ['energy'],
+    tags: ['energy', 'engineering'],
     cost: 200,
     precedes: ['nano_excavator_optimization_2'],
     effects: [
@@ -942,7 +938,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   nano_excavator_optimization_2: {
     id: 'nano_excavator_optimization_2',
-    tags: ['energy'],
+    tags: ['energy', 'engineering'],
     cost: 400,
     requires: ['nano_excavator_optimization_1'],
     precedes: ['nano_excavator_optimization_3'],
@@ -961,7 +957,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   nano_excavator_optimization_3: {
     id: 'nano_excavator_optimization_3',
-    tags: ['energy'],
+    tags: ['energy', 'engineering'],
     cost: 800,
     requires: ['nano_excavator_optimization_2'],
     effects: [
@@ -981,7 +977,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** mining district: reduce energy upkeep */
   autonomous_mining_protocols_1: {
     id: 'autonomous_mining_protocols_1',
-    tags: ['energy'],
+    tags: ['energy', 'production'],
     cost: 200,
     precedes: ['autonomous_mining_protocols_2'],
     effects: [
@@ -994,7 +990,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   autonomous_mining_protocols_2: {
     id: 'autonomous_mining_protocols_2',
-    tags: ['energy'],
+    tags: ['energy', 'production'],
     cost: 400,
     requires: ['autonomous_mining_protocols_1'],
     precedes: ['autonomous_mining_protocols_3'],
@@ -1008,7 +1004,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   autonomous_mining_protocols_3: {
     id: 'autonomous_mining_protocols_3',
-    tags: ['energy'],
+    tags: ['energy', 'production'],
     cost: 800,
     requires: ['autonomous_mining_protocols_2'],
     effects: [
@@ -1023,7 +1019,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** mining district: increase mineral production */
   improved_extraction_tech_1: {
     id: 'improved_extraction_tech_1',
-    tags: ['energy'],
+    tags: ['energy', 'production'],
     cost: 200,
     precedes: ['improved_extraction_tech_2'],
     effects: [
@@ -1036,7 +1032,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   improved_extraction_tech_2: {
     id: 'improved_extraction_tech_2',
-    tags: ['energy'],
+    tags: ['energy', 'production'],
     cost: 400,
     requires: ['improved_extraction_tech_1'],
     precedes: ['improved_extraction_tech_3'],
@@ -1050,7 +1046,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   improved_extraction_tech_3: {
     id: 'improved_extraction_tech_3',
-    tags: ['energy'],
+    tags: ['energy', 'production'],
     cost: 800,
     requires: ['improved_extraction_tech_2'],
     effects: [
@@ -1062,12 +1058,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** agricultural district: chance */
-
   /** agricultural district: reduce initial energy cost */
   permaculture_ecosystem_engineering_1: {
     id: 'permaculture_ecosystem_engineering_1',
-    tags: ['energy'],
+    tags: ['energy', 'biology'],
     cost: 200,
     precedes: ['permaculture_ecosystem_engineering_2'],
     effects: [
@@ -1080,7 +1074,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   permaculture_ecosystem_engineering_2: {
     id: 'permaculture_ecosystem_engineering_2',
-    tags: ['energy'],
+    tags: ['energy', 'biology'],
     cost: 400,
     requires: ['permaculture_ecosystem_engineering_1'],
     precedes: ['permaculture_ecosystem_engineering_3'],
@@ -1094,7 +1088,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   permaculture_ecosystem_engineering_3: {
     id: 'permaculture_ecosystem_engineering_3',
-    tags: ['energy'],
+    tags: ['energy', 'biology'],
     cost: 800,
     requires: ['permaculture_ecosystem_engineering_2'],
     effects: [
@@ -1109,7 +1103,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** agricultural district: reduce energy upkeep */
   self_replenishment_1: {
     id: 'self_replenishment_1',
-    tags: ['energy'],
+    tags: ['energy', 'biology'],
     cost: 200,
     precedes: ['self_replenishment_2'],
     effects: [
@@ -1122,7 +1116,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   self_replenishment_2: {
     id: 'self_replenishment_2',
-    tags: ['energy'],
+    tags: ['energy', 'biology'],
     cost: 400,
     requires: ['self_replenishment_1'],
     precedes: ['self_replenishment_3'],
@@ -1136,7 +1130,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   self_replenishment_3: {
     id: 'self_replenishment_3',
-    tags: ['energy'],
+    tags: ['energy', 'biology'],
     cost: 800,
     requires: ['self_replenishment_2'],
     effects: [
@@ -1151,7 +1145,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** agricultural district: increase food production */
   superior_crops_1: {
     id: 'superior_crops_1',
-    tags: ['energy'],
+    tags: ['energy', 'biology'],
     cost: 200,
     precedes: ['superior_crops_2'],
     effects: [
@@ -1164,7 +1158,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   superior_crops_2: {
     id: 'superior_crops_2',
-    tags: ['energy'],
+    tags: ['energy', 'biology'],
     cost: 400,
     requires: ['superior_crops_1'],
     precedes: ['superior_crops_3'],
@@ -1178,7 +1172,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   superior_crops_3: {
     id: 'superior_crops_3',
-    tags: ['energy'],
+    tags: ['energy', 'biology'],
     cost: 800,
     requires: ['superior_crops_2'],
     effects: [
@@ -1190,12 +1184,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** research site: chance */
-
   /** research site: reduce initial mineral cost */
   effective_lab_building_1: {
     id: 'effective_lab_building_1',
-    tags: ['energy'],
+    tags: ['construction', 'engineering'],
     cost: 200,
     precedes: ['effective_lab_building_2'],
     effects: [
@@ -1208,7 +1200,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   effective_lab_building_2: {
     id: 'effective_lab_building_2',
-    tags: ['energy'],
+    tags: ['construction', 'engineering'],
     cost: 400,
     requires: ['effective_lab_building_1'],
     precedes: ['effective_lab_building_3'],
@@ -1222,7 +1214,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   effective_lab_building_3: {
     id: 'effective_lab_building_3',
-    tags: ['energy'],
+    tags: ['construction', 'engineering'],
     cost: 800,
     requires: ['effective_lab_building_2'],
     effects: [
@@ -1237,7 +1229,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** research site: reduce energy upkeep */
   automated_research_archives_1: {
     id: 'automated_research_archives_1',
-    tags: ['energy'],
+    tags: ['construction', 'engineering', 'energy'],
     cost: 200,
     precedes: ['automated_research_archives_2'],
     effects: [
@@ -1250,7 +1242,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   automated_research_archives_2: {
     id: 'automated_research_archives_2',
-    tags: ['energy'],
+    tags: ['construction', 'engineering', 'energy'],
     cost: 400,
     requires: ['automated_research_archives_1'],
     precedes: ['automated_research_archives_3'],
@@ -1264,7 +1256,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   automated_research_archives_3: {
     id: 'automated_research_archives_3',
-    tags: ['energy'],
+    tags: ['construction', 'engineering', 'energy'],
     cost: 800,
     requires: ['automated_research_archives_2'],
     effects: [
@@ -1279,7 +1271,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** research site: increase research production */
   research_accelerators_1: {
     id: 'research_accelerators_1',
-    tags: ['energy'],
+    tags: ['computing'],
     cost: 200,
     precedes: ['research_accelerators_2'],
     effects: [
@@ -1292,7 +1284,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   research_accelerators_2: {
     id: 'research_accelerators_2',
-    tags: ['energy'],
+    tags: ['computing'],
     cost: 400,
     requires: ['research_accelerators_1'],
     precedes: ['research_accelerators_3'],
@@ -1306,7 +1298,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   research_accelerators_3: {
     id: 'research_accelerators_3',
-    tags: ['energy'],
+    tags: ['computing'],
     cost: 800,
     requires: ['research_accelerators_2'],
     effects: [
@@ -1318,12 +1310,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** ancient_foundry: chance */
-
   /** ancient_foundry: reduce initial mineral cost */
   ancient_crafting_1: {
     id: 'ancient_crafting_1',
-    tags: ['energy'],
+    tags: ['engineering'],
     cost: 200,
     precedes: ['ancient_crafting_2'],
     effects: [
@@ -1336,7 +1326,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   ancient_crafting_2: {
     id: 'ancient_crafting_2',
-    tags: ['energy'],
+    tags: ['engineering'],
     cost: 400,
     requires: ['ancient_crafting_1'],
     precedes: ['ancient_crafting_3'],
@@ -1350,7 +1340,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   ancient_crafting_3: {
     id: 'ancient_crafting_3',
-    tags: ['energy'],
+    tags: ['engineering'],
     cost: 800,
     requires: ['ancient_techniques_2'],
     effects: [
@@ -1365,7 +1355,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** ancient_foundry: reduce energy and mineral upkeep */
   timeless_fabrication_methods_1: {
     id: 'timeless_fabrication_methods_1',
-    tags: ['energy'],
+    tags: ['energy', 'engineering'],
     cost: 200,
     precedes: ['timeless_fabrication_methods_2'],
     effects: [
@@ -1383,7 +1373,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   timeless_fabrication_methods_2: {
     id: 'timeless_fabrication_methods_2',
-    tags: ['energy'],
+    tags: ['energy', 'engineering'],
     cost: 400,
     requires: ['timeless_fabrication_methods_1'],
     precedes: ['timeless_fabrication_methods_3'],
@@ -1402,7 +1392,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   timeless_fabrication_methods_3: {
     id: 'timeless_fabrication_methods_3',
-    tags: ['energy'],
+    tags: ['energy', 'engineering'],
     cost: 800,
     requires: ['timeless_fabrication_methods_2'],
     effects: [
@@ -1422,7 +1412,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** ancient_foundry: increase alloy production */
   mythic_alloy_crafting_1: {
     id: 'mythic_alloy_crafting_1',
-    tags: ['energy'],
+    tags: ['production', 'materials'],
     cost: 200,
     precedes: ['mythic_alloy_crafting_2'],
     effects: [
@@ -1435,7 +1425,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   mythic_alloy_crafting_2: {
     id: 'mythic_alloy_crafting_2',
-    tags: ['energy'],
+    tags: ['production', 'materials'],
     cost: 400,
     requires: ['mythic_alloy_crafting_1'],
     precedes: ['mythic_alloy_crafting_3'],
@@ -1449,7 +1439,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   mythic_alloy_crafting_3: {
     id: 'mythic_alloy_crafting_3',
-    tags: ['energy'],
+    tags: ['production', 'materials'],
     cost: 800,
     requires: ['mythic_alloy_crafting_2'],
     effects: [
@@ -1461,12 +1451,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** ancient_refinery: chance */
-
   /** ancient_refinery: reduce initial mineral cost */
   traditional_refining_wisdom_1: {
     id: 'traditional_refining_wisdom_1',
-    tags: ['energy'],
+    tags: ['engineering'],
     cost: 200,
     precedes: ['traditional_refining_wisdom_2'],
     effects: [
@@ -1479,7 +1467,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   traditional_refining_wisdom_2: {
     id: 'traditional_refining_wisdom_2',
-    tags: ['energy'],
+    tags: ['engineering'],
     cost: 400,
     requires: ['traditional_refining_wisdom_1'],
     precedes: ['traditional_refining_wisdom_3'],
@@ -1493,7 +1481,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   traditional_refining_wisdom_3: {
     id: 'traditional_refining_wisdom_3',
-    tags: ['energy'],
+    tags: ['engineering'],
     cost: 800,
     requires: ['traditional_refining_wisdom_2'],
     effects: [
@@ -1508,7 +1496,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** ancient_refinery: reduce energy and mineral upkeep */
   ageless_refining_techniques_1: {
     id: 'ageless_refining_techniques_1',
-    tags: ['energy'],
+    tags: ['energy', 'engineering'],
     cost: 200,
     precedes: ['ageless_refining_techniques_2'],
     effects: [
@@ -1526,7 +1514,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   ageless_refining_techniques_2: {
     id: 'ageless_refining_techniques_2',
-    tags: ['energy'],
+    tags: ['energy', 'engineering'],
     cost: 400,
     requires: ['ageless_refining_techniques_1'],
     precedes: ['ageless_refining_techniques_3'],
@@ -1545,7 +1533,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   ageless_refining_techniques_3: {
     id: 'ageless_refining_techniques_3',
-    tags: ['energy'],
+    tags: ['energy', 'engineering'],
     cost: 800,
     requires: ['ageless_refining_techniques_2'],
     effects: [
@@ -1565,7 +1553,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** ancient_refinery: increase fuel production */
   ancient_alchemy_1: {
     id: 'ancient_alchemy_1',
-    tags: ['energy'],
+    tags: ['propulsion'],
     cost: 200,
     precedes: ['ancient_alchemy_2'],
     effects: [
@@ -1578,7 +1566,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   ancient_alchemy_2: {
     id: 'ancient_alchemy_2',
-    tags: ['energy'],
+    tags: ['propulsion'],
     cost: 400,
     requires: ['ancient_alchemy_1'],
     precedes: ['ancient_alchemy_3'],
@@ -1592,7 +1580,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   ancient_alchemy_3: {
     id: 'ancient_alchemy_3',
-    tags: ['energy'],
+    tags: ['propulsion'],
     cost: 800,
     requires: ['ancient_alchemy_2'],
     effects: [
