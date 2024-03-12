@@ -7,9 +7,9 @@ export const DISTRICTS = {
     id: 'energy',
     chance: {
       energy: 5,
-      ancient_technology: 3,
-      ancient_industry: 2,
-      ancient_military: 2,
+      ancient_technology: 3, // wisdom_reclamation tech tree
+      ancient_industry: 2, // primordial_industrial_secrets tech tree
+      ancient_military: 2, // timeless_warfare tech tree
       default: 1,
     },
     cost: {
@@ -26,9 +26,9 @@ export const DISTRICTS = {
     id: 'mining',
     chance: {
       mining: 5,
-      ancient_industry: 3,
-      ancient_technology: 2,
-      ancient_military: 2,
+      ancient_industry: 3, // primordial_industrial_secrets tech tree
+      ancient_technology: 2, // wisdom_reclamation tech tree
+      ancient_military: 2, // timeless_warfare tech tree
       default: 1,
     },
     cost: {
@@ -62,9 +62,9 @@ export const DISTRICTS = {
   research_site: {
     id: 'research_site',
     chance: {
-      ancient_technology: 5,
-      ancient_military: 2,
-      ancient_industry: 2,
+      ancient_technology: 5, // wisdom_reclamation tech tree
+      ancient_military: 2, // timeless_warfare tech tree
+      ancient_industry: 2, // primordial_industrial_secrets tech tree
       default: 1,
     },
     cost: {
@@ -80,9 +80,9 @@ export const DISTRICTS = {
   ancient_foundry: {
     id: 'ancient_foundry',
     chance: {
-      ancient_military: 5,
-      ancient_industry: 3,
-      ancient_technology: 2,
+      ancient_military: 5, // timeless_warfare tech tree
+      ancient_industry: 3, // primordial_industrial_secrets tech tree
+      ancient_technology: 2, // wisdom_reclamation tech tree
       default: 1,
     },
     cost: {
@@ -99,9 +99,9 @@ export const DISTRICTS = {
   ancient_refinery: {
     id: 'ancient_refinery',
     chance: {
-      ancient_industry: 5,
-      ancient_military: 3,
-      ancient_technology: 2,
+      ancient_industry: 5, // primordial_industrial_secrets tech tree
+      ancient_military: 3, // timeless_warfare tech tree
+      ancient_technology: 2, // wisdom_reclamation tech tree
       default: 1,
     },
     cost: {
@@ -112,7 +112,7 @@ export const DISTRICTS = {
       energy: 10, // ageless_refining_techniques tech tree
     },
     production: {
-      fuel: 10, // TODO fuel_production tech tree
+      fuel: 10, // ancient_alchemy tech tree
     },
   },
 } as const satisfies Record<string, District>;
