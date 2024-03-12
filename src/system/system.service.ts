@@ -2,14 +2,17 @@ import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
-import {System, SystemUpgradeLevel} from './system.schema';
-import {System, SystemDocument} from './system.schema';
+import {System,SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
 import {GRIDS} from "../game-logic/gridtypes";
 import {UpdateSystemDto} from './system.dto';
-import {SystemUpgradeName} from '../game-logic/system-upgrade';
-import {DistrictName} from '../game-logic/districts';
+import {SYSTEM_UPGRADE_NAMES, SystemUpgradeName} from '../game-logic/system-upgrade';
+import {DISTRICT_NAMES, DistrictName, DISTRICTS} from '../game-logic/districts';
 import {BuildingName} from '../game-logic/buildings';
+import {SYSTEM_TYPES} from "../game-logic/system-types";
+import {calculateVariables, getEmpireEffectSources} from "../game-logic/variables";
+import {EmpireService} from "../empire/empire.service";
+import {Empire} from "../empire/empire.schema";
 
 @Injectable()
 @EventRepository()
@@ -17,13 +20,14 @@ export class SystemService extends MongooseRepository<System> {
   constructor(
     @InjectModel(System.name) model: Model<System>,
     private eventEmitter: EventService,
+    private empireService: EmpireService,
   ) {
     super(model);
   }
 
   async updateSystem(system: SystemDocument, dto: UpdateSystemDto): Promise<SystemDocument | null> {
     if (dto.upgrade) {
-      this.upgradeSystem(system, dto.upgrade);
+      await this.upgradeSystem(system, dto.upgrade, dto.owner);
     }
     if (dto.districts) {
       this.updateDistricts(system, dto.districts);
@@ -35,9 +39,24 @@ export class SystemService extends MongooseRepository<System> {
     return system;
   }
 
-  private upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName) {
+  private async upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName, owner?: Types.ObjectId) {
     // TODO @Giulcoo: https://github.com/sekassel-research/stp-24-server/issues/7
     system.upgrade = upgrade;
+
+    switch (upgrade) {
+      case 'explored':
+        this.generateDistricts(system, await this.empireService.find(owner!) as Empire);
+        break;
+      case 'colonized':
+        system.owner = owner;
+        break;
+      case 'upgraded':
+        system.capacity *= 1.25;
+        break;
+      case 'developed':
+        system.capacity *= 1.25;
+        break;
+    }
   }
 
   private updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>) {
@@ -53,6 +72,22 @@ export class SystemService extends MongooseRepository<System> {
   private updateBuildings(system: SystemDocument, buildings: BuildingName[]) {
     // TODO @Giulcoo: https://github.com/sekassel-research/stp-24-server/issues/17
     system.buildings = buildings;
+  }
+
+  private generateDistricts(system: SystemDocument, empire: Empire){
+    //TODO: Generate districts based on the empire that arrived first
+    system.type = this.randomSystemType();
+
+    calculateVariables({}, empire);
+
+    system.districtSlots["energy"] = 3;
+    system.districtSlots["mining"] = 3;
+    system.districtSlots["agriculture"] = 3;
+  }
+
+  private randomSystemType(): string {
+    //TODO: Create random system type depending on chances
+    return Object.keys(SYSTEM_TYPES)[0];
   }
 
   async generateMap(game: Game): Promise<void> {
@@ -189,11 +224,11 @@ export class SystemService extends MongooseRepository<System> {
       _id: new Types.ObjectId(),
       game: game._id,
       owner: game.owner,
-      capacity: Math.floor(Math.random() * 100) + 100,
+      capacity: Math.randInt(5) + 8, //TODO: Set realistic capacity
       type: 'regular',
       x: x,
       y: y,
-      upgrade: SystemUpgradeLevel.unexplored,
+      upgrade: SYSTEM_UPGRADE_NAMES[0],
       links: {},
       districtSlots: {},
       districts: {},
