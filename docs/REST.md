@@ -45,10 +45,3 @@ All delete operations, whether manual, cleanup or cascading, trigger the same ev
 | Game          | All Empires                |
 | Game          | All Members                |
 | Game          | All Systems                |
-
-<!--
-Cascading deletes do not apply to some resources:
-
-* Deleting a User does not delete any of their Messages.
-* Deleting a User does not delete any Group in which they are a Member.
--->
