@@ -15,11 +15,11 @@ export const DISTRICTS = {
     cost: {
       minerals: 75, // quantum_cost_reduction tech tree
     },
-    upkeep: {
+    upkeep: { // low_maintenance_power_grids tech tree
       minerals: 5,
     },
-    production: {
-      energy: 10, // energetic_terraforming tech tree
+    production: { // energetic_terraforming tech tree
+      energy: 10,
     },
   },
   mining: {
@@ -35,7 +35,7 @@ export const DISTRICTS = {
       minerals: 50, // nano_excavator_optimization tech tree
       energy: 25, // nano_excavator_optimization tech tree
     },
-    upkeep: {
+    upkeep: { // autonomous_mining_protocols tech tree
       energy: 5,
     },
     production: {
@@ -49,10 +49,10 @@ export const DISTRICTS = {
       default: 1,
     },
     cost: {
-      energy: 75, // TODO tilling the soil // cheap_buildings tech tree
+      energy: 75, // permaculture_ecosystem_engineering tech tree
     },
     upkeep: {
-      energy: 5, // TODO watering the crops // efficient_buildings tech tree
+      energy: 5, // self_replenishment tech tree
     },
     production: {
       food: 10, // TODO food_production tech tree
@@ -71,7 +71,7 @@ export const DISTRICTS = {
       minerals: 100, // effective_lab_building tech tree
     },
     upkeep: {
-      energy: 20, // TODO powering the lab // efficient_buildings tech tree
+      energy: 20, // automated_research_archives tech tree
     },
     production: {
       research: 10, // TODO research_production tech tree
@@ -89,8 +89,8 @@ export const DISTRICTS = {
       minerals: 100, // ancient_crafting_techniques tech tree
     },
     upkeep: {
-      minerals: 10, // TODO the processed materials
-      energy: 10, // TODO powering the foundry // efficient_buildings tech tree
+      minerals: 10, // timeless_fabrication_methods tech tree
+      energy: 10, // timeless_fabrication_methods tech tree
     },
     production: {
       alloys: 10, // TODO alloy_production tech tree
@@ -108,8 +108,8 @@ export const DISTRICTS = {
       minerals: 100, // traditional_refining_wisdom tech tree
     },
     upkeep: {
-      minerals: 10, // TODO the crude oil
-      energy: 10, // TODO powering the refinery // efficient_buildings tech tree
+      minerals: 10, // ageless_refining_techniques tech tree
+      energy: 10, // ageless_refining_techniques tech tree
     },
     production: {
       fuel: 10, // TODO fuel_production tech tree
