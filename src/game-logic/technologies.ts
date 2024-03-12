@@ -486,11 +486,312 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /**
-   * District technologies // TODO
+   * District technologies //
    */
 
-  /** all districts: chance */
-  // TODO only increase ancient chance, not mine or default
+  /** all districts: chance for ancient military */
+  timeless_warfare_1: {
+    id: 'timeless_warfare_1',
+    tags: ['energy'],
+    cost: 400,
+    precedes: ['timeless_warfare_2'],
+    effects: [
+      {
+        description: '+5% chance for $ancient_military$ for $energy$',
+        variable: 'districts.energy.chance.ancient_military',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_military$ for $mining$',
+        variable: 'districts.mining.chance.ancient_military',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_military$ for $research_site$',
+        variable: 'districts.research_site.chance.ancient_military',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_military$ for $ancient_foundry$',
+        variable: 'districts.ancient_foundry.chance.ancient_military',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_military$ for $ancient_refinery$',
+        variable: 'districts.ancient_refinery.chance.ancient_military',
+        multiplier: 1.05,
+      },
+    ],
+  },
+  timeless_warfare_2: {
+    id: 'timeless_warfare_2',
+    tags: ['energy'],
+    cost: 800,
+    requires: ['timeless_warfare_1'],
+    precedes: ['timeless_warfare_3'],
+    effects: [
+      {
+        description: '+10% chance for $ancient_military$ for $energy$',
+        variable: 'districts.energy.chance.ancient_military',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_military$ for $mining$',
+        variable: 'districts.mining.chance.ancient_military',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_military$ for $research_site$',
+        variable: 'districts.research_site.chance.ancient_military',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_military$ for $ancient_foundry$',
+        variable: 'districts.ancient_foundry.chance.ancient_military',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_military$ for $ancient_refinery$',
+        variable: 'districts.ancient_refinery.chance.ancient_military',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  timeless_warfare_3: {
+    id: 'timeless_warfare_3',
+    tags: ['energy'],
+    cost: 1600,
+    requires: ['timeless_warfare_2'],
+    effects: [
+      {
+        description: '+15% chance for $ancient_military$ for $energy$',
+        variable: 'districts.energy.chance.ancient_military',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_military$ for $mining$',
+        variable: 'districts.mining.chance.ancient_military',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_military$ for $research_site$',
+        variable: 'districts.research_site.chance.ancient_military',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_military$ for $ancient_foundry$',
+        variable: 'districts.ancient_foundry.chance.ancient_military',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_military$ for $ancient_refinery$',
+        variable: 'districts.ancient_refinery.chance.ancient_military',
+        multiplier: 1.15,
+      },
+    ],
+  },
+
+  /** all districts: chance for ancient industry */
+  primordial_industrial_secrets_1: {
+    id: 'primordial_industrial_secrets_1',
+    tags: ['energy'],
+    cost: 400,
+    precedes: ['primordial_industrial_secrets_2'],
+    effects: [
+      {
+        description: '+5% chance for $ancient_industry$ for $energy$',
+        variable: 'districts.energy.chance.ancient_industry',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_industry$ for $mining$',
+        variable: 'districts.mining.chance.ancient_industry',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_industry$ for $research_site$',
+        variable: 'districts.research_site.chance.ancient_industry',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_industry$ for $ancient_foundry$',
+        variable: 'districts.ancient_foundry.chance.ancient_industry',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_industry$ for $ancient_refinery$',
+        variable: 'districts.ancient_refinery.chance.ancient_industry',
+        multiplier: 1.05,
+      },
+    ],
+  },
+  primordial_industrial_secrets_2: {
+    id: 'primordial_industrial_secrets_2',
+    tags: ['energy'],
+    cost: 800,
+    requires: ['primordial_industrial_secrets_1'],
+    effects: [
+      {
+        description: '+10% chance for $ancient_industry$ for $energy$',
+        variable: 'districts.energy.chance.ancient_industry',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_industry$ for $mining$',
+        variable: 'districts.mining.chance.ancient_industry',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_industry$ for $research_site$',
+        variable: 'districts.research_site.chance.ancient_industry',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_industry$ for $ancient_foundry$',
+        variable: 'districts.ancient_foundry.chance.ancient_industry',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_industry$ for $ancient_refinery$',
+        variable: 'districts.ancient_refinery.chance.ancient_industry',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  primordial_industrial_secrets_3: {
+    id: 'primordial_industrial_secrets_3',
+    tags: ['energy'],
+    cost: 1600,
+    requires: ['primordial_industrial_secrets_2'],
+    effects: [
+      {
+        description: '+15% chance for $ancient_industry$ for $energy$',
+        variable: 'districts.energy.chance.ancient_industry',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_industry$ for $mining$',
+        variable: 'districts.mining.chance.ancient_industry',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_industry$ for $research_site$',
+        variable: 'districts.research_site.chance.ancient_industry',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_industry$ for $ancient_foundry$',
+        variable: 'districts.ancient_foundry.chance.ancient_industry',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_industry$ for $ancient_refinery$',
+        variable: 'districts.ancient_refinery.chance.ancient_industry',
+        multiplier: 1.15,
+      },
+    ],
+  },
+
+  /** all districts: chance for ancient technology */
+  wisdom_reclamation_1: {
+    id: 'wisdom_reclamation_1',
+    tags: ['energy'],
+    cost: 400,
+    precedes: ['wisdom_reclamation_2'],
+    effects: [
+      {
+        description: '+5% chance for $ancient_technology$ for $energy$',
+        variable: 'districts.energy.chance.ancient_technology',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_technology$ for $mining$',
+        variable: 'districts.mining.chance.ancient_technology',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_technology$ for $research_site$',
+        variable: 'districts.research_site.chance.ancient_technology',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_technology$ for $ancient_foundry$',
+        variable: 'districts.ancient_foundry.chance.ancient_technology',
+        multiplier: 1.05,
+      },
+      {
+        description: '+5% chance for $ancient_technology$ for $ancient_refinery$',
+        variable: 'districts.ancient_refinery.chance.ancient_technology',
+        multiplier: 1.05,
+      },
+    ],
+  },
+  wisdom_reclamation_2: {
+    id: 'wisdom_reclamation_2',
+    tags: ['energy'],
+    cost: 800,
+    requires: ['wisdom_reclamation_1'],
+    effects: [
+      {
+        description: '+10% chance for $ancient_technology$ for $energy$',
+        variable: 'districts.energy.chance.ancient_technology',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_technology$ for $mining$',
+        variable: 'districts.mining.chance.ancient_technology',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_technology$ for $research_site$',
+        variable: 'districts.research_site.chance.ancient_technology',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_technology$ for $ancient_foundry$',
+        variable: 'districts.ancient_foundry.chance.ancient_technology',
+        multiplier: 1.1,
+      },
+      {
+        description: '+10% chance for $ancient_technology$ for $ancient_refinery$',
+        variable: 'districts.ancient_refinery.chance.ancient_technology',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  wisdom_reclamation_3: {
+    id: 'wisdom_reclamation_3',
+    tags: ['energy'],
+    cost: 1600,
+    requires: ['wisdom_reclamation_2'],
+    effects: [
+      {
+        description: '+15% chance for $ancient_technology$ for $energy$',
+        variable: 'districts.energy.chance.ancient_technology',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_technology$ for $mining$',
+        variable: 'districts.mining.chance.ancient_technology',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_technology$ for $research_site$',
+        variable: 'districts.research_site.chance.ancient_technology',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_technology$ for $ancient_foundry$',
+        variable: 'districts.ancient_foundry.chance.ancient_technology',
+        multiplier: 1.15,
+      },
+      {
+        description: '+15% chance for $ancient_technology$ for $ancient_refinery$',
+        variable: 'districts.ancient_refinery.chance.ancient_technology',
+        multiplier: 1.15,
+      },
+    ],
+  },
 
   /** energy district: reduce initial mineral cost */
   quantum_cost_reduction_1: {
