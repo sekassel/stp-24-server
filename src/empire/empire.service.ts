@@ -68,7 +68,7 @@ export class EmpireService extends MongooseRepository<Empire> {
 
   private async unlockTechnology(empire: Empire, technologies: string[]) {
     const user = await this.userService.find(empire.user) ?? notFound(empire.user);
-    const technologyCostMultiplier = calculateVariable('empire.technologies.costMultiplier', empire);
+    const technologyCostMultiplier = calculateVariable('empire.technologies.cost_multiplier', empire);
     for (const technologyId of technologies) {
       const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
 
@@ -99,7 +99,9 @@ export class EmpireService extends MongooseRepository<Empire> {
       if (!empire.technologies.includes(technologyId)) {
         empire.technologies.push(technologyId);
         // Increment the user's technology count by 1
-        user.technologies = {...user.technologies, [technologyId]: (user.technologies?.[technologyId] || 0) + 1};
+        if (user.technologies) {
+          user.technologies[technologyId] = (user.technologies?.[technologyId] ?? 0) + 1;
+        }
       }
     }
 
