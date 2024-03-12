@@ -69,7 +69,7 @@ async function bootstrap() {
   await app.listen(environment.port);
   await app.startAllMicroservices();
 
-  new Logger('Main').log(`🚀 Server is running on ${environment.baseUrl}`);
+  new Logger('Main').log(`🚀 Server is running on ${environment.baseUrl}/${globalPrefix}`);
 }
 
 bootstrap();
