@@ -71,6 +71,10 @@ export class EmpireService extends MongooseRepository<Empire> {
     for (const technologyId of technologies) {
       const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
 
+      if (empire.technologies.includes(technologyId)) {
+        throw new BadRequestException(`Technology ${technologyId} has already been unlocked.`);
+      }
+
       // Check if all required technologies are unlocked
       const hasAllRequiredTechnologies = !technology.requires || technology.requires.every(
         (requiredTechnology: string) => empire.technologies.includes(requiredTechnology)
