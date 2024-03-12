@@ -6,11 +6,13 @@ import {BUILDINGS} from './buildings';
 import {EMPIRE_VARIABLES} from './empire-variables';
 import {RESOURCES} from './resources';
 import {DISTRICTS} from './districts';
+import {SYSTEM_UPGRADES} from './system-upgrade';
 
 export const VARIABLES = {
   districts: DISTRICTS,
   buildings: BUILDINGS,
   empire: EMPIRE_VARIABLES,
+  systems: SYSTEM_UPGRADES,
   resources: RESOURCES,
 } as const;
 

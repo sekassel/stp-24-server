@@ -4,13 +4,14 @@ import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {GameDocument} from '../game/game.schema';
 import {EmpireDocument} from '../empire/empire.schema';
-import {SystemDocument, SystemUpgradeLevel, SystemUpgradeType} from '../system/system.schema';
+import {SystemDocument} from '../system/system.schema';
 import {calculateVariables, getInitialVariables} from './variables';
 import {Variable} from './types';
 import {ResourceName} from './resources';
 import {DistrictName, DISTRICTS} from './districts';
 import {EMPIRE_VARIABLES} from './empire-variables';
 import {BUILDINGS} from './buildings';
+import {SYSTEM_UPGRADES} from './system-upgrade';
 
 @Injectable()
 export class GameLogicService {
@@ -52,12 +53,11 @@ export class GameLogicService {
 
     // handle districts and buildings
     for (const system of systems) {
-      const upgradeType = SystemUpgradeLevel[system.upgrade] as SystemUpgradeType;
-      if (upgradeType === 'unexplored' || upgradeType === 'explored') {
+      if (system.upgrade === 'unexplored' || system.upgrade === 'explored') {
         continue;
       }
 
-      const systemUpkeepPaid = this.deductSystemUpkeep(upgradeType, empire, variables);
+      const systemUpkeepPaid = this.deductSystemUpkeep(system.upgrade, empire, variables);
       if (!systemUpkeepPaid) {
         continue;
       }
@@ -130,8 +130,8 @@ export class GameLogicService {
 
   private deductSystemUpkeep(upgrade: 'colonized' | 'upgraded' | 'developed', empire: EmpireDocument, variables: Record<Variable, number>) {
     let systemUpkeepPaid = true;
-    for (const resource of Object.keys(EMPIRE_VARIABLES.system[upgrade].consumption)) {
-      const variable = `empire.system.${upgrade}.consumption.${resource}` as Variable;
+    for (const resource of Object.keys(SYSTEM_UPGRADES[upgrade].upkeep)) {
+      const variable = `system.${upgrade}.upkeep.${resource}` as Variable;
       systemUpkeepPaid = this.deductResource(empire, resource as ResourceName, variables[variable]) && systemUpkeepPaid;
     }
     return systemUpkeepPaid;
@@ -150,17 +150,9 @@ export class GameLogicService {
   private popGrowth(systems: SystemDocument[], variables: Record<Variable, number>) {
     for (const system of systems) {
       const {population, capacity} = system;
-      let growthVariable: Variable = 'empire.pop.growth.developed';
-      if (population < capacity) {
-        switch (system.upgrade) {
-          case 2:
-            growthVariable = 'empire.pop.growth.colonized';
-            break;
-          case 3:
-            growthVariable = 'empire.pop.growth.upgraded';
-            break;
-        }
-      }
+      const growthVariable: Variable = population >= capacity
+        ? 'systems.developed.pop_growth'
+        : `systems.${system.upgrade}.pop_growth`;
       system.population = variables[growthVariable] * population;
     }
   }

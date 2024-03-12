@@ -2,8 +2,12 @@ import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
-import {System, SystemUpgradeLevel} from './system.schema';
+import {System, SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
+import {UpdateSystemDto} from './system.dto';
+import {SystemUpgradeName} from '../game-logic/system-upgrade';
+import {DistrictName} from '../game-logic/districts';
+import {BuildingName} from '../game-logic/buildings';
 
 @Injectable()
 @EventRepository()
@@ -13,6 +17,40 @@ export class SystemService extends MongooseRepository<System> {
     private eventEmitter: EventService,
   ) {
     super(model);
+  }
+
+  async updateSystem(system: SystemDocument, dto: UpdateSystemDto): Promise<SystemDocument | null> {
+    if (dto.upgrade) {
+      this.upgradeSystem(system, dto.upgrade);
+    }
+    if (dto.districts) {
+      this.updateDistricts(system, dto.districts);
+    }
+    if (dto.buildings) {
+      this.updateBuildings(system, dto.buildings);
+    }
+    await this.saveAll([system]) // emits update events
+    return system;
+  }
+
+  private upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName) {
+    // TODO @Giulcoo: https://github.com/sekassel-research/stp-24-server/issues/7
+    system.upgrade = upgrade;
+  }
+
+  private updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>) {
+    // TODO @Giulcoo: https://github.com/sekassel-research/stp-24-server/issues/15
+    //   - Check costs and resources
+    //   - Check if districts don't exceed capacity
+    //   - Check if districts don't exceed slots
+    for (const [district, amount] of Object.entries(districts)) {
+      system.$inc(`districts.${district}`, amount);
+    }
+  }
+
+  private updateBuildings(system: SystemDocument, buildings: BuildingName[]) {
+    // TODO @Giulcoo: https://github.com/sekassel-research/stp-24-server/issues/17
+    system.buildings = buildings;
   }
 
   async generateMap(game: Game): Promise<void> {
@@ -47,7 +85,7 @@ export class SystemService extends MongooseRepository<System> {
         type: 'regular',
         x: center[0] + distance * Math.cos(angle),
         y: center[1] + distance * Math.sin(angle),
-        upgrade: SystemUpgradeLevel.unexplored,
+        upgrade: 'unexplored',
         links: {},
         districtSlots: {},
         districts: {},
