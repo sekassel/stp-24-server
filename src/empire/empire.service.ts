@@ -9,7 +9,6 @@ import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MAX_EMPIRES
 import {generateTraits} from '../game-logic/traits';
 import {TECHNOLOGIES} from "../game-logic/technologies";
 import {UserService} from "../user/user.service";
-import {UpdateUserDto} from "../user/user.dto";
 import {ResourceName} from "../game-logic/resources";
 import {Variable} from "../game-logic/types";
 import {calculateVariable, calculateVariables, getVariables} from "../game-logic/variables";
@@ -95,7 +94,7 @@ export class EmpireService extends MongooseRepository<Empire> {
       if (!empire.technologies.includes(technologyId)) {
         empire.technologies.push(technologyId);
         // Increment the user's technology count by 1
-        user.$inc(`technologies.${technologyId}`, 1);
+        user.technologies = {...user.technologies, [technologyId]: (user.technologies?.[technologyId] || 0) + 1};
       }
     }
 
