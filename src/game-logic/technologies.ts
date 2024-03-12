@@ -489,7 +489,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * District technologies // TODO
    */
 
-  /** energy district: chance */
+  /** all districts: chance */
   // TODO only increase ancient chance, not mine or default
 
   /** energy district: reduce initial mineral cost */
@@ -584,9 +584,9 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['energetic_terraforming_2'],
     effects: [
       {
-        description: '+5% $energy$ production from $energy$ districts',
+        description: '+10% $energy$ production from $energy$ districts',
         variable: 'districts.energy.production.energy',
-        multiplier: 1.05,
+        multiplier: 1.1,
       },
     ],
   },
@@ -598,9 +598,9 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['energetic_terraforming_3'],
     effects: [
       {
-        description: '+10% $energy$ production from $energy$ districts',
+        description: '+20% $energy$ production from $energy$ districts',
         variable: 'districts.energy.production.energy',
-        multiplier: 1.1,
+        multiplier: 1.2,
       },
     ],
   },
@@ -611,9 +611,9 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['energetic_terraforming_2'],
     effects: [
       {
-        description: '+15% $energy$ production from $energy$ districts',
+        description: '+30% $energy$ production from $energy$ districts',
         variable: 'districts.energy.production.energy',
-        multiplier: 1.15,
+        multiplier: 1.3,
       },
     ],
   },
@@ -677,7 +677,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-
   /** mining district: reduce energy upkeep */
   autonomous_mining_protocols_1: {
     id: 'autonomous_mining_protocols_1',
@@ -721,6 +720,46 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** mining district: increase mineral production */
+  improved_extraction_tech_1: {
+    id: 'improved_extraction_tech_1',
+    tags: ['energy'],
+    cost: 200,
+    precedes: ['improved_extraction_tech_2'],
+    effects: [
+      {
+        description: '+10% $minerals$ production from $mining$ districts',
+        variable: 'districts.mining.production.minerals',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  improved_extraction_tech_2: {
+    id: 'improved_extraction_tech_2',
+    tags: ['energy'],
+    cost: 400,
+    requires: ['improved_extraction_tech_1'],
+    precedes: ['improved_extraction_tech_3'],
+    effects: [
+      {
+        description: '+20% $minerals$ production from $mining$ districts',
+        variable: 'districts.mining.production.minerals',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  improved_extraction_tech_3: {
+    id: 'improved_extraction_tech_3',
+    tags: ['energy'],
+    cost: 800,
+    requires: ['improved_extraction_tech_2'],
+    effects: [
+      {
+        description: '+30% $minerals$ production from $mining$ districts',
+        variable: 'districts.mining.production.minerals',
+        multiplier: 1.3,
+      },
+    ],
+  },
 
   /** agricultural district: chance */
 
@@ -809,6 +848,46 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** agricultural district: increase food production */
+  superior_crops_1: {
+    id: 'superior_crops_1',
+    tags: ['energy'],
+    cost: 200,
+    precedes: ['superior_crops_2'],
+    effects: [
+      {
+        description: '+10% $food$ production from $agriculture$ districts',
+        variable: 'districts.agriculture.production.food',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  superior_crops_2: {
+    id: 'superior_crops_2',
+    tags: ['energy'],
+    cost: 400,
+    requires: ['superior_crops_1'],
+    precedes: ['superior_crops_3'],
+    effects: [
+      {
+        description: '+20% $food$ production from $agriculture$ districts',
+        variable: 'districts.agriculture.production.food',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  superior_crops_3: {
+    id: 'superior_crops_3',
+    tags: ['energy'],
+    cost: 800,
+    requires: ['superior_crops_2'],
+    effects: [
+      {
+        description: '+30% $food$ production from $agriculture$ districts',
+        variable: 'districts.agriculture.production.food',
+        multiplier: 1.3,
+      },
+    ],
+  },
 
   /** research site: chance */
 
@@ -820,7 +899,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['effective_lab_building_2'],
     effects: [
       {
-        description: '-10% initial $minerals$ cost for $research_site$ districts',
+        description: '-10% initial $minerals$ cost for $research_site$',
         variable: 'districts.research_site.cost.minerals',
         multiplier: 0.9,
       },
@@ -834,7 +913,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['effective_lab_building_3'],
     effects: [
       {
-        description: '-20% initial $minerals$ cost for $research_site$ districts',
+        description: '-20% initial $minerals$ cost for $research_site$',
         variable: 'districts.research_site.cost.minerals',
         multiplier: 0.8,
       },
@@ -847,7 +926,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['effective_lab_building_2'],
     effects: [
       {
-        description: '-30% initial $minerals$ cost for $research_site$ districts',
+        description: '-30% initial $minerals$ cost for $research_site$',
         variable: 'districts.research_site.cost.minerals',
         multiplier: 0.7,
       },
@@ -862,7 +941,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['automated_research_archives_2'],
     effects: [
       {
-        description: '-10% $energy$ upkeep for $research_site$ districts',
+        description: '-10% $energy$ upkeep for $research_site$',
         variable: 'districts.research_site.upkeep.energy',
         multiplier: 0.9,
       },
@@ -876,7 +955,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['automated_research_archives_3'],
     effects: [
       {
-        description: '-20% $energy$ upkeep for $research_site$ districts',
+        description: '-20% $energy$ upkeep for $research_site$',
         variable: 'districts.research_site.upkeep.energy',
         multiplier: 0.8,
       },
@@ -889,7 +968,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['automated_research_archives_2'],
     effects: [
       {
-        description: '-30% $energy$ upkeep for $research_site$ district',
+        description: '-30% $energy$ upkeep for $research_site$',
         variable: 'districts.research_site.upkeep.energy',
         multiplier: 0.7,
       },
@@ -897,6 +976,46 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** research site: increase research production */
+  research_accelerators_1: {
+    id: 'research_accelerators_1',
+    tags: ['energy'],
+    cost: 200,
+    precedes: ['research_accelerators_2'],
+    effects: [
+      {
+        description: '+10% $research$ production from $research_site$',
+        variable: 'districts.research_site.production.research',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  research_accelerators_2: {
+    id: 'research_accelerators_2',
+    tags: ['energy'],
+    cost: 400,
+    requires: ['research_accelerators_1'],
+    precedes: ['research_accelerators_3'],
+    effects: [
+      {
+        description: '+20% $research$ production from $research_site$',
+        variable: 'districts.research_site.production.research',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  research_accelerators_3: {
+    id: 'research_accelerators_3',
+    tags: ['energy'],
+    cost: 800,
+    requires: ['research_accelerators_2'],
+    effects: [
+      {
+        description: '+30% $research$ production from $research_site$',
+        variable: 'districts.research_site.production.research',
+        multiplier: 1.3,
+      },
+    ],
+  },
 
   /** ancient_foundry: chance */
 
@@ -1000,6 +1119,46 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** ancient_foundry: increase alloy production */
+  mythic_alloy_crafting_1: {
+    id: 'mythic_alloy_crafting_1',
+    tags: ['energy'],
+    cost: 200,
+    precedes: ['mythic_alloy_crafting_2'],
+    effects: [
+      {
+        description: '+10% $alloys$ production from $ancient_foundry$',
+        variable: 'districts.ancient_foundry.production.alloys',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  mythic_alloy_crafting_2: {
+    id: 'mythic_alloy_crafting_2',
+    tags: ['energy'],
+    cost: 400,
+    requires: ['mythic_alloy_crafting_1'],
+    precedes: ['mythic_alloy_crafting_3'],
+    effects: [
+      {
+        description: '+20% $alloys$ production from $ancient_foundry$',
+        variable: 'districts.ancient_foundry.production.alloys',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  mythic_alloy_crafting_3: {
+    id: 'mythic_alloy_crafting_3',
+    tags: ['energy'],
+    cost: 800,
+    requires: ['mythic_alloy_crafting_2'],
+    effects: [
+      {
+        description: '+30% $alloys$ production from $ancient_foundry$',
+        variable: 'districts.ancient_foundry.production.alloys',
+        multiplier: 1.3,
+      },
+    ],
+  },
 
   /** ancient_refinery: chance */
 
@@ -1103,6 +1262,46 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** ancient_refinery: increase fuel production */
+  ancient_alchemy_1: {
+    id: 'ancient_alchemy_1',
+    tags: ['energy'],
+    cost: 200,
+    precedes: ['ancient_alchemy_2'],
+    effects: [
+      {
+        description: '+10% $fuel$ production from $ancient_refinery$',
+        variable: 'districts.ancient_refinery.production.fuel',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  ancient_alchemy_2: {
+    id: 'ancient_alchemy_2',
+    tags: ['energy'],
+    cost: 400,
+    requires: ['ancient_alchemy_1'],
+    precedes: ['ancient_alchemy_3'],
+    effects: [
+      {
+        description: '+20% $fuel$ production from $ancient_refinery$',
+        variable: 'districts.ancient_refinery.production.fuel',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  ancient_alchemy_3: {
+    id: 'ancient_alchemy_3',
+    tags: ['energy'],
+    cost: 800,
+    requires: ['ancient_alchemy_2'],
+    effects: [
+      {
+        description: '+30% $fuel$ production from $ancient_refinery$',
+        variable: 'districts.ancient_refinery.production.fuel',
+        multiplier: 1.3,
+      },
+    ],
+  },
 
 };
 

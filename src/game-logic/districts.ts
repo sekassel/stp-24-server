@@ -38,7 +38,7 @@ export const DISTRICTS = {
     upkeep: { // autonomous_mining_protocols tech tree
       energy: 5,
     },
-    production: {
+    production: { //improved_extraction_tech_1 tech tree
       minerals: 10,
     },
   },
@@ -55,7 +55,7 @@ export const DISTRICTS = {
       energy: 5, // self_replenishment tech tree
     },
     production: {
-      food: 10, // TODO food_production tech tree
+      food: 10, // superior_crops tech tree
     },
   },
   // advanced resource districts. cost should be around 100, upkeep around 20, production around 10
@@ -74,7 +74,7 @@ export const DISTRICTS = {
       energy: 20, // automated_research_archives tech tree
     },
     production: {
-      research: 10, // TODO research_production tech tree
+      research: 10, // research_accelerators tech tree
     },
   },
   ancient_foundry: {
@@ -93,7 +93,7 @@ export const DISTRICTS = {
       energy: 10, // timeless_fabrication_methods tech tree
     },
     production: {
-      alloys: 10, // TODO alloy_production tech tree
+      alloys: 10, // mythic_alloy_crafting tech tree
     },
   },
   ancient_refinery: {
