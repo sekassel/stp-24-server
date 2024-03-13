@@ -3,15 +3,16 @@ import {GameService} from '../game/game.service';
 import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {GameDocument} from '../game/game.schema';
-import {EmpireDocument} from '../empire/empire.schema';
-import {SystemDocument} from '../system/system.schema';
-import {calculateVariables, getInitialVariables} from './variables';
+import {Empire, EmpireDocument} from '../empire/empire.schema';
+import {System, SystemDocument} from '../system/system.schema';
+import {calculateVariable, calculateVariables, getInitialVariables} from './variables';
 import {Variable} from './types';
 import {ResourceName} from './resources';
 import {DistrictName, DISTRICTS} from './districts';
 import {EMPIRE_VARIABLES} from './empire-variables';
 import {BUILDINGS} from './buildings';
-import {SYSTEM_UPGRADES} from './system-upgrade';
+import {SYSTEM_UPGRADES, SystemUpgradeName} from './system-upgrade';
+import {AggregateItem, AggregateResult} from './aggregates';
 
 @Injectable()
 export class GameLogicService {
@@ -155,5 +156,32 @@ export class GameLogicService {
         : `systems.${system.upgrade}.pop_growth`;
       system.population = variables[growthVariable] * population;
     }
+  }
+
+  computeMonthlyPopGrowth(empire: Empire, systems: System[]): AggregateResult {
+    let total = 0;
+    const groupedItems: Partial<Record<SystemUpgradeName, AggregateItem>> = {};
+
+    for (const system of systems) {
+      const {population, capacity} = system;
+      const effectiveUpgrade = population >= capacity ? 'developed' : system.upgrade;
+      const item = groupedItems[effectiveUpgrade] ??= {
+        id: effectiveUpgrade,
+        count: 0,
+        subtotal: 0,
+        variable: `systems.${effectiveUpgrade}.pop_growth`,
+      };
+      const variable: Variable = `systems.${effectiveUpgrade}.pop_growth`;
+      const value = calculateVariable(variable, empire);
+      const systemGrowth = (value - 1) * population;
+      item.count++;
+      item.subtotal += systemGrowth;
+      total += systemGrowth;
+    }
+
+    return {
+      total,
+      items: Object.values(groupedItems),
+    };
   }
 }
