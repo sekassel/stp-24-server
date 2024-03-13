@@ -1,5 +1,5 @@
 import {Controller, Get, Param} from '@nestjs/common';
-import {ApiExtraModels, ApiOkResponse, ApiTags, getSchemaPath, refs} from '@nestjs/swagger';
+import {ApiExtraModels, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath, refs} from '@nestjs/swagger';
 import {TRAITS} from "../game-logic/traits";
 import {Building, District, Resource, SystemUpgrade, Technology, Trait} from '../game-logic/types';
 import {Throttled} from "../util/throttled.decorator";
@@ -10,6 +10,7 @@ import {BuildingName, BUILDINGS} from "../game-logic/buildings";
 import {RESOURCES} from '../game-logic/resources';
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
 import {SYSTEM_UPGRADES} from '../game-logic/system-upgrade';
+import {getInitialVariables} from '../game-logic/variables';
 
 @Controller('presets')
 @ApiTags('Presets')
@@ -92,5 +93,23 @@ export class PresetsController {
   @NotFound()
   getTrait(@Param('id') id: string): Trait | undefined {
     return TRAITS[id];
+  }
+
+  @Get('variables')
+  @ApiOperation({description: 'Get all variables and their default values'})
+  getVariables() {
+    return getInitialVariables();
+  }
+
+  @Get('variables/effects')
+  @ApiOperation({description: 'Get all variables and the technologies and traits that affect them'})
+  getVariablesEffects() {
+    const variables = Object.fromEntries(Object.keys(getInitialVariables()).map(k => [k, [] as string[]]));
+    for (const technology of [...Object.values(TECHNOLOGIES), ...Object.values(TRAITS)]) {
+      for (const effect of technology.effects) {
+        variables[effect.variable].push(technology.id);
+      }
+    }
+    return variables;
   }
 }
