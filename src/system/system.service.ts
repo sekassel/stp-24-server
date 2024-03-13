@@ -7,13 +7,13 @@ import {Game} from "../game/game.schema";
 import {GRIDS} from "../game-logic/gridtypes";
 import {UpdateSystemDto} from './system.dto';
 import {SYSTEM_UPGRADE_NAMES, SYSTEM_UPGRADES, SystemUpgradeName} from '../game-logic/system-upgrade';
-import {DistrictName, DISTRICTS} from '../game-logic/districts';
+import {DistrictName, DISTRICTS, NUMBER_OF_DISTRICTS} from '../game-logic/districts';
 import {BuildingName} from '../game-logic/buildings';
-import {SYSTEM_TYPES} from "../game-logic/system-types";
+import {SYSTEM_TYPES, SystemType} from "../game-logic/system-types";
 import {calculateVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
 import {Empire} from "../empire/empire.schema";
-import {Variable} from "../game-logic/types";
+import {District, Variable} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 
 @Injectable()
@@ -54,7 +54,7 @@ export class SystemService extends MongooseRepository<System> {
         //Remove resources from empire
         {
           const empire = await this.empireService.find(owner!) as Empire;
-          for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[SYSTEM_UPGRADE_NAMES[2]].cost)){
+          for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES.colonized.cost)){
             empire.resources[resource as ResourceName] -= amount;
           }
         }
@@ -66,7 +66,7 @@ export class SystemService extends MongooseRepository<System> {
         //Remove resources from empire
         {
           const empire = await this.empireService.find(owner!) as Empire;
-          for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[SYSTEM_UPGRADE_NAMES[2]].cost)){
+          for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[upgrade].cost)){
             empire.resources[resource as ResourceName] -= amount;
           }
         }
@@ -90,20 +90,12 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private generateDistricts(system: SystemDocument, empire: Empire){
-    system.type = this.randomSystemType();
-    system.capacity = Math.randInt(5) + 8;
-
     //Get district chances for this system type
     const districtChances: Partial<Record<Variable, number>> = {};
 
     for(const [key, value] of Object.entries(DISTRICTS)){
-      let chance: number = value.chance.default;
-
-      for(const [type, typeChance] of Object.entries(value.chance)){
-        if(system.type == type) chance = typeChance;
-      }
-
-      districtChances[`districts.${key}.chance.default` as Variable] = chance;
+      const chance: District['chance'] = value.chance;
+      districtChances[`districts.${key}.chance.${system.type}` as Variable] = chance[system.type] ?? value.chance.default;
     }
 
     calculateVariables(districtChances, empire);
@@ -113,37 +105,18 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private randomDistricts(system: SystemDocument, districtChances: Partial<Record<Variable, number>>) {
-    const types:DistrictName[] = [];
+    for(let i = 0; i < NUMBER_OF_DISTRICTS; i++){
+      const type= Object.keys(districtChances)[Object.values(districtChances).randomWeighted()] as Variable;
+      districtChances[type] && districtChances[type]!--;
 
-    for(const [district, chances] of Object.entries(districtChances)){
-      for(let i = 0; i < chances; i++){
-        types.push(district as DistrictName);
-      }
-    }
-
-    for(let i = 0; i < 10; i++){
-      const nextIndex = Math.randInt(types.length);
-      const type = types[nextIndex];
-      delete types[nextIndex];
-
-      if(system.districtSlots[type]){
-        system.districtSlots[type]!++;
+      const district = type.split('.')[1] as DistrictName;
+      if(system.districtSlots[district]){
+        system.districtSlots[district]!++;
       }
       else{
-        system.districtSlots[type] = 1;
+        system.districtSlots[district] = 1;
       }
     }
-  }
-
-  private randomSystemType(): string {
-    const types: string[] = [];
-    for(const [systemtype, chance] of Object.entries(SYSTEM_TYPES)) {
-      for(let i = 0; i < chance.chance; i++) {
-        types.push(systemtype);
-      }
-    }
-
-    return types[Math.randInt(types.length)];
   }
 
   async generateMap(game: Game): Promise<void> {
@@ -280,8 +253,8 @@ export class SystemService extends MongooseRepository<System> {
       _id: new Types.ObjectId(),
       game: game._id,
       owner: game.owner,
-      capacity: 0,
-      type: 'regular',
+      type: this.randomSystemType(),
+      capacity: Math.randInt(5) + 8,
       x: x,
       y: y,
       upgrade: SYSTEM_UPGRADE_NAMES[0],
@@ -293,6 +266,10 @@ export class SystemService extends MongooseRepository<System> {
       updatedAt: new Date(),
       createdAt: new Date(),
     };
+  }
+
+  private randomSystemType(): SystemType {
+    return Object.keys(SYSTEM_TYPES)[Object.values(SYSTEM_TYPES).map(s => s.chance).randomWeighted()] as SystemType;
   }
 
   private emit(event: string, system: System): void {
