@@ -6,7 +6,7 @@ import {System,SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
 import {GRIDS} from "../game-logic/gridtypes";
 import {UpdateSystemDto} from './system.dto';
-import {SYSTEM_UPGRADE_NAMES, SystemUpgradeName} from '../game-logic/system-upgrade';
+import {SYSTEM_UPGRADE_NAMES, SYSTEM_UPGRADES, SystemUpgradeName} from '../game-logic/system-upgrade';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {BuildingName} from '../game-logic/buildings';
 import {SYSTEM_TYPES} from "../game-logic/system-types";
@@ -14,6 +14,7 @@ import {calculateVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
 import {Empire} from "../empire/empire.schema";
 import {Variable} from "../game-logic/types";
+import {ResourceName} from "../game-logic/resources";
 
 @Injectable()
 @EventRepository()
@@ -49,10 +50,26 @@ export class SystemService extends MongooseRepository<System> {
         break;
       case 'colonized':
         system.owner = owner;
+
+        //Remove resources from empire
+        {
+          const empire = await this.empireService.find(owner!) as Empire;
+          for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[SYSTEM_UPGRADE_NAMES[2]].cost)){
+            empire.resources[resource as ResourceName] -= amount;
+          }
+        }
         break;
       case 'upgraded':
       case 'developed':
         system.capacity *= 1.25;
+
+        //Remove resources from empire
+        {
+          const empire = await this.empireService.find(owner!) as Empire;
+          for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[SYSTEM_UPGRADE_NAMES[2]].cost)){
+            empire.resources[resource as ResourceName] -= amount;
+          }
+        }
         break;
     }
   }
