@@ -7,10 +7,14 @@ import { JwtStrategy } from './jwt.strategy';
 
 @Injectable()
 export class AuthService {
+  // Hack because it is just not possible to inject AuthService into EventModuleOptions
+  static instance: AuthService;
+
   constructor(
     private jwtService: JwtService,
     private jwtStrategy: JwtStrategy,
   ) {
+    AuthService.instance = this;
   }
 
   async parseUserForWebSocket(message: IncomingMessage): Promise<User | undefined> {

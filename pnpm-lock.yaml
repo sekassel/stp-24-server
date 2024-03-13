@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   '@nestjs/swagger@7.1.7':
-    hash: uzti3qkedwrm3trvcvapapi3xu
+    hash: 4ii6sofmvozs2np5jre6jiles4
     path: patches/@nestjs__swagger@7.1.7.patch
 
 dependencies:
@@ -48,7 +48,7 @@ dependencies:
     version: 4.0.0(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(reflect-metadata@0.1.14)
   '@nestjs/swagger':
     specifier: ^7.1.7
-    version: 7.1.7(patch_hash=uzti3qkedwrm3trvcvapapi3xu)(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.14)
+    version: 7.1.7(patch_hash=4ii6sofmvozs2np5jre6jiles4)(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.14)
   '@nestjs/throttler':
     specifier: ^5.1.1
     version: 5.1.1(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(reflect-metadata@0.1.14)
@@ -1076,7 +1076,7 @@ packages:
       '@nestjs/microservices': 10.3.0(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(@nestjs/websockets@10.3.0)(nats@2.18.0)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       '@nestjs/mongoose': 10.0.2(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(mongoose@8.0.4)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       '@nestjs/platform-express': 10.3.0(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)
-      '@nestjs/swagger': 7.1.7(patch_hash=uzti3qkedwrm3trvcvapapi3xu)(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.14)
+      '@nestjs/swagger': 7.1.7(patch_hash=4ii6sofmvozs2np5jre6jiles4)(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.14)
       '@nestjs/websockets': 10.3.0(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       class-transformer: 0.5.1
       class-validator: 0.14.0
@@ -1446,7 +1446,7 @@ packages:
       - chokidar
     dev: true
 
-  /@nestjs/swagger@7.1.7(patch_hash=uzti3qkedwrm3trvcvapapi3xu)(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.14):
+  /@nestjs/swagger@7.1.7(patch_hash=4ii6sofmvozs2np5jre6jiles4)(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.14):
     resolution: {integrity: sha512-dM7a8rL2SYDvSZ1FyWTH90QshIGB74W7LwPIQpGM4cDOEJ+LyKDFpq9kb5BZ0m2A5vzLhue+pFe4/L5RzKES0w==}
     peerDependencies:
       '@fastify/static': ^6.0.0

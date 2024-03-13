@@ -62,10 +62,15 @@ However, the payload within the `data` field may contain any JSON value, not jus
 The following table shows which events may be sent.
 Some events are only visible to certain users for privacy reasons.
 
-| Event Name                                                   | Payload                             | Visible to |
-|--------------------------------------------------------------|-------------------------------------|------------|
-| `users.<userId>.{created,updated,deleted}`<sup>1, 2</sup>    | [`User`](#model-User)               | Everyone   |
-| `users.<userId>.achievements.<id>.{created,updated,deleted}` | [`Achievement`](#model-Achievement) | Everyone   |
+| Event Name                                                    | Payload                                                                          | Visible to   | Note                                    |
+|---------------------------------------------------------------|----------------------------------------------------------------------------------|--------------|-----------------------------------------|
+| `users.<userId>.{created,updated,deleted}`<sup>1, 2</sup>     | [`User`](#model-User)                                                            | Everyone     |
+| `users.<userId>.achievements.<id>.{created,updated,deleted}`  | [`Achievement`](#model-Achievement)                                              | Everyone     |
+| `games.<gameId>.{created,updated,deleted}`                    | [`Game`](#model-Game)                                                            | Everyone     |
+| `games.<gameId>.ticked`                                       | [`Game`](#model-Game)                                                            | Everyone     | Sent when the game updates periodically |
+| `games.<gameId>.members.<userId>.{created,updated,deleted}`   | [`Member`](#model-Member)                                                        | Everyone     |
+| `games.<gameId>.systems.<systemId>.{created,updated,deleted}` | [`System`](#model-System)                                                        | Everyone     |
+| `games.<gameId>.empires.<empireId>.{created,updated,deleted}` | [`Empire`](#model-Empire) or [`ReadEmpireDto`](#model-ReadEmpireDto)<sup>3</sup> | Game Members |
 
 <sup>1</sup>: The shorthand notation `foo.{bar,baz}` means "either `foo.bar` or `foo.baz`" **in this table**. You **cannot** use this notation to subscribe to or unsubscribe from events!
 
@@ -73,3 +78,5 @@ Some events are only visible to certain users for privacy reasons.
 The placeholder `<userId>` stands for "some fixed User ID". For example, a possible event could be `users.507f191e810c19729de860ea.updated`.
 You can use this to subscribe to events that concern a single resource. If you do want to subscribe to all user events, use the pattern `users.*.*`.
 Similarly, to receive all events regarding the messages of a group, you could use the pattern `groups.507f191e810c19729de860ea.messages.*.*`.
+
+<sup>3</sup>: The user corresponding to the empire receives more information than other game members.

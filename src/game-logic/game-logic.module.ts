@@ -5,6 +5,7 @@ import {GameLogicScheduler} from './game-logic.scheduler';
 import {GameModule} from '../game/game.module';
 import {SystemModule} from '../system/system.module';
 import {EmpireModule} from '../empire/empire.module';
+import { GameLogicController } from './game-logic.controller';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import {EmpireModule} from '../empire/empire.module';
     EmpireModule,
   ],
   providers: environment.passive ? [GameLogicService] : [GameLogicService, GameLogicScheduler],
+  controllers: [GameLogicController],
 })
 export class GameLogicModule {
 }

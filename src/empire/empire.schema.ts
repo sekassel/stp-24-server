@@ -19,6 +19,7 @@ import {MAX_EMPIRES, MAX_TRAITS} from '../game-logic/constants';
 import {ResourceName, RESOURCES} from '../game-logic/resources';
 import {TRAITS} from '../game-logic/traits';
 import {TECHNOLOGIES} from '../game-logic/technologies';
+import {RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class Empire extends GlobalSchema {
@@ -78,11 +79,7 @@ export class Empire extends GlobalSchema {
   @IsObject()
   @ApiProperty({
     type: 'object',
-    properties: Object.fromEntries(Object.keys(RESOURCES).map(id => [id, {
-      type: 'integer',
-      default: 0,
-      minimum: 0,
-    }])) as any,
+    properties: RESOURCES_SCHEMA_PROPERTIES,
   })
   resources: Record<ResourceName, number>;
 
