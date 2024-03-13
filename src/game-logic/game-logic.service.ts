@@ -161,7 +161,7 @@ export class GameLogicService {
     }
   }
 
-  computeMonthlyPopGrowth(empire: Empire, systems: System[]): AggregateResult {
+  aggregatePopGrowth(empire: Empire, systems: System[]): AggregateResult {
     let total = 0;
     const groupedItems: Partial<Record<SystemUpgradeName, AggregateItem>> = {};
 

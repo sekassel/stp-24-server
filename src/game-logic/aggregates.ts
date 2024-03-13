@@ -34,13 +34,13 @@ export class AggregateResult {
 }
 
 export const AGGREGATES = {
-  'resources.population.monthly': {
+  'resources.population.periodic': {
     params: [],
-    compute: (service, empire, systems) => service.computeMonthlyPopGrowth(empire, systems),
+    compute: (service, empire, systems) => service.aggregatePopGrowth(empire, systems),
   },
-  'system.resources.population.monthly': {
+  'system.resources.population.periodic': {
     params: ['system'],
-    compute: (service, empire, systems, {system}) => service.computeMonthlyPopGrowth(empire, systems.filter(s => s._id.equals(system))),
+    compute: (service, empire, systems, {system}) => service.aggregatePopGrowth(empire, systems.filter(s => s._id.equals(system))),
   },
 } as const satisfies Record<string, AggregateFn>;
 export type AggregateId = keyof typeof AGGREGATES;

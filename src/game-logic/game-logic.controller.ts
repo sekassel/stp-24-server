@@ -29,7 +29,7 @@ export class GameLogicController {
   @ApiOperation({
     summary: 'Get the value and explanation of an empire aggregate.',
     description: 'Query parameters can be used to add context to the aggregate.\n\n' +
-      'Example: `GET .../system.resources.population.monthly?system=5f4e3d2c1b0a090807060504`',
+      'Example: `GET .../system.resources.population.periodic?system=5f4e3d2c1b0a090807060504`',
   })
   @ApiOkResponse({type: AggregateResult})
   @ApiForbiddenResponse({description: 'Cannot view another user\'s empire aggregate.'})
