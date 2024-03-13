@@ -19,6 +19,8 @@ import {EmpireModule} from './empire/empire.module';
 import { PresetsModule } from './presets/presets.module';
 import {SystemModule} from "./system/system.module";
 import { GameLogicModule } from './game-logic/game-logic.module';
+import {IncomingMessage} from 'http';
+import {AuthService} from './auth/auth.service';
 
 @Module({
   imports: [
@@ -29,7 +31,7 @@ import { GameLogicModule } from './game-logic/game-logic.module';
     EventModule.forRoot({
       transport: Transport.NATS,
       transportOptions: environment.nats,
-      userIdProvider: async (req) => 'u1',
+      userIdProvider: async (req: IncomingMessage) => (await AuthService.instance.parseUserForWebSocket(req))?._id?.toString(),
     }),
     ScheduleModule.forRoot(),
     SentryModule.forRootAsync({
