@@ -65,7 +65,22 @@ export class PresetsController {
     });
 
     for (const tech of Object.values(TECHNOLOGIES)) {
-      g.node(tech.id, {label: `${tech.id}|Cost: ${tech.cost}|Tags: ${tech.tags.join(', ')}`, shape: 'record'});
+      const node = g.node(tech.id, {
+        label: `${tech.id}|Cost: ${tech.cost}|Tags: ${tech.tags.join(', ')}`,
+        shape: 'record',
+        style: 'filled',
+      });
+      switch (tech.tags[0]) {
+        case 'engineering':
+          node.attributes.set('fillcolor', 'orange');
+          break;
+        case 'physics':
+          node.attributes.set('fillcolor', 'dodgerblue');
+          break;
+        case 'society':
+          node.attributes.set('fillcolor', 'green3');
+          break;
+      }
       for (const req of tech.requires ?? []) {
         g.edge([req, tech.id]);
       }
