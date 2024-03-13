@@ -7,12 +7,13 @@ import {Game} from "../game/game.schema";
 import {GRIDS} from "../game-logic/gridtypes";
 import {UpdateSystemDto} from './system.dto';
 import {SYSTEM_UPGRADE_NAMES, SystemUpgradeName} from '../game-logic/system-upgrade';
-import {DISTRICT_NAMES, DistrictName, DISTRICTS} from '../game-logic/districts';
+import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {BuildingName} from '../game-logic/buildings';
 import {SYSTEM_TYPES} from "../game-logic/system-types";
-import {calculateVariables, getEmpireEffectSources} from "../game-logic/variables";
+import {calculateVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
 import {Empire} from "../empire/empire.schema";
+import {Variable} from "../game-logic/types";
 
 @Injectable()
 @EventRepository()
@@ -40,7 +41,6 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private async upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName, owner?: Types.ObjectId) {
-    // TODO @Giulcoo: https://github.com/sekassel-research/stp-24-server/issues/7
     system.upgrade = upgrade;
 
     switch (upgrade) {
@@ -51,8 +51,6 @@ export class SystemService extends MongooseRepository<System> {
         system.owner = owner;
         break;
       case 'upgraded':
-        system.capacity *= 1.25;
-        break;
       case 'developed':
         system.capacity *= 1.25;
         break;
@@ -75,19 +73,60 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private generateDistricts(system: SystemDocument, empire: Empire){
-    //TODO: Generate districts based on the empire that arrived first
     system.type = this.randomSystemType();
+    system.capacity = Math.randInt(5) + 8;
 
-    calculateVariables({}, empire);
+    //Get district chances for this system type
+    const districtChances: Partial<Record<Variable, number>> = {};
 
-    system.districtSlots["energy"] = 3;
-    system.districtSlots["mining"] = 3;
-    system.districtSlots["agriculture"] = 3;
+    for(const [key, value] of Object.entries(DISTRICTS)){
+      let chance: number = value.chance.default;
+
+      for(const [type, typeChance] of Object.entries(value.chance)){
+        if(system.type == type) chance = typeChance;
+      }
+
+      districtChances[`districts.${key}.chance.default` as Variable] = chance;
+    }
+
+    calculateVariables(districtChances, empire);
+
+    //Generate random districts depending on the chances
+    this.randomDistricts(system, districtChances);
+  }
+
+  private randomDistricts(system: SystemDocument, districtChances: Partial<Record<Variable, number>>) {
+    const types:DistrictName[] = [];
+
+    for(const [district, chances] of Object.entries(districtChances)){
+      for(let i = 0; i < chances; i++){
+        types.push(district as DistrictName);
+      }
+    }
+
+    for(let i = 0; i < 10; i++){
+      const nextIndex = Math.randInt(types.length);
+      const type = types[nextIndex];
+      delete types[nextIndex];
+
+      if(system.districtSlots[type]){
+        system.districtSlots[type]!++;
+      }
+      else{
+        system.districtSlots[type] = 1;
+      }
+    }
   }
 
   private randomSystemType(): string {
-    //TODO: Create random system type depending on chances
-    return Object.keys(SYSTEM_TYPES)[0];
+    const types: string[] = [];
+    for(const [systemtype, chance] of Object.entries(SYSTEM_TYPES)) {
+      for(let i = 0; i < chance.chance; i++) {
+        types.push(systemtype);
+      }
+    }
+
+    return types[Math.randInt(types.length)];
   }
 
   async generateMap(game: Game): Promise<void> {
@@ -224,7 +263,7 @@ export class SystemService extends MongooseRepository<System> {
       _id: new Types.ObjectId(),
       game: game._id,
       owner: game.owner,
-      capacity: Math.randInt(5) + 8, //TODO: Set realistic capacity
+      capacity: 0,
       type: 'regular',
       x: x,
       y: y,
