@@ -35,6 +35,9 @@ export class GameLogicService {
     }
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
+    for (const game of games) {
+      this.gameService.emit('ticked', game);
+    }
   }
 
   private updateGame(game: GameDocument, empires: EmpireDocument[], systems: SystemDocument[]) {

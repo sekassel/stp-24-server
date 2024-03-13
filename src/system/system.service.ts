@@ -181,6 +181,7 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private emit(event: string, system: System): void {
+    // TODO mask population, districts and buildings
     this.eventEmitter.emit(`games.${system.game}.systems.${system._id}.${event}`, system);
   }
 }

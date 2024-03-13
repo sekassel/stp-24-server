@@ -31,7 +31,7 @@ export class GameService extends MongooseRepository<Game> {
     return super.create((await this.hash(game)) as Game);
   }
 
-  private emit(event: string, game: Game): void {
+  emit(event: string, game: Game): void {
     this.eventService.emit(`games.${game._id}.${event}`, game);
   }
 }
