@@ -792,11 +792,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** energy district: reduce initial mineral cost */
-  quantum_cost_reduction_1: {
-    id: 'quantum_cost_reduction_1',
+  energy_district_construction_1: {
+    id: 'energy_district_construction_1',
     tags: ['energy'],
     cost: 200,
-    precedes: ['quantum_cost_reduction_2'],
+    precedes: ['energy_district_construction_2'],
     effects: [
       {
         description: '-10% initial $minerals$ cost for $energy$ districts',
@@ -805,12 +805,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  quantum_cost_reduction_2: {
-    id: 'quantum_cost_reduction_2',
+  energy_district_construction_2: {
+    id: 'energy_district_construction_2',
     tags: ['energy'],
     cost: 400,
-    requires: ['quantum_cost_reduction_1'],
-    precedes: ['quantum_cost_reduction_3'],
+    requires: ['energy_district_construction_1'],
+    precedes: ['energy_district_construction_3'],
     effects: [
       {
         description: '-20% initial $minerals$ cost for $energy$ districts',
@@ -819,11 +819,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  quantum_cost_reduction_3: {
-    id: 'quantum_cost_reduction_3',
+  energy_district_construction_3: {
+    id: 'energy_district_construction_3',
     tags: ['energy'],
     cost: 800,
-    precedes: ['quantum_cost_reduction_2'],
+    precedes: ['energy_district_construction_2'],
     effects: [
       {
         description: '-30% initial $minerals$ cost for $energy$ districts',
@@ -876,11 +876,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** energy district: increase energy production */
-  energetic_terraforming_1: {
-    id: 'energetic_terraforming_1',
+  energy_output_1: {
+    id: 'energy_output_1',
     tags: ['energy', 'production'],
     cost: 200,
-    precedes: ['energetic_terraforming_2'],
+    precedes: ['energy_output_2'],
     effects: [
       {
         description: '+10% $energy$ production from $energy$ districts',
@@ -889,12 +889,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  energetic_terraforming_2: {
-    id: 'energetic_terraforming_2',
+  energy_output_2: {
+    id: 'energy_output_2',
     tags: ['energy', 'production'],
     cost: 400,
-    requires: ['energetic_terraforming_1'],
-    precedes: ['energetic_terraforming_3'],
+    requires: ['energy_output_1'],
+    precedes: ['energy_output_3'],
     effects: [
       {
         description: '+20% $energy$ production from $energy$ districts',
@@ -903,11 +903,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  energetic_terraforming_3: {
-    id: 'energetic_terraforming_3',
+  energy_output_3: {
+    id: 'energy_output_3',
     tags: ['energy', 'production'],
     cost: 800,
-    requires: ['energetic_terraforming_2'],
+    requires: ['energy_output_2'],
     effects: [
       {
         description: '+30% $energy$ production from $energy$ districts',
@@ -918,11 +918,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** mining district: reduce initial mineral and energy cost */
-  nano_excavator_optimization_1: {
-    id: 'nano_excavator_optimization_1',
+  mining_foundation_1: {
+    id: 'mining_foundation_1',
     tags: ['energy', 'engineering'],
     cost: 200,
-    precedes: ['nano_excavator_optimization_2'],
+    precedes: ['mining_foundation_2'],
     effects: [
       {
         description: '-5% initial $minerals$ cost for $mining$ districts',
@@ -936,12 +936,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  nano_excavator_optimization_2: {
-    id: 'nano_excavator_optimization_2',
+  mining_foundation_2: {
+    id: 'mining_foundation_2',
     tags: ['energy', 'engineering'],
     cost: 400,
-    requires: ['nano_excavator_optimization_1'],
-    precedes: ['nano_excavator_optimization_3'],
+    requires: ['mining_foundation_1'],
+    precedes: ['mining_foundation_3'],
     effects: [
       {
         description: '-10% initial $minerals$ cost for $mining$ districts',
@@ -955,11 +955,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  nano_excavator_optimization_3: {
-    id: 'nano_excavator_optimization_3',
+  mining_foundation_3: {
+    id: 'mining_foundation_3',
     tags: ['energy', 'engineering'],
     cost: 800,
-    requires: ['nano_excavator_optimization_2'],
+    requires: ['mining_foundation_2'],
     effects: [
       {
         description: '-15% initial $minerals$ cost for $mining$ districts',
@@ -975,11 +975,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** mining district: reduce energy upkeep */
-  autonomous_mining_protocols_1: {
-    id: 'autonomous_mining_protocols_1',
+  efficient_mining_1: {
+    id: 'efficient_mining_1',
     tags: ['energy', 'production'],
     cost: 200,
-    precedes: ['autonomous_mining_protocols_2'],
+    precedes: ['efficient_mining_2'],
     effects: [
       {
         description: '-10% initial $energy$ upkeep for $mining$ districts',
@@ -988,12 +988,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  autonomous_mining_protocols_2: {
-    id: 'autonomous_mining_protocols_2',
+  efficient_mining_2: {
+    id: 'efficient_mining_2',
     tags: ['energy', 'production'],
     cost: 400,
-    requires: ['autonomous_mining_protocols_1'],
-    precedes: ['autonomous_mining_protocols_3'],
+    requires: ['efficient_mining_1'],
+    precedes: ['efficient_mining_3'],
     effects: [
       {
         description: '-20% initial $energy$ upkeep for $mining$ districts',
@@ -1002,11 +1002,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  autonomous_mining_protocols_3: {
-    id: 'autonomous_mining_protocols_3',
+  efficient_mining_3: {
+    id: 'efficient_mining_3',
     tags: ['energy', 'production'],
     cost: 800,
-    requires: ['autonomous_mining_protocols_2'],
+    requires: ['efficient_mining_2'],
     effects: [
       {
         description: '-30% initial $energy$ upkeep for $mining$ districts',
@@ -1059,11 +1059,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** agricultural district: reduce initial energy cost */
-  permaculture_ecosystem_engineering_1: {
-    id: 'permaculture_ecosystem_engineering_1',
+  efficient_agriculture_1: {
+    id: 'efficient_agriculture_1',
     tags: ['energy', 'biology'],
     cost: 200,
-    precedes: ['permaculture_ecosystem_engineering_2'],
+    precedes: ['efficient_agriculture_2'],
     effects: [
       {
         description: '-10% initial $energy$ cost for $agriculture$ districts',
@@ -1072,12 +1072,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  permaculture_ecosystem_engineering_2: {
-    id: 'permaculture_ecosystem_engineering_2',
+  efficient_agriculture_2: {
+    id: 'efficient_agriculture_2',
     tags: ['energy', 'biology'],
     cost: 400,
-    requires: ['permaculture_ecosystem_engineering_1'],
-    precedes: ['permaculture_ecosystem_engineering_3'],
+    requires: ['efficient_agriculture_1'],
+    precedes: ['efficient_agriculture_3'],
     effects: [
       {
         description: '-20% initial $energy$ cost for $agriculture$ districts',
@@ -1086,11 +1086,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  permaculture_ecosystem_engineering_3: {
-    id: 'permaculture_ecosystem_engineering_3',
+  efficient_agriculture_3: {
+    id: 'efficient_agriculture_3',
     tags: ['energy', 'biology'],
     cost: 800,
-    requires: ['permaculture_ecosystem_engineering_2'],
+    requires: ['efficient_agriculture_2'],
     effects: [
       {
         description: '-30% initial $energy$ cost for $agriculture$ districts',
@@ -1227,11 +1227,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** research site: reduce energy upkeep */
-  automated_research_archives_1: {
-    id: 'automated_research_archives_1',
+  effective_research_1: {
+    id: 'effective_research_1',
     tags: ['construction', 'engineering', 'energy'],
     cost: 200,
-    precedes: ['automated_research_archives_2'],
+    precedes: ['effective_research_2'],
     effects: [
       {
         description: '-10% $energy$ upkeep for $research_site$',
@@ -1240,12 +1240,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  automated_research_archives_2: {
-    id: 'automated_research_archives_2',
+  effective_research_2: {
+    id: 'effective_research_2',
     tags: ['construction', 'engineering', 'energy'],
     cost: 400,
-    requires: ['automated_research_archives_1'],
-    precedes: ['automated_research_archives_3'],
+    requires: ['effective_research_1'],
+    precedes: ['effective_research_3'],
     effects: [
       {
         description: '-20% $energy$ upkeep for $research_site$',
@@ -1254,11 +1254,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  automated_research_archives_3: {
+  effective_research_3: {
     id: 'automated_research_archives_3',
     tags: ['construction', 'engineering', 'energy'],
     cost: 800,
-    requires: ['automated_research_archives_2'],
+    requires: ['effective_research_2'],
     effects: [
       {
         description: '-30% $energy$ upkeep for $research_site$',
@@ -1269,11 +1269,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** research site: increase research production */
-  research_accelerators_1: {
-    id: 'research_accelerators_1',
+  increased_research_production_1: {
+    id: 'increased_research_production_1',
     tags: ['computing'],
     cost: 200,
-    precedes: ['research_accelerators_2'],
+    precedes: ['increased_research_production_2'],
     effects: [
       {
         description: '+10% $research$ production from $research_site$',
@@ -1282,12 +1282,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  research_accelerators_2: {
-    id: 'research_accelerators_2',
+  increased_research_production_2: {
+    id: 'increased_research_production_2',
     tags: ['computing'],
     cost: 400,
-    requires: ['research_accelerators_1'],
-    precedes: ['research_accelerators_3'],
+    requires: ['increased_research_production_1'],
+    precedes: ['increased_research_production_3'],
     effects: [
       {
         description: '+20% $research$ production from $research_site$',
@@ -1296,11 +1296,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  research_accelerators_3: {
-    id: 'research_accelerators_3',
+  increased_research_production_3: {
+    id: 'increased_research_production_3',
     tags: ['computing'],
     cost: 800,
-    requires: ['research_accelerators_2'],
+    requires: ['increased_research_production_2'],
     effects: [
       {
         description: '+30% $research$ production from $research_site$',
