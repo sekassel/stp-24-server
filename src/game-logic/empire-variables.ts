@@ -10,4 +10,7 @@ export const EMPIRE_VARIABLES = {
       },
     },
   },
+  technologies: {
+    cost_multiplier: 0.95,
+  },
 } as const;

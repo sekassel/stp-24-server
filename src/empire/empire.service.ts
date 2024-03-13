@@ -9,7 +9,6 @@ import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MAX_EMPIRES
 import {generateTraits} from '../game-logic/traits';
 import {TECHNOLOGIES} from "../game-logic/technologies";
 import {UserService} from "../user/user.service";
-import {UpdateUserDto} from "../user/user.dto";
 import {ResourceName} from "../game-logic/resources";
 import {Variable} from "../game-logic/types";
 import {calculateVariable, calculateVariables, getVariables} from "../game-logic/variables";
@@ -69,8 +68,13 @@ export class EmpireService extends MongooseRepository<Empire> {
 
   private async unlockTechnology(empire: Empire, technologies: string[]) {
     const user = await this.userService.find(empire.user) ?? notFound(empire.user);
+    const technologyCostMultiplier = calculateVariable('empire.technologies.cost_multiplier', empire);
     for (const technologyId of technologies) {
       const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
+
+      if (empire.technologies.includes(technologyId)) {
+        throw new BadRequestException(`Technology ${technologyId} has already been unlocked.`);
+      }
 
       // Check if all required technologies are unlocked
       const hasAllRequiredTechnologies = !technology.requires || technology.requires.every(
@@ -84,7 +88,7 @@ export class EmpireService extends MongooseRepository<Empire> {
 
       // Calculate the technology cost based on the formula
       const technologyCount = user.technologies?.[technologyId] || 0;
-      const technologyCost = technology.cost * 0.95 ** Math.min(technologyCount, 10);
+      const technologyCost = Math.round(technology.cost * technologyCostMultiplier ** Math.min(technologyCount, 10));
 
       if (empire.resources.research < technologyCost) {
         throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
@@ -95,7 +99,9 @@ export class EmpireService extends MongooseRepository<Empire> {
       if (!empire.technologies.includes(technologyId)) {
         empire.technologies.push(technologyId);
         // Increment the user's technology count by 1
-        user.$inc(`technologies.${technologyId}`, 1);
+        if (user.technologies) {
+          user.technologies[technologyId] = (user.technologies?.[technologyId] ?? 0) + 1;
+        }
       }
     }
 
@@ -112,7 +118,7 @@ export class EmpireService extends MongooseRepository<Empire> {
       if (resourceAmount === 0) {
         continue;
       }
-      const creditValue  = resourceVariables[`resources.${resource}.credit_value` as Variable];
+      const creditValue = resourceVariables[`resources.${resource}.credit_value` as Variable];
 
       if (creditValue === 0) {
         throw new BadRequestException(`The resource ${resource} cannot be bought or sold.`);
