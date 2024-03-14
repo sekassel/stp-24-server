@@ -1,22 +1,6 @@
 # STP Server 2024
 
-## Installation
-
-Requires [`pnpm`](https://pnpm.js.org/) instead of [`npm`].
-
-```bash
-$ pnpm install
-```
-
-## Dependencies
-
-MongoDB and NATS are required and provided with `docker-compose`.
-
-```bash
-$ docker compose up database nats
-```
-
-## Running the app
+## Non-Development
 
 To run everything for non-development, use
 
@@ -24,20 +8,42 @@ To run everything for non-development, use
 $ docker compose up
 ```
 
-Otherwise, choose one of the following:
+## Development
+
+### Setup
+
+Requires [`pnpm`](https://pnpm.js.org/) instead of `npm`.
+
+```bash
+$ pnpm install
+```
+
+MongoDB and NATS are required and provided with `docker-compose`.
+
+```bash
+$ docker compose up database nats
+```
+
+### Running
+
+Choose one of the following ways to run the server:
 
 ```bash
 # development
 $ pnpm run start
+```
 
+```bash
 # watch mode (recommended)
 $ pnpm run start:dev
+```
 
+```bash
 # production mode
 $ pnpm run start:prod
 ```
 
-## Test
+## Testing
 
 ```bash
 # unit tests
