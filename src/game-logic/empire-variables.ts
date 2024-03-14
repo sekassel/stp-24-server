@@ -1,5 +1,5 @@
 export const EMPIRE_VARIABLES = {
-  market: {
+  market: { // market fee reduction tech tree
     fee: 0.3,
   },
   pop: {

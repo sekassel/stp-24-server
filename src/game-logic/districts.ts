@@ -7,39 +7,39 @@ export const DISTRICTS = {
     id: 'energy',
     chance: {
       energy: 5,
-      ancient_technology: 3,
-      ancient_industry: 2,
-      ancient_military: 2,
+      ancient_technology: 3, // wisdom_reclamation tech tree
+      ancient_industry: 2, // primordial_industrial_secrets tech tree
+      ancient_military: 2, // timeless_warfare tech tree
       default: 1,
     },
     cost: {
-      minerals: 75, // silicon solar collectors // cheap_buildings tech tree
+      minerals: 75, // quantum_cost_reduction tech tree
     },
-    upkeep: {
-      minerals: 5, // maintenance
+    upkeep: { // low_maintenance_power_grids tech tree
+      minerals: 5,
     },
-    production: {
-      energy: 10, // energy_production tech tree
+    production: { // energetic_terraforming tech tree
+      energy: 10,
     },
   },
   mining: {
     id: 'mining',
     chance: {
       mining: 5,
-      ancient_industry: 3,
-      ancient_technology: 2,
-      ancient_military: 2,
+      ancient_industry: 3, // primordial_industrial_secrets tech tree
+      ancient_technology: 2, // wisdom_reclamation tech tree
+      ancient_military: 2, // timeless_warfare tech tree
       default: 1,
     },
     cost: {
-      minerals: 50, // building the supporting structure // cheap_buildings tech tree
-      energy: 25, // digging the mine // cheap_buildings tech tree
+      minerals: 50, // nano_excavator_optimization tech tree
+      energy: 25, // nano_excavator_optimization tech tree
     },
-    upkeep: {
-      energy: 5, // powering the mine // efficient_buildings tech tree
+    upkeep: { // autonomous_mining_protocols tech tree
+      energy: 5,
     },
-    production: {
-      minerals: 10, // mineral_production tech tree
+    production: { //improved_extraction_tech_1 tech tree
+      minerals: 10,
     },
   },
   agriculture: {
@@ -49,70 +49,70 @@ export const DISTRICTS = {
       default: 1,
     },
     cost: {
-      energy: 75, // tilling the soil // cheap_buildings tech tree
+      energy: 75, // permaculture_ecosystem_engineering tech tree
     },
     upkeep: {
-      energy: 5, // watering the crops // efficient_buildings tech tree
+      energy: 5, // self_replenishment tech tree
     },
     production: {
-      food: 10, // food_production tech tree
+      food: 10, // superior_crops tech tree
     },
   },
   // advanced resource districts. cost should be around 100, upkeep around 20, production around 10
   research_site: {
     id: 'research_site',
     chance: {
-      ancient_technology: 5,
-      ancient_military: 2,
-      ancient_industry: 2,
+      ancient_technology: 5, // wisdom_reclamation tech tree
+      ancient_military: 2, // timeless_warfare tech tree
+      ancient_industry: 2, // primordial_industrial_secrets tech tree
       default: 1,
     },
     cost: {
-      minerals: 100, // building the lab // cheap_buildings tech tree
+      minerals: 100, // effective_lab_building tech tree
     },
     upkeep: {
-      energy: 20, // powering the lab // efficient_buildings tech tree
+      energy: 20, // automated_research_archives tech tree
     },
     production: {
-      research: 10, // research_production tech tree
+      research: 10, // research_accelerators tech tree
     },
   },
   ancient_foundry: {
     id: 'ancient_foundry',
     chance: {
-      ancient_military: 5,
-      ancient_industry: 3,
-      ancient_technology: 2,
+      ancient_military: 5, // timeless_warfare tech tree
+      ancient_industry: 3, // primordial_industrial_secrets tech tree
+      ancient_technology: 2, // wisdom_reclamation tech tree
       default: 1,
     },
     cost: {
-      minerals: 100, // building the foundry // cheap_buildings tech tree
+      minerals: 100, // ancient_crafting_techniques tech tree
     },
     upkeep: {
-      minerals: 10, // the processed materials
-      energy: 10, // powering the foundry // efficient_buildings tech tree
+      minerals: 10, // timeless_fabrication_methods tech tree
+      energy: 10, // timeless_fabrication_methods tech tree
     },
     production: {
-      alloys: 10, // alloy_production tech tree
+      alloys: 10, // mythic_alloy_crafting tech tree
     },
   },
   ancient_refinery: {
     id: 'ancient_refinery',
     chance: {
-      ancient_industry: 5,
-      ancient_military: 3,
-      ancient_technology: 2,
+      ancient_industry: 5, // primordial_industrial_secrets tech tree
+      ancient_military: 3, // timeless_warfare tech tree
+      ancient_technology: 2, // wisdom_reclamation tech tree
       default: 1,
     },
     cost: {
-      minerals: 100, // building the refinery // cheap_buildings tech tree
+      minerals: 100, // traditional_refining_wisdom tech tree
     },
     upkeep: {
-      minerals: 10, // the crude oil
-      energy: 10, // powering the refinery // efficient_buildings tech tree
+      minerals: 10, // ageless_refining_techniques tech tree
+      energy: 10, // ageless_refining_techniques tech tree
     },
     production: {
-      fuel: 10, // fuel_production tech tree
+      fuel: 10, // ancient_alchemy tech tree
     },
   },
 } as const satisfies Record<string, District>;
