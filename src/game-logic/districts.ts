@@ -118,4 +118,4 @@ export const DISTRICTS = {
 } as const satisfies Record<string, District>;
 export type DistrictName = keyof typeof DISTRICTS;
 export const DISTRICT_NAMES = Object.keys(DISTRICTS) as DistrictName[];
-export const NUMBER_OF_DISTRICTS = 10;
+export const CAPACITY_RANGE = [8, 13] as const;

@@ -3,7 +3,7 @@ declare global {
     sum(): number;
     shuffle(): T[];
     random(): T;
-    randomWeighted(): T;
+    randomWeighted(selector: (item: T) => [any,number]): any;
     minBy(selector: (item: T) => number): T;
     maxBy(selector: (item: T) => number): T;
     countIf(predicate: (item: T) => boolean): number;
@@ -32,13 +32,8 @@ Array.prototype.random = function() {
   return this[Math.randInt(this.length)];
 }
 
-Array.prototype.randomWeighted = function() {
-  if(this.length > 0 && typeof this[0] === 'number'){
-    return this[Math.randWeighted(this.map((item) => item as number))];
-  }
-  else{
-    return this[0];
-  }
+Array.prototype.randomWeighted = function(selector: (item: any) => [any,number]) {
+  return selector(this[Math.randWeighted(this.map((item) => selector(item)[0]))])[1];
 }
 
 Array.prototype.minBy = function(selector: (item: any) => number) {

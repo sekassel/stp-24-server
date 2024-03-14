@@ -58,3 +58,12 @@ export const SYSTEM_UPGRADES = {
 
 export type SystemUpgradeName = keyof typeof SYSTEM_UPGRADES;
 export const SYSTEM_UPGRADE_NAMES = Object.keys(SYSTEM_UPGRADES) as SystemUpgradeName[];
+export const CAPACITY_MULTIPLIER = {
+  unexplored: 1,
+  explored: 1,
+  colonized: 1,
+  upgraded: 1.25,
+  developed: 1.25,
+} as const satisfies Record<SystemUpgradeName, number>;
+
+export const AMOUNT_OF_DISTRICTS = (capacity:number) => 0.8 * capacity;

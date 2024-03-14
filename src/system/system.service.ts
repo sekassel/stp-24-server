@@ -6,8 +6,14 @@ import {System,SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
 import {GRIDS} from "../game-logic/gridtypes";
 import {UpdateSystemDto} from './system.dto';
-import {SYSTEM_UPGRADE_NAMES, SYSTEM_UPGRADES, SystemUpgradeName} from '../game-logic/system-upgrade';
-import {DistrictName, DISTRICTS, NUMBER_OF_DISTRICTS} from '../game-logic/districts';
+import {
+  AMOUNT_OF_DISTRICTS,
+  CAPACITY_MULTIPLIER,
+  SYSTEM_UPGRADE_NAMES,
+  SYSTEM_UPGRADES,
+  SystemUpgradeName
+} from '../game-logic/system-upgrade';
+import {CAPACITY_RANGE, DistrictName, DISTRICTS} from '../game-logic/districts';
 import {BuildingName} from '../game-logic/buildings';
 import {SYSTEM_TYPES, SystemType} from "../game-logic/system-types";
 import {calculateVariables} from "../game-logic/variables";
@@ -43,6 +49,7 @@ export class SystemService extends MongooseRepository<System> {
 
   private async upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName, owner?: Types.ObjectId) {
     system.upgrade = upgrade;
+    system.capacity *= CAPACITY_MULTIPLIER[upgrade];
 
     switch (upgrade) {
       case 'explored':
@@ -61,8 +68,6 @@ export class SystemService extends MongooseRepository<System> {
         break;
       case 'upgraded':
       case 'developed':
-        system.capacity *= 1.25;
-
         //Remove resources from empire
         {
           const empire = await this.empireService.find(owner!) as Empire;
@@ -105,8 +110,8 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private randomDistricts(system: SystemDocument, districtChances: Partial<Record<Variable, number>>) {
-    for(let i = 0; i < NUMBER_OF_DISTRICTS; i++){
-      const type= Object.keys(districtChances)[Object.values(districtChances).randomWeighted()] as Variable;
+    for(let i = 0; i < AMOUNT_OF_DISTRICTS(system.capacity); i++){
+      const type = Object.entries(districtChances).randomWeighted(item => item) as Variable;
       districtChances[type] && districtChances[type]!--;
 
       const district = type.split('.')[1] as DistrictName;
@@ -253,8 +258,8 @@ export class SystemService extends MongooseRepository<System> {
       _id: new Types.ObjectId(),
       game: game._id,
       owner: game.owner,
-      type: this.randomSystemType(),
-      capacity: Math.randInt(5) + 8,
+      type: Object.entries(SYSTEM_TYPES).randomWeighted(([key, value]) => [key, value.chance]),
+      capacity: Math.randInt(CAPACITY_RANGE[1] - CAPACITY_RANGE[0]) + CAPACITY_RANGE[0],
       x: x,
       y: y,
       upgrade: SYSTEM_UPGRADE_NAMES[0],
@@ -266,10 +271,6 @@ export class SystemService extends MongooseRepository<System> {
       updatedAt: new Date(),
       createdAt: new Date(),
     };
-  }
-
-  private randomSystemType(): SystemType {
-    return Object.keys(SYSTEM_TYPES)[Object.values(SYSTEM_TYPES).map(s => s.chance).randomWeighted()] as SystemType;
   }
 
   private emit(event: string, system: System): void {
