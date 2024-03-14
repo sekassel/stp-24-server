@@ -4,7 +4,7 @@ export const BUILDINGS = {
   // basic resource buildings. cost should be around 75, upkeep around 5, production around 10
   power_plant: {
     id: 'power_plant',
-    cost: {
+    cost: { // cheap_buildings, improved_production, efficient_resources tech trees
       minerals: 75, // silicon solar collectors // cheap_buildings tech tree
     },
     upkeep: {
@@ -14,7 +14,7 @@ export const BUILDINGS = {
       energy: 10, // energy_production tech tree
     },
   },
-  mine: {
+  mine: { // cheap_buildings, efficient_buildings, improved_production tech trees
     id: 'mine',
     cost: {
       minerals: 50, // building the supporting structure // cheap_buildings tech tree
@@ -27,7 +27,7 @@ export const BUILDINGS = {
       minerals: 10, // mineral_production tech tree
     },
   },
-  farm: {
+  farm: { // cheap_buildings, efficient_buildings, improved_production tech trees
     id: 'farm',
     cost: {
       energy: 75, // tilling the soil // cheap_buildings tech tree
@@ -40,7 +40,7 @@ export const BUILDINGS = {
     },
   },
   // advanced resource buildings. cost should be around 100, upkeep around 20, production around 10
-  research_lab: {
+  research_lab: { // cheap_buildings, efficient_buildings, improved_production tech trees
     id: 'research_lab',
     cost: {
       minerals: 100, // building the lab // cheap_buildings tech tree
@@ -52,7 +52,7 @@ export const BUILDINGS = {
       research: 10, // research_production tech tree
     },
   },
-  foundry: {
+  foundry: { // cheap_buildings, efficient_buildings, improved_production tech trees
     id: 'foundry',
     cost: {
       minerals: 100, // building the foundry // cheap_buildings tech tree
@@ -65,7 +65,7 @@ export const BUILDINGS = {
       alloys: 10, // alloy_production tech tree
     },
   },
-  refinery: {
+  refinery: { // cheap_buildings, efficient_buildings, improved_production tech trees
     id: 'refinery',
     cost: {
       minerals: 100, // building the refinery // cheap_buildings tech tree
