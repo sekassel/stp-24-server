@@ -7,15 +7,13 @@ import {Game} from "../game/game.schema";
 import {GRIDS} from "../game-logic/gridtypes";
 import {UpdateSystemDto} from './system.dto';
 import {
-  AMOUNT_OF_DISTRICTS,
-  CAPACITY_MULTIPLIER,
   SYSTEM_UPGRADE_NAMES,
   SYSTEM_UPGRADES,
   SystemUpgradeName
 } from '../game-logic/system-upgrade';
-import {CAPACITY_RANGE, DistrictName, DISTRICTS} from '../game-logic/districts';
+import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {BuildingName} from '../game-logic/buildings';
-import {SYSTEM_TYPES} from "../game-logic/system-types";
+import {SYSTEM_TYPES, SystemType} from "../game-logic/system-types";
 import {calculateVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
 import {Empire} from "../empire/empire.schema";
@@ -49,46 +47,28 @@ export class SystemService extends MongooseRepository<System> {
 
   private async upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName, owner?: Types.ObjectId) {
     system.upgrade = upgrade;
-    system.capacity *= CAPACITY_MULTIPLIER[upgrade];
+    system.capacity *= SYSTEM_UPGRADES[upgrade].capacity_multiplier;
+
+    if(!owner){
+      throw new BadRequestException(`Owner required to explore system`);
+    }
+
+    const empire = await this.empireService.find(owner);
+    if(!empire){
+      throw new BadRequestException(`Empire ${owner} not found`);
+    }
 
     switch (upgrade) {
       case 'explored':
-        this.generateDistricts(system, await this.empireService.find(owner!) as Empire);
+        this.generateDistricts(system, empire as Empire);
         break;
       case 'colonized':
         system.owner = owner;
-
-        //Remove resources from empire
-        {
-          const empire = await this.empireService.find(owner!) as Empire;
-          const costs = Object.entries(SYSTEM_UPGRADES.colonized.cost);
-
-          if(costs.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
-            for(const [resource, amount] of costs){
-              empire.resources[resource as ResourceName] -= amount;
-            }
-          }
-          else{
-            throw new BadRequestException(`Not enough resources to colonize system`);
-          }
-        }
+        this.applyCosts(empire, upgrade);
         break;
       case 'upgraded':
       case 'developed':
-        //Remove resources from empire
-        {
-          const empire = await this.empireService.find(owner!) as Empire;
-          const costs = Object.entries(SYSTEM_UPGRADES.colonized.cost);
-
-          if(costs.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
-            for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[upgrade].cost)){
-              empire.resources[resource as ResourceName] -= amount;
-            }
-          }
-          else{
-            throw new BadRequestException(`Not enough resources to upgrade system`);
-          }
-        }
+        this.applyCosts(empire, upgrade);
         break;
     }
   }
@@ -124,8 +104,8 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private randomDistricts(system: SystemDocument, districtChances: Partial<Record<Variable, number>>) {
-    for(let i = 0; i < AMOUNT_OF_DISTRICTS(system.capacity); i++){
-      const type = Object.entries(districtChances).randomWeighted(item => item) as Variable;
+    for(let i = 0; i < SYSTEM_TYPES[system.type].district_percentage * system.capacity; i++){
+      const type = Object.entries(districtChances).randomWeighted(i => i[1])[0] as Variable;
       districtChances[type] && districtChances[type]!--;
 
       const district = type.split('.')[1] as DistrictName;
@@ -135,6 +115,19 @@ export class SystemService extends MongooseRepository<System> {
       else{
         system.districtSlots[district] = 1;
       }
+    }
+  }
+
+  private applyCosts(empire: Empire, upgrade: SystemUpgradeName){
+    const costs = Object.entries(SYSTEM_UPGRADES[upgrade].cost);
+
+    if(costs.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
+      for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[upgrade].cost)){
+        empire.resources[resource as ResourceName] -= amount;
+      }
+    }
+    else{
+      throw new BadRequestException(`Not enough resources to upgrade system`);
     }
   }
 
@@ -268,12 +261,15 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private createSystem(game: Game, x: number, y: number): System {
+    const systemType = Object.entries(SYSTEM_TYPES).randomWeighted(([, value]) => value.chance)[0] as SystemType;
+    const capacity_range = SYSTEM_TYPES[systemType].capacity_range;
+
     return {
       _id: new Types.ObjectId(),
       game: game._id,
       owner: game.owner,
-      type: Object.entries(SYSTEM_TYPES).randomWeighted(([key, value]) => [key, value.chance]),
-      capacity: Math.randInt(CAPACITY_RANGE[1] - CAPACITY_RANGE[0]) + CAPACITY_RANGE[0],
+      type: systemType,
+      capacity: Math.randInt(capacity_range[1] - capacity_range[0]) + capacity_range[0],
       x: x,
       y: y,
       upgrade: SYSTEM_UPGRADE_NAMES[0],
