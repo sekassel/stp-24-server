@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
@@ -61,8 +61,15 @@ export class SystemService extends MongooseRepository<System> {
         //Remove resources from empire
         {
           const empire = await this.empireService.find(owner!) as Empire;
-          for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES.colonized.cost)){
-            empire.resources[resource as ResourceName] -= amount;
+          const costs = Object.entries(SYSTEM_UPGRADES.colonized.cost);
+
+          if(costs.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
+            for(const [resource, amount] of costs){
+              empire.resources[resource as ResourceName] -= amount;
+            }
+          }
+          else{
+            throw new BadRequestException(`Not enough resources to colonize system`);
           }
         }
         break;
@@ -71,8 +78,15 @@ export class SystemService extends MongooseRepository<System> {
         //Remove resources from empire
         {
           const empire = await this.empireService.find(owner!) as Empire;
-          for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[upgrade].cost)){
-            empire.resources[resource as ResourceName] -= amount;
+          const costs = Object.entries(SYSTEM_UPGRADES.colonized.cost);
+
+          if(costs.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
+            for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[upgrade].cost)){
+              empire.resources[resource as ResourceName] -= amount;
+            }
+          }
+          else{
+            throw new BadRequestException(`Not enough resources to upgrade system`);
           }
         }
         break;
