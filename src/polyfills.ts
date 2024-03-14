@@ -33,7 +33,7 @@ Array.prototype.random = function() {
 }
 
 Array.prototype.randomWeighted = function(selector: (item: any) => [any,number]) {
-  return selector(this[Math.randWeighted(this.map((item) => selector(item)[0]))])[1];
+  return selector(this[Math.randWeighted(this.map((item) => selector(item)[1]))])[0];
 }
 
 Array.prototype.minBy = function(selector: (item: any) => number) {

@@ -15,7 +15,7 @@ import {
 } from '../game-logic/system-upgrade';
 import {CAPACITY_RANGE, DistrictName, DISTRICTS} from '../game-logic/districts';
 import {BuildingName} from '../game-logic/buildings';
-import {SYSTEM_TYPES, SystemType} from "../game-logic/system-types";
+import {SYSTEM_TYPES} from "../game-logic/system-types";
 import {calculateVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
 import {Empire} from "../empire/empire.schema";
