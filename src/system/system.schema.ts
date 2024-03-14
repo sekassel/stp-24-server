@@ -14,7 +14,7 @@ export class System extends GlobalSchema {
   @Ref('Game')
   game: Types.ObjectId;
 
-  @Prop()
+  @Prop({type: String})
   @ApiProperty()
   @IsString()
   type: SystemType;
