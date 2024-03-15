@@ -6,12 +6,14 @@ export const SYSTEM_UPGRADES = {
     pop_growth: 1,
     cost: {},
     upkeep: {},
+    capacity_multiplier: 1,
   },
   explored: {
     id: 'explored',
     pop_growth: 1,
     cost: {},
     upkeep: {},
+    capacity_multiplier: 1,
   },
   colonized: {
     id: 'colonized',
@@ -25,6 +27,7 @@ export const SYSTEM_UPGRADES = {
       fuel: 1,
       food: 1,
     },
+    capacity_multiplier: 1,
   },
   upgraded: {
     id: 'upgraded',
@@ -39,6 +42,7 @@ export const SYSTEM_UPGRADES = {
       food: 2,
       alloys: 1, // upgraded systems provide defense that must be maintained
     },
+    capacity_multiplier: 1.25,
   },
   developed: {
     id: 'developed',
@@ -53,6 +57,7 @@ export const SYSTEM_UPGRADES = {
       food: 4,
       alloys: 3,
     },
+    capacity_multiplier: 1.25,
   }
 } as const satisfies Record<string, SystemUpgrade>;
 

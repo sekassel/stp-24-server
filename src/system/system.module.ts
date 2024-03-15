@@ -5,6 +5,7 @@ import {SystemController} from './system.controller';
 import {SystemHandler} from './system.handler';
 import {System, SystemSchema} from './system.schema';
 import {SystemService} from './system.service';
+import {EmpireModule} from '../empire/empire.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import {SystemService} from './system.service';
       schema: SystemSchema,
     }]),
     GameModule,
+    EmpireModule,
   ],
   controllers: [SystemController],
   providers: [SystemService, SystemHandler],

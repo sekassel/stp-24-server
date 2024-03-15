@@ -3,6 +3,7 @@ declare global {
     sum(): number;
     shuffle(): T[];
     random(): T;
+    randomWeighted(selector: (item: T) => number): T;
     minBy(selector: (item: T) => number): T;
     maxBy(selector: (item: T) => number): T;
     countIf(predicate: (item: T) => boolean): number;
@@ -11,6 +12,7 @@ declare global {
   interface Math {
     clamp(value: number, min: number, max: number): number;
     randInt(maxExclusive: number): number;
+    randWeighted(weights: number[]): number;
   }
 }
 
@@ -28,6 +30,10 @@ Array.prototype.shuffle = function() {
 
 Array.prototype.random = function() {
   return this[Math.randInt(this.length)];
+}
+
+Array.prototype.randomWeighted = function(selector: (item: any) => number) {
+  return this[Math.randWeighted(this.map(selector))];
 }
 
 Array.prototype.minBy = function(selector: (item: any) => number) {
@@ -48,6 +54,18 @@ Math.clamp = function(value: number, min: number, max: number) {
 
 Math.randInt = function(maxExclusive: number) {
   return Math.floor(Math.random() * maxExclusive);
+}
+
+Math.randWeighted = function(weights: number[]) {
+  const total = weights.sum();
+  let random = Math.random() * total;
+  for (let i = 0; i < weights.length; i++) {
+    if (random < weights[i]) {
+      return i;
+    }
+    random -= weights[i];
+  }
+  return weights.length - 1;
 }
 
 export {};
