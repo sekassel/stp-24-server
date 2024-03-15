@@ -487,13 +487,20 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * District technologies //
    */
 
-  // TODO unlock ancient abilities
-
   /** all districts: chance for ancient military */
+  ancient_military: {
+    id: 'ancient_military',
+    tags: ['society', 'military', 'rare'],
+    cost: 400,
+    precedes: ['timeless_warfare_1'],
+    effects: [
+    ],
+  },
   timeless_warfare_1: {
     id: 'timeless_warfare_1',
     tags: ['society', 'military', 'rare'],
     cost: 400,
+    requires: ['ancient_military'],
     precedes: ['timeless_warfare_2'],
     effects: [
       {
@@ -592,10 +599,19 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** all districts: chance for ancient industry */
+  ancient_industry: {
+    id: 'ancient_industry',
+    tags: ['engineering', 'production', 'rare'],
+    cost: 400,
+    precedes: ['primordial_industrial_secrets_1'],
+    effects: [
+    ],
+  },
   primordial_industrial_secrets_1: {
     id: 'primordial_industrial_secrets_1',
     tags: ['engineering', 'production', 'rare'],
     cost: 400,
+    requires: ['ancient_industry'],
     precedes: ['primordial_industrial_secrets_2'],
     effects: [
       {
@@ -693,10 +709,19 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** all districts: chance for ancient technology */
+  ancient_technology: {
+    id: 'ancient_technology',
+    tags: ['physics', 'computing', 'rare'],
+    cost: 400,
+    precedes: ['wisdom_reclamation_1'],
+    effects: [
+    ],
+  },
   wisdom_reclamation_1: {
     id: 'wisdom_reclamation_1',
     tags: ['physics', 'computing', 'rare'],
     cost: 400,
+    requires: ['ancient_technology'],
     precedes: ['wisdom_reclamation_2'],
     effects: [
       {
