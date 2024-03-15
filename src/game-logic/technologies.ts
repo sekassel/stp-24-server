@@ -852,7 +852,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'energy_district_construction_3',
     tags: ['engineering', 'construction'],
     cost: 800,
-    precedes: ['energy_district_construction_2'],
+    requires: ['energy_district_construction_2'],
     effects: [
       {
         description: '-30% initial $minerals$ cost for $energy$ districts',
