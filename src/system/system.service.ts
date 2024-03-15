@@ -72,7 +72,7 @@ export class SystemService extends MongooseRepository<System> {
         break;
     }
 
-    this.empireService.saveAll([empire]);
+    await this.empireService.saveAll([empire]);
   }
 
   private updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>) {
