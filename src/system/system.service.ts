@@ -16,7 +16,7 @@ import {BuildingName} from '../game-logic/buildings';
 import {SYSTEM_TYPES, SystemType} from "../game-logic/system-types";
 import {calculateVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
-import {Empire} from "../empire/empire.schema";
+import {Empire, EmpireDocument} from "../empire/empire.schema";
 import {District, Variable} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 
@@ -60,7 +60,7 @@ export class SystemService extends MongooseRepository<System> {
 
     switch (upgrade) {
       case 'explored':
-        this.generateDistricts(system, empire as Empire);
+        this.generateDistricts(system, empire);
         break;
       case 'colonized':
         system.owner = owner;
@@ -71,6 +71,8 @@ export class SystemService extends MongooseRepository<System> {
         this.applyCosts(empire, upgrade);
         break;
     }
+
+    this.empireService.saveAll([empire]);
   }
 
   private updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>) {
@@ -104,7 +106,8 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private randomDistricts(system: SystemDocument, districtChances: Partial<Record<Variable, number>>) {
-    for(let i = 0; i < SYSTEM_TYPES[system.type].district_percentage * system.capacity; i++){
+    const nDistricts = SYSTEM_TYPES[system.type].district_percentage * system.capacity;
+    for(let i = 0; i < nDistricts; i++){
       const type = Object.entries(districtChances).randomWeighted(i => i[1])[0] as Variable;
       districtChances[type] && districtChances[type]!--;
 
@@ -118,7 +121,7 @@ export class SystemService extends MongooseRepository<System> {
     }
   }
 
-  private applyCosts(empire: Empire, upgrade: SystemUpgradeName){
+  private applyCosts(empire: EmpireDocument, upgrade: SystemUpgradeName){
     const costs = Object.entries(SYSTEM_UPGRADES[upgrade].cost);
 
     if(costs.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
