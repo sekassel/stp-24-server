@@ -1371,22 +1371,35 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 };
 
 // special resources
-generate_sequence('pop_food_consumption', ['society', 'biology'], 'empire.pop.consumption.food', '$food$ per $pop$ per $time$', {multiplierIncrement: -0.05});
+generate_sequence('pop_food_consumption', ['society', 'biology'], 'empire.pop.consumption.food',
+  '$food$ per $pop$ per $time$', {multiplierIncrement: -0.05});
 // pop growth is already a multiplier, so it will be 1.05 -> 1.05 * 1.025 = 1.07625 -> 1.05 * 1.025^2 = 1.10390625
-generate_sequence('pop_growth_colonized', ['society', 'biology'], 'systems.colonized.pop_growth', '$pop$ growth per $time$ on colonized $system$', {multiplierIncrement: +0.025});
-generate_sequence('pop_growth_upgraded', ['society', 'biology'], 'systems.upgraded.pop_growth', '$pop$ growth per $time$ on upgraded $system$', {multiplierIncrement: +0.025});
-generate_sequence('unemployed_pop_cost', ['society', 'state'], 'empire.pop.consumption.credits.unemployed', '$credits$ per unemployed $pop$ per $time$', {
+generate_sequence('pop_growth_colonized', ['society', 'biology'], 'systems.colonized.pop_growth',
+  '$pop$ growth per $time$ on colonized $system$',
+  {multiplierIncrement: +0.025});
+generate_sequence('pop_growth_upgraded', ['society', 'biology'], 'systems.upgraded.pop_growth',
+  '$pop$ growth per $time$ on upgraded $system$',
+  {multiplierIncrement: +0.025});
+generate_sequence('unemployed_pop_cost', ['society', 'state'],
+  'empire.pop.consumption.credits.unemployed', '$credits$ per unemployed $pop$ per $time$',
+  {
   multiplierIncrement: -0.05,
   exponentialBase: 3,
 }); // -5% -> -15% -> -45%
 // basic resources
-generate_sequence('energy_production', ['physics', 'energy'], 'buildings.power_plant.production.energy', '$energy$ from $power_plant$ per $time$');
-generate_sequence('mineral_production', ['engineering', 'production'], 'buildings.mine.production.minerals', '$minerals$ from $mine$ per $time$');
-generate_sequence('food_production', ['society', 'biology'], 'buildings.farm.production.food', '$food$ from $farm$ per $time$');
+generate_sequence('energy_production', ['physics', 'energy'],
+  'buildings.power_plant.production.energy', '$energy$ from $power_plant$ per $time$');
+generate_sequence('mineral_production', ['engineering', 'production'],
+  'buildings.mine.production.minerals', '$minerals$ from $mine$ per $time$');
+generate_sequence('food_production', ['society', 'biology'],
+  'buildings.farm.production.food', '$food$ from $farm$ per $time$');
 // advanced resources
-generate_sequence('research_production', ['physics', 'computing'], 'buildings.research_lab.production.research', '$research$ from $research_lab$ per $time$');
-generate_sequence('alloy_production', ['engineering', 'materials'], 'buildings.foundry.production.alloys', '$alloys$ from $foundry$ per $time$');
-generate_sequence('fuel_production', ['engineering', 'production'], 'buildings.refinery.production.fuel', '$fuel$ from $refinery$ per $time$');
+generate_sequence('research_production', ['physics', 'computing'],
+  'buildings.research_lab.production.research', '$research$ from $research_lab$ per $time$');
+generate_sequence('alloy_production', ['engineering', 'materials'],
+  'buildings.foundry.production.alloys', '$alloys$ from $foundry$ per $time$');
+generate_sequence('fuel_production', ['engineering', 'production'],
+  'buildings.refinery.production.fuel', '$fuel$ from $refinery$ per $time$');
 
 // basic district resource production
 generate_sequence('energy_district_production', ['energy', 'production'],
