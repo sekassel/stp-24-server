@@ -155,6 +155,11 @@ export class SystemUpgrade {
     properties: RESOURCES_SCHEMA_PROPERTIES,
   })
   upkeep: Partial<Record<ResourceName, number>>;
+
+  @ApiPropertyOptional({
+    description: 'The capacity multiplier of the system.',
+  })
+  capacity_multiplier?: number;
 }
 
 export class Building {
