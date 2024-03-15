@@ -255,7 +255,7 @@ export const TRAITS: Record<string, Trait> = {
     ],
   },
   green: { // major energy production penalty
-    id: '_green',
+    id: 'green',
     cost: -3,
     conflicts: ['radioactive', 'chernobylian', 'tsaristic', 'ecological', 'nature_loving'],
     effects: [
