@@ -544,11 +544,6 @@ export const TRAITS: Record<string, Trait> = {
         variable: 'buildings.foundry.production.alloys',
         multiplier: 0.99,
       },
-      {
-        description: '-1% $alloys$ from $foundry$',
-        variable: 'buildings.foundry.production.alloys',
-        multiplier: 0.99,
-      },
     ],
   },
   beginner: { // minor fuel and research production penalty
