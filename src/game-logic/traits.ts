@@ -255,7 +255,7 @@ export const TRAITS: Record<string, Trait> = {
     ],
   },
   green: { // major energy production penalty
-    id: '_green',
+    id: 'green',
     cost: -3,
     conflicts: ['radioactive', 'chernobylian', 'tsaristic', 'ecological', 'nature_loving'],
     effects: [
@@ -537,11 +537,6 @@ export const TRAITS: Record<string, Trait> = {
       {
         description: '-1% $minerals$ from $mine$',
         variable: 'buildings.mine.production.minerals',
-        multiplier: 0.99,
-      },
-      {
-        description: '-1% $alloys$ from $foundry$',
-        variable: 'buildings.foundry.production.alloys',
         multiplier: 0.99,
       },
       {
