@@ -17,7 +17,7 @@ import {SYSTEM_TYPES, SystemType} from "../game-logic/system-types";
 import {calculateVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
 import {Empire, EmpireDocument} from "../empire/empire.schema";
-import {District, Variable} from "../game-logic/types";
+import {District, Grid, Variable, Vertex} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 
 @Injectable()
@@ -150,106 +150,101 @@ export class SystemService extends MongooseRepository<System> {
   /**
    * Creates a cluster of systems and connects these systems
    */
-  // private createCluster(game: Game, count: number, radius: number, center: number[]): System[] {
   private createCluster(game: Game, scaling: number, offset: number[]): System[] {
-    const systems: System[] = [];
+    const grid:Grid = GRIDS[Math.randInt(GRIDS.length)];
+    const systemAmount = Math.randInt(grid.system_range[1] - grid.system_range[0]) + grid.system_range[0];
+    const vertices: number[] = Array.from(grid.vertices.map(vertex => vertex.id)).sort(() => Math.random() - 0.5).slice(0, systemAmount);
+    const edges: number[][] = this.createSpanningTree(grid, vertices);
+
+    //Add random cycles
+    // const randomCycles = vertices.length * grid.cycle_percentage;
+    // for(let i = 0; i < randomCycles; i++) {
+    //   const system1 = vertices[Math.randInt(vertices.length)];
+    //   const neighbors = grid.vertices[system1].neighbors.filter(neighbor => vertices.includes(neighbor));
+    //   const system2 = neighbors[Math.randInt(neighbors.length)];
+    //   const newEdge = Array.from([system1, system2]).sort(v => v);
+    //
+    //   if(!edges.includes(newEdge) && !this.hasIntersection(grid, edges, newEdge)){
+    //     edges.push([system1, system2]);
+    //   }
+    // }
 
     //Create systems
-    const grid:number[][] = GRIDS[Math.randInt(GRIDS.length)].sort(() => Math.random() - 0.5).slice(0, 10);
+    const systems: Record<number, System> = {};
+    vertices.forEach(vertex => systems[vertex] = this.createSystem(game, grid.vertices[vertex], scaling, offset));
 
-    for(const [x, y] of grid) {
-      systems.push(this.createSystem(game, (x + Math.random()*0.25) * scaling + offset[0], (y + Math.random()*0.25) * scaling + offset[1]));
+    //Connect systems
+    for(const [system1, system2] of edges) {
+      this.connectSystems(systems[system1], systems[system2]);
     }
 
-    //Connect systems as a spanning tree
-    const visitedSystems: System[] = [systems[0]];
-    while(visitedSystems.length < systems.length) {
-      let nextSystem: System | undefined = undefined;
-      for(const system of this.edgesSortedSystems(visitedSystems)){
-        if(Math.random() < 0.3){
-          nextSystem = system;
-          break;
-        }
+    return Object.values(systems);
+  }
+
+  private createSpanningTree(grid: Grid, vertices: number[]): number[][] {
+    const edges: number[][] = [];
+
+    const visited = [vertices[Math.randInt(vertices.length)]];
+
+    while(visited.length < vertices.length) {
+      const candidateEdges = [];
+
+      for(const vertex of visited) {
+        const validNeighborEdges = grid.vertices[vertex].neighbors
+          .filter(neighbor => vertices.includes(neighbor) && !visited.includes(neighbor))
+          .map(neighbor => vertex > neighbor ? [neighbor, vertex] : [vertex, neighbor])
+          .filter(edge => !this.hasCycle(vertex, edges) && !this.hasIntersection(grid, edges, edge));
+
+        candidateEdges.push(...validNeighborEdges);
       }
 
-      if(!nextSystem) nextSystem = visitedSystems[Math.randInt(visitedSystems.length)];
-
-      const candidates = this.distanceSortedSystems(systems.filter(s => !visitedSystems.includes(s)), nextSystem);
-
-      for(const otherSystem of candidates) {
-        this.connectSystems(nextSystem, otherSystem);
-
-        if(this.checkForCycles(systems, nextSystem)) {
-          this.removeConnection(nextSystem, otherSystem);
-        } else{
-          visitedSystems.push(otherSystem);
-          break;
-        }
-      }
+      const newEdge = candidateEdges[Math.randInt(candidateEdges.length)];
+      edges.push(newEdge);
+      visited.push(newEdge.find(vertex => !visited.includes(vertex))!);
     }
 
-    //Add random cycle
-    //const randomCycles = Math.randInt(count/10);
-    const randomCycles = 0;
-    for(let i = 0; i < randomCycles; i++) {
-      const system1 = systems[Math.randInt(systems.length)];
-      const system2 = systems[Math.randInt(systems.length)];
-
-      if(system1 != system2) this.connectSystems(system1, system2);
-    }
-
-    return systems;
+    return edges;
   }
 
   /**
    * Checks if a system is part of a cycle in a cluster of systems
    * */
-  private checkForCycles(systems: System[], start: System): boolean {
-    const systemsCopy: System[] = [];
-    for(const system of systems) {
-      const copy = new System();
-      copy._id = system._id;
-      copy.links = {...system.links};
-      systemsCopy.push(copy);
-    }
+  private hasCycle(start: number, edges: number[][]): boolean {
+    const visited: number[][] = edges.filter(edge => edge.includes(start));
+    const stack: number[] = visited.map(edge => edge[0] === start ? edge[1] : edge[0]);
 
-    const startCopy = new System();
-    startCopy._id = start._id;
-    startCopy.links = {...start.links};
-
-    const stack:System[] = [];
-
-    for(const link of Object.keys(startCopy.links)) {
-      const neighbors = systemsCopy.filter(system => system._id.toString() === link);
-      neighbors.forEach(neighbor => this.removeConnection(startCopy, neighbor));
-      stack.push(...neighbors);
-    }
-
-    while(stack.length > 0) {
+    while (stack.length > 0) {
       const current = stack.pop();
       if(!current) break;
 
-      if(current == start) return true;
-
-      for(const link in current.links) {
-        const neighbors = systemsCopy.filter(system => system._id.toString() === link);
-        neighbors.forEach(neighbor => this.removeConnection(current, neighbor));
-        stack.push(...neighbors);
+      for(const edge of edges.filter(edge => !visited.includes(edge))) {
+        if(edge[0] === current) {
+          if(edge[1] === start) return true;
+          visited.push(edge);
+          stack.push(edge[1]);
+        }
+        else if(edge[1] === current) {
+          if(edge[0] === start) return true;
+          visited.push(edge);
+          stack.push(edge[0]);
+        }
       }
     }
+
     return false;
   }
 
-  private distanceSortedSystems(systems: System[], system: System): System[] {
-    return systems.sort((a, b) => {
-      const distanceA = Math.hypot(a.x - system.x, a.y - system.y);
-      const distanceB = Math.hypot(b.x - system.x, b.y - system.y);
-      return distanceA - distanceB;
-    }).filter(s => s != system);
+  private hasIntersection(grid: Grid, edges: number[][], newEdge: number[]): boolean {
+    return edges.some(edge => this.isIntersecting(grid, edge, newEdge) || this.isIntersecting(grid, newEdge, edge));
   }
 
-  private edgesSortedSystems(systems: System[]): System[] {
-    return systems.sort((a, b) => Object.keys(a.links).length - Object.keys(b.links).length);
+  private isIntersecting(grid: Grid, edge1: number[], edge2: number[]): boolean {
+    for(const intersectingEdges of grid.intersecting_edges) {
+      if((intersectingEdges[0][0] == edge1[0] && intersectingEdges[0][1] == edge1[1]
+        && intersectingEdges[1][0] == edge2[0] && intersectingEdges[1][1] == edge2[1])) return true;
+    }
+
+    return false;
   }
 
   private connectSystems(system1: System, system2: System): void {
@@ -258,12 +253,7 @@ export class SystemService extends MongooseRepository<System> {
     system2.links[system1._id.toString()] = distance;
   }
 
-  private removeConnection(system1: System, system2: System): void {
-    delete system1.links[system2._id.toString()];
-    delete system2.links[system1._id.toString()];
-  }
-
-  private createSystem(game: Game, x: number, y: number): System {
+  private createSystem(game: Game, vertex: Vertex, scaling: number, offset: number[]): System {
     const systemType = Object.entries(SYSTEM_TYPES).randomWeighted(([, value]) => value.chance)[0] as SystemType;
     const capacity_range = SYSTEM_TYPES[systemType].capacity_range;
 
@@ -273,8 +263,8 @@ export class SystemService extends MongooseRepository<System> {
       owner: game.owner,
       type: systemType,
       capacity: Math.randInt(capacity_range[1] - capacity_range[0]) + capacity_range[0],
-      x: x,
-      y: y,
+      x: vertex.x * scaling + offset[0] + Math.random() * (scaling/3),
+      y: vertex.y * scaling + offset[1] + Math.random() * (scaling/3),
       upgrade: SYSTEM_UPGRADE_NAMES[0],
       links: {},
       districtSlots: {},
