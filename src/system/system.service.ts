@@ -119,6 +119,7 @@ export class SystemService extends MongooseRepository<System> {
         system.districtSlots[district] = 1;
       }
     }
+    system.markModified('districtSlots');
   }
 
   private applyCosts(empire: EmpireDocument, upgrade: SystemUpgradeName){
@@ -128,6 +129,7 @@ export class SystemService extends MongooseRepository<System> {
       for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[upgrade].cost)){
         empire.resources[resource as ResourceName] -= amount;
       }
+      empire.markModified('resources');
     }
     else{
       throw new BadRequestException(`Not enough resources to upgrade system`);
