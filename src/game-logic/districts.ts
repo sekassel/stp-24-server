@@ -65,7 +65,7 @@ export const DISTRICTS = {
       ancient_technology: 5, // wisdom_reclamation tech tree
       ancient_military: 2, // timeless_warfare tech tree
       ancient_industry: 2, // primordial_industrial_secrets tech tree
-      default: 1,
+      default: 0,
     },
     cost: {
       minerals: 100, // effective_lab_building tech tree
@@ -83,7 +83,7 @@ export const DISTRICTS = {
       ancient_military: 5, // timeless_warfare tech tree
       ancient_industry: 3, // primordial_industrial_secrets tech tree
       ancient_technology: 2, // wisdom_reclamation tech tree
-      default: 1,
+      default: 0,
     },
     cost: {
       minerals: 100, // ancient_crafting_techniques tech tree
@@ -102,7 +102,7 @@ export const DISTRICTS = {
       ancient_industry: 5, // primordial_industrial_secrets tech tree
       ancient_military: 3, // timeless_warfare tech tree
       ancient_technology: 2, // wisdom_reclamation tech tree
-      default: 1,
+      default: 0,
     },
     cost: {
       minerals: 100, // traditional_refining_wisdom tech tree
