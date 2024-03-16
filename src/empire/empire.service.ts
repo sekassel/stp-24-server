@@ -12,7 +12,7 @@ import {UserService} from "../user/user.service";
 import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
 import {Variable} from "../game-logic/types";
 import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
-import {Game} from '../game/game.schema';
+import {Game, GameDocument} from '../game/game.schema';
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -148,18 +148,18 @@ export class EmpireService extends MongooseRepository<Empire> {
     }
   }
 
-  async initEmpires(game: Game) {
+  async initEmpires(game: Game): Promise<EmpireDocument[]> {
     const existingEmpires = await this.findAll({
       game: game._id,
     });
     if (existingEmpires.length) {
-      return;
+      return [];
     }
 
     const members = await this.memberService.findAll({
       game: game._id,
     });
-    await this.createMany(members
+    return this.createMany(members
       .filter(m => m.empire)
       .map(member => {
         const resourceVariables: Record<Variable & `resources.${string}`, number> = flatten(RESOURCES, 'resources.');

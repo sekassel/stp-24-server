@@ -15,15 +15,6 @@ export class EmpireHandler {
   ) {
   }
 
-  @OnEvent('games.*.updated')
-  async onGameUpdated(game: Game): Promise<void> {
-    if (!game.started) {
-      return;
-    }
-
-    await this.empireService.initEmpires(game);
-  }
-
   @OnEvent('games.*.deleted')
   async onGameDeleted(game: Game): Promise<void> {
     await this.empireService.deleteMany({

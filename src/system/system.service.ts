@@ -90,7 +90,7 @@ export class SystemService extends MongooseRepository<System> {
     system.buildings = buildings;
   }
 
-  private generateDistricts(system: SystemDocument, empire: Empire){
+  generateDistricts(system: SystemDocument, empire: Empire){
     //Get district chances for this system type
     const districtChances: Partial<Record<Variable, number>> = {};
 
@@ -134,8 +134,10 @@ export class SystemService extends MongooseRepository<System> {
     }
   }
 
-  async generateMap(game: Game): Promise<void> {
-    if(!game.settings?.size) return;
+  async generateMap(game: Game): Promise<SystemDocument[]> {
+    if(!game.settings?.size) {
+      return [];
+    }
 
     const clusters: System[][] = [];
 
@@ -144,7 +146,7 @@ export class SystemService extends MongooseRepository<System> {
 
     //TODO: Connect clusters
 
-    await this.createMany(clusters.flat());
+    return this.createMany(clusters.flat());
   }
 
   /**
@@ -270,7 +272,6 @@ export class SystemService extends MongooseRepository<System> {
     return {
       _id: new Types.ObjectId(),
       game: game._id,
-      owner: game.owner,
       type: systemType,
       capacity: Math.randInt(capacity_range[1] - capacity_range[0]) + capacity_range[0],
       x: x,
