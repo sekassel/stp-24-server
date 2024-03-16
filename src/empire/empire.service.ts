@@ -9,9 +9,10 @@ import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MAX_EMPIRES
 import {generateTraits} from '../game-logic/traits';
 import {TECHNOLOGIES} from "../game-logic/technologies";
 import {UserService} from "../user/user.service";
-import {ResourceName} from "../game-logic/resources";
+import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
 import {Variable} from "../game-logic/types";
-import {calculateVariable, calculateVariables, getVariables} from "../game-logic/variables";
+import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
+import {Game} from '../game/game.schema';
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -145,6 +146,40 @@ export class EmpireService extends MongooseRepository<Empire> {
         empire.resources[resource as ResourceName] += resourceAmount;
       }
     }
+  }
+
+  async initEmpires(game: Game) {
+    const existingEmpires = await this.findAll({
+      game: game._id,
+    });
+    if (existingEmpires.length) {
+      return;
+    }
+
+    const members = await this.memberService.findAll({
+      game: game._id,
+    });
+    await this.createMany(members
+      .filter(m => m.empire)
+      .map(member => {
+        const resourceVariables: Record<Variable & `resources.${string}`, number> = flatten(RESOURCES, 'resources.');
+        calculateVariables(resourceVariables, {
+          traits: member.empire!.traits,
+          technologies: [],
+        });
+        const resources: any = {};
+        for (const resource of RESOURCE_NAMES) {
+          resources[resource] = resourceVariables[`resources.${resource}.starting`];
+        }
+        return ({
+          ...member.empire!,
+          game: game._id,
+          user: member.user,
+          technologies: [],
+          resources,
+        });
+      })
+    );
   }
 
   private async emit(event: string, empire: Empire) {
