@@ -487,11 +487,21 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * District technologies //
    */
 
+  /** all districts: activate ancient military, industry and technology */
+  ancient_mastery: {
+    id: 'ancient_mastery',
+    tags: ['rare'],
+    cost: 200,
+    effects: [
+    ],
+  },
+
   /** all districts: chance for ancient military */
   ancient_military_activation: {
     id: 'ancient_military_activation',
     tags: ['society', 'military', 'rare'],
     cost: 400,
+    requires: ['ancient_mastery'],
     precedes: ['ancient_military_1'],
     effects: [
     ],
@@ -603,6 +613,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'ancient_industry_activation',
     tags: ['engineering', 'production', 'rare'],
     cost: 400,
+    requires: ['ancient_mastery'],
     precedes: ['ancient_industry_1'],
     effects: [
     ],
@@ -714,6 +725,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'ancient_tech_activation',
     tags: ['physics', 'computing', 'rare'],
     cost: 400,
+    requires: ['ancient_mastery'],
     precedes: ['ancient_tech_1'],
     effects: [
     ],
