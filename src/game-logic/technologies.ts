@@ -46,6 +46,15 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'construction',
     tags: ['engineering', 'construction'],
     cost: 100,
+    requires: ['engineering'],
+    effects: [
+    ],
+  },
+  production: {
+    id: 'production',
+    tags: ['engineering', 'production'],
+    cost: 100,
+    requires: ['engineering'],
     effects: [
     ],
   },
@@ -180,7 +189,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'cheap_buildings_1',
     tags: ['engineering', 'construction'],
     cost: 200,
-    requires: ['engineering'],
+    requires: ['construction'],
     precedes: ['cheap_buildings_2'],
     effects: [
       {
@@ -278,6 +287,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'improved_production_1',
     tags: ['engineering', 'production'],
     cost: 200,
+    requires: ['production'],
     precedes: ['improved_production_2'],
     effects: [
       {
@@ -374,6 +384,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_resources_1',
     tags: ['engineering', 'construction'],
     cost: 200,
+    requires: ['construction'],
     precedes: ['efficient_resources_2'],
     effects: [
       {
@@ -1409,17 +1420,21 @@ generate_sequence('energy_production', ['physics', 'energy'],
   'buildings.power_plant.production.energy', '$energy$ from $power_plant$ per $time$',
   {}, ['technology']);
 generate_sequence('mineral_production', ['engineering', 'production'],
-  'buildings.mine.production.minerals', '$minerals$ from $mine$ per $time$');
+  'buildings.mine.production.minerals', '$minerals$ from $mine$ per $time$',
+  {}, ['production']);
 generate_sequence('food_production', ['society', 'biology'],
-  'buildings.farm.production.food', '$food$ from $farm$ per $time$');
+  'buildings.farm.production.food', '$food$ from $farm$ per $time$',
+  {}, ['demographic']);
 // advanced resources
 generate_sequence('research_production', ['physics', 'computing'],
   'buildings.research_lab.production.research', '$research$ from $research_lab$ per $time$',
   {}, ['technology']);
 generate_sequence('alloy_production', ['engineering', 'materials'],
-  'buildings.foundry.production.alloys', '$alloys$ from $foundry$ per $time$');
+  'buildings.foundry.production.alloys', '$alloys$ from $foundry$ per $time$',
+  {}, ['production']);
 generate_sequence('fuel_production', ['engineering', 'production'],
-  'buildings.refinery.production.fuel', '$fuel$ from $refinery$ per $time$');
+  'buildings.refinery.production.fuel', '$fuel$ from $refinery$ per $time$',
+  {}, ['production']);
 
 // basic district resource production
 generate_sequence('energy_district_production', ['physics', 'energy'],
