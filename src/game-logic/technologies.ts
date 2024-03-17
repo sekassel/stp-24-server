@@ -487,6 +487,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * District technologies //
    */
 
+  // TODO tech tree
+
   /** all districts: unlock district specialization */
   district_specialization: {
     id: 'district_specialization',
@@ -879,6 +881,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'energy_district_construction_1',
     tags: ['engineering', 'construction'],
     cost: 200,
+    requires: ['district_cost_reduction'],
     precedes: ['energy_district_construction_2'],
     effects: [
       {
@@ -963,6 +966,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'mining_foundation_1',
     tags: ['physics', 'energy'],
     cost: 200,
+    requires: ['district_cost_reduction'],
     precedes: ['mining_foundation_2'],
     effects: [
       {
@@ -1062,6 +1066,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'agriculture_cost_reduction_1',
     tags: ['physics', 'energy'],
     cost: 200,
+    requires: ['district_cost_reduction'],
     precedes: ['agriculture_cost_reduction_2'],
     effects: [
       {
@@ -1146,6 +1151,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'effective_lab_building_1',
     tags: ['engineering', 'construction'],
     cost: 200,
+    requires: ['district_cost_reduction'],
     precedes: ['effective_lab_building_2'],
     effects: [
       {
@@ -1225,11 +1231,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** ancient_foundry: reduce initial mineral cost */
+  /** ancient_foundry: reduce initial mineral cost */ // TODO
   ancient_foundry_structure_1: {
     id: 'ancient_foundry_structure_1',
     tags: ['engineering', 'construction'],
     cost: 200,
+    requires: ['ancient_district_cost_reduction'],
     precedes: ['ancient_foundry_structure_2'],
     effects: [
       {
@@ -1329,6 +1336,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'ancient_refinery_structure_1',
     tags: ['engineering', 'construction'],
     cost: 200,
+    requires: ['ancient_district_cost_reduction'],
     precedes: ['ancient_refinery_structure_2'],
     effects: [
       {
@@ -1469,6 +1477,8 @@ generate_sequence('ancient_foundry_production', ['engineering', 'materials'],
   'districts.ancient_foundry.production.alloys', '$alloys$ from $ancient_foundry$ per $time$');
 generate_sequence('ancient_refinery_production', ['physics', 'propulsion'],
   'districts.ancient_refinery.production.fuel', '$fuel$ from $ancient_refinery$ per $time$');
+
+// TODO adapt generate sequence
 
 /**
  * Generates a sequence of technologies with increasing cost and effect.
