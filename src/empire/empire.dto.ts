@@ -12,6 +12,7 @@ export class EmpireTemplate extends PickType(Empire, [
   'name',
   'color',
   'flag',
+  'homeSystem',
   'portrait',
   'traits',
 ] as const) {

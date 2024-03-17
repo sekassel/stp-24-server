@@ -2,7 +2,7 @@ import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {Doc, Ref} from '@mean-stream/nestx';
-import {ApiProperty} from '@nestjs/swagger';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   IsArray,
@@ -10,7 +10,7 @@ import {
   IsIn,
   IsInt,
   IsNotEmpty,
-  IsObject,
+  IsObject, IsOptional,
   IsString,
   Max,
   Min,
@@ -20,6 +20,7 @@ import {ResourceName, RESOURCES} from '../game-logic/resources';
 import {TRAITS} from '../game-logic/traits';
 import {TECHNOLOGIES} from '../game-logic/technologies';
 import {RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
+import {SYSTEM_TYPES, SystemType} from '../game-logic/system-types';
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class Empire extends GlobalSchema {
@@ -63,6 +64,15 @@ export class Empire extends GlobalSchema {
   @Min(1)
   @Max(MAX_EMPIRES)
   portrait: number;
+
+  @Prop({type: String})
+  @ApiPropertyOptional({
+    description: 'The type of home system for this empire. Random if not specified.',
+    enum: Object.keys(SYSTEM_TYPES),
+  })
+  @IsOptional()
+  @IsIn(Object.keys(SYSTEM_TYPES))
+  homeSystem?: SystemType;
 
   @Prop()
   @ApiProperty({

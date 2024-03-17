@@ -44,7 +44,9 @@ export class GameLogicHandler {
       homeSystem.population = empire.resources.population;
       homeSystem.upgrade = 'developed';
       homeSystem.capacity *= SYSTEM_UPGRADES.developed.capacity_multiplier;
-      // TODO empire home system type
+      if (empire.homeSystem) {
+        homeSystem.type = empire.homeSystem;
+      }
       this.systemService.generateDistricts(homeSystem, empire);
       homeSystem.districts = homeSystem.districtSlots;
       homeSystem.buildings = [

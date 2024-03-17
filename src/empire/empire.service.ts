@@ -13,6 +13,7 @@ import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
 import {Variable} from "../game-logic/types";
 import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
 import {Game, GameDocument} from '../game/game.schema';
+import {SYSTEM_TYPES} from '../game-logic/system-types';
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
