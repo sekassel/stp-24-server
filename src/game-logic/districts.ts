@@ -16,7 +16,7 @@ export const DISTRICTS = {
       minerals: 75, // quantum_cost_reduction tech tree
     },
     upkeep: { // low_maintenance_power_grids tech tree
-      minerals: 5,
+      minerals: 1,
     },
     production: { // energetic_terraforming tech tree
       energy: 10,
@@ -36,10 +36,11 @@ export const DISTRICTS = {
       energy: 25, // nano_excavator_optimization tech tree
     },
     upkeep: { // autonomous_mining_protocols tech tree
-      energy: 5,
+      energy: 1,
+      fuel: 1,
     },
     production: { //improved_extraction_tech_1 tech tree
-      minerals: 10,
+      minerals: 12,
     },
   },
   agriculture: {
@@ -52,10 +53,11 @@ export const DISTRICTS = {
       energy: 75, // permaculture_ecosystem_engineering tech tree
     },
     upkeep: {
-      energy: 5, // self_replenishment tech tree
+      energy: 1, // self_replenishment tech tree
+      fuel: 1,
     },
     production: {
-      food: 10, // superior_crops tech tree
+      food: 12, // superior_crops tech tree
     },
   },
   // advanced resource districts. cost should be around 100, upkeep around 20, production around 10
@@ -71,7 +73,7 @@ export const DISTRICTS = {
       minerals: 100, // effective_lab_building tech tree
     },
     upkeep: {
-      energy: 20, // automated_research_archives tech tree
+      energy: 15, // automated_research_archives tech tree
     },
     production: {
       research: 10, // research_accelerators tech tree
@@ -90,7 +92,7 @@ export const DISTRICTS = {
     },
     upkeep: {
       minerals: 10, // timeless_fabrication_methods tech tree
-      energy: 10, // timeless_fabrication_methods tech tree
+      energy: 5, // timeless_fabrication_methods tech tree
     },
     production: {
       alloys: 10, // mythic_alloy_crafting tech tree
@@ -108,7 +110,7 @@ export const DISTRICTS = {
       minerals: 100, // traditional_refining_wisdom tech tree
     },
     upkeep: {
-      minerals: 10, // ageless_refining_techniques tech tree
+      minerals: 5, // ageless_refining_techniques tech tree
       energy: 10, // ageless_refining_techniques tech tree
     },
     production: {
