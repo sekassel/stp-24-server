@@ -505,6 +505,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
     ],
   },
+  ancient_district_production_increase: {
+    id: 'ancient_district_production_increase',
+    tags: ['engineering', 'construction'],
+    cost: 100,
+    requires: ['district_production_increase'],
+    effects: [
+    ],
+  },
   district_cost_reduction: {
     id: 'district_cost_reduction',
     tags: ['engineering', 'construction'],
@@ -1243,7 +1251,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** ancient_foundry: reduce initial mineral cost */ // TODO
+  /** ancient_foundry: reduce initial mineral cost */
   ancient_foundry_structure_1: {
     id: 'ancient_foundry_structure_1',
     tags: ['engineering', 'construction'],
@@ -1482,18 +1490,22 @@ generate_sequence('energy_district_production', ['physics', 'energy'],
   'districts.energy.production.energy', '$energy$ from $energy$ district per $time$',
   {}, ['district_production_increase']);
 generate_sequence('mining_district_production', ['engineering', 'production'],
-  'districts.mining.production.minerals', '$minerals$ from $mining$ district per $time$');
+  'districts.mining.production.minerals', '$minerals$ from $mining$ district per $time$',
+  {}, ['district_production_increase']);
 generate_sequence('agriculture_district_production', ['society', 'biology'],
-  'districts.agriculture.production.food', '$food$ from $agriculture$ district per $time$');
+  'districts.agriculture.production.food', '$food$ from $agriculture$ district per $time$',
+  {}, ['district_production_increase']);
 // advanced district resource production
 generate_sequence('research_site_production', ['physics', 'computing'],
-  'districts.research_site.production.research', '$research$ from $research_site$ per $time$');
+  'districts.research_site.production.research', '$research$ from $research_site$ per $time$',
+  {}, ['district_production_increase']);
 generate_sequence('ancient_foundry_production', ['engineering', 'materials'],
-  'districts.ancient_foundry.production.alloys', '$alloys$ from $ancient_foundry$ per $time$');
+  'districts.ancient_foundry.production.alloys', '$alloys$ from $ancient_foundry$ per $time$',
+  {}, ['ancient_district_production_increase']);
 generate_sequence('ancient_refinery_production', ['physics', 'propulsion'],
-  'districts.ancient_refinery.production.fuel', '$fuel$ from $ancient_refinery$ per $time$');
+  'districts.ancient_refinery.production.fuel', '$fuel$ from $ancient_refinery$ per $time$',
+  {}, ['ancient_district_production_increase']);
 
-// TODO adapt generate sequence
 
 /**
  * Generates a sequence of technologies with increasing cost and effect.
