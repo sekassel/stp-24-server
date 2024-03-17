@@ -1402,18 +1402,18 @@ generate_sequence('fuel_production', ['engineering', 'production'],
   'buildings.refinery.production.fuel', '$fuel$ from $refinery$ per $time$');
 
 // basic district resource production
-generate_sequence('energy_district_production', ['energy', 'production'],
+generate_sequence('energy_district_production', ['physics', 'energy'],
   'districts.energy.production.energy', '$energy$ from $energy$ district per $time$');
-generate_sequence('mining_district_production', ['energy', 'production'],
+generate_sequence('mining_district_production', ['engineering', 'production'],
   'districts.mining.production.minerals', '$minerals$ from $mining$ district per $time$');
-generate_sequence('agriculture_district_production', ['energy', 'production'],
+generate_sequence('agriculture_district_production', ['society', 'biology'],
   'districts.agriculture.production.food', '$food$ from $agriculture$ district per $time$');
 // advanced district resource production
-generate_sequence('research_site_production', ['computing'],
+generate_sequence('research_site_production', ['physics', 'computing'],
   'districts.research_site.production.research', '$research$ from $research_site$ per $time$');
-generate_sequence('ancient_foundry_production', ['production', 'materials'],
+generate_sequence('ancient_foundry_production', ['engineering', 'materials'],
   'districts.ancient_foundry.production.alloys', '$alloys$ from $ancient_foundry$ per $time$');
-generate_sequence('ancient_refinery_production', ['propulsion'],
+generate_sequence('ancient_refinery_production', ['physics', 'propulsion'],
   'districts.ancient_refinery.production.fuel', '$fuel$ from $ancient_refinery$ per $time$');
 
 /**
