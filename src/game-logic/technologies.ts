@@ -63,67 +63,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-
-  /**
-   * Pop technologies
-   */
   
-  /** pop: unemployed cost / social benefits */
-  social_benefits_1: { // reduced unemployed pop cost
-    id: 'social_benefits_1',
-    tags: ['society', 'state'],
-    cost: 200,
-    precedes: ['social_benefits_2'],
-    effects: [
-      {
-        description: '-5% $credits$ per unemployed population',
-        variable: 'empire.pop.consumption.credits.unemployed',
-        multiplier: 0.95,
-      },
-    ],
-  },
-  social_benefits_2: { // further reduced unemployed pop cost
-    id: 'social_benefits_2',
-    tags: ['society', 'state'],
-    cost: 400,
-    requires: ['social_benefits_1'],
-    precedes: ['social_benefits_3'],
-    effects: [
-      {
-        description: '-10% $credits$ per unemployed population',
-        variable: 'empire.pop.consumption.credits.unemployed',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  social_benefits_3: { // further reduced unemployed pop cost
-    id: 'social_benefits_3',
-    tags: ['society', 'state'],
-    cost: 800,
-    requires: ['social_benefits_2'],
-    precedes: ['social_benefits_4'],
-    effects: [
-      {
-        description: '-15% $credits$ per unemployed population',
-        variable: 'empire.pop.consumption.credits.unemployed',
-        multiplier: 0.85,
-      },
-    ],
-  },
-  social_benefits_4: { // further reduced unemployed pop cost
-    id: 'social_benefits_4',
-    tags: ['society', 'state'],
-    cost: 1600,
-    requires: ['social_benefits_3'],
-    effects: [
-      {
-        description: '-20% $credits$ per unemployed population',
-        variable: 'empire.pop.consumption.credits.unemployed',
-        multiplier: 0.8,
-      },
-    ],
-  },
-
   /**
    * System technologies
    */
