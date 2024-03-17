@@ -4,6 +4,23 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   /** Technologies for empire variables (market, pop, system) */
 
+  /** society: unlock technologies*/
+  society: {
+    id: 'society',
+    tags: ['society'],
+    cost: 200,
+    effects: [
+    ],
+  },
+  demographic: {
+    id: 'demographic',
+    tags: ['society'],
+    cost: 100,
+    requires: ['society'],
+    effects: [
+    ],
+  },
+
   /**
    * Market technologies, market fee is already a multiplier
    */
@@ -13,6 +30,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'novice_trader',
     tags: ['society', 'economy'],
     cost: 200,
+    requires: ['society'],
     precedes: ['advanced_trader'],
     effects: [
       {
@@ -63,7 +81,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  
+
   /**
    * System technologies
    */
@@ -370,8 +388,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /**
    * District technologies //
    */
-
-  // TODO district tech tree
 
   /** all districts: unlock district specialization */
   district_specialization: {
@@ -1340,20 +1356,21 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
 // special resources
 generate_sequence('pop_food_consumption', ['society', 'biology'], 'empire.pop.consumption.food',
-  '$food$ per $pop$ per $time$', {multiplierIncrement: -0.05});
+  '$food$ per $pop$ per $time$', {multiplierIncrement: -0.05},
+  ['demographic']);
 // pop growth is already a multiplier, so it will be 1.05 -> 1.05 * 1.025 = 1.07625 -> 1.05 * 1.025^2 = 1.10390625
 generate_sequence('pop_growth_colonized', ['society', 'biology'], 'systems.colonized.pop_growth',
   '$pop$ growth per $time$ on colonized $system$',
-  {multiplierIncrement: +0.025});
+  {multiplierIncrement: +0.025}, ['demographic']);
 generate_sequence('pop_growth_upgraded', ['society', 'biology'], 'systems.upgraded.pop_growth',
   '$pop$ growth per $time$ on upgraded $system$',
-  {multiplierIncrement: +0.025});
+  {multiplierIncrement: +0.025}, ['demographic']);
 generate_sequence('unemployed_pop_cost', ['society', 'state'],
   'empire.pop.consumption.credits.unemployed', '$credits$ per unemployed $pop$ per $time$',
   {
   multiplierIncrement: -0.05,
   exponentialBase: 3,
-}); // -5% -> -15% -> -45%
+}, ['demographic']); // -5% -> -15% -> -45%
 // basic resources
 generate_sequence('energy_production', ['physics', 'energy'],
   'buildings.power_plant.production.energy', '$energy$ from $power_plant$ per $time$');
