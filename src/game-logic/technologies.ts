@@ -67,63 +67,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /**
    * Pop technologies
    */
-
-  /** pop food consumption / nutrition */
-  nutrition_1: { // reduced pop food consumption
-    id: 'nutrition_1',
-    tags: ['society', 'biology'],
-    cost: 200,
-    precedes: ['nutrition_2'],
-    effects: [
-      {
-        description: '-5% $food$ consumption per population',
-        variable: 'empire.pop.consumption.food',
-        multiplier: 0.95,
-      },
-    ],
-  },
-  nutrition_2: { // further reduced pop food consumption
-    id: 'nutrition_2',
-    tags: ['society', 'biology'],
-    cost: 400,
-    requires: ['nutrition_1'],
-    precedes: ['nutrition_3'],
-    effects: [
-      {
-        description: '-10% $food$ consumption per population',
-        variable: 'empire.pop.consumption.food',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  nutrition_3: { // further reduced pop food consumption
-    id: 'nutrition_3',
-    tags: ['society', 'biology'],
-    cost: 800,
-    requires: ['nutrition_2'],
-    precedes: ['nutrition_4'],
-    effects: [
-      {
-        description: '-15% $food$ consumption per population',
-        variable: 'empire.pop.consumption.food',
-        multiplier: 0.85,
-      },
-    ],
-  },
-  nutrition_4: { // further reduced pop food consumption
-    id: 'nutrition_4',
-    tags: ['society', 'biology'],
-    cost: 1600,
-    requires: ['nutrition_3'],
-    effects: [
-      {
-        description: '-20% $food$ consumption per population',
-        variable: 'empire.pop.consumption.food',
-        multiplier: 0.8,
-      },
-    ],
-  },
-
+  
   /** pop: unemployed cost / social benefits */
   social_benefits_1: { // reduced unemployed pop cost
     id: 'social_benefits_1',
