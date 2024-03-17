@@ -121,6 +121,8 @@ export class GameLogicService {
 
     // ensure empire population is up to date
     empire.resources.population = systems.map(s => s.population).sum();
+
+    empire.markModified('resources');
   }
 
   private deductJoblessUpkeep(systems: SystemDocument[], empire: EmpireDocument, variables: Record<Variable, number>) {
@@ -135,7 +137,7 @@ export class GameLogicService {
   private deductSystemUpkeep(upgrade: 'colonized' | 'upgraded' | 'developed', empire: EmpireDocument, variables: Record<Variable, number>) {
     let systemUpkeepPaid = true;
     for (const resource of Object.keys(SYSTEM_UPGRADES[upgrade].upkeep)) {
-      const variable = `system.${upgrade}.upkeep.${resource}` as Variable;
+      const variable = `systems.${upgrade}.upkeep.${resource}` as Variable;
       systemUpkeepPaid = this.deductResource(empire, resource as ResourceName, variables[variable]) && systemUpkeepPaid;
     }
     return systemUpkeepPaid;
