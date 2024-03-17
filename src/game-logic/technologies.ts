@@ -495,6 +495,38 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
     ],
   },
+  district_production_increase: {
+    id: 'district_production_increase',
+    tags: ['engineering', 'construction'],
+    cost: 100,
+    requires: ['district_specialization'],
+    effects: [
+    ],
+  },
+  district_cost_reduction: {
+    id: 'district_cost_reduction',
+    tags: ['engineering', 'construction'],
+    cost: 100,
+    requires: ['district_specialization'],
+    effects: [
+    ],
+  },
+  ancient_district_cost_reduction: {
+    id: 'ancient_district_cost_reduction',
+    tags: ['engineering', 'construction'],
+    cost: 200,
+    requires: ['district_cost_reduction'],
+    effects: [
+    ],
+  },
+  district_upkeep_reduction: {
+    id: 'district_upkeep_reduction',
+    tags: ['engineering', 'construction'],
+    cost: 100,
+    requires: ['district_specialization'],
+    effects: [
+    ],
+  },
 
   /** all districts: activate ancient military, industry and technology */
   ancient_mastery: {
