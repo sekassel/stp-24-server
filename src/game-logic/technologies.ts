@@ -487,11 +487,21 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * District technologies //
    */
 
+  /** all districts: unlock district specialization */
+  district_specialization: {
+    id: 'district_specialization',
+    tags: ['engineering', 'construction'],
+    cost: 200,
+    effects: [
+    ],
+  },
+
   /** all districts: activate ancient military, industry and technology */
   ancient_mastery: {
     id: 'ancient_mastery',
-    tags: ['rare'],
+    tags: ['engineering', 'construction', 'rare'],
     cost: 200,
+    requires: ['district_specialization'],
     effects: [
     ],
   },
