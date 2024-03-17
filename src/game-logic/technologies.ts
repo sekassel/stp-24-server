@@ -1479,7 +1479,8 @@ generate_sequence('fuel_production', ['engineering', 'production'],
 
 // basic district resource production
 generate_sequence('energy_district_production', ['physics', 'energy'],
-  'districts.energy.production.energy', '$energy$ from $energy$ district per $time$');
+  'districts.energy.production.energy', '$energy$ from $energy$ district per $time$',
+  {}, ['district_production_increase']);
 generate_sequence('mining_district_production', ['engineering', 'production'],
   'districts.mining.production.minerals', '$minerals$ from $mining$ district per $time$');
 generate_sequence('agriculture_district_production', ['society', 'biology'],
@@ -1545,8 +1546,10 @@ generate_sequence('ancient_refinery_production', ['physics', 'propulsion'],
  * }
  *
  * @param base_id the base ID, e.g. "energy_production"
+ * @param tags
  * @param variable the variable to modify, e.g. "power_plant.production.energy"
  * @param variable_desc the description of the variable, e.g. "$energy$ from $power_plant$ per $time$"
+ * @param requirement the requirement for the first step, default undefined
  * @param multiplierIncrement the amount to increase the multiplier by each step, default +0.05
  * @param exponentialBase the base of the exponential, default 2
  * @param count the number of steps, default 3
@@ -1554,6 +1557,7 @@ generate_sequence('ancient_refinery_production', ['physics', 'propulsion'],
  */
 function generate_sequence(base_id: string, tags: TechnologyTag[], variable: Variable, variable_desc: string,
                            {multiplierIncrement = +0.05, exponentialBase = 2, count = 3, startCost = 100} = {},
+                           requirement?: readonly string[],
 ) {
   for (let index = 1; index <= count; index++) {
     const exponential = exponentialBase ** (index - 1);
@@ -1564,7 +1568,7 @@ function generate_sequence(base_id: string, tags: TechnologyTag[], variable: Var
       id,
       tags,
       cost,
-      requires: index > 1 ? [base_id + '_' + (index - 1)] : undefined,
+      requires: requirement && index == 1 ? requirement : (index > 1 ? [base_id + '_' + (index - 1)] : undefined),
       precedes: index < count ? [base_id + '_' + (index + 1)] : undefined,
       effects: [
         {
