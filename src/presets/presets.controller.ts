@@ -14,6 +14,7 @@ import {getInitialVariables} from '../game-logic/variables';
 import {Digraph, toDot} from 'ts-graphviz';
 import {toStream} from '@ts-graphviz/adapter';
 import {Response} from 'express';
+import {SYSTEM_TYPES} from '../game-logic/system-types';
 
 @Controller('presets')
 @ApiTags('Presets')
@@ -38,6 +39,16 @@ export class PresetsController {
   })
   getSystemUpgrades(): typeof SYSTEM_UPGRADES {
     return SYSTEM_UPGRADES;
+  }
+
+  @Get('system-types')
+  @ApiOkResponse({
+    schema: {
+      properties: Object.fromEntries(Object.keys(SYSTEM_TYPES).map(k => [k, {type: 'object'}])),
+    },
+  })
+  getSystemTypes(): typeof SYSTEM_TYPES {
+    return SYSTEM_TYPES;
   }
 
   @Get('empire-variables')
