@@ -20,6 +20,35 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
     ],
   },
+  physics: {
+    id: 'physics',
+    tags: ['physics'],
+    cost: 200,
+    effects: [
+    ],
+  },
+  technology: {
+    id: 'technology',
+    tags: ['physics'],
+    cost: 100,
+    requires: ['physics'],
+    effects: [
+    ],
+  },
+  engineering: {
+    id: 'engineering',
+    tags: ['engineering'],
+    cost: 200,
+    effects: [
+    ],
+  },
+  construction: {
+    id: 'construction',
+    tags: ['engineering', 'construction'],
+    cost: 100,
+    effects: [
+    ],
+  },
 
   /**
    * Market technologies, market fee is already a multiplier
@@ -91,6 +120,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'cheap_claims_1',
     tags: ['society', 'state'],
     cost: 200,
+    requires: ['society'],
     effects: [
       {
         description: '-25% $energy$ cost for system claims',
@@ -150,6 +180,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'cheap_buildings_1',
     tags: ['engineering', 'construction'],
     cost: 200,
+    requires: ['engineering'],
     precedes: ['cheap_buildings_2'],
     effects: [
       {
@@ -203,6 +234,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_buildings_1',
     tags: ['physics', 'energy'],
     cost: 200,
+    requires: ['technology'],
     precedes: ['efficient_buildings_2'],
     effects: [
       {
@@ -394,6 +426,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'district_specialization',
     tags: ['engineering', 'construction'],
     cost: 200,
+    requires: ['engineering', 'technology'],
     effects: [
     ],
   },
@@ -1373,14 +1406,16 @@ generate_sequence('unemployed_pop_cost', ['society', 'state'],
 }, ['demographic']); // -5% -> -15% -> -45%
 // basic resources
 generate_sequence('energy_production', ['physics', 'energy'],
-  'buildings.power_plant.production.energy', '$energy$ from $power_plant$ per $time$');
+  'buildings.power_plant.production.energy', '$energy$ from $power_plant$ per $time$',
+  {}, ['technology']);
 generate_sequence('mineral_production', ['engineering', 'production'],
   'buildings.mine.production.minerals', '$minerals$ from $mine$ per $time$');
 generate_sequence('food_production', ['society', 'biology'],
   'buildings.farm.production.food', '$food$ from $farm$ per $time$');
 // advanced resources
 generate_sequence('research_production', ['physics', 'computing'],
-  'buildings.research_lab.production.research', '$research$ from $research_lab$ per $time$');
+  'buildings.research_lab.production.research', '$research$ from $research_lab$ per $time$',
+  {}, ['technology']);
 generate_sequence('alloy_production', ['engineering', 'materials'],
   'buildings.foundry.production.alloys', '$alloys$ from $foundry$ per $time$');
 generate_sequence('fuel_production', ['engineering', 'production'],
