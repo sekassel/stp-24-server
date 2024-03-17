@@ -487,7 +487,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * District technologies //
    */
 
-  // TODO tech tree
+  // TODO district tech tree
 
   /** all districts: unlock district specialization */
   district_specialization: {
@@ -529,6 +529,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
     ],
   },
+  ancient_district_upkeep_reduction: {
+    id: 'ancient_district_upkeep_reduction',
+    tags: ['engineering', 'construction'],
+    cost: 200,
+    requires: ['district_upkeep_reduction'],
+    effects: [
+    ],
+  },
 
   /** all districts: activate ancient military, industry and technology */
   ancient_mastery: {
@@ -544,7 +552,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   ancient_military_activation: {
     id: 'ancient_military_activation',
     tags: ['society', 'military', 'rare'],
-    cost: 400,
+    cost: 200,
     requires: ['ancient_mastery'],
     precedes: ['ancient_military_1'],
     effects: [
@@ -656,7 +664,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   ancient_industry_activation: {
     id: 'ancient_industry_activation',
     tags: ['engineering', 'production', 'rare'],
-    cost: 400,
+    cost: 200,
     requires: ['ancient_mastery'],
     precedes: ['ancient_industry_1'],
     effects: [
@@ -768,7 +776,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   ancient_tech_activation: {
     id: 'ancient_tech_activation',
     tags: ['physics', 'computing', 'rare'],
-    cost: 400,
+    cost: 200,
     requires: ['ancient_mastery'],
     precedes: ['ancient_tech_1'],
     effects: [
@@ -924,6 +932,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_energy_1',
     tags: ['engineering', 'construction'],
     cost: 200,
+    requires: ['district_upkeep_reduction'],
     precedes: ['efficient_energy_2'],
     effects: [
       {
@@ -1024,6 +1033,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_mining_1',
     tags: ['physics', 'energy'],
     cost: 200,
+    requires: ['district_upkeep_reduction'],
     precedes: ['efficient_mining_2'],
     effects: [
       {
@@ -1109,6 +1119,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_agriculture_1',
     tags: ['physics', 'energy'],
     cost: 200,
+    requires: ['district_upkeep_reduction'],
     precedes: ['efficient_agriculture_2'],
     effects: [
       {
@@ -1194,6 +1205,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'effective_research_1',
     tags: ['physics', 'energy'],
     cost: 200,
+    requires: ['district_upkeep_reduction'],
     precedes: ['effective_research_2'],
     effects: [
       {
@@ -1279,6 +1291,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_ancient_foundry_1',
     tags: ['physics', 'energy'],
     cost: 200,
+    requires: ['ancient_district_upkeep_reduction'],
     precedes: ['efficient_ancient_foundry_2'],
     effects: [
       {
@@ -1379,6 +1392,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_ancient_refinery_1',
     tags: ['physics', 'energy'],
     cost: 200,
+    requires: ['ancient_district_upkeep_reduction'],
     precedes: ['efficient_ancient_refinery_2'],
     effects: [
       {
