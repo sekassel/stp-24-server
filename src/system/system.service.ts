@@ -13,7 +13,7 @@ import {
 } from '../game-logic/system-upgrade';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {BuildingName} from '../game-logic/buildings';
-import {SYSTEM_TYPES, SystemType} from "../game-logic/system-types";
+import {SYSTEM_TYPES, SystemTypeName} from "../game-logic/system-types";
 import {calculateVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
 import {Empire, EmpireDocument} from "../empire/empire.schema";
@@ -269,7 +269,7 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private createSystem(game: Game, x: number, y: number): System {
-    const systemType = Object.entries(SYSTEM_TYPES).randomWeighted(([, value]) => value.chance)[0] as SystemType;
+    const systemType = Object.entries(SYSTEM_TYPES).randomWeighted(([, value]) => value.chance)[0] as SystemTypeName;
     const capacity_range = SYSTEM_TYPES[systemType].capacity_range;
 
     return {

@@ -1,3 +1,5 @@
+import {SystemType} from './types';
+
 export const SYSTEM_TYPES = {
   regular: {
     id: 'regular',
@@ -41,5 +43,5 @@ export const SYSTEM_TYPES = {
     capacity_range: [10, 16],
     district_percentage: 0.8,
   },
-} as const;
-export type SystemType = keyof typeof SYSTEM_TYPES;
+} as const satisfies Record<string, SystemType>;
+export type SystemTypeName = keyof typeof SYSTEM_TYPES;

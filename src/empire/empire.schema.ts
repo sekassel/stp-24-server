@@ -20,7 +20,7 @@ import {ResourceName, RESOURCES} from '../game-logic/resources';
 import {TRAITS} from '../game-logic/traits';
 import {TECHNOLOGIES} from '../game-logic/technologies';
 import {RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
-import {SYSTEM_TYPES, SystemType} from '../game-logic/system-types';
+import {SYSTEM_TYPES, SystemTypeName} from '../game-logic/system-types';
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class Empire extends GlobalSchema {
@@ -72,7 +72,7 @@ export class Empire extends GlobalSchema {
   })
   @IsOptional()
   @IsIn(Object.keys(SYSTEM_TYPES))
-  homeSystem?: SystemType;
+  homeSystem?: SystemTypeName;
 
   @Prop()
   @ApiProperty({
