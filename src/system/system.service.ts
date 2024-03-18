@@ -139,8 +139,11 @@ export class SystemService extends MongooseRepository<System> {
 
     const clusters: System[][] = [];
 
-    //TODO: Generate multiple clusters
-    clusters.push(this.createCluster(game, 15, [-40, -40]));
+    for(let x = 0; x < 3; x++){
+      for(let y = 0; y < 3; y++){
+        clusters.push(this.createCluster(game, 20, [(x-5)*100, (y-5)*100]));
+      }
+    }
 
     //TODO: Connect clusters
 
@@ -157,17 +160,17 @@ export class SystemService extends MongooseRepository<System> {
     const edges: number[][] = this.createSpanningTree(grid, vertices);
 
     //Add random cycles
-    // const randomCycles = vertices.length * grid.cycle_percentage;
-    // for(let i = 0; i < randomCycles; i++) {
-    //   const system1 = vertices[Math.randInt(vertices.length)];
-    //   const neighbors = grid.vertices[system1].neighbors.filter(neighbor => vertices.includes(neighbor));
-    //   const system2 = neighbors[Math.randInt(neighbors.length)];
-    //   const newEdge = Array.from([system1, system2]).sort(v => v);
-    //
-    //   if(!edges.includes(newEdge) && !this.hasIntersection(grid, edges, newEdge)){
-    //     edges.push([system1, system2]);
-    //   }
-    // }
+    const randomCycles = vertices.length * grid.cycle_percentage;
+    for(let i = 0; i < randomCycles; i++) {
+      const system1 = vertices[Math.randInt(vertices.length)];
+      const neighbors = grid.vertices[system1].neighbors.filter(neighbor => vertices.includes(neighbor));
+      const system2 = neighbors[Math.randInt(neighbors.length)];
+      const newEdge = Array.from([system1, system2]).sort(v => v);
+
+      if(!edges.includes(newEdge) && !this.hasIntersection(grid, edges, newEdge)){
+        edges.push([system1, system2]);
+      }
+    }
 
     //Create systems
     const systems: Record<number, System> = {};
