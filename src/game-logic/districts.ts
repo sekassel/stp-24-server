@@ -7,10 +7,10 @@ export const DISTRICTS = {
     id: 'energy',
     chance: {
       energy: 5,
-      ancient_technology: 3, // wisdom_reclamation tech tree
-      ancient_industry: 2, // primordial_industrial_secrets tech tree
-      ancient_military: 2, // timeless_warfare tech tree
-      default: 1,
+      ancient_technology: 4, // wisdom_reclamation tech tree
+      ancient_industry: 3, // primordial_industrial_secrets tech tree
+      ancient_military: 3, // timeless_warfare tech tree
+      default: 2,
     },
     cost: {
       minerals: 75, // quantum_cost_reduction tech tree
@@ -26,10 +26,10 @@ export const DISTRICTS = {
     id: 'mining',
     chance: {
       mining: 5,
-      ancient_industry: 3, // primordial_industrial_secrets tech tree
-      ancient_technology: 2, // wisdom_reclamation tech tree
-      ancient_military: 2, // timeless_warfare tech tree
-      default: 1,
+      ancient_industry: 4, // primordial_industrial_secrets tech tree
+      ancient_technology: 3, // wisdom_reclamation tech tree
+      ancient_military: 3, // timeless_warfare tech tree
+      default: 2,
     },
     cost: {
       minerals: 50, // nano_excavator_optimization tech tree
@@ -47,7 +47,7 @@ export const DISTRICTS = {
     id: 'agriculture',
     chance: {
       agriculture: 5,
-      default: 1,
+      default: 2,
     },
     cost: {
       energy: 75, // permaculture_ecosystem_engineering tech tree
