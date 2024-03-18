@@ -1,8 +1,9 @@
 import {ResourceName, RESOURCES} from './resources';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {VARIABLES} from './variables';
-import {SYSTEM_TYPES, SystemType} from './system-types';
+import {SYSTEM_TYPES, SystemTypeName} from './system-types';
 import {SchemaObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import {ArrayMaxSize, ArrayMinSize, IsInt} from 'class-validator';
 
 export type DeepNumberKeys<T> = T extends Record<string, any> ? {
   [K in keyof T]-?: T[K] extends object ? `${K & string}.${DeepNumberKeys<T[K]>}` : T[K] extends number ? K & string : never;
@@ -15,7 +16,7 @@ export class Effect {
   description: string;
 
   /** the variable that is affected. */
-  @ApiProperty({description: 'The variable that is affected.'})
+  @ApiProperty({type: String, description: 'The variable that is affected.'})
   variable: Variable;
 
   /** the additive to apply to the variable before multipliers */
@@ -135,6 +136,38 @@ export const RESOURCES_SCHEMA_PROPERTIES = Object.fromEntries(Object.keys(RESOUR
   minimum: 0,
 } satisfies SchemaObject]));
 
+export class SystemType {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({
+    description: 'The chance of generating this type of system.',
+    type: 'integer',
+    default: 0,
+    minimum: 0,
+  })
+  chance: number;
+
+  @ApiProperty({
+    description: 'The minimum and maximum capacity for this type of system.',
+    type: 'array',
+    minItems: 2,
+    maxItems: 2,
+    items: {
+      type: 'integer',
+      minimum: 0,
+    },
+  })
+  capacity_range: [number, number];
+
+  @ApiProperty({
+    description: 'The number of districts as a fraction of capacity for this type of system.',
+    type: 'number',
+    minimum: 0,
+  })
+  district_percentage: number;
+}
+
 export class SystemUpgrade {
   @ApiProperty()
   id: string;
@@ -197,7 +230,7 @@ export class District {
       minimum: 0,
     } satisfies SchemaObject])),
   })
-  chance: Partial<Record<SystemType | 'default', number>>;
+  chance: Partial<Record<SystemTypeName | 'default', number>>;
 
   @ApiProperty({
     description: 'The cost to establish the district, specified in various resources.',

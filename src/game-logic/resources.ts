@@ -6,7 +6,7 @@ export const RESOURCES = {
     starting: 1000,
   },
   population: {
-    starting: 100,
+    starting: 20,
   },
   // raw resources
   energy: {

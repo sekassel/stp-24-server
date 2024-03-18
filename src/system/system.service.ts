@@ -13,7 +13,7 @@ import {
 } from '../game-logic/system-upgrade';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {BuildingName} from '../game-logic/buildings';
-import {SYSTEM_TYPES, SystemType} from "../game-logic/system-types";
+import {SYSTEM_TYPES, SystemTypeName} from "../game-logic/system-types";
 import {calculateVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
 import {Empire, EmpireDocument} from "../empire/empire.schema";
@@ -81,8 +81,10 @@ export class SystemService extends MongooseRepository<System> {
     //   - Check if districts don't exceed capacity
     //   - Check if districts don't exceed slots
     for (const [district, amount] of Object.entries(districts)) {
-      system.$inc(`districts.${district}`, amount);
+      const districtName = district as DistrictName;
+      system.districts[districtName] = (system.districts[districtName] ?? 0) + amount;
     }
+    system.markModified('districts');
   }
 
   private updateBuildings(system: SystemDocument, buildings: BuildingName[]) {
@@ -90,7 +92,7 @@ export class SystemService extends MongooseRepository<System> {
     system.buildings = buildings;
   }
 
-  private generateDistricts(system: SystemDocument, empire: Empire){
+  generateDistricts(system: SystemDocument, empire: Empire){
     //Get district chances for this system type
     const districtChances: Partial<Record<Variable, number>> = {};
 
@@ -109,7 +111,6 @@ export class SystemService extends MongooseRepository<System> {
     const nDistricts = SYSTEM_TYPES[system.type].district_percentage * system.capacity;
     for(let i = 0; i < nDistricts; i++){
       const type = Object.entries(districtChances).randomWeighted(i => i[1])[0] as Variable;
-      districtChances[type] && districtChances[type]!--;
 
       const district = type.split('.')[1] as DistrictName;
       if(system.districtSlots[district]){
@@ -119,6 +120,7 @@ export class SystemService extends MongooseRepository<System> {
         system.districtSlots[district] = 1;
       }
     }
+    system.markModified('districtSlots');
   }
 
   private applyCosts(empire: EmpireDocument, upgrade: SystemUpgradeName){
@@ -128,14 +130,17 @@ export class SystemService extends MongooseRepository<System> {
       for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[upgrade].cost)){
         empire.resources[resource as ResourceName] -= amount;
       }
+      empire.markModified('resources');
     }
     else{
       throw new BadRequestException(`Not enough resources to upgrade system`);
     }
   }
 
-  async generateMap(game: Game): Promise<void> {
-    if(!game.settings?.size) return;
+  async generateMap(game: Game): Promise<SystemDocument[]> {
+    if(!game.settings?.size) {
+      return [];
+    }
 
     const clusters: System[][] = [];
 
@@ -147,7 +152,7 @@ export class SystemService extends MongooseRepository<System> {
 
     //TODO: Connect clusters
 
-    await this.createMany(clusters.flat());
+    return this.createMany(clusters.flat());
   }
 
   /**

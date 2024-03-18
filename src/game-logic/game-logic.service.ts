@@ -121,6 +121,8 @@ export class GameLogicService {
 
     // ensure empire population is up to date
     empire.resources.population = systems.map(s => s.population).sum();
+
+    empire.markModified('resources');
   }
 
   private deductJoblessUpkeep(systems: SystemDocument[], empire: EmpireDocument, variables: Record<Variable, number>) {
@@ -135,7 +137,7 @@ export class GameLogicService {
   private deductSystemUpkeep(upgrade: 'colonized' | 'upgraded' | 'developed', empire: EmpireDocument, variables: Record<Variable, number>) {
     let systemUpkeepPaid = true;
     for (const resource of Object.keys(SYSTEM_UPGRADES[upgrade].upkeep)) {
-      const variable = `system.${upgrade}.upkeep.${resource}` as Variable;
+      const variable = `systems.${upgrade}.upkeep.${resource}` as Variable;
       systemUpkeepPaid = this.deductResource(empire, resource as ResourceName, variables[variable]) && systemUpkeepPaid;
     }
     return systemUpkeepPaid;
@@ -169,7 +171,6 @@ export class GameLogicService {
       const {population, capacity} = system;
       const effectiveUpgrade = population >= capacity ? 'developed' : system.upgrade;
       const item = groupedItems[effectiveUpgrade] ??= {
-        id: effectiveUpgrade,
         count: 0,
         subtotal: 0,
         variable: `systems.${effectiveUpgrade}.pop_growth`,
@@ -185,6 +186,43 @@ export class GameLogicService {
     return {
       total,
       items: Object.values(groupedItems),
+    };
+  }
+
+  aggregateResource(empire: Empire, systems: System[], resource: ResourceName): AggregateResult {
+    const items: AggregateItem[] = [];
+    const variables = getInitialVariables();
+    calculateVariables(variables, empire);
+
+    // + district production
+    // + building production
+    // - system upkeep
+    // - district upkeep
+    // - building upkeep
+    // if food: - pop upkeep
+    if (resource === 'food') {
+      const popUpkeep = variables['empire.pop.consumption.food'] * empire.resources.population;
+      items.push({
+        variable: 'empire.pop.consumption.food',
+        count: empire.resources.population,
+        subtotal: -popUpkeep,
+      });
+    }
+    // if credits: - jobless pop upkeep
+    if (resource === 'credits') {
+      const totalJobs = systems.map(s => Object.values(s.districts).sum() + s.buildings.length).sum();
+      const unemployedPops = empire.resources.population - totalJobs;
+      const unemployedPopUpkeep = variables['empire.pop.consumption.credits.unemployed'] * unemployedPops;
+      items.push({
+        variable: 'empire.pop.consumption.credits.unemployed',
+        count: unemployedPops,
+        subtotal: -unemployedPopUpkeep,
+      });
+    }
+
+    return {
+      total: items.map(item => item.subtotal).sum(),
+      items,
     };
   }
 }

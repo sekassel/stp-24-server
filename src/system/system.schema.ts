@@ -7,7 +7,7 @@ import {ApiProperty} from "@nestjs/swagger";
 import {IsArray, IsEnum, IsIn, IsInt, IsNumber, IsObject, IsString, Min} from 'class-validator';
 import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
 import {SYSTEM_UPGRADE_NAMES, SystemUpgradeName} from '../game-logic/system-upgrade';
-import {SystemType} from "../game-logic/system-types";
+import {SystemTypeName} from "../game-logic/system-types";
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class System extends GlobalSchema {
@@ -17,7 +17,7 @@ export class System extends GlobalSchema {
   @Prop({type: String})
   @ApiProperty()
   @IsString()
-  type: SystemType;
+  type: SystemTypeName;
 
   @Prop({type: Object, default: {}})
   @IsObject()

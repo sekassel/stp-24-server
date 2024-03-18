@@ -3,6 +3,8 @@ import {Empire} from '../empire/empire.schema';
 import {GameLogicService} from './game-logic.service';
 import {ApiProperty} from '@nestjs/swagger';
 import {Variable} from './types';
+import {RESOURCE_NAMES, ResourceName} from './resources';
+import {BadRequestException} from '@nestjs/common';
 
 export class AggregateFn {
   @ApiProperty({type: [String]})
@@ -12,17 +14,14 @@ export class AggregateFn {
 }
 
 export class AggregateItem {
-  @ApiProperty()
-  id: string;
+  @ApiProperty({type: String})
+  variable: Variable;
 
   @ApiProperty()
   count: number;
 
   @ApiProperty()
   subtotal: number;
-
-  @ApiProperty({type: String})
-  variable: Variable;
 }
 
 export class AggregateResult {
@@ -41,6 +40,18 @@ export const AGGREGATES = {
   'system.resources.population.periodic': {
     params: ['system'],
     compute: (service, empire, systems, {system}) => service.aggregatePopGrowth(empire, systems.filter(s => s._id.equals(system))),
+  },
+  'resources.periodic': {
+    params: ['resource'],
+    compute: (service, empire, systems, {resource, system}) => {
+      if (!RESOURCE_NAMES.includes(resource as ResourceName)) {
+        throw new BadRequestException(`Invalid resource: ${resource}`);
+      }
+      if (system) {
+        systems = systems.filter(s => s._id.equals(system));
+      }
+      return service.aggregateResource(empire, systems, resource as ResourceName);
+    },
   },
 } as const satisfies Record<string, AggregateFn>;
 export type AggregateId = keyof typeof AGGREGATES;

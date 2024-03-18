@@ -12,47 +12,7 @@ import {Variable} from '../game-logic/types';
 export class EmpireHandler {
   constructor(
     private empireService: EmpireService,
-    private memberService: MemberService,
   ) {
-  }
-
-  @OnEvent('games.*.updated')
-  async onGameUpdated(game: Game): Promise<void> {
-    if (!game.started) {
-      return;
-    }
-
-    const existingEmpires = await this.empireService.findAll({
-      game: game._id,
-    });
-    if (existingEmpires.length) {
-      return;
-    }
-
-    const members = await this.memberService.findAll({
-      game: game._id,
-    });
-    await this.empireService.createMany(members
-      .filter(m => m.empire)
-      .map(member => {
-        const resourceVariables: Record<Variable & `resources.${string}`, number> = flatten(RESOURCES, 'resources.');
-        calculateVariables(resourceVariables, {
-          traits: member.empire!.traits,
-          technologies: [],
-        });
-        const resources: any = {};
-        for (const resource of RESOURCE_NAMES) {
-          resources[resource] = resourceVariables[`resources.${resource}.starting`];
-        }
-        return ({
-          ...member.empire!,
-          game: game._id,
-          user: member.user,
-          technologies: [],
-          resources,
-        });
-      })
-    );
   }
 
   @OnEvent('games.*.deleted')

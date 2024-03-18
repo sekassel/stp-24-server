@@ -9,7 +9,7 @@ export class GameLogicScheduler {
   ) {
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async updateGames() {
     return this.gameLogicService.updateGames();
   }
