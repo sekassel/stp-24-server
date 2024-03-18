@@ -1,5 +1,5 @@
 import {BadRequestException, Controller, ForbiddenException, Get, Param, ParseArrayPipe, Query} from '@nestjs/common';
-import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags} from '@nestjs/swagger';
+import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags} from '@nestjs/swagger';
 import {AggregateId, AggregateResult, AGGREGATES} from './aggregates';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Auth, AuthUser} from '../auth/auth.decorator';
@@ -46,6 +46,7 @@ export class GameLogicController {
 
   @Get('variables/:variable')
   @ApiOperation({summary: 'Get the value and explanation of an empire variable.'})
+  @ApiParam({name: 'variable', type: String})
   @ApiOkResponse({type: ExplainedVariable})
   @ApiForbiddenResponse({description: 'Cannot view another user\'s empire variable.'})
   @NotFound()
