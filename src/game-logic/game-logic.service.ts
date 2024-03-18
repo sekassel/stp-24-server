@@ -171,7 +171,6 @@ export class GameLogicService {
       const {population, capacity} = system;
       const effectiveUpgrade = population >= capacity ? 'developed' : system.upgrade;
       const item = groupedItems[effectiveUpgrade] ??= {
-        id: effectiveUpgrade,
         count: 0,
         subtotal: 0,
         variable: `systems.${effectiveUpgrade}.pop_growth`,
@@ -204,10 +203,9 @@ export class GameLogicService {
     if (resource === 'food') {
       const popUpkeep = variables['empire.pop.consumption.food'] * empire.resources.population;
       items.push({
-        id: 'pop_food_consumption',
+        variable: 'empire.pop.consumption.food',
         count: empire.resources.population,
         subtotal: -popUpkeep,
-        variable: 'empire.pop.consumption.food',
       });
     }
     // if credits: - jobless pop upkeep
@@ -216,10 +214,9 @@ export class GameLogicService {
       const unemployedPops = empire.resources.population - totalJobs;
       const unemployedPopUpkeep = variables['empire.pop.consumption.credits.unemployed'] * unemployedPops;
       items.push({
-        id: 'pop_unemployed_credits_cost',
+        variable: 'empire.pop.consumption.credits.unemployed',
         count: unemployedPops,
         subtotal: -unemployedPopUpkeep,
-        variable: 'empire.pop.consumption.credits.unemployed',
       });
     }
 

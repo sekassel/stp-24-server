@@ -14,17 +14,14 @@ export class AggregateFn {
 }
 
 export class AggregateItem {
-  @ApiProperty()
-  id: string;
+  @ApiProperty({type: String})
+  variable: Variable;
 
   @ApiProperty()
   count: number;
 
   @ApiProperty()
   subtotal: number;
-
-  @ApiProperty({type: String})
-  variable: Variable;
 }
 
 export class AggregateResult {
