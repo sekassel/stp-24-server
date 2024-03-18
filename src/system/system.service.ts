@@ -111,7 +111,6 @@ export class SystemService extends MongooseRepository<System> {
     const nDistricts = SYSTEM_TYPES[system.type].district_percentage * system.capacity;
     for(let i = 0; i < nDistricts; i++){
       const type = Object.entries(districtChances).randomWeighted(i => i[1])[0] as Variable;
-      districtChances[type] && districtChances[type]!--;
 
       const district = type.split('.')[1] as DistrictName;
       if(system.districtSlots[district]){
