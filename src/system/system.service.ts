@@ -80,10 +80,11 @@ export class SystemService extends MongooseRepository<System> {
     //   - Check costs and resources
     //   - Check if districts don't exceed capacity
     //   - Check if districts don't exceed slots
-    system.districts ??= {};
     for (const [district, amount] of Object.entries(districts)) {
-      system.$inc(`districts.${district}`, amount);
+      const districtName = district as DistrictName;
+      system.districts[districtName] = (system.districts[districtName] ?? 0) + amount;
     }
+    system.markModified('districts');
   }
 
   private updateBuildings(system: SystemDocument, buildings: BuildingName[]) {
