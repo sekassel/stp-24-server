@@ -4,7 +4,7 @@ import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {System,SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
-import {GRIDS} from "../game-logic/gridtypes";
+import {CIRCLE_GENERATOR, GRID_SCALING, GRIDS} from "../game-logic/gridtypes";
 import {UpdateSystemDto} from './system.dto';
 import {
   SYSTEM_UPGRADE_NAMES,
@@ -143,16 +143,76 @@ export class SystemService extends MongooseRepository<System> {
     }
 
     const clusters: System[][] = [];
+    const clustersCenter: number[][] = [];
+    const clustersRadius: number[] = [];
+    let avgRadius = -1;
 
-    for(let x = 0; x < 3; x++){
-      for(let y = 0; y < 3; y++){
-        clusters.push(this.createCluster(game, 20, [(x-5)*100, (y-5)*100]));
+    //Create clusters
+    while(clusters.flat().length < game.settings.size){
+      const cluster = this.createCluster(game, GRID_SCALING, [-GRID_SCALING*2,-GRID_SCALING*2]);
+      const center = this.calcClusterCenter(cluster);
+      const radius = this.calcClusterRadius(cluster, center);
+
+      clusters.push(cluster);
+      clustersCenter.push(center);
+      clustersRadius.push(radius);
+
+      if (avgRadius === -1) {
+        avgRadius = radius;
+      }
+      else {
+        avgRadius = (avgRadius + radius) / 2;
       }
     }
 
-    //TODO: Connect clusters
+
+    //Spread clusters across the map
+    for(let i = 1; i < clusters.length; i++){
+      let angle = 0;
+      let angleOffset = Math.PI*2*Math.random();
+      let radius = avgRadius;
+
+      while(this.hasClusterCollision(clustersCenter, clustersRadius, i)){
+        angle += Math.PI/(radius * CIRCLE_GENERATOR["radius_angle_percentage"] + Math.random() * CIRCLE_GENERATOR["angle_steps"]);
+
+        if(angle > Math.PI*2){
+          angle = 0;
+          angleOffset = Math.PI*2*Math.random();
+          radius += avgRadius * CIRCLE_GENERATOR["radius_steps"] * Math.random();
+        }
+
+        const movement = [Math.cos(angle + angleOffset)*radius, Math.sin(angle + angleOffset)*radius];
+        clusters[i] = this.moveCluster(clusters[i], movement);
+        clustersCenter[i] = [clustersCenter[i][0] + movement[0], clustersCenter[i][1] + movement[1]];
+      }
+    }
+
+    //Connect clusters
+
 
     return this.createMany(clusters.flat());
+  }
+
+  private moveCluster(cluster: System[], movement: number[]): System[] {
+    return cluster.map(system => {
+      system.x += movement[0];
+      system.y += movement[1];
+      return system;
+    });
+  }
+
+  private hasClusterCollision(clusterCenters: number[][], clusterRadius: number[], clusterIndex: number): boolean {
+    for(let i = 0; i < clusterCenters.length; i++){
+      if(i === clusterIndex) continue;
+      if(this.clusterCollision(clusterCenters[i], clusterCenters[clusterIndex],
+        clusterRadius[i]*CIRCLE_GENERATOR["collision_precision"],
+        clusterRadius[clusterIndex]*CIRCLE_GENERATOR["collision_precision"])) return true;
+    }
+    return false;
+  }
+
+  private clusterCollision(center1: number[], center2: number[], radius1: number, radius2: number): boolean {
+    return Math.hypot(center1[0] - center2[0], center1[1] - center2[1]) < radius1 + radius2;
   }
 
   /**
@@ -186,6 +246,7 @@ export class SystemService extends MongooseRepository<System> {
       this.connectSystems(systems[system1], systems[system2]);
     }
 
+
     return Object.values(systems);
   }
 
@@ -212,6 +273,33 @@ export class SystemService extends MongooseRepository<System> {
     }
 
     return edges;
+  }
+
+  private calcClusterCenter(cluster: System[]): number[] {
+    const x = cluster.reduce((acc, system) => acc + system.x, 0) / cluster.length;
+    const y = cluster.reduce((acc, system) => acc + system.y, 0) / cluster.length;
+    return [x, y];
+  }
+
+  private calcClusterRadius(cluster: System[], center: number[]): number {
+    return cluster.reduce((acc, system) => Math.max(acc, Math.hypot(system.x - center[0], system.y - center[1])), 0);
+  }
+
+  private connectCluster(cluster1: System[], cluster2: System[]) {
+    let nearestSystems: System[] = [];
+    let nearesSystemDistance = -1;
+
+    for(const system1 of cluster1){
+      for(const system2 of cluster2){
+        const distance = Math.hypot(system1.x - system2.x, system1.y - system2.y);
+        if(nearesSystemDistance === -1 || distance < nearesSystemDistance){
+          nearestSystems = [system1, system2];
+          nearesSystemDistance = distance;
+        }
+      }
+    }
+
+    this.connectSystems(nearestSystems[0], nearestSystems[1]);
   }
 
   /**
@@ -262,7 +350,7 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private createSystem(game: Game, vertex: Vertex, scaling: number, offset: number[]): System {
-    const systemType = Object.entries(SYSTEM_TYPES).randomWeighted(([, value]) => value.chance)[0] as SystemType;
+    const systemType = Object.entries(SYSTEM_TYPES).randomWeighted(([, value]) => value.chance)[0] as SystemTypeName;
     const capacity_range = SYSTEM_TYPES[systemType].capacity_range;
 
     return {
@@ -271,8 +359,8 @@ export class SystemService extends MongooseRepository<System> {
       owner: game.owner,
       type: systemType,
       capacity: Math.randInt(capacity_range[1] - capacity_range[0]) + capacity_range[0],
-      x: vertex.x * scaling + offset[0] + Math.random() * (scaling/3),
-      y: vertex.y * scaling + offset[1] + Math.random() * (scaling/3),
+      x: vertex.x * scaling + offset[0] + Math.random() * (scaling/2.2),
+      y: vertex.y * scaling + offset[1] + Math.random() * (scaling/2.2),
       upgrade: SYSTEM_UPGRADE_NAMES[0],
       links: {},
       districtSlots: {},

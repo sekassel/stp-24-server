@@ -45,3 +45,4 @@ export const SYSTEM_TYPES = {
   },
 } as const satisfies Record<string, SystemType>;
 export type SystemTypeName = keyof typeof SYSTEM_TYPES;
+
