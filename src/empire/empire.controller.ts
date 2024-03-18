@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  ForbiddenException,
-  Get,
-  Param,
-  ParseArrayPipe,
-  Patch,
-  Query
-} from '@nestjs/common';
+import {Body, Controller, ForbiddenException, Get, Param, Patch} from '@nestjs/common';
 import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, refs} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
@@ -18,8 +9,6 @@ import {Empire} from './empire.schema';
 import {EmpireService} from './empire.service';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
-import {ExplainedVariable, Variable} from '../game-logic/types';
-import {explainVariable, getEmpireEffectSources} from '../game-logic/variables';
 
 @Controller('games/:game/empires')
 @ApiTags('Game Empires')
@@ -69,41 +58,5 @@ export class EmpireController {
       throw new ForbiddenException('Cannot modify another user\'s empire.');
     }
     return this.empireService.updateEmpire(empire, dto);
-  }
-
-  @Get(':empire/variables')
-  @ApiOperation({summary: 'Get the value and explanation of multiple empire variable.'})
-  @ApiOkResponse({type: [ExplainedVariable]})
-  @ApiForbiddenResponse({description: 'Cannot view another user\'s empire variables.'})
-  @NotFound()
-  async getVariables(
-    @AuthUser() currentUser: User,
-    @Param('empire', ObjectIdPipe) id: Types.ObjectId,
-    @Query('variables', ParseArrayPipe) variables: Variable[],
-  ): Promise<ExplainedVariable[]> {
-    const empire = await this.empireService.find(id) ?? notFound(id);
-    if (!currentUser._id.equals(empire.user)) {
-      throw new ForbiddenException('Cannot view another user\'s empire variable.');
-    }
-    const effectSources = getEmpireEffectSources(empire);
-    return variables.map(v => explainVariable(v, effectSources));
-  }
-
-  @Get(':empire/variables/:variable')
-  @ApiOperation({summary: 'Get the value and explanation of an empire variable.'})
-  @ApiOkResponse({type: ExplainedVariable})
-  @ApiForbiddenResponse({description: 'Cannot view another user\'s empire variable.'})
-  @NotFound()
-  async getVariable(
-    @AuthUser() currentUser: User,
-    @Param('empire', ObjectIdPipe) id: Types.ObjectId,
-    @Param('variable') variable: Variable,
-  ): Promise<ExplainedVariable> {
-    const empire = await this.empireService.find(id) ?? notFound(id);
-    if (!currentUser._id.equals(empire.user)) {
-      throw new ForbiddenException('Cannot view another user\'s empire variable.');
-    }
-    const effectSources = getEmpireEffectSources(empire);
-    return explainVariable(variable, effectSources);
   }
 }
