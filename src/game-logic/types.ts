@@ -16,7 +16,7 @@ export class Effect {
   description: string;
 
   /** the variable that is affected. */
-  @ApiProperty({description: 'The variable that is affected.'})
+  @ApiProperty({type: String, description: 'The variable that is affected.'})
   variable: Variable;
 
   /** the additive to apply to the variable before multipliers */
