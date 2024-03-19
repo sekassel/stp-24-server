@@ -169,16 +169,16 @@ export class SystemService extends MongooseRepository<System> {
     //Spread clusters across the map
     for(let i = 1; i < clusters.length; i++){
       let angle = 0;
-      let angleOffset = Math.PI*2*Math.random();
+      let angleOffset = Math.PI*2*Math.random()
       let radius = avgRadius;
 
       while(this.hasClusterCollision(clustersCenter, clustersRadius, i)){
-        angle += Math.PI/(radius * CIRCLE_GENERATOR["radius_angle_percentage"] + Math.random() * CIRCLE_GENERATOR["angle_steps"]);
+        angle += Math.PI/(radius * CIRCLE_GENERATOR["radius_angle_percentage"] + CIRCLE_GENERATOR["angle_steps"]);
 
         if(angle > Math.PI*2){
           angle = 0;
           angleOffset = Math.PI*2*Math.random();
-          radius += avgRadius * CIRCLE_GENERATOR["radius_steps"] * Math.random();
+          radius += avgRadius * CIRCLE_GENERATOR["radius_steps"];
         }
 
         const movement = [Math.cos(angle + angleOffset)*radius, Math.sin(angle + angleOffset)*radius];

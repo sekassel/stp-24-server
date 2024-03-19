@@ -52,8 +52,8 @@ export const GRIDS  = [
 export const GRID_SCALING = 12;
 
 export const CIRCLE_GENERATOR = {
-  radius_steps: 0.05,
-  angle_steps: 100,
-  radius_angle_percentage: 5,
-  collision_precision: 0.95,
+  radius_steps: 0.01,
+  angle_steps: 300,
+  radius_angle_percentage: 1,
+  collision_precision: 0.99,
 }
