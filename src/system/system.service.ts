@@ -4,7 +4,7 @@ import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {System,SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
-import {CIRCLE_GENERATOR, GRID_SCALING, GRIDS} from "../game-logic/gridtypes";
+import {CIRCLE_GENERATOR, GRID_SCALING, GRIDS, Grid, Vertex, MAX_SYSTEM_DISPLACEMENT} from "../game-logic/gridtypes";
 import {UpdateSystemDto} from './system.dto';
 import {
   SYSTEM_UPGRADE_NAMES,
@@ -17,7 +17,7 @@ import {SYSTEM_TYPES, SystemTypeName} from "../game-logic/system-types";
 import {calculateVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
 import {Empire, EmpireDocument} from "../empire/empire.schema";
-import {District, Grid, Variable, Vertex} from "../game-logic/types";
+import {District, Variable} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 
 @Injectable()
@@ -173,12 +173,12 @@ export class SystemService extends MongooseRepository<System> {
       let radius = avgRadius;
 
       while(this.hasClusterCollision(clustersCenter, clustersRadius, i)){
-        angle += Math.PI/(radius * CIRCLE_GENERATOR["radius_angle_percentage"] + CIRCLE_GENERATOR["angle_steps"]);
+        angle += Math.PI/(radius * CIRCLE_GENERATOR.radius_angle_percentage + CIRCLE_GENERATOR.angle_steps);
 
         if(angle > Math.PI*2){
           angle = 0;
           angleOffset = Math.PI*2*Math.random();
-          radius += avgRadius * CIRCLE_GENERATOR["radius_steps"];
+          radius += avgRadius * CIRCLE_GENERATOR.radius_steps;
         }
 
         const movement = [Math.cos(angle + angleOffset)*radius, Math.sin(angle + angleOffset)*radius];
@@ -359,8 +359,8 @@ export class SystemService extends MongooseRepository<System> {
       owner: game.owner,
       type: systemType,
       capacity: Math.randInt(capacity_range[1] - capacity_range[0]) + capacity_range[0],
-      x: vertex.x * scaling + offset[0] + Math.random() * (scaling/2.2),
-      y: vertex.y * scaling + offset[1] + Math.random() * (scaling/2.2),
+      x: vertex.x * scaling + offset[0] + Math.random() * scaling * MAX_SYSTEM_DISPLACEMENT,
+      y: vertex.y * scaling + offset[1] + Math.random() * scaling * MAX_SYSTEM_DISPLACEMENT,
       upgrade: SYSTEM_UPGRADE_NAMES[0],
       links: {},
       districtSlots: {},

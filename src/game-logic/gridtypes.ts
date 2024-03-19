@@ -1,4 +1,16 @@
-import {Grid} from "./types";
+export class Grid {
+  vertices: readonly Vertex[];
+  intersecting_edges: readonly number[][][];
+  system_range: readonly [number, number];
+  cycle_percentage: number;
+}
+
+export class Vertex {
+  id: number;
+  x: number;
+  y: number;
+  neighbors: readonly number[];
+}
 
 export const GRIDS  = [
   {
@@ -50,6 +62,7 @@ export const GRIDS  = [
 ] as const satisfies Grid[];
 
 export const GRID_SCALING = 12;
+export const MAX_SYSTEM_DISPLACEMENT = 0.45;
 
 export const CIRCLE_GENERATOR = {
   radius_steps: 0.01,

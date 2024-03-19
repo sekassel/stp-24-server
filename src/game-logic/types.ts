@@ -250,17 +250,3 @@ export class District {
   })
   production: Partial<Record<ResourceName, number>>;
 }
-
-export class Grid {
-  vertices: readonly Vertex[];
-  intersecting_edges: readonly number[][][];
-  system_range: readonly [number, number];
-  cycle_percentage: number;
-}
-
-export class Vertex {
-  id: number;
-  x: number;
-  y: number;
-  neighbors: readonly number[];
-}
