@@ -33,14 +33,6 @@ export class AggregateResult {
 }
 
 export const AGGREGATES = {
-  'resources.population.periodic': {
-    params: [],
-    compute: (service, empire, systems) => service.aggregatePopGrowth(empire, systems),
-  },
-  'system.resources.population.periodic': {
-    params: ['system'],
-    compute: (service, empire, systems, {system}) => service.aggregatePopGrowth(empire, systems.filter(s => s._id.equals(system))),
-  },
   'resources.periodic': {
     params: ['resource'],
     compute: (service, empire, systems, {resource, system}) => {
@@ -49,6 +41,9 @@ export const AGGREGATES = {
       }
       if (system) {
         systems = systems.filter(s => s._id.equals(system));
+      }
+      if (resource === 'population') {
+        return service.aggregatePopGrowth(empire, systems);
       }
       return service.aggregateResource(empire, systems, resource as ResourceName);
     },
