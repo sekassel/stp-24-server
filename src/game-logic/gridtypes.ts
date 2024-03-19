@@ -1,8 +1,18 @@
+export class Map {
+  clusters: readonly Cluster[];
+}
+
 export class Grid {
   vertices: readonly Vertex[];
   intersecting_edges: readonly number[][][];
   system_range: readonly [number, number];
   cycle_percentage: number;
+}
+
+export class Cluster {
+  x: number;
+  y: number;
+  level: number;
 }
 
 export class Vertex {
@@ -11,6 +21,14 @@ export class Vertex {
   y: number;
   neighbors: readonly number[];
 }
+
+export const MAPS = [
+  {
+    clusters: [
+      { x: 0, y: 0, level: 0 },
+    ],
+  }
+] as const satisfies Map[];
 
 export const GRIDS  = [
   {
