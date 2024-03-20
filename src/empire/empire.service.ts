@@ -68,7 +68,7 @@ export class EmpireService extends MongooseRepository<Empire> {
     return empire;
   }
 
-  private async unlockTechnology(empire: Empire, technologies: string[]) {
+  private async unlockTechnology(empire: EmpireDocument, technologies: string[]) {
     const user = await this.userService.find(empire.user) ?? notFound(empire.user);
     const technologyCostMultiplier = calculateVariable('empire.technologies.cost_multiplier', empire);
     for (const technologyId of technologies) {
@@ -98,11 +98,13 @@ export class EmpireService extends MongooseRepository<Empire> {
 
       // Deduct research points and unlock technology
       empire.resources.research -= technologyCost;
+      empire.markModified('resources');
       if (!empire.technologies.includes(technologyId)) {
         empire.technologies.push(technologyId);
         // Increment the user's technology count by 1
         if (user.technologies) {
           user.technologies[technologyId] = (user.technologies?.[technologyId] ?? 0) + 1;
+          user.markModified('technologies');
         }
       }
     }
