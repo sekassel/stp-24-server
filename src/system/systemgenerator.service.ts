@@ -189,8 +189,7 @@ export class SystemGeneratorService {
 
   private removeIntersectingEdges(systems: System[]): System[] {
     for(let i = 0; i < systems.length; i++) {
-      for(let j = 0; j < systems.length; j++) {
-        if(i === j) continue;
+      for(let j = i+1; j < systems.length; j++) {
         this.checkLinks(systems, i, j);
       }
     }
