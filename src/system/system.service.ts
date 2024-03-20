@@ -88,7 +88,7 @@ export class SystemService extends MongooseRepository<System> {
       const districtTypeSlots = districtSlots[districtName];
       const builtDistrictsOfType = allDistricts[districtName] ?? 0;
       builtDistrictsCount += builtDistrictsOfType;
-      amountOfDistrictsToBeBuilt += amount;
+      amountOfDistrictsToBeBuilt += amount ?? 0;
 
       // Check if districts don't exceed slots
       if (districtTypeSlots !== undefined && districtTypeSlots - builtDistrictsOfType < amount) {
