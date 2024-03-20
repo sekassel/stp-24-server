@@ -1,6 +1,6 @@
 import {Game} from "../game/game.schema";
 import {System} from "./system.schema";
-import {CIRCLE_GENERATOR, GRID_SCALING} from "../game-logic/gridtypes";
+import {CIRCLE_GENERATOR, GRID_SCALING, MAP_CYCLE_PERCENTAGE} from "../game-logic/gridtypes";
 import {ClusterGeneratorService} from "./clustergenerator.service";
 
 export class SystemGeneratorService {
@@ -41,7 +41,7 @@ export class SystemGeneratorService {
     for(let i = 1; i < clusters.length; i++){
       let angle = 0;
       let angleOffset = Math.PI*2*Math.random()
-      let radius = avgRadius;
+      let radius = avgRadius/2;
 
       while(this.hasClusterCollision(clustersCenter, clustersRadius, i)){
         angle += Math.PI/(radius * CIRCLE_GENERATOR.radius_angle_percentage + CIRCLE_GENERATOR.angle_steps);
@@ -99,6 +99,10 @@ export class SystemGeneratorService {
 
   private connectClusters(clusters: System[][], centers: number[][], maxDistance: number): void {
     const edges: number[][] = [];
+    let cycleEdges: number[][] = [];
+    let edgesMassCenter:number[] = [];
+
+    //Connect clusters as a spanning tree
     let queue: number[][] = [];
     for(let i = 0; i < clusters.length; i++){
       for(let j = 0; j < clusters.length; j++){
@@ -113,10 +117,30 @@ export class SystemGeneratorService {
       edges.push(edge);
       if(!this.hasCycle(edge, edges)){
         this.connectCluster(clusters[edge[0]], clusters[edge[1]]);
+
+        const edgeCenter = [(centers[edge[0]][0] + centers[edge[1]][0])/2, (centers[edge[0]][1] + centers[edge[1]][1])/2];
+        if(edgesMassCenter.length == 0){
+          edgesMassCenter = edgeCenter;
+        }
+        else{
+          edgesMassCenter = [(edgesMassCenter[0] + edgeCenter[0])/2, (edgesMassCenter[1] + edgeCenter[1])/2];
+        }
       }
       else{
         edges.pop();
+        cycleEdges.push(edge);
       }
+    }
+
+    //Add random cycle edges
+    for(let i = 0; i < clusters.length * MAP_CYCLE_PERCENTAGE; i++){
+      if(cycleEdges.length == 0) break;
+      cycleEdges = this.sortEdgesByDistanceFromPoint(centers, cycleEdges, edgesMassCenter);
+      const edge = cycleEdges.pop()!;
+      const edgeCenter = [(centers[edge[0]][0] + centers[edge[1]][0])/2, (centers[edge[0]][1] + centers[edge[1]][1])/2];
+
+      this.connectCluster(clusters[edge[0]], clusters[edge[1]]);
+      edgesMassCenter = [(edgesMassCenter[0] + edgeCenter[0])/2, (edgesMassCenter[1] + edgeCenter[1])/2];
     }
   }
 
@@ -132,19 +156,30 @@ export class SystemGeneratorService {
     }).filter(edge => Math.hypot(centers[edge[0]][0] - centers[edge[1]][0], centers[edge[0]][1] - centers[edge[1]][1]) < maxDistance);
   }
 
+  private sortEdgesByDistanceFromPoint(centers: number[][], edges: number[][], point: number[]): number[][] {
+    return edges.sort((edge1, edge2) => {
+      const edge1Center = [(centers[edge1[0]][0] + centers[edge1[1]][0])/2, (centers[edge1[0]][1] + centers[edge1[1]][1])/2];
+      const edge2Center = [(centers[edge2[0]][0] + centers[edge2[1]][0])/2, (centers[edge2[0]][1] + centers[edge2[1]][1])/2];
+
+      const edge1Distance = Math.hypot(edge1Center[0] - point[0], edge1Center[1] - point[1]);
+      const edge2Distance = Math.hypot(edge2Center[0] - point[0], edge2Center[1] - point[1]);
+      return edge1Distance - edge2Distance;
+    });
+  }
+
   /**
    * Connects the two nearest systems of two clusters
    * */
   private connectCluster(cluster1: System[], cluster2: System[]) {
     let nearestSystems: System[] = [];
-    let nearesSystemDistance = -1;
+    let nearestSystemDistance = -1;
 
     for(const system1 of cluster1){
       for(const system2 of cluster2){
         const distance = Math.hypot(system1.x - system2.x, system1.y - system2.y);
-        if(nearesSystemDistance === -1 || distance < nearesSystemDistance){
+        if(nearestSystemDistance === -1 || distance < nearestSystemDistance){
           nearestSystems = [system1, system2];
-          nearesSystemDistance = distance;
+          nearestSystemDistance = distance;
         }
       }
     }

@@ -86,6 +86,7 @@ export const GRIDS  = [
 
 export const GRID_SCALING = 12;
 export const MAX_SYSTEM_DISPLACEMENT = 0.45;
+export const MAP_CYCLE_PERCENTAGE = 0.5;
 
 export const CIRCLE_GENERATOR = {
   radius_steps: 0.01,
