@@ -1,6 +1,6 @@
 import {Effect, EffectSource, ExplainedVariable, Variable} from './types';
 import {Empire} from '../empire/empire.schema';
-import {getEffectiveTechnologies, TECHNOLOGIES} from './technologies';
+import {getEffectiveTechnologies, TECH_CATEGORIES, TECHNOLOGIES} from './technologies';
 import {TRAITS} from './traits';
 import {BUILDINGS} from './buildings';
 import {EMPIRE_VARIABLES} from './empire-variables';
@@ -14,6 +14,7 @@ export const VARIABLES = {
   empire: EMPIRE_VARIABLES,
   systems: SYSTEM_UPGRADES,
   resources: RESOURCES,
+  technologies: TECH_CATEGORIES,
 } as const;
 
 export function getInitialVariables(): Record<Variable, number> {

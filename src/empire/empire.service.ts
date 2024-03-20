@@ -10,10 +10,12 @@ import {generateTraits} from '../game-logic/traits';
 import {TECHNOLOGIES} from "../game-logic/technologies";
 import {UserService} from "../user/user.service";
 import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
-import {Variable} from "../game-logic/types";
+import {Technology, Variable} from '../game-logic/types';
 import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
 import {Game, GameDocument} from '../game/game.schema';
 import {SYSTEM_TYPES} from '../game-logic/system-types';
+import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
+import {UserDocument} from '../user/user.schema';
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -70,7 +72,12 @@ export class EmpireService extends MongooseRepository<Empire> {
 
   private async unlockTechnology(empire: EmpireDocument, technologies: string[]) {
     const user = await this.userService.find(empire.user) ?? notFound(empire.user);
-    const technologyCostMultiplier = calculateVariable('empire.technologies.cost_multiplier', empire);
+    const variables = {
+      ...getVariables('technologies'),
+      'empire.technologies.cost_multiplier': EMPIRE_VARIABLES.technologies.cost_multiplier,
+    };
+    calculateVariables(variables, empire);
+
     for (const technologyId of technologies) {
       const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
 
@@ -89,8 +96,7 @@ export class EmpireService extends MongooseRepository<Empire> {
       }
 
       // Calculate the technology cost based on the formula
-      const technologyCount = user.technologies?.[technologyId] || 0;
-      const technologyCost = Math.round(technology.cost * technologyCostMultiplier ** Math.min(technologyCount, 10));
+      const technologyCost = this.getTechnologyCost(user, technology, variables);
 
       if (empire.resources.research < technologyCost) {
         throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
@@ -110,6 +116,28 @@ export class EmpireService extends MongooseRepository<Empire> {
     }
 
     await this.userService.saveAll([user]);
+  }
+
+  private getTechnologyCost(user: UserDocument, technology: Technology, variables: Partial<Record<Variable, number>>) {
+    const technologyCount = user.technologies?.[technology.id] || 0;
+
+    let technologyCost = technology.cost;
+
+    // step 1: if the user has already unlocked this tech, decrease the cost exponentially
+    if (technologyCount) {
+      const baseCostMultiplier = variables['empire.technologies.cost_multiplier'] || 1;
+      const unlockCostMultiplier = baseCostMultiplier ** Math.min(technologyCount, 10);
+      technologyCost *= unlockCostMultiplier;
+    }
+
+    // step 2: apply tag multipliers
+    for (const tag of technology.tags) {
+      const tagCostMultiplier = variables[`technologies.${tag}.cost_multiplier`] || 1;
+      technologyCost *= tagCostMultiplier;
+    }
+
+    // step 3: round the cost
+    return Math.round(technologyCost);
   }
 
   private resourceTrading(empire: Empire, resources: Record<ResourceName, number>) {
