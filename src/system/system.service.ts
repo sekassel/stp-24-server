@@ -14,7 +14,7 @@ import {
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {BuildingName} from '../game-logic/buildings';
 import {SYSTEM_TYPES, SystemTypeName} from "../game-logic/system-types";
-import {calculateVariables} from "../game-logic/variables";
+import {calculateVariables, getVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
 import {Empire, EmpireDocument} from "../empire/empire.schema";
 import {District, Variable} from "../game-logic/types";
@@ -75,13 +75,22 @@ export class SystemService extends MongooseRepository<System> {
     await this.empireService.saveAll([empire]);
   }
 
-  private updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>) {
+  private async updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>) {
     // TODO @Simolse: #15 Build and Destroy Districts
     //   - Check costs and resources
+    const districtVariables = getVariables('districts');
     const districtSlots = {...system.districtSlots};
     const allDistricts = {...system.districts};
     let builtDistrictsCount = 0;
     let amountOfDistrictsToBeBuilt = 0;
+    let empire;
+
+    if (system.owner instanceof Types.ObjectId) {
+      empire = await this.empireService.find(system.owner);
+    }
+    if (empire) {
+      calculateVariables(districtVariables, empire);
+    }
 
     for (const [district, amount] of Object.entries(districts)) {
       const districtName = district as DistrictName;
@@ -94,6 +103,7 @@ export class SystemService extends MongooseRepository<System> {
       if (districtTypeSlots !== undefined && districtTypeSlots - builtDistrictsOfType < amount) {
         throw new BadRequestException(`Insufficient district slots for ${districtName}`);
       }
+      const districtCost = districtVariables[`district.${district}.cost` as Variable];
     }
 
     // Check if district slots don't exceed capacity
