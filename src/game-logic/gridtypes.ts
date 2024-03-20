@@ -1,5 +1,10 @@
-export class Map {
-  clusters: readonly Cluster[];
+export class ClusterMap {
+  levels: readonly Level[];
+  size: readonly number[];
+}
+
+export class Level {
+  points: readonly number[][]; //Points where clusters of systems will be placed
 }
 
 export class Grid {
@@ -7,12 +12,6 @@ export class Grid {
   intersecting_edges: readonly number[][][];
   system_range: readonly [number, number];
   cycle_percentage: number;
-}
-
-export class Cluster {
-  x: number;
-  y: number;
-  level: number;
 }
 
 export class Vertex {
@@ -24,11 +23,17 @@ export class Vertex {
 
 export const MAPS = [
   {
-    clusters: [
-      { x: 0, y: 0, level: 0 },
+    levels: [
+      { points: [[0,0]] },
+      { points: [[2,2], [4,2], [2,4], [4,4]] },
+      { points: [[3,1], [1,3], [5,3], [3,5]] },
+      { points: [[1,1], [5,1], [1,5], [5,5]] },
+      { points: [[2,0], [4,0], [0,2], [6,2], [0,4], [6,4], [2,6], [4,6]] },
+      { points: [[0,0], [6,0], [0,6], [6,6]] },
     ],
+    size: [6, 6],
   }
-] as const satisfies Map[];
+] as const satisfies ClusterMap[];
 
 export const GRIDS  = [
   {
