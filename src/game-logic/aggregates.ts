@@ -5,6 +5,8 @@ import {ApiProperty} from '@nestjs/swagger';
 import {Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {BadRequestException} from '@nestjs/common';
+import {TECHNOLOGIES} from './technologies';
+import {notFound} from '@mean-stream/nestx';
 
 export class AggregateFn {
   @ApiProperty({type: [String]})
@@ -48,5 +50,16 @@ export const AGGREGATES = {
       return service.aggregateResource(empire, systems, resource as ResourceName);
     },
   },
+  'technology.cost': {
+    params: ['technology'],
+    compute: (service, empire, systems, {technology}) => {
+      // TODO real technology cost
+      const tech = TECHNOLOGIES[technology] ?? notFound(technology);
+      return {
+        total: tech.cost,
+        items: [],
+      };
+    },
+  }
 } as const satisfies Record<string, AggregateFn>;
 export type AggregateId = keyof typeof AGGREGATES;
