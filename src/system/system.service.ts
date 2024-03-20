@@ -76,7 +76,7 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>) {
-    // TODO @Giulcoo: https://github.com/sekassel-research/stp-24-server/issues/15
+    // TODO @Simolse: #15 Build and Destroy Districts
     //   - Check costs and resources
     //   - Check if districts don't exceed capacity
     //   - Check if districts don't exceed slots
@@ -88,7 +88,10 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private updateBuildings(system: SystemDocument, buildings: BuildingName[]) {
-    // TODO @Giulcoo: https://github.com/sekassel-research/stp-24-server/issues/17
+    // TODO @Giulcoo: #17 Build and Destroy Buildings
+    //  - Determine new and removed buildings
+    //  - Check costs and resources
+    //  - Check if buildings don't exceed capacity
     system.buildings = buildings;
   }
 

@@ -1,6 +1,5 @@
 import type {District} from './types';
 
-// TODO adjust cost, upkeep, and production values
 export const DISTRICTS = {
   // basic resource districts. cost should be around 75, upkeep around 5, production around 10
   energy: {
