@@ -6,7 +6,7 @@ import {GameDocument} from '../game/game.schema';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
 import {calculateVariable, calculateVariables, getInitialVariables} from './variables';
-import {Variable} from './types';
+import {Technology, Variable} from './types';
 import {ResourceName} from './resources';
 import {DistrictName, DISTRICTS} from './districts';
 import {EMPIRE_VARIABLES} from './empire-variables';
@@ -224,5 +224,9 @@ export class GameLogicService {
       total: items.map(item => item.subtotal).sum(),
       items,
     };
+  }
+
+  aggregateTechCost(empire: Empire, technology: Technology): AggregateResult {
+    return this.empireService.aggregateTechCost(empire, technology);
   }
 }

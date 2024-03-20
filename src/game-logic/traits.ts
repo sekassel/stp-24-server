@@ -44,7 +44,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['weak'],
     effects: [
       {
-        description: '+5% $minerals$ from $mine$',
+        description: '+5% $resources.minerals$ from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 1.05,
       },
@@ -56,7 +56,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['strong'],
     effects: [
       {
-        description: '-5% $minerals$ from $mine$',
+        description: '-5% $resources.minerals$ from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 0.95,
       },
@@ -70,17 +70,17 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['smart', 'intelligent'],
     effects: [
       {
-        description: '-5% $research$ from $research_lab$',
+        description: '-5% $resources.research$ from $buildings.research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 0.95,
       },
       {
-        description: '+0.5% $alloys$ from $foundry$',
+        description: '+0.5% $resources.alloys$ from $buildings.foundry$',
         variable: 'buildings.foundry.production.alloys',
         multiplier: 1.005,
       },
       {
-        description: '+0.5% $fuel$ from $refinery$',
+        description: '+0.5% $resources.fuel$ from $buildings.refinery$',
         variable: 'buildings.refinery.production.fuel',
         multiplier: 1.005,
       },
@@ -92,7 +92,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['dumb', 'intelligent'],
     effects: [
       {
-        description: '+5% $research$ from $research_lab$',
+        description: '+5% $resources.research$ from $buildings.research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 1.05,
       },
@@ -104,7 +104,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['dumb', 'smart'],
     effects: [
       {
-        description: '+10% $research$ from $research_lab$',
+        description: '+10% $resources.research$ from $buildings.research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 1.1,
       },
@@ -118,17 +118,17 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['urban', 'gentrified', 'industrious'],
     effects: [
       {
-        description: 'Start with 200 additional $food$',
+        description: 'Start with 200 additional $resources.food$',
         variable: 'resources.food.starting',
         bonus: 200,
       },
       {
-        description: 'Start with 20 reduced $energy$',
+        description: 'Start with 20 reduced $resources.energy$',
         variable: 'resources.energy.starting',
         bonus: -20,
       },
       {
-        description: '+5% $food$ from $farm$',
+        description: '+5% $resources.food$ from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.05,
       },
@@ -140,7 +140,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['agrarian', 'industrious', 'gentrified'],
     effects: [
       {
-        description: '-5% $food$ from $farm$',
+        description: '-5% $resources.food$ from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 0.95,
       },
@@ -152,12 +152,12 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['urban', 'gentrified', 'agrarian'],
     effects: [
       {
-        description: '+10% $food$ from $farm$',
+        description: '+10% $resources.food$ from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.1,
       },
       {
-        description: 'Start with 20 additional $fuel$',
+        description: 'Start with 20 additional $resources.fuel$',
         variable: 'resources.fuel.starting',
         bonus: 20,
       },
@@ -169,7 +169,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['agrarian', 'industrious', 'urban'],
     effects: [
       {
-        description: '-10% $food$ from $farm$',
+        description: '-10% $resources.food$ from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 0.9,
       },
@@ -183,12 +183,12 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['ecological', 'nature_loving', 'green', 'chernobylian', 'tsaristic'],
     effects: [
       {
-        description: '+10% $energy$ from $power_plant$',
+        description: '+10% $resources.energy$ from $buildings.power_plant$',
         variable: 'buildings.power_plant.production.energy',
         multiplier: 1.1,
       },
       {
-        description: '-3% $food$ from $farm$',
+        description: '-3% $resources.food$ from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 0.97,
       },
@@ -200,12 +200,12 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['ecological', 'nature_loving', 'green', 'radioactive', 'tsaristic'],
     effects: [
       {
-        description: '+20% $energy$ from $power_plant$',
+        description: '+20% $resources.energy$ from $buildings.power_plant$',
         variable: 'buildings.power_plant.production.energy',
         multiplier: 1.2,
       },
       {
-        description: '-6% $food$ from $farm$',
+        description: '-6% $resources.food$ from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 0.94,
       },
@@ -217,12 +217,12 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['ecological', 'nature_loving', 'green', 'radioactive', 'chernobylian'],
     effects: [
       {
-        description: '+30% $energy$ from $power_plant$',
+        description: '+30% $resources.energy$ from $buildings.power_plant$',
         variable: 'buildings.power_plant.production.energy',
         multiplier: 1.3,
       },
       {
-        description: '-10% $food$ from $farm$',
+        description: '-10% $resources.food$ from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 0.9,
       },
@@ -236,7 +236,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['radioactive', 'chernobylian', 'tsaristic', 'nature_loving', 'green'],
     effects: [
       {
-        description: '-5% $energy$ from $power_plant$',
+        description: '-5% $resources.energy$ from $buildings.power_plant$',
         variable: 'buildings.power_plant.production.energy',
         multiplier: 0.95,
       },
@@ -248,7 +248,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['radioactive', 'chernobylian', 'tsaristic', 'ecological', 'green'],
     effects: [
       {
-        description: '-10% $energy$ from $power_plant$',
+        description: '-10% $resources.energy$ from $buildings.power_plant$',
         variable: 'buildings.power_plant.production.energy',
         multiplier: 0.9,
       },
@@ -260,7 +260,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['radioactive', 'chernobylian', 'tsaristic', 'ecological', 'nature_loving'],
     effects: [
       {
-        description: '-15% $energy$ from $power_plant$',
+        description: '-15% $resources.energy$ from $buildings.power_plant$',
         variable: 'buildings.power_plant.production.energy',
         multiplier: 0.85,
       },
@@ -274,27 +274,27 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['clumsy', 'incompetent', 'skilled'],
     effects: [
       {
-        description: '-10% initial $minerals$ for $power_plant$',
+        description: '-10% initial $resources.minerals$ for $buildings.power_plant$',
         variable: 'buildings.power_plant.cost.minerals',
         multiplier: 0.9,
       },
       {
-        description: '-10% initial $minerals$ for $mine$',
+        description: '-10% initial $resources.minerals$ for $buildings.mine$',
         variable: 'buildings.mine.cost.minerals',
         multiplier: 0.9,
       },
       {
-        description: '-10% initial $minerals$ for $research_lab$',
+        description: '-10% initial $resources.minerals$ for $buildings.research_lab$',
         variable: 'buildings.research_lab.cost.minerals',
         multiplier: 0.9,
       },
       {
-        description: '-10% initial $minerals$ for $foundry$',
+        description: '-10% initial $resources.minerals$ for $buildings.foundry$',
         variable: 'buildings.foundry.cost.minerals',
         multiplier: 0.9,
       },
       {
-        description: '-10% initial $minerals$ for $refinery$',
+        description: '-10% initial $resources.minerals$ for $buildings.refinery$',
         variable: 'buildings.refinery.cost.minerals',
         multiplier: 0.9,
       },
@@ -306,27 +306,27 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['clumsy', 'incompetent', 'proficient'],
     effects: [
       {
-        description: '-20% initial $minerals$ for $power_plant$',
+        description: '-20% initial $resources.minerals$ for $buildings.power_plant$',
         variable: 'buildings.power_plant.cost.minerals',
         multiplier: 0.8,
       },
       {
-        description: '-20% initial $minerals$ for $mine$',
+        description: '-20% initial $resources.minerals$ for $buildings.mine$',
         variable: 'buildings.mine.cost.minerals',
         multiplier: 0.8,
       },
       {
-        description: '-20% initial $minerals$ for $research_lab$',
+        description: '-20% initial $resources.minerals$ for $buildings.research_lab$',
         variable: 'buildings.power_plant.cost.minerals',
         multiplier: 0.8,
       },
       {
-        description: '-20% initial $minerals$ for $foundry$',
+        description: '-20% initial $resources.minerals$ for $buildings.foundry$',
         variable: 'buildings.foundry.cost.minerals',
         multiplier: 0.8,
       },
       {
-        description: '-20% initial $minerals$ for $refinery$',
+        description: '-20% initial $resources.minerals$ for $buildings.refinery$',
         variable: 'buildings.refinery.cost.minerals',
         multiplier: 0.8,
       },
@@ -340,27 +340,27 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['proficient', 'skilled', 'incompetent'],
     effects: [
       {
-        description: '+10% initial $minerals$ cost for $power_plant$',
+        description: '+10% initial $resources.minerals$ cost for $buildings.power_plant$',
         variable: 'buildings.power_plant.cost.minerals',
         multiplier: 1.1,
       },
       {
-        description: '+10% initial $minerals$ for $mine$',
+        description: '+10% initial $resources.minerals$ for $buildings.mine$',
         variable: 'buildings.mine.cost.minerals',
         multiplier: 1.1,
       },
       {
-        description: '+10% initial $minerals$ for $research_lab$',
+        description: '+10% initial $resources.minerals$ for $buildings.research_lab$',
         variable: 'buildings.power_plant.cost.minerals',
         multiplier: 1.1,
       },
       {
-        description: '+10% initial $minerals$ for $foundry$',
+        description: '+10% initial $resources.minerals$ for $buildings.foundry$',
         variable: 'buildings.foundry.cost.minerals',
         multiplier: 1.1,
       },
       {
-        description: '+10% initial $minerals$ for $refinery$',
+        description: '+10% initial $resources.minerals$ for $buildings.refinery$',
         variable: 'buildings.refinery.cost.minerals',
         multiplier: 1.1,
       },
@@ -372,27 +372,27 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['proficient', 'skilled'],
     effects: [
       {
-        description: '+20% initial $minerals$ for $power_plant$',
+        description: '+20% initial $resources.minerals$ for $buildings.power_plant$',
         variable: 'buildings.power_plant.cost.minerals',
         multiplier: 1.2,
       },
       {
-        description: '+20% initial $minerals$ for $mine$',
+        description: '+20% initial $resources.minerals$ for $buildings.mine$',
         variable: 'buildings.mine.cost.minerals',
         multiplier: 1.2,
       },
       {
-        description: '+20% initial $minerals$ for $research_lab$',
+        description: '+20% initial $resources.minerals$ for $buildings.research_lab$',
         variable: 'buildings.research_lab.cost.minerals',
         multiplier: 1.2,
       },
       {
-        description: '+20% initial $minerals$ for $foundry$',
+        description: '+20% initial $resources.minerals$ for $buildings.foundry$',
         variable: 'buildings.foundry.cost.minerals',
         multiplier: 1.2,
       },
       {
-        description: '+20% initial $minerals$ for $refinery$',
+        description: '+20% initial $resources.minerals$ for $buildings.refinery$',
         variable: 'buildings.refinery.cost.minerals',
         multiplier: 1.2,
       },
@@ -406,7 +406,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['settler', 'surface_operator', 'claustrophobic', 'excavator', 'pitman'],
     effects: [
       {
-        description: '+10% $minerals$ from $mine$',
+        description: '+10% $resources.minerals$ from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 1.1,
       },
@@ -418,7 +418,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['settler', 'surface_operator', 'claustrophobic', 'miner', 'pitman'],
     effects: [
       {
-        description: '+20% $minerals$ from $mine$',
+        description: '+20% $resources.minerals$ from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 1.2,
       },
@@ -430,7 +430,7 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['settler', 'surface_operator', 'claustrophobic', 'miner', 'excavator'],
     effects: [
       {
-        description: '+30% $minerals$ from $mine$',
+        description: '+30% $resources.minerals$ from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 1.3,
       },
@@ -445,12 +445,12 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['miner', 'excavator', 'pitman', 'surface_operator', 'claustrophobic'],
     effects: [
       {
-        description: '-10% $minerals$ from $mine$',
+        description: '-10% $resources.minerals$ from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 0.9,
       },
       {
-        description: '+2% $food$ from $farm$',
+        description: '+2% $resources.food$ from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.02,
       },
@@ -462,12 +462,12 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['miner', 'excavator', 'pitman', 'settler', 'claustrophobic'],
     effects: [
       {
-        description: '-20% $minerals$ from $mine$',
+        description: '-20% $resources.minerals$ from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 0.8,
       },
       {
-        description: '+4% $food$ from $farm$',
+        description: '+4% $resources.food$ from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.04,
       },
@@ -479,12 +479,12 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['miner', 'excavator', 'pitman', 'settler', 'surface_operator'],
     effects: [
       {
-        description: '-30% $minerals$ from $mine$',
+        description: '-30% $resources.minerals$ from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 0.7,
       },
       {
-        description: '+6% $food$ from $farm$',
+        description: '+6% $resources.food$ from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.06,
       },
@@ -498,22 +498,22 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['amateur', 'beginner', 'technician', 'dilettante'],
     effects: [
       {
-        description: 'Start with 100 additional $energy$',
+        description: 'Start with 100 additional $resources.energy$',
         variable: 'resources.energy.starting',
         bonus: 100,
       },
       {
-        description: '+5% $research$ from $research_lab$',
+        description: '+5% $resources.research$ from $buildings.research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 1.05,
       },
       {
-        description: '-0.5% $minerals$ from $mine$',
+        description: '-0.5% $resources.minerals$ from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 0.995,
       },
       {
-        description: '-0.5% $alloys$ from $foundry$',
+        description: '-0.5% $resources.alloys$ from $buildings.foundry$',
         variable: 'buildings.foundry.production.alloys',
         multiplier: 0.995,
       },
@@ -525,22 +525,22 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['beginner', 'amateur', 'assistant_technician', 'dilettante'],
     effects: [
       {
-        description: 'Start with 300 additional $energy$',
+        description: 'Start with 300 additional $resources.energy$',
         variable: 'resources.energy.starting',
         bonus: 300,
       },
       {
-        description: '+10% $research$ from $research_lab$',
+        description: '+10% $resources.research$ from $buildings.research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 1.1,
       },
       {
-        description: '-1% $minerals$ from $mine$',
+        description: '-1% $resources.minerals$ from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 0.99,
       },
       {
-        description: '-1% $alloys$ from $foundry$',
+        description: '-1% $resources.alloys$ from $buildings.foundry$',
         variable: 'buildings.foundry.production.alloys',
         multiplier: 0.99,
       },
@@ -552,12 +552,12 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['technician', 'assistant_technician', 'amateur', 'dilettante'],
     effects: [
       {
-        description: '-2% $research$ from $research_lab$',
+        description: '-2% $resources.research$ from $buildings.research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 0.98,
       },
       {
-        description: '-2% $fuel$ from $refinery$',
+        description: '-2% $resources.fuel$ from $buildings.refinery$',
         variable: 'buildings.refinery.production.fuel',
         multiplier: 0.98,
       },
@@ -569,12 +569,12 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['assistant_technician', 'technician', 'beginner', 'dilettante'],
     effects: [
       {
-        description: '-4% $research$ from $research_lab$',
+        description: '-4% $resources.research$ from $buildings.research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 0.96,
       },
       {
-        description: '-4% $fuel$ from $refinery$',
+        description: '-4% $resources.fuel$ from $buildings.refinery$',
         variable: 'buildings.refinery.production.fuel',
         multiplier: 0.96,
       },
@@ -586,27 +586,27 @@ export const TRAITS: Record<string, Trait> = {
     conflicts: ['assistant_technician', 'technician', 'beginner', 'amateur'],
     effects: [
       {
-        description: '-2% $research$ from $research_lab$',
+        description: '-2% $resources.research$ from $buildings.research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 0.96,
       },
       {
-        description: '-2% $fuel$ from $refinery$',
+        description: '-2% $resources.fuel$ from $buildings.refinery$',
         variable: 'buildings.refinery.production.fuel',
         multiplier: 0.96,
       },
       {
-        description: '-2% $energy$ from $power_plant$',
+        description: '-2% $resources.energy$ from $buildings.power_plant$',
         variable: 'buildings.power_plant.production.energy',
         multiplier: 0.96,
       },
       {
-        description: '-1% $minerals$ from $mine$',
+        description: '-1% $resources.minerals$ from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 0.96,
       },
       {
-        description: '-1% $food$ from $farm$',
+        description: '-1% $resources.food$ from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 0.96,
       },

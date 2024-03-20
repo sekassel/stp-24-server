@@ -1,4 +1,10 @@
-import type {Technology, TechnologyTag, Variable} from './types';
+import {Technology, TECHNOLOGY_TAGS, TechnologyTag, Variable} from './types';
+
+export const TECH_CATEGORIES = Object.fromEntries(TECHNOLOGY_TAGS.map(tag => [tag, {
+  cost_multiplier: 1,
+}])) as Record<TechnologyTag, {
+  cost_multiplier: number;
+}>;
 
 export const TECHNOLOGIES: Record<string, Technology> = {
 
@@ -132,12 +138,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['society'],
     effects: [
       {
-        description: '-25% $energy$ cost for system claims',
+        description: '-25% $resources.energy$ cost for $systems.colonized$',
         variable: 'systems.colonized.cost.energy',
         multiplier: 0.75,
       },
       {
-        description: '-25% $minerals$ cost for system claims',
+        description: '-25% $resources.minerals$ cost for $systems.colonized$',
         variable: 'systems.colonized.cost.minerals',
         multiplier: 0.75,
       },
@@ -150,12 +156,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['cheap_claims_1'],
     effects: [
       {
-        description: '-15% $minerals$ cost for system upgrades',
+        description: '-15% $resources.minerals$ cost for $systems.upgraded$',
         variable: 'systems.upgraded.cost.minerals',
         multiplier: 0.85,
       },
       {
-        description: '-15% $alloys$ cost for system upgrades',
+        description: '-15% $resources.alloys$ cost for $systems.upgraded$',
         variable: 'systems.upgraded.cost.alloys',
         multiplier: 0.85,
       },
@@ -168,12 +174,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['cheap_claims_2'],
     effects: [
       {
-        description: '-15% $alloys$ cost for system development',
+        description: '-15% $resources.alloys$ cost for $systems.developed$',
         variable: 'systems.developed.cost.alloys',
         multiplier: 0.85,
       },
       {
-        description: '-15% $fuel$ cost for system development',
+        description: '-15% $resources.fuel$ cost for $systems.developed$',
         variable: 'systems.developed.cost.fuel',
         multiplier: 0.85,
       },
@@ -193,22 +199,22 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['cheap_buildings_2'],
     effects: [
       {
-        description: '-15% $minerals$ cost for $power_plant$',
+        description: '-15% $resources.minerals$ cost for $buildings.power_plant$',
         variable: 'buildings.power_plant.cost.minerals',
         multiplier: 0.85,
       },
       {
-        description: '-15% $minerals$ cost for $mine$',
+        description: '-15% $resources.minerals$ cost for $buildings.mine$',
         variable: 'buildings.mine.cost.minerals',
         multiplier: 0.85,
       },
       {
-        description: '-15% $energy$ cost for $mine$',
+        description: '-15% $resources.energy$ cost for $buildings.mine$',
         variable: 'buildings.mine.cost.energy',
         multiplier: 0.85,
       },
       {
-        description: '-15% $energy$ cost for $farm$',
+        description: '-15% $resources.energy$ cost for $buildings.farm$',
         variable: 'buildings.farm.cost.energy',
         multiplier: 0.85,
       },
@@ -221,17 +227,17 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['cheap_buildings_1'],
     effects: [
       {
-        description: '-15% $minerals$ cost for $research_lab$',
+        description: '-15% $resources.minerals$ cost for $buildings.research_lab$',
         variable: 'buildings.research_lab.cost.minerals',
         multiplier: 0.85,
       },
       {
-        description: '-15% $minerals$ cost for $foundry$',
+        description: '-15% $resources.minerals$ cost for $buildings.foundry$',
         variable: 'buildings.foundry.cost.minerals',
         multiplier: 0.85,
       },
       {
-        description: '-15% $minerals$ cost for $refinery$',
+        description: '-15% $resources.minerals$ cost for $buildings.refinery$',
         variable: 'buildings.refinery.cost.minerals',
         multiplier: 0.85,
       },
@@ -247,12 +253,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_buildings_2'],
     effects: [
       {
-        description: '-15% $energy$ upkeep for $mine$',
+        description: '-15% $resources.energy$ upkeep for $buildings.mine$',
         variable: 'buildings.mine.upkeep.energy',
         multiplier: 0.85,
       },
       {
-        description: '-15% $energy$ upkeep for $farm$',
+        description: '-15% $resources.energy$ upkeep for $buildings.farm$',
         variable: 'buildings.farm.upkeep.energy',
         multiplier: 0.85,
       },
@@ -265,17 +271,17 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['efficient_buildings_1'],
     effects: [
       {
-        description: '-15% $energy$ upkeep for $research_lab$',
+        description: '-15% $resources.energy$ upkeep for $buildings.research_lab$',
         variable: 'buildings.research_lab.upkeep.energy',
         multiplier: 0.85,
       },
       {
-        description: '-15% $energy$ upkeep for $foundry$',
+        description: '-15% $resources.energy$ upkeep for $buildings.foundry$',
         variable: 'buildings.foundry.upkeep.energy',
         multiplier: 0.85,
       },
       {
-        description: '-15% $energy$ upkeep for $refinery$',
+        description: '-15% $resources.energy$ upkeep for $buildings.refinery$',
         variable: 'buildings.refinery.upkeep.energy',
         multiplier: 0.85,
       },
@@ -291,17 +297,17 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['improved_production_2'],
     effects: [
       {
-        description: '+5% $energy$ production from $power_plant$',
+        description: '+5% $resources.energy$ production from $buildings.power_plant$',
         variable: 'buildings.power_plant.production.energy',
         multiplier: 1.05,
       },
       {
-        description: '+5% $minerals$ production from $mine$',
+        description: '+5% $resources.minerals$ production from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 1.05,
       },
       {
-        description: '+5% $food$ production from $farm$',
+        description: '+5% $resources.food$ production from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.05,
       },
@@ -315,17 +321,17 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     // NOT precedes: ["improved_production_3"], improved_production_3 switches to advanced buildings, so the basic buildings should still be improved
     effects: [
       {
-        description: '+10% $energy$ production from $power_plant$',
+        description: '+10% $resources.energy$ production from $buildings.power_plant$',
         variable: 'buildings.power_plant.production.energy',
         multiplier: 1.1,
       },
       {
-        description: '+10% $minerals$ production from $mine$',
+        description: '+10% $resources.minerals$ production from $buildings.mine$',
         variable: 'buildings.mine.production.minerals',
         multiplier: 1.1,
       },
       {
-        description: '+10% $food$ production from $farm$',
+        description: '+10% $resources.food$ production from $buildings.farm$',
         variable: 'buildings.farm.production.food',
         multiplier: 1.1,
       },
@@ -339,17 +345,17 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['improved_production_4'],
     effects: [
       {
-        description: '+5% $research$ production from $research_lab$',
+        description: '+5% $resources.research$ production from $buildings.research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 1.05,
       },
       {
-        description: '+5% $alloys$ production from $foundry$',
+        description: '+5% $resources.alloys$ production from $buildings.foundry$',
         variable: 'buildings.foundry.production.alloys',
         multiplier: 1.05,
       },
       {
-        description: '+5% $fuel$ production from $refinery$',
+        description: '+5% $resources.fuel$ production from $buildings.refinery$',
         variable: 'buildings.refinery.production.fuel',
         multiplier: 1.05,
       },
@@ -362,17 +368,17 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['improved_production_3'],
     effects: [
       {
-        description: '+10% $research$ production from $research_lab$',
+        description: '+10% $resources.research$ production from $buildings.research_lab$',
         variable: 'buildings.research_lab.production.research',
         multiplier: 1.1,
       },
       {
-        description: '+10% $alloys$ production from $foundry$',
+        description: '+10% $resources.alloys$ production from $buildings.foundry$',
         variable: 'buildings.foundry.production.alloys',
         multiplier: 1.1,
       },
       {
-        description: '+10% $fuel$ production from $refinery$',
+        description: '+10% $resources.fuel$ production from $buildings.refinery$',
         variable: 'buildings.refinery.production.fuel',
         multiplier: 1.1,
       },
@@ -388,17 +394,17 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_resources_2'],
     effects: [
       {
-        description: '-10% $minerals$ upkeep for $power_plant$',
+        description: '-10% $resources.minerals$ upkeep for $buildings.power_plant$',
         variable: 'buildings.power_plant.upkeep.minerals',
         multiplier: 0.9,
       },
       {
-        description: '-10% $minerals$ upkeep for $foundry$',
+        description: '-10% $resources.minerals$ upkeep for $buildings.foundry$',
         variable: 'buildings.foundry.upkeep.minerals',
         multiplier: 0.9,
       },
       {
-        description: '-10% $minerals$ upkeep for $refinery$',
+        description: '-10% $resources.minerals$ upkeep for $buildings.refinery$',
         variable: 'buildings.refinery.upkeep.minerals',
         multiplier: 0.9,
       },
@@ -411,17 +417,17 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['efficient_resources_1'],
     effects: [
       {
-        description: '-15% $minerals$ upkeep for $power_plant$',
+        description: '-15% $resources.minerals$ upkeep for $buildings.power_plant$',
         variable: 'buildings.power_plant.upkeep.minerals',
         multiplier: 0.85,
       },
       {
-        description: '-15% $minerals$ upkeep for $foundry$',
+        description: '-15% $resources.minerals$ upkeep for $buildings.foundry$',
         variable: 'buildings.foundry.upkeep.minerals',
         multiplier: 0.85,
       },
       {
-        description: '-15% $minerals$ upkeep for $refinery$',
+        description: '-15% $resources.minerals$ upkeep for $buildings.refinery$',
         variable: 'buildings.refinery.upkeep.minerals',
         multiplier: 0.85,
       },
@@ -518,27 +524,27 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_military_2'],
     effects: [
       {
-        description: '+5% chance to discover $energy$ districts on $ancient_military$',
+        description: '+5% chance to discover $districts.energy$ on $systems.ancient_military$',
         variable: 'districts.energy.chance.ancient_military',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $mining$ districts on $ancient_military$',
+        description: '+5% chance to discover $districts.mining$ on $systems.ancient_military$',
         variable: 'districts.mining.chance.ancient_military',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $research_site$ on $ancient_military$',
+        description: '+5% chance to discover $districts.research_site$ on $systems.ancient_military$',
         variable: 'districts.research_site.chance.ancient_military',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $ancient_foundry$ on $ancient_military$',
+        description: '+5% chance to discover $districts.ancient_foundry$ on $systems.ancient_military$',
         variable: 'districts.ancient_foundry.chance.ancient_military',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $ancient_refinery$ on $ancient_military$',
+        description: '+5% chance to discover $districts.ancient_refinery$ on $systems.ancient_military$',
         variable: 'districts.ancient_refinery.chance.ancient_military',
         multiplier: 1.05,
       },
@@ -552,27 +558,27 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_military_3'],
     effects: [
       {
-        description: '+10% chance to discover $energy$ districts on $ancient_military',
+        description: '+10% chance to discover $districts.energy$ on $ancient_military',
         variable: 'districts.energy.chance.ancient_military',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $mining$ districts on $ancient_military$',
+        description: '+10% chance to discover $districts.mining$ on $systems.ancient_military$',
         variable: 'districts.mining.chance.ancient_military',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $research_site$ on $ancient_military$',
+        description: '+10% chance to discover $districts.research_site$ on $systems.ancient_military$',
         variable: 'districts.research_site.chance.ancient_military',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $ancient_foundry$ on $ancient_military$',
+        description: '+10% chance to discover $districts.ancient_foundry$ on $systems.ancient_military$',
         variable: 'districts.ancient_foundry.chance.ancient_military',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $ancient_refinery$ on $ancient_military$',
+        description: '+10% chance to discover $districts.ancient_refinery$ on $systems.ancient_military$',
         variable: 'districts.ancient_refinery.chance.ancient_military',
         multiplier: 1.1,
       },
@@ -585,27 +591,27 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['ancient_military_2'],
     effects: [
       {
-        description: '+15% chance to discover $energy$ districts on $ancient_military',
+        description: '+15% chance to discover $districts.energy$ on $ancient_military',
         variable: 'districts.energy.chance.ancient_military',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $mining$ districts on $ancient_military$',
+        description: '+15% chance to discover $districts.mining$ on $systems.ancient_military$',
         variable: 'districts.mining.chance.ancient_military',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $research_site$ on $ancient_military$',
+        description: '+15% chance to discover $districts.research_site$ on $systems.ancient_military$',
         variable: 'districts.research_site.chance.ancient_military',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $ancient_foundry$ on $ancient_military$',
+        description: '+15% chance to discover $districts.ancient_foundry$ on $systems.ancient_military$',
         variable: 'districts.ancient_foundry.chance.ancient_military',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $ancient_refinery$ on $ancient_military$',
+        description: '+15% chance to discover $districts.ancient_refinery$ on $systems.ancient_military$',
         variable: 'districts.ancient_refinery.chance.ancient_military',
         multiplier: 1.15,
       },
@@ -630,27 +636,27 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_industry_2'],
     effects: [
       {
-        description: '+5% chance to discover $energy$ districts on $ancient_industry$',
+        description: '+5% chance to discover $districts.energy$ on $systems.ancient_industry$',
         variable: 'districts.energy.chance.ancient_industry',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $mining$ districts on $ancient_industry$',
+        description: '+5% chance to discover $districts.mining$ on $systems.ancient_industry$',
         variable: 'districts.mining.chance.ancient_industry',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $research_site$ on $ancient_industry$',
+        description: '+5% chance to discover $districts.research_site$ on $systems.ancient_industry$',
         variable: 'districts.research_site.chance.ancient_industry',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $ancient_foundry$ on $ancient_industry$',
+        description: '+5% chance to discover $districts.ancient_foundry$ on $systems.ancient_industry$',
         variable: 'districts.ancient_foundry.chance.ancient_industry',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $ancient_refinery$ on $ancient_industry$',
+        description: '+5% chance to discover $districts.ancient_refinery$ on $systems.ancient_industry$',
         variable: 'districts.ancient_refinery.chance.ancient_industry',
         multiplier: 1.05,
       },
@@ -664,27 +670,27 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_industry_3'],
     effects: [
       {
-        description: '+10% chance to discover $energy$ districts on $ancient_industry$',
+        description: '+10% chance to discover $districts.energy$ on $systems.ancient_industry$',
         variable: 'districts.energy.chance.ancient_industry',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $mining$ districts on $ancient_industry$',
+        description: '+10% chance to discover $districts.mining$ on $systems.ancient_industry$',
         variable: 'districts.mining.chance.ancient_industry',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $research_site$ on $ancient_industry$',
+        description: '+10% chance to discover $districts.research_site$ on $systems.ancient_industry$',
         variable: 'districts.research_site.chance.ancient_industry',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $ancient_foundry$ on $ancient_industry$',
+        description: '+10% chance to discover $districts.ancient_foundry$ on $systems.ancient_industry$',
         variable: 'districts.ancient_foundry.chance.ancient_industry',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $ancient_refinery$ on $ancient_industry$',
+        description: '+10% chance to discover $districts.ancient_refinery$ on $systems.ancient_industry$',
         variable: 'districts.ancient_refinery.chance.ancient_industry',
         multiplier: 1.1,
       },
@@ -697,27 +703,27 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['ancient_industry_2'],
     effects: [
       {
-        description: '+15% chance to discover $energy$ districts on $ancient_industry$',
+        description: '+15% chance to discover $districts.energy$ on $systems.ancient_industry$',
         variable: 'districts.energy.chance.ancient_industry',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $mining$ districts on $ancient_industry$',
+        description: '+15% chance to discover $districts.mining$ on $systems.ancient_industry$',
         variable: 'districts.mining.chance.ancient_industry',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $research_site$ on $ancient_industry$',
+        description: '+15% chance to discover $districts.research_site$ on $systems.ancient_industry$',
         variable: 'districts.research_site.chance.ancient_industry',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $ancient_foundry$ on $ancient_industry$',
+        description: '+15% chance to discover $districts.ancient_foundry$ on $systems.ancient_industry$',
         variable: 'districts.ancient_foundry.chance.ancient_industry',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $ancient_refinery$ on $ancient_industry$',
+        description: '+15% chance to discover $districts.ancient_refinery$ on $systems.ancient_industry$',
         variable: 'districts.ancient_refinery.chance.ancient_industry',
         multiplier: 1.15,
       },
@@ -742,27 +748,27 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_tech_2'],
     effects: [
       {
-        description: '+5% chance to discover $energy$ districts on $ancient_technology$',
+        description: '+5% chance to discover $districts.energy$ on $systems.ancient_technology$',
         variable: 'districts.energy.chance.ancient_technology',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $mining$ districts on $ancient_technology$',
+        description: '+5% chance to discover $districts.mining$ on $systems.ancient_technology$',
         variable: 'districts.mining.chance.ancient_technology',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $research_site$ on $ancient_technology$',
+        description: '+5% chance to discover $districts.research_site$ on $systems.ancient_technology$',
         variable: 'districts.research_site.chance.ancient_technology',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $ancient_foundry$ on $ancient_technology$',
+        description: '+5% chance to discover $districts.ancient_foundry$ on $systems.ancient_technology$',
         variable: 'districts.ancient_foundry.chance.ancient_technology',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $ancient_refinery$ on $ancient_technology$',
+        description: '+5% chance to discover $districts.ancient_refinery$ on $systems.ancient_technology$',
         variable: 'districts.ancient_refinery.chance.ancient_technology',
         multiplier: 1.05,
       },
@@ -776,27 +782,27 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_tech_3'],
     effects: [
       {
-        description: '+10% chance to discover $energy$ districts on $ancient_technology$',
+        description: '+10% chance to discover $districts.energy$ on $systems.ancient_technology$',
         variable: 'districts.energy.chance.ancient_technology',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $mining$ districts on $ancient_technology$',
+        description: '+10% chance to discover $districts.mining$ on $systems.ancient_technology$',
         variable: 'districts.mining.chance.ancient_technology',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $research_site$ on $ancient_technology$',
+        description: '+10% chance to discover $districts.research_site$ on $systems.ancient_technology$',
         variable: 'districts.research_site.chance.ancient_technology',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $ancient_foundry$ on $ancient_technology$',
+        description: '+10% chance to discover $districts.ancient_foundry$ on $systems.ancient_technology$',
         variable: 'districts.ancient_foundry.chance.ancient_technology',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $ancient_refinery$ on $ancient_technology$',
+        description: '+10% chance to discover $districts.ancient_refinery$ on $systems.ancient_technology$',
         variable: 'districts.ancient_refinery.chance.ancient_technology',
         multiplier: 1.1,
       },
@@ -809,27 +815,27 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['ancient_tech_2'],
     effects: [
       {
-        description: '+15% chance to discover $energy$ districts on $ancient_technology$',
+        description: '+15% chance to discover $districts.energy$ on $systems.ancient_technology$',
         variable: 'districts.energy.chance.ancient_technology',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $mining$ districts on $ancient_technology$',
+        description: '+15% chance to discover $districts.mining$ on $systems.ancient_technology$',
         variable: 'districts.mining.chance.ancient_technology',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $research_site$ on $ancient_technology$',
+        description: '+15% chance to discover $districts.research_site$ on $systems.ancient_technology$',
         variable: 'districts.research_site.chance.ancient_technology',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $ancient_foundry$ on $ancient_technology$',
+        description: '+15% chance to discover $districts.ancient_foundry$ on $systems.ancient_technology$',
         variable: 'districts.ancient_foundry.chance.ancient_technology',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $ancient_refinery$ on $ancient_technology$',
+        description: '+15% chance to discover $districts.ancient_refinery$ on $systems.ancient_technology$',
         variable: 'districts.ancient_refinery.chance.ancient_technology',
         multiplier: 1.15,
       },
@@ -845,7 +851,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['energy_district_construction_2'],
     effects: [
       {
-        description: '-10% initial $minerals$ cost for $energy$ districts',
+        description: '-10% initial $resources.minerals$ cost for $districts.energy$',
         variable: 'districts.energy.cost.minerals',
         multiplier: 0.9,
       },
@@ -859,7 +865,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['energy_district_construction_3'],
     effects: [
       {
-        description: '-20% initial $minerals$ cost for $energy$ districts',
+        description: '-20% initial $resources.minerals$ cost for $districts.energy$',
         variable: 'districts.energy.cost.minerals',
         multiplier: 0.8,
       },
@@ -872,7 +878,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['energy_district_construction_2'],
     effects: [
       {
-        description: '-30% initial $minerals$ cost for $energy$ districts',
+        description: '-30% initial $resources.minerals$ cost for $districts.energy$',
         variable: 'districts.energy.cost.minerals',
         multiplier: 0.7,
       },
@@ -888,7 +894,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_energy_2'],
     effects: [
       {
-        description: '-10% $minerals$ upkeep for $energy$ districts',
+        description: '-10% $resources.minerals$ upkeep for $districts.energy$',
         variable: 'districts.energy.upkeep.minerals',
         multiplier: 0.9,
       },
@@ -902,7 +908,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_energy_3'],
     effects: [
       {
-        description: '-20% $minerals$ upkeep for $energy$ districts',
+        description: '-20% $resources.minerals$ upkeep for $districts.energy$',
         variable: 'districts.energy.upkeep.minerals',
         multiplier: 0.8,
       },
@@ -915,7 +921,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['efficient_energy_2'],
     effects: [
       {
-        description: '-30% $minerals$ upkeep for $energy$ district',
+        description: '-30% $resources.minerals$ upkeep for $districts.energy$',
         variable: 'districts.energy.upkeep.minerals',
         multiplier: 0.7,
       },
@@ -931,12 +937,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['mining_foundation_2'],
     effects: [
       {
-        description: '-5% initial $minerals$ cost for $mining$ districts',
+        description: '-5% initial $resources.minerals$ cost for $districts.mining$',
         variable: 'districts.mining.cost.minerals',
         multiplier: 0.95,
       },
       {
-        description: '-5% initial $energy$ cost for $mining$ districts',
+        description: '-5% initial $resources.energy$ cost for $districts.mining$',
         variable: 'districts.mining.cost.energy',
         multiplier: 0.95,
       },
@@ -950,12 +956,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['mining_foundation_3'],
     effects: [
       {
-        description: '-10% initial $minerals$ cost for $mining$ districts',
+        description: '-10% initial $resources.minerals$ cost for $districts.mining$',
         variable: 'districts.mining.cost.minerals',
         multiplier: 0.9,
       },
       {
-        description: '-10% initial $energy$ cost for $mining$ districts',
+        description: '-10% initial $resources.energy$ cost for $districts.mining$',
         variable: 'districts.mining.cost.energy',
         multiplier: 0.9,
       },
@@ -968,12 +974,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['mining_foundation_2'],
     effects: [
       {
-        description: '-15% initial $minerals$ cost for $mining$ districts',
+        description: '-15% initial $resources.minerals$ cost for $districts.mining$',
         variable: 'districts.mining.cost.minerals',
         multiplier: 0.85,
       },
       {
-        description: '-15% initial $energy$ cost for $mining$ districts',
+        description: '-15% initial $resources.energy$ cost for $districts.mining$',
         variable: 'districts.mining.cost.energy',
         multiplier: 0.85,
       },
@@ -989,7 +995,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_mining_2'],
     effects: [
       {
-        description: '-10% initial $energy$ upkeep for $mining$ districts',
+        description: '-10% initial $resources.energy$ upkeep for $districts.mining$',
         variable: 'districts.mining.upkeep.energy',
         multiplier: 0.9,
       },
@@ -1003,7 +1009,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_mining_3'],
     effects: [
       {
-        description: '-20% initial $energy$ upkeep for $mining$ districts',
+        description: '-20% initial $resources.energy$ upkeep for $districts.mining$',
         variable: 'districts.mining.upkeep.energy',
         multiplier: 0.8,
       },
@@ -1016,7 +1022,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['efficient_mining_2'],
     effects: [
       {
-        description: '-30% initial $energy$ upkeep for $mining$ districts',
+        description: '-30% initial $resources.energy$ upkeep for $districts.mining$',
         variable: 'districts.mining.upkeep.energy',
         multiplier: 0.7,
       },
@@ -1032,7 +1038,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['agriculture_cost_reduction_2'],
     effects: [
       {
-        description: '-10% initial $energy$ cost for $agriculture$ districts',
+        description: '-10% initial $resources.energy$ cost for $districts.agriculture$',
         variable: 'districts.agriculture.cost.energy',
         multiplier: 0.9,
       },
@@ -1046,7 +1052,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['agriculture_cost_reduction_3'],
     effects: [
       {
-        description: '-20% initial $energy$ cost for $agriculture$ districts',
+        description: '-20% initial $resources.energy$ cost for $districts.agriculture$',
         variable: 'districts.agriculture.cost.energy',
         multiplier: 0.8,
       },
@@ -1059,7 +1065,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['agriculture_cost_reduction_2'],
     effects: [
       {
-        description: '-30% initial $energy$ cost for $agriculture$ districts',
+        description: '-30% initial $resources.energy$ cost for $districts.agriculture$',
         variable: 'districts.agriculture.cost.energy',
         multiplier: 0.7,
       },
@@ -1075,7 +1081,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_agriculture_2'],
     effects: [
       {
-        description: '-10% $energy$ upkeep for $agriculture$ districts',
+        description: '-10% $resources.energy$ upkeep for $districts.agriculture$',
         variable: 'districts.agriculture.upkeep.energy',
         multiplier: 0.9,
       },
@@ -1089,7 +1095,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_agriculture_3'],
     effects: [
       {
-        description: '-20% $energy$ upkeep for $agriculture$ districts',
+        description: '-20% $resources.energy$ upkeep for $districts.agriculture$',
         variable: 'districts.agriculture.upkeep.energy',
         multiplier: 0.8,
       },
@@ -1102,7 +1108,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['efficient_agriculture_2'],
     effects: [
       {
-        description: '-30% $energy$ upkeep for $agriculture$ districts',
+        description: '-30% $resources.energy$ upkeep for $districts.agriculture$',
         variable: 'districts.agriculture.upkeep.energy',
         multiplier: 0.7,
       },
@@ -1118,7 +1124,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['effective_lab_building_2'],
     effects: [
       {
-        description: '-10% initial $minerals$ cost for $research_site$',
+        description: '-10% initial $resources.minerals$ cost for $districts.research_site$',
         variable: 'districts.research_site.cost.minerals',
         multiplier: 0.9,
       },
@@ -1132,7 +1138,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['effective_lab_building_3'],
     effects: [
       {
-        description: '-20% initial $minerals$ cost for $research_site$',
+        description: '-20% initial $resources.minerals$ cost for $districts.research_site$',
         variable: 'districts.research_site.cost.minerals',
         multiplier: 0.8,
       },
@@ -1145,7 +1151,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['effective_lab_building_2'],
     effects: [
       {
-        description: '-30% initial $minerals$ cost for $research_site$',
+        description: '-30% initial $resources.minerals$ cost for $districts.research_site$',
         variable: 'districts.research_site.cost.minerals',
         multiplier: 0.7,
       },
@@ -1161,7 +1167,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['effective_research_2'],
     effects: [
       {
-        description: '-10% $energy$ upkeep for $research_site$',
+        description: '-10% $resources.energy$ upkeep for $districts.research_site$',
         variable: 'districts.research_site.upkeep.energy',
         multiplier: 0.9,
       },
@@ -1175,7 +1181,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['effective_research_3'],
     effects: [
       {
-        description: '-20% $energy$ upkeep for $research_site$',
+        description: '-20% $resources.energy$ upkeep for $districts.research_site$',
         variable: 'districts.research_site.upkeep.energy',
         multiplier: 0.8,
       },
@@ -1188,7 +1194,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['effective_research_2'],
     effects: [
       {
-        description: '-30% $energy$ upkeep for $research_site$',
+        description: '-30% $resources.energy$ upkeep for $districts.research_site$',
         variable: 'districts.research_site.upkeep.energy',
         multiplier: 0.7,
       },
@@ -1204,7 +1210,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_foundry_structure_2'],
     effects: [
       {
-        description: '-10% initial $minerals$ cost for $ancient_foundry$',
+        description: '-10% initial $resources.minerals$ cost for $districts.ancient_foundry$',
         variable: 'districts.ancient_foundry.cost.minerals',
         multiplier: 0.9,
       },
@@ -1218,7 +1224,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_foundry_structure_3'],
     effects: [
       {
-        description: '-20% initial $minerals$ cost for $ancient_foundry$',
+        description: '-20% initial $resources.minerals$ cost for $districts.ancient_foundry$',
         variable: 'districts.ancient_foundry.cost.minerals',
         multiplier: 0.8,
       },
@@ -1231,7 +1237,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['ancient_foundry_structure_2'],
     effects: [
       {
-        description: '-30% initial $minerals$ cost for $ancient_foundry$',
+        description: '-30% initial $resources.minerals$ cost for $districts.ancient_foundry$',
         variable: 'districts.ancient_foundry.cost.minerals',
         multiplier: 0.7,
       },
@@ -1247,12 +1253,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_ancient_foundry_2'],
     effects: [
       {
-        description: '-5% $minerals$ upkeep for $ancient_foundry$',
+        description: '-5% $resources.minerals$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_foundry.upkeep.minerals',
         multiplier: 0.95,
       },
       {
-        description: '-5% $energy$ upkeep for $ancient_foundry$',
+        description: '-5% $resources.energy$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_foundry.upkeep.energy',
         multiplier: 0.95,
       },
@@ -1266,12 +1272,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_ancient_foundry_3'],
     effects: [
       {
-        description: '-10% $minerals$ upkeep for $ancient_foundry$',
+        description: '-10% $resources.minerals$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_foundry.upkeep.minerals',
         multiplier: 0.9,
       },
       {
-        description: '-10% $energy$ upkeep for $ancient_foundry$',
+        description: '-10% $resources.energy$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_foundry.upkeep.energy',
         multiplier: 0.9,
       },
@@ -1284,12 +1290,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['efficient_ancient_foundry_2'],
     effects: [
       {
-        description: '-15% $minerals$ upkeep for $ancient_foundry$',
+        description: '-15% $resources.minerals$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_foundry.upkeep.minerals',
         multiplier: 0.85,
       },
       {
-        description: '-15% $energy$ upkeep for $ancient_foundry$',
+        description: '-15% $resources.energy$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_foundry.upkeep.energy',
         multiplier: 0.85,
       },
@@ -1305,7 +1311,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_refinery_structure_2'],
     effects: [
       {
-        description: '-10% initial $minerals$ cost for $ancient_refinery$',
+        description: '-10% initial $resources.minerals$ cost for $districts.ancient_refinery$',
         variable: 'districts.ancient_refinery.cost.minerals',
         multiplier: 0.9,
       },
@@ -1319,7 +1325,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_refinery_structure_3'],
     effects: [
       {
-        description: '-20% initial $minerals$ cost for $ancient_refinery$',
+        description: '-20% initial $resources.minerals$ cost for $districts.ancient_refinery$',
         variable: 'districts.ancient_refinery.cost.minerals',
         multiplier: 0.8,
       },
@@ -1332,7 +1338,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['ancient_refinery_structure_2'],
     effects: [
       {
-        description: '-30% initial $minerals$ cost for $ancient_refinery$',
+        description: '-30% initial $resources.minerals$ cost for $districts.ancient_refinery$',
         variable: 'districts.ancient_refinery.cost.minerals',
         multiplier: 0.7,
       },
@@ -1348,12 +1354,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_ancient_refinery_2'],
     effects: [
       {
-        description: '-5% $minerals$ upkeep for $ancient_foundry$',
+        description: '-5% $resources.minerals$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_refinery.upkeep.minerals',
         multiplier: 0.95,
       },
       {
-        description: '-5% $energy$ upkeep for $ancient_foundry$',
+        description: '-5% $resources.energy$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_refinery.upkeep.energy',
         multiplier: 0.95,
       },
@@ -1367,12 +1373,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['efficient_ancient_refinery_3'],
     effects: [
       {
-        description: '-10% $minerals$ upkeep for $ancient_foundry$',
+        description: '-10% $resources.minerals$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_refinery.upkeep.minerals',
         multiplier: 0.9,
       },
       {
-        description: '-10% $energy$ upkeep for $ancient_foundry$',
+        description: '-10% $resources.energy$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_refinery.upkeep.energy',
         multiplier: 0.9,
       },
@@ -1385,12 +1391,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['efficient_ancient_refinery_2'],
     effects: [
       {
-        description: '-15% $minerals$ upkeep for $ancient_foundry$',
+        description: '-15% $resources.minerals$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_refinery.upkeep.minerals',
         multiplier: 0.85,
       },
       {
-        description: '-15% $energy$ upkeep for $ancient_foundry$',
+        description: '-15% $resources.energy$ upkeep for $districts.ancient_foundry$',
         variable: 'districts.ancient_refinery.upkeep.energy',
         multiplier: 0.85,
       },
@@ -1400,90 +1406,90 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
 // special resources
 generate_sequence('pop_food_consumption', ['society', 'biology'], 'empire.pop.consumption.food',
-  '$food$ per $pop$ per $time$', {multiplierIncrement: -0.05},
+  '$resources.food$ per $resources.population$ per $period$', {multiplierIncrement: -0.05},
   ['demographic']);
 // pop growth is already a multiplier, so it will be 1.05 -> 1.05 * 1.025 = 1.07625 -> 1.05 * 1.025^2 = 1.10390625
 generate_sequence('pop_growth_colonized', ['society', 'biology'], 'systems.colonized.pop_growth',
-  '$pop$ growth per $time$ on colonized $system$',
+  '$resources.population$ growth per $period$ on $systems.colonized$',
   {multiplierIncrement: +0.025}, ['demographic']);
 generate_sequence('pop_growth_upgraded', ['society', 'biology'], 'systems.upgraded.pop_growth',
-  '$pop$ growth per $time$ on upgraded $system$',
+  '$resources.population$ growth per $period$ on $systems.upgraded$',
   {multiplierIncrement: +0.025}, ['demographic']);
 generate_sequence('unemployed_pop_cost', ['society', 'state'],
-  'empire.pop.consumption.credits.unemployed', '$credits$ per unemployed $pop$ per $time$',
+  'empire.pop.consumption.credits.unemployed', '$resources.credits$ per unemployed $resources.population$ per $period$',
   {
   multiplierIncrement: -0.05,
   exponentialBase: 3,
 }, ['demographic']); // -5% -> -15% -> -45%
 // basic resources
 generate_sequence('energy_production', ['physics', 'energy'],
-  'buildings.power_plant.production.energy', '$energy$ from $power_plant$ per $time$',
+  'buildings.power_plant.production.energy', '$resources.energy$ from $buildings.power_plant$ per $period$',
   {}, ['technology']);
 generate_sequence('mineral_production', ['engineering', 'production'],
-  'buildings.mine.production.minerals', '$minerals$ from $mine$ per $time$',
+  'buildings.mine.production.minerals', '$resources.minerals$ from $buildings.mine$ per $period$',
   {}, ['production']);
 generate_sequence('food_production', ['society', 'biology'],
-  'buildings.farm.production.food', '$food$ from $farm$ per $time$',
+  'buildings.farm.production.food', '$resources.food$ from $buildings.farm$ per $period$',
   {}, ['demographic']);
 // advanced resources
 generate_sequence('research_production', ['physics', 'computing'],
-  'buildings.research_lab.production.research', '$research$ from $research_lab$ per $time$',
+  'buildings.research_lab.production.research', '$resources.research$ from $buildings.research_lab$ per $period$',
   {}, ['technology']);
 generate_sequence('alloy_production', ['engineering', 'materials'],
-  'buildings.foundry.production.alloys', '$alloys$ from $foundry$ per $time$',
+  'buildings.foundry.production.alloys', '$resources.alloys$ from $buildings.foundry$ per $period$',
   {}, ['production']);
 generate_sequence('fuel_production', ['engineering', 'production'],
-  'buildings.refinery.production.fuel', '$fuel$ from $refinery$ per $time$',
+  'buildings.refinery.production.fuel', '$resources.fuel$ from $buildings.refinery$ per $period$',
   {}, ['production']);
 
 // basic district resource production
 generate_sequence('energy_district_production', ['physics', 'energy'],
-  'districts.energy.production.energy', '$energy$ from $energy$ district per $time$',
+  'districts.energy.production.energy', '$resources.energy$ from $districts.energy$ per $period$',
   {}, ['district_production_increase']);
 generate_sequence('mining_district_production', ['engineering', 'production'],
-  'districts.mining.production.minerals', '$minerals$ from $mining$ district per $time$',
+  'districts.mining.production.minerals', '$resources.minerals$ from $districts.mining$ per $period$',
   {}, ['district_production_increase']);
 generate_sequence('agriculture_district_production', ['society', 'biology'],
-  'districts.agriculture.production.food', '$food$ from $agriculture$ district per $time$',
+  'districts.agriculture.production.food', '$resources.food$ from $districts.agriculture$ per $period$',
   {}, ['district_production_increase']);
 // advanced district resource production
 generate_sequence('research_site_production', ['physics', 'computing'],
-  'districts.research_site.production.research', '$research$ from $research_site$ per $time$',
+  'districts.research_site.production.research', '$resources.research$ from $districts.research_site$ per $period$',
   {}, ['district_production_increase']);
 generate_sequence('ancient_foundry_production', ['engineering', 'materials'],
-  'districts.ancient_foundry.production.alloys', '$alloys$ from $ancient_foundry$ per $time$',
+  'districts.ancient_foundry.production.alloys', '$resources.alloys$ from $districts.ancient_foundry$ per $period$',
   {}, ['ancient_district_production_increase']);
 generate_sequence('ancient_refinery_production', ['physics', 'propulsion'],
-  'districts.ancient_refinery.production.fuel', '$fuel$ from $ancient_refinery$ per $time$',
+  'districts.ancient_refinery.production.fuel', '$resources.fuel$ from $districts.ancient_refinery$ per $period$',
   {}, ['ancient_district_production_increase']);
 
 
 /**
  * Generates a sequence of technologies with increasing cost and effect.
  * @example
- * generate_sequence('energy_production', 'power_plant.production.energy', '$energy$ from $power_plant$ per $time$');
+ * generate_sequence('energy_production', 'power_plant.production.energy', '$resources.energy$ from $buildings.power_plant$ per $period$');
  * // generates:
  * TECHNOLOGIES.energy_production_1 = {
  *   id: 'energy_production_1',
  *   cost: 100,
  *   precedes: ['energy_production_2'],
- *   effects: +5% $energy$ from $power_plant$ per $time$',
+ *   effects: +5% $resources.energy$ from $buildings.power_plant$ per $period$',
  * },
  * TECHNOLOGIES.energy_production_2 = {
  *   id: 'energy_production_2',
  *   cost: 200,
  *   requires: ['energy_production_1'],
  *   precedes: ['energy_production_3'],
- *   effects: +10% $energy$ from $power_plant$ per $time$',
+ *   effects: +10% $resources.energy$ from $buildings.power_plant$ per $period$',
  * },
  * TECHNOLOGIES.energy_production_3 = {
  *   id: 'energy_production_3',
  *   cost: 400,
  *   requires: ['energy_production_2'],
- *   effects: +20% $energy$ from $power_plant$ per $time$',
+ *   effects: +20% $resources.energy$ from $buildings.power_plant$ per $period$',
  * }
  * @example
- * generate_sequence('unemployed_pop_cost', 'pop.consumption.credits.unemployed', '$credits$ per unemployed $pop$ per $time$', {
+ * generate_sequence('unemployed_pop_cost', 'pop.consumption.credits.unemployed', '$resources.credits$ per unemployed $resources.population$ per $period$', {
  *   multiplierIncrement: -0.05,
  *   exponentialBase: 3,
  * });
@@ -1492,26 +1498,26 @@ generate_sequence('ancient_refinery_production', ['physics', 'propulsion'],
  *   id: 'unemployed_pop_cost_1',
  *   cost: 100,
  *   precedes: ['unemployed_pop_cost_2'],
- *   effects: -5% $credits$ per unemployed $pop$ per $time$',
+ *   effects: -5% $resources.credits$ per unemployed $resources.population$ per $period$',
  * },
  * TECHNOLOGIES.unemployed_pop_cost_2 = {
  *   id: 'unemployed_pop_cost_2',
  *   cost: 300, // here the cost is 3x the previous cost, because exponentialBase is 3
  *   requires: ['unemployed_pop_cost_1'],
  *   precedes: ['unemployed_pop_cost_3'],
- *   effects: -15% $credits$ per unemployed $pop$ per $time$', // 3x the previous effect
+ *   effects: -15% $resources.credits$ per unemployed $resources.population$ per $period$', // 3x the previous effect
  * },
  * TECHNOLOGIES.unemployed_pop_cost_3 = {
  *   id: 'unemployed_pop_cost_3',
  *   cost: 900, // again 3x the previous cost
  *   requires: ['unemployed_pop_cost_2'],
- *   effects: -45% $credits$ per unemployed $pop$ per $time$',
+ *   effects: -45% $resources.credits$ per unemployed $resources.population$ per $period$',
  * }
  *
  * @param base_id the base ID, e.g. "energy_production"
  * @param tags
  * @param variable the variable to modify, e.g. "power_plant.production.energy"
- * @param variable_desc the description of the variable, e.g. "$energy$ from $power_plant$ per $time$"
+ * @param variable_desc the description of the variable, e.g. "$resources.energy$ from $buildings.power_plant$ per $period$"
  * @param requirement the requirement for the first step, default undefined
  * @param multiplierIncrement the amount to increase the multiplier by each step, default +0.05
  * @param exponentialBase the base of the exponential, default 2

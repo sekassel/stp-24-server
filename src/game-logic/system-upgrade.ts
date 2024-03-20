@@ -48,8 +48,8 @@ export const SYSTEM_UPGRADES = {
     id: 'developed',
     pop_growth: 1.01,
     cost: {
-      alloys: 200, // TODO cheap_claims tech tree
-      fuel: 100, // TODO cheap_claims tech tree
+      alloys: 200, // cheap_claims tech tree
+      fuel: 100, // cheap_claims tech tree
     },
     upkeep: {
       energy: 4,

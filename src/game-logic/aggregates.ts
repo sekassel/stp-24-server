@@ -1,14 +1,19 @@
 import {System} from '../system/system.schema';
 import {Empire} from '../empire/empire.schema';
 import {GameLogicService} from './game-logic.service';
-import {ApiProperty} from '@nestjs/swagger';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {BadRequestException} from '@nestjs/common';
+import {TECHNOLOGIES} from './technologies';
+import {notFound} from '@mean-stream/nestx';
 
 export class AggregateFn {
   @ApiProperty({type: [String]})
   params: string[];
+
+  @ApiPropertyOptional({type: [String]})
+  optionalParams?: string[];
 
   compute: (service: GameLogicService, empire: Empire, systems: System[], params: Record<string, string>) => AggregateResult;
 }
@@ -32,17 +37,10 @@ export class AggregateResult {
   items: AggregateItem[];
 }
 
-export const AGGREGATES = {
-  'resources.population.periodic': {
-    params: [],
-    compute: (service, empire, systems) => service.aggregatePopGrowth(empire, systems),
-  },
-  'system.resources.population.periodic': {
-    params: ['system'],
-    compute: (service, empire, systems, {system}) => service.aggregatePopGrowth(empire, systems.filter(s => s._id.equals(system))),
-  },
+export const AGGREGATES: Record<string, AggregateFn> = {
   'resources.periodic': {
     params: ['resource'],
+    optionalParams: ['system'],
     compute: (service, empire, systems, {resource, system}) => {
       if (!RESOURCE_NAMES.includes(resource as ResourceName)) {
         throw new BadRequestException(`Invalid resource: ${resource}`);
@@ -50,8 +48,18 @@ export const AGGREGATES = {
       if (system) {
         systems = systems.filter(s => s._id.equals(system));
       }
+      if (resource === 'population') {
+        return service.aggregatePopGrowth(empire, systems);
+      }
       return service.aggregateResource(empire, systems, resource as ResourceName);
     },
   },
-} as const satisfies Record<string, AggregateFn>;
+  'technology.cost': {
+    params: ['technology'],
+    compute: (service, empire, systems, {technology}) => {
+      const tech = TECHNOLOGIES[technology] ?? notFound(technology);
+      return service.aggregateTechCost(empire, tech);
+    },
+  }
+};
 export type AggregateId = keyof typeof AGGREGATES;
