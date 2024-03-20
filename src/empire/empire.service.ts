@@ -7,7 +7,7 @@ import {EmpireTemplate, ReadEmpireDto, UpdateEmpireDto} from './empire.dto';
 import {MemberService} from '../member/member.service';
 import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MAX_EMPIRES} from '../game-logic/constants';
 import {generateTraits} from '../game-logic/traits';
-import {TECHNOLOGIES} from "../game-logic/technologies";
+import {TECH_CATEGORIES, TECHNOLOGIES} from '../game-logic/technologies';
 import {UserService} from "../user/user.service";
 import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
 import {Technology, Variable} from '../game-logic/types';
@@ -16,6 +16,7 @@ import {Game, GameDocument} from '../game/game.schema';
 import {SYSTEM_TYPES} from '../game-logic/system-types';
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
 import {UserDocument} from '../user/user.schema';
+import {AggregateItem, AggregateResult} from '../game-logic/aggregates';
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -74,7 +75,7 @@ export class EmpireService extends MongooseRepository<Empire> {
     const user = await this.userService.find(empire.user) ?? notFound(empire.user);
     const variables = {
       ...getVariables('technologies'),
-      'empire.technologies.cost_multiplier': EMPIRE_VARIABLES.technologies.cost_multiplier,
+      ...getVariables('empire'),
     };
     calculateVariables(variables, empire);
 
@@ -118,9 +119,10 @@ export class EmpireService extends MongooseRepository<Empire> {
     await this.userService.saveAll([user]);
   }
 
-  private getTechnologyCost(user: UserDocument, technology: Technology, variables: Partial<Record<Variable, number>>) {
+  getTechnologyCost(user: UserDocument, technology: Technology, variables: Partial<Record<Variable, number>>) {
     const technologyCount = user.technologies?.[technology.id] || 0;
 
+    const difficultyMultiplier = variables['empire.technologies.difficulty'] || 1;
     let technologyCost = technology.cost;
 
     // step 1: if the user has already unlocked this tech, decrease the cost exponentially
@@ -138,6 +140,44 @@ export class EmpireService extends MongooseRepository<Empire> {
 
     // step 3: round the cost
     return Math.round(technologyCost);
+  }
+
+  aggregateTechCost(empire: Empire, technology: Technology): AggregateResult {
+    const variables: Partial<Record<Variable, number>> = {
+      'empire.technologies.cost_multiplier': EMPIRE_VARIABLES.technologies.cost_multiplier,
+    };
+    for (const tag of technology.tags) {
+      variables[`technologies.${tag}.cost_multiplier`] = TECH_CATEGORIES[tag].cost_multiplier;
+    }
+    calculateVariables(variables, empire);
+
+    let total = technology.cost;
+
+    const items: AggregateItem[] = [];
+    total *= variables['empire.technologies.difficulty'] || 1;
+    items.push({
+      variable: 'empire.technologies.difficulty',
+      count: technology.cost,
+      subtotal: total,
+    })
+    items.push({
+      variable: 'empire.technologies.cost_multiplier',
+      // TODO real user tech count and subtotal
+      count: 0,
+      subtotal: 0,
+    });
+    for (const tag of technology.tags) {
+      const tagCostMultiplier = variables[`technologies.${tag}.cost_multiplier`] || 1;
+      const newTotal = total * tagCostMultiplier;
+      items.push({
+        variable: `technologies.${tag}.cost_multiplier`,
+        count: 1,
+        subtotal: newTotal - total,
+      });
+      total = newTotal;
+    }
+
+    return {items, total};
   }
 
   private resourceTrading(empire: Empire, resources: Record<ResourceName, number>) {

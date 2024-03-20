@@ -53,12 +53,8 @@ export const AGGREGATES = {
   'technology.cost': {
     params: ['technology'],
     compute: (service, empire, systems, {technology}) => {
-      // TODO real technology cost
       const tech = TECHNOLOGIES[technology] ?? notFound(technology);
-      return {
-        total: tech.cost,
-        items: [],
-      };
+      return service.aggregateTechCost(empire, tech);
     },
   }
 } as const satisfies Record<string, AggregateFn>;
