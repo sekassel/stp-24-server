@@ -150,75 +150,50 @@ export class SystemService extends MongooseRepository<System> {
       return [];
     }
 
-    let clusters: System[][] = [];
+    const clusters: System[][] = [];
     const clustersCenter: number[][] = [];
     const clustersRadius: number[] = [];
     let avgRadius = -1;
 
     //Create clusters
-    const map:ClusterMap = MAPS[Math.randInt(MAPS.length)];
+    while(clusters.flat().length < game.settings.size){
+      const cluster = this.createCluster(game, GRID_SCALING, [-GRID_SCALING*2,-GRID_SCALING*2]);
+      const center = this.calcClusterCenter(cluster);
+      const radius = this.calcClusterRadius(cluster, center);
 
-    for (const level of map.levels) {
-      for (const point of level.points) {
-        const pos = [point[0] - (map.size[0])/2, point[1] - (map.size[1])/2];
-        const cluster = this.createCluster(game, GRID_SCALING, pos);
-        const center = this.calcClusterCenter(cluster);
-        const radius = this.calcClusterRadius(cluster, center);
+      clusters.push(cluster);
+      clustersCenter.push(center);
+      clustersRadius.push(radius);
 
-        clusters.push(cluster);
-        clustersCenter.push(center);
-        clustersRadius.push(radius);
-
-        if (avgRadius === -1) {
-          avgRadius = radius;
-        }
-        else {
-          avgRadius = (avgRadius + radius) / 2;
-        }
+      if (avgRadius === -1) {
+        avgRadius = radius;
+      }
+      else {
+        avgRadius = (avgRadius + radius) / 2;
       }
     }
 
-    //Move clusters
+    //Spread clusters across the map
+    for(let i = 1; i < clusters.length; i++){
+      let angle = 0;
+      let angleOffset = Math.PI*2*Math.random()
+      let radius = avgRadius;
 
+      while(this.hasClusterCollision(clustersCenter, clustersRadius, i)){
+        angle += Math.PI/(radius * CIRCLE_GENERATOR.radius_angle_percentage + CIRCLE_GENERATOR.angle_steps);
 
-    // while(clusters.flat().length < game.settings.size){
-    //   const cluster = this.createCluster(game, GRID_SCALING, [-GRID_SCALING*2,-GRID_SCALING*2]);
-    //   const center = this.calcClusterCenter(cluster);
-    //   const radius = this.calcClusterRadius(cluster, center);
-    //
-    //   clusters.push(cluster);
-    //   clustersCenter.push(center);
-    //   clustersRadius.push(radius);
-    //
-    //   if (avgRadius === -1) {
-    //     avgRadius = radius;
-    //   }
-    //   else {
-    //     avgRadius = (avgRadius + radius) / 2;
-    //   }
-    // }
-    //
-    //
-    // //Spread clusters across the map
-    // for(let i = 1; i < clusters.length; i++){
-    //   let angle = 0;
-    //   let angleOffset = Math.PI*2*Math.random()
-    //   let radius = avgRadius;
-    //
-    //   while(this.hasClusterCollision(clustersCenter, clustersRadius, i)){
-    //     angle += Math.PI/(radius * CIRCLE_GENERATOR.radius_angle_percentage + CIRCLE_GENERATOR.angle_steps);
-    //
-    //     if(angle > Math.PI*2){
-    //       angle = 0;
-    //       angleOffset = Math.PI*2*Math.random();
-    //       radius += avgRadius * CIRCLE_GENERATOR.radius_steps;
-    //     }
-    //
-    //     const movement = [Math.cos(angle + angleOffset)*radius, Math.sin(angle + angleOffset)*radius];
-    //     clusters[i] = this.moveCluster(clusters[i], movement);
-    //     clustersCenter[i] = [clustersCenter[i][0] + movement[0], clustersCenter[i][1] + movement[1]];
-    //   }
-    // }
+        if(angle > Math.PI*2){
+          angle = 0;
+          angleOffset = Math.PI*2*Math.random();
+          radius += avgRadius * CIRCLE_GENERATOR.radius_steps;
+        }
+
+        const newCenter = [Math.cos(angle + angleOffset)*radius, Math.sin(angle + angleOffset)*radius];
+        const movement = [newCenter[0] - clustersCenter[i][0], newCenter[1] - clustersCenter[i][1]];
+        clusters[i] = this.moveCluster(clusters[i], movement);
+        clustersCenter[i] = [newCenter[0], newCenter[1]];
+      }
+    }
 
     //Connect clusters
 
