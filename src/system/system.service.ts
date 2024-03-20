@@ -2,7 +2,7 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
-import {System,SystemDocument} from './system.schema';
+import {System, SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
 import {CIRCLE_GENERATOR, GRID_SCALING, GRIDS, Grid, Vertex, MAX_SYSTEM_DISPLACEMENT} from "../game-logic/gridtypes";
 import {UpdateSystemDto} from './system.dto';
@@ -49,12 +49,12 @@ export class SystemService extends MongooseRepository<System> {
     system.upgrade = upgrade;
     system.capacity *= SYSTEM_UPGRADES[upgrade].capacity_multiplier;
 
-    if(!owner){
+    if (!owner) {
       throw new BadRequestException(`Owner required to explore system`);
     }
 
     const empire = await this.empireService.find(owner);
-    if(!empire){
+    if (!empire) {
       throw new BadRequestException(`Empire ${owner} not found`);
     }
 
@@ -78,8 +78,30 @@ export class SystemService extends MongooseRepository<System> {
   private updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>) {
     // TODO @Simolse: #15 Build and Destroy Districts
     //   - Check costs and resources
-    //   - Check if districts don't exceed capacity
-    //   - Check if districts don't exceed slots
+    const districtSlots = {...system.districtSlots};
+    const allDistricts = {...system.districts};
+    let builtDistrictsCount = 0;
+    let amountOfDistrictsToBeBuilt = 0;
+
+    for (const [district, amount] of Object.entries(districts)) {
+      const districtName = district as DistrictName;
+      const districtTypeSlots = districtSlots[districtName];
+      const builtDistrictsOfType = allDistricts[districtName] ?? 0;
+      builtDistrictsCount += builtDistrictsOfType;
+      amountOfDistrictsToBeBuilt += amount;
+
+      // Check if districts don't exceed slots
+      if (districtTypeSlots !== undefined && districtTypeSlots - builtDistrictsOfType < amount) {
+        throw new BadRequestException(`Insufficient district slots for ${districtName}`);
+      }
+    }
+
+    // Check if district slots don't exceed capacity
+    if (system.buildings.length + builtDistrictsCount + amountOfDistrictsToBeBuilt > Math.round(system.capacity)) {
+      throw new BadRequestException(`System ${system._id} has not enough capacity to build the districts`);
+    }
+
+    // ADRIAN'S PERFECT CODE
     for (const [district, amount] of Object.entries(districts)) {
       const districtName = district as DistrictName;
       system.districts[districtName] = (system.districts[districtName] ?? 0) + amount;
@@ -95,11 +117,11 @@ export class SystemService extends MongooseRepository<System> {
     system.buildings = buildings;
   }
 
-  generateDistricts(system: SystemDocument, empire: Empire){
+  generateDistricts(system: SystemDocument, empire: Empire) {
     //Get district chances for this system type
     const districtChances: Partial<Record<Variable, number>> = {};
 
-    for(const [key, value] of Object.entries(DISTRICTS)){
+    for (const [key, value] of Object.entries(DISTRICTS)) {
       const chance: District['chance'] = value.chance;
       districtChances[`districts.${key}.chance.${system.type}` as Variable] = chance[system.type] ?? value.chance.default;
     }
@@ -112,36 +134,34 @@ export class SystemService extends MongooseRepository<System> {
 
   private randomDistricts(system: SystemDocument, districtChances: Partial<Record<Variable, number>>) {
     const nDistricts = SYSTEM_TYPES[system.type].district_percentage * system.capacity;
-    for(let i = 0; i < nDistricts; i++){
+    for (let i = 0; i < nDistricts; i++) {
       const type = Object.entries(districtChances).randomWeighted(i => i[1])[0] as Variable;
 
       const district = type.split('.')[1] as DistrictName;
-      if(system.districtSlots[district]){
+      if (system.districtSlots[district]) {
         system.districtSlots[district]!++;
-      }
-      else{
+      } else {
         system.districtSlots[district] = 1;
       }
     }
     system.markModified('districtSlots');
   }
 
-  private applyCosts(empire: EmpireDocument, upgrade: SystemUpgradeName){
+  private applyCosts(empire: EmpireDocument, upgrade: SystemUpgradeName) {
     const costs = Object.entries(SYSTEM_UPGRADES[upgrade].cost);
 
-    if(costs.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
-      for(const [resource, amount] of Object.entries(SYSTEM_UPGRADES[upgrade].cost)){
+    if (costs.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)) {
+      for (const [resource, amount] of Object.entries(SYSTEM_UPGRADES[upgrade].cost)) {
         empire.resources[resource as ResourceName] -= amount;
       }
       empire.markModified('resources');
-    }
-    else{
+    } else {
       throw new BadRequestException(`Not enough resources to upgrade system`);
     }
   }
 
   async generateMap(game: Game): Promise<SystemDocument[]> {
-    if(!game.settings?.size) {
+    if (!game.settings?.size) {
       return [];
     }
 
@@ -222,7 +242,8 @@ export class SystemService extends MongooseRepository<System> {
    * Creates a cluster of systems and connects these systems
    */
   private createCluster(game: Game, scaling: number, offset: number[]): System[] {
-    const grid:Grid = GRIDS[Math.randInt(GRIDS.length)];
+
+    const grid: Grid = GRIDS[Math.randInt(GRIDS.length)];
     const systemAmount = Math.randInt(grid.system_range[1] - grid.system_range[0]) + grid.system_range[0];
     const vertices: number[] = Array.from(grid.vertices.map(vertex => vertex.id)).sort(() => Math.random() - 0.5).slice(0, systemAmount);
     const edges: number[][] = this.createSpanningTree(grid, vertices);
@@ -245,7 +266,7 @@ export class SystemService extends MongooseRepository<System> {
     vertices.forEach(vertex => systems[vertex] = this.createSystem(game, grid.vertices[vertex], scaling, offset));
 
     //Connect systems
-    for(const [system1, system2] of edges) {
+      for (const [system1, system2] of edges) {
       this.connectSystems(systems[system1], systems[system2]);
     }
 
@@ -260,8 +281,7 @@ export class SystemService extends MongooseRepository<System> {
 
     while(visited.length < vertices.length) {
       const candidateEdges = [];
-
-      for(const vertex of visited) {
+    for (const vertex of visited) {
         const validNeighborEdges = grid.vertices[vertex].neighbors
           .filter(neighbor => vertices.includes(neighbor) && !visited.includes(neighbor))
           .map(neighbor => vertex > neighbor ? [neighbor, vertex] : [vertex, neighbor])
@@ -310,14 +330,14 @@ export class SystemService extends MongooseRepository<System> {
    * */
   private hasCycle(start: number, edges: number[][]): boolean {
     const visited: number[][] = edges.filter(edge => edge.includes(start));
+
     const stack: number[] = visited.map(edge => edge[0] === start ? edge[1] : edge[0]);
 
     while (stack.length > 0) {
       const current = stack.pop();
-      if(!current) break;
+      if (!current) break;
 
-      for(const edge of edges.filter(edge => !visited.includes(edge))) {
-        if(edge[0] === current) {
+      for(const edge of edges.filter(edge => !visited.includes(edge))) {if (edge[0] === current) {
           if(edge[1] === start) return true;
           visited.push(edge);
           stack.push(edge[1]);
