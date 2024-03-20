@@ -1,7 +1,7 @@
 import {System} from '../system/system.schema';
 import {Empire} from '../empire/empire.schema';
 import {GameLogicService} from './game-logic.service';
-import {ApiProperty} from '@nestjs/swagger';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {BadRequestException} from '@nestjs/common';
@@ -11,6 +11,9 @@ import {notFound} from '@mean-stream/nestx';
 export class AggregateFn {
   @ApiProperty({type: [String]})
   params: string[];
+
+  @ApiPropertyOptional({type: [String]})
+  optionalParams?: string[];
 
   compute: (service: GameLogicService, empire: Empire, systems: System[], params: Record<string, string>) => AggregateResult;
 }
@@ -34,9 +37,10 @@ export class AggregateResult {
   items: AggregateItem[];
 }
 
-export const AGGREGATES = {
+export const AGGREGATES: Record<string, AggregateFn> = {
   'resources.periodic': {
     params: ['resource'],
+    optionalParams: ['system'],
     compute: (service, empire, systems, {resource, system}) => {
       if (!RESOURCE_NAMES.includes(resource as ResourceName)) {
         throw new BadRequestException(`Invalid resource: ${resource}`);
@@ -57,5 +61,5 @@ export const AGGREGATES = {
       return service.aggregateTechCost(empire, tech);
     },
   }
-} as const satisfies Record<string, AggregateFn>;
+};
 export type AggregateId = keyof typeof AGGREGATES;
