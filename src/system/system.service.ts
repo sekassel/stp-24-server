@@ -88,9 +88,10 @@ export class SystemService extends MongooseRepository<System> {
     if (system.owner instanceof Types.ObjectId) {
       empire = await this.empireService.find(system.owner);
     }
-    if (empire) {
-      calculateVariables(districtVariables, empire);
+    if (!empire) {
+      throw new BadRequestException(`Empire ${system.owner} not found`);
     }
+    calculateVariables(districtVariables, empire);
 
     for (const [district, amount] of Object.entries(districts)) {
       const districtName = district as DistrictName;
@@ -103,7 +104,10 @@ export class SystemService extends MongooseRepository<System> {
       if (districtTypeSlots !== undefined && districtTypeSlots - builtDistrictsOfType < amount) {
         throw new BadRequestException(`Insufficient district slots for ${districtName}`);
       }
+
       const districtCost = districtVariables[`district.${district}.cost` as Variable];
+      // TODO: Check if empire has enough resource to buy or the given amount is negative to refund resources
+      if (districtCost * amount < empire.resources.)
     }
 
     // Check if district slots don't exceed capacity
