@@ -14,55 +14,57 @@ export class SystemGeneratorService {
       return [];
     }
 
-    const clusters: System[][] = [];
-    const clustersCenter: number[][] = [];
-    const clustersRadius: number[] = [];
-    let avgRadius = -1;
+    // const clusters: System[][] = [];
+    // const clustersCenter: number[][] = [];
+    // const clustersRadius: number[] = [];
+    // let avgRadius = -1;
+    //
+    // //Create clusters
+    // while(clusters.flat().length < game.settings.size){
+    //   const cluster = this.clusterGenerator.generateCluster(game, GRID_SCALING, [-GRID_SCALING*2,-GRID_SCALING*2]);
+    //   const center = this.calcClusterCenter(cluster);
+    //   const radius = this.calcClusterRadius(cluster, center);
+    //
+    //   clusters.push(cluster);
+    //   clustersCenter.push(center);
+    //   clustersRadius.push(radius);
+    //
+    //   if (avgRadius === -1) {
+    //     avgRadius = radius;
+    //   }
+    //   else {
+    //     avgRadius = (avgRadius + radius) / 2;
+    //   }
+    // }
+    //
+    // //Spread clusters across the map
+    // for(let i = 1; i < clusters.length; i++){
+    //   let angle = 0;
+    //   let angleOffset = Math.PI*2*Math.random()
+    //   let radius = avgRadius/2;
+    //
+    //   while(this.hasClusterCollision(clustersCenter, clustersRadius, i)){
+    //     angle += Math.PI/(radius * CIRCLE_GENERATOR.radius_angle_percentage + CIRCLE_GENERATOR.angle_steps);
+    //
+    //     if(angle > Math.PI*2){
+    //       angle = 0;
+    //       angleOffset = Math.PI*2*Math.random();
+    //       radius += avgRadius * CIRCLE_GENERATOR.radius_steps;
+    //     }
+    //
+    //     const newCenter = [Math.cos(angle + angleOffset)*radius, Math.sin(angle + angleOffset)*radius];
+    //     const movement = [newCenter[0] - clustersCenter[i][0], newCenter[1] - clustersCenter[i][1]];
+    //     clusters[i] = this.moveCluster(clusters[i], movement);
+    //     clustersCenter[i] = [newCenter[0], newCenter[1]];
+    //   }
+    // }
+    //
+    // //Connect clusters
+    // this.connectClusters(clusters, clustersCenter, avgRadius*3);
+    //
+    // return clusters.flat();
 
-    //Create clusters
-    while(clusters.flat().length < game.settings.size){
-      const cluster = this.clusterGenerator.generateCluster(game, GRID_SCALING, [-GRID_SCALING*2,-GRID_SCALING*2]);
-      const center = this.calcClusterCenter(cluster);
-      const radius = this.calcClusterRadius(cluster, center);
-
-      clusters.push(cluster);
-      clustersCenter.push(center);
-      clustersRadius.push(radius);
-
-      if (avgRadius === -1) {
-        avgRadius = radius;
-      }
-      else {
-        avgRadius = (avgRadius + radius) / 2;
-      }
-    }
-
-    //Spread clusters across the map
-    for(let i = 1; i < clusters.length; i++){
-      let angle = 0;
-      let angleOffset = Math.PI*2*Math.random()
-      let radius = avgRadius/2;
-
-      while(this.hasClusterCollision(clustersCenter, clustersRadius, i)){
-        angle += Math.PI/(radius * CIRCLE_GENERATOR.radius_angle_percentage + CIRCLE_GENERATOR.angle_steps);
-
-        if(angle > Math.PI*2){
-          angle = 0;
-          angleOffset = Math.PI*2*Math.random();
-          radius += avgRadius * CIRCLE_GENERATOR.radius_steps;
-        }
-
-        const newCenter = [Math.cos(angle + angleOffset)*radius, Math.sin(angle + angleOffset)*radius];
-        const movement = [newCenter[0] - clustersCenter[i][0], newCenter[1] - clustersCenter[i][1]];
-        clusters[i] = this.moveCluster(clusters[i], movement);
-        clustersCenter[i] = [newCenter[0], newCenter[1]];
-      }
-    }
-
-    //Connect clusters
-    this.connectClusters(clusters, clustersCenter, avgRadius*3);
-
-    return clusters.flat();
+    return this.removeIntersectingEdges(this.clusterGenerator.generateCluster(game, GRID_SCALING, [-GRID_SCALING*2,-GRID_SCALING*2]));
   }
 
   private moveCluster(cluster: System[], movement: number[]): System[] {
@@ -185,5 +187,90 @@ export class SystemGeneratorService {
     }
 
     this.clusterGenerator.connectSystems(nearestSystems[0], nearestSystems[1]);
+  }
+
+  private removeIntersectingEdges(systems: System[]): System[] {
+    for(let i = 0; i < systems.length; i++) {
+      for(let j = 0; j < systems.length; j++) {
+        if(i === j) continue;
+        this.checkLinks(systems, i, j);
+      }
+    }
+
+    return systems;
+  }
+
+  /**
+   * Checks if two systems have links that intersect with each other
+   */
+  private checkLinks(systems: System[], system1: number, system2: number) {
+    const links1:System[][] = Array.from(Object.keys(systems[system1].links).map(key => {
+      const otherSystem = systems.find(system => system._id.toString() === key)!;
+      return [systems[system1], otherSystem];
+    }));
+
+    if(links1.find(link => link[1]._id.toString() === systems[system2]._id.toString())) return;
+
+    for(const key of Object.keys(systems[system2].links)){
+      const system = systems.find(system => system._id.toString() === key)!;
+      const link2 = [systems[system2], system];
+
+      if(links1.some(link1 => this.isEdgesIntersecting(link1, link2))){
+        this.removeLink(systems[system2], system);
+      }
+    }
+  }
+
+  private isEdgesIntersecting(link1: System[], link2: System[]): boolean {
+    //https://www.jeffreythompson.org/collision-detection/line-line.php
+    const x1 = link1[0].x;
+    const y1 = link1[0].y;
+    const x2 = link1[1].x;
+    const y2 = link1[1].y;
+    const x3 = link2[0].x;
+    const y3 = link2[0].y;
+    const x4 = link2[1].x;
+    const y4 = link2[1].y;
+
+    const uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+    const uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+
+    return uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1;
+
+    //Linear function try
+    // const m1 = (link1[1].y - link1[0].y) / (link1[1].x - link1[0].x);
+    // const m2 = (link2[1].y - link2[0].y) / (link2[1].x - link2[0].x);
+    // const b1 = link1[0].y - m1 * link1[0].x;
+    // const b2 = link2[0].y - m2 * link2[0].x;
+    //
+    // const x = (b2 - b1) / (m1 - m2);
+    // const y = m1 * x + b1;
+
+    //https://gamedev.stackexchange.com/questions/26004/how-to-detect-2d-line-on-line-collision
+    // const aX = link1[0].x;
+    // const aY = link1[0].y;
+    // const bX = link1[1].x;
+    // const bY = link1[1].y;
+    // const cX = link2[0].x;
+    // const cY = link2[0].y;
+    // const dX = link2[1].x;
+    // const dY = link2[1].y;
+    //
+    // const denominator = ((bX - aX) * (dY - cY)) - ((bY - aY) * (dX - cX));
+    // const numerator1 = ((aY - cY) * (dX - cX)) - ((aX - cX) * (dY - cY));
+    // const numerator2 = ((aY - cY) * (bX - aX)) - ((aX - cX) * (bY - aY));
+    //
+    // // Detect coincident lines
+    // if (denominator == 0) return numerator1 == 0 && numerator2 == 0;
+    //
+    // const r = numerator1 / denominator;
+    // const s = numerator2 / denominator;
+    //
+    // return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
+  }
+
+  private removeLink(system1: System, system2: System) {
+    delete system1.links[system2._id.toString()];
+    delete system2.links[system1._id.toString()];
   }
 }

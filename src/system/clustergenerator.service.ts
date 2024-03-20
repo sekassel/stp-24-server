@@ -1,44 +1,58 @@
 import {Game} from "../game/game.schema";
 import {System} from "./system.schema";
-import {Grid, GRIDS, MAX_SYSTEM_DISPLACEMENT, Vertex} from "../game-logic/gridtypes";
+import {Grid, MAX_SYSTEM_DISPLACEMENT, Vertex} from "../game-logic/gridtypes";
 import {SYSTEM_TYPES, SystemTypeName} from "../game-logic/system-types";
 import {Types} from "mongoose";
 import {SYSTEM_UPGRADE_NAMES} from "../game-logic/system-upgrade";
-import {isLocalFile} from "@swc/core/spack";
 
 export class ClusterGeneratorService {
   /**
    * Creates a cluster of systems and connects these systems
    */
   generateCluster(game: Game, scaling: number, offset: number[]): System[] {
-    const grid:Grid = GRIDS[Math.randInt(GRIDS.length)];
-    const systemAmount = Math.randInt(grid.system_range[1] - grid.system_range[0]) + grid.system_range[0];
-    const vertices: number[] = Array.from(grid.vertices.map(vertex => vertex.id)).sort(() => Math.random() - 0.5).slice(0, systemAmount);
-    const edges: number[][] = this.createSpanningTree(grid, vertices);
+    // const grid:Grid = GRIDS[Math.randInt(GRIDS.length)];
+    // const systemAmount = Math.randInt(grid.system_range[1] - grid.system_range[0]) + grid.system_range[0];
+    // const vertices: number[] = Array.from(grid.vertices.map(vertex => vertex.id)).sort(() => Math.random() - 0.5).slice(0, systemAmount);
+    // const edges: number[][] = this.createSpanningTree(grid, vertices);
+    //
+    // //Add random cycles
+    // const randomCycles = vertices.length * grid.cycle_percentage;
+    // for(let i = 0; i < randomCycles; i++) {
+    //   const system1 = vertices[Math.randInt(vertices.length)];
+    //   const neighbors = grid.vertices[system1].neighbors.filter(neighbor => vertices.includes(neighbor));
+    //   const system2 = neighbors[Math.randInt(neighbors.length)];
+    //   const newEdge = Array.from([system1, system2]).sort(v => v);
+    //
+    //   if(!edges.includes(newEdge) && !this.hasIntersection(grid, edges, newEdge)){
+    //     edges.push([system1, system2]);
+    //   }
+    // }
+    //
+    // //Create systems
+    // const systems: Record<number, System> = {};
+    // vertices.forEach(vertex => systems[vertex] = this.createSystem(game, grid.vertices[vertex], scaling, offset));
+    //
+    // //Connect systems
+    // for(const [system1, system2] of edges) {
+    //   this.connectSystems(systems[system1], systems[system2]);
+    // }
+    //
+    // return Object.values(systems);
 
-    //Add random cycles
-    const randomCycles = vertices.length * grid.cycle_percentage;
-    for(let i = 0; i < randomCycles; i++) {
-      const system1 = vertices[Math.randInt(vertices.length)];
-      const neighbors = grid.vertices[system1].neighbors.filter(neighbor => vertices.includes(neighbor));
-      const system2 = neighbors[Math.randInt(neighbors.length)];
-      const newEdge = Array.from([system1, system2]).sort(v => v);
+    const systems: System[] = [];
+    systems.push(this.createSystem(game, { id: 0, x: 0, y: 0, neighbors: [] }, scaling, offset));
+    systems.push(this.createSystem(game, { id: 0, x: 1, y: 0, neighbors: [] }, scaling, offset));
+    systems.push(this.createSystem(game, { id: 0, x: 0, y: 1, neighbors: [] }, scaling, offset));
+    systems.push(this.createSystem(game, { id: 0, x: 1, y: 1, neighbors: [] }, scaling, offset));
 
-      if(!edges.includes(newEdge) && !this.hasIntersection(grid, edges, newEdge)){
-        edges.push([system1, system2]);
-      }
-    }
+    this.connectSystems(systems[0], systems[1]);
+    this.connectSystems(systems[0], systems[2]);
+    this.connectSystems(systems[0], systems[3]);
+    this.connectSystems(systems[1], systems[2]);
+    this.connectSystems(systems[1], systems[3]);
+    this.connectSystems(systems[2], systems[3]);
 
-    //Create systems
-    const systems: Record<number, System> = {};
-    vertices.forEach(vertex => systems[vertex] = this.createSystem(game, grid.vertices[vertex], scaling, offset));
-
-    //Connect systems
-    for(const [system1, system2] of edges) {
-      this.connectSystems(systems[system1], systems[system2]);
-    }
-
-    return Object.values(systems);
+    return systems;
   }
 
   private createSpanningTree(grid: Grid, vertices: number[]): number[][] {
