@@ -6,6 +6,8 @@ import {SystemHandler} from './system.handler';
 import {System, SystemSchema} from './system.schema';
 import {SystemService} from './system.service';
 import {EmpireModule} from '../empire/empire.module';
+import {SystemGeneratorService} from "./systemgenerator.service";
+import {ClusterGeneratorService} from "./clustergenerator.service";
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import {EmpireModule} from '../empire/empire.module';
     EmpireModule,
   ],
   controllers: [SystemController],
-  providers: [SystemService, SystemHandler],
+  providers: [SystemService, SystemGeneratorService, ClusterGeneratorService, SystemHandler],
   exports: [SystemService],
 })
 export class SystemModule {

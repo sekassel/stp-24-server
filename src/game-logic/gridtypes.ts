@@ -1,3 +1,12 @@
+export class ClusterMap {
+  levels: readonly Level[];
+  size: readonly number[];
+}
+
+export class Level {
+  points: readonly number[][]; //Points where clusters of systems will be placed
+}
+
 export class Grid {
   vertices: readonly Vertex[];
   intersecting_edges: readonly number[][][];
@@ -11,6 +20,20 @@ export class Vertex {
   y: number;
   neighbors: readonly number[];
 }
+
+export const MAPS = [
+  {
+    levels: [
+      { points: [[3,3]] },
+      { points: [[2,2], [4,2], [2,4], [4,4]] },
+      { points: [[3,1], [1,3], [5,3], [3,5]] },
+      { points: [[1,1], [5,1], [1,5], [5,5]] },
+      { points: [[2,0], [4,0], [0,2], [6,2], [0,4], [6,4], [2,6], [4,6]] },
+      { points: [[0,0], [6,0], [0,6], [6,6]] },
+    ],
+    size: [7, 7],
+  }
+] as const satisfies ClusterMap[];
 
 export const GRIDS  = [
   {
@@ -63,10 +86,11 @@ export const GRIDS  = [
 
 export const GRID_SCALING = 12;
 export const MAX_SYSTEM_DISPLACEMENT = 0.45;
+export const MAP_CYCLE_PERCENTAGE = 0.5;
 
 export const CIRCLE_GENERATOR = {
   radius_steps: 0.01,
-  angle_steps: 300,
-  radius_angle_percentage: 1,
-  collision_precision: 0.99,
+  angle_steps: 100,
+  radius_angle_percentage: 3,
+  collision_precision: 1.1, //The smaller the number the nearer the clusters are to each other
 }
