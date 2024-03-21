@@ -116,6 +116,11 @@ export class SystemService extends MongooseRepository<System> {
         throw new ConflictException(`Insufficient district slots for ${districtName}`);
       }
 
+      // Check if district slots don't exceed capacity
+      if (system.buildings.length + builtDistrictsCount + amountOfDistrictsToBeBuilt > Math.round(system.capacity)) {
+        throw new ConflictException(`System ${system._id} has not enough capacity to build the districts`);
+      }
+
       // Check if empire has enough resource to buy the district or the given amount is negative to refund resources
       const districtCost: Record<ResourceName, number> = getDistrictCost(districtName, districtVariables);
       const empireResources: Record<ResourceName, number> = empire.resources;
@@ -128,7 +133,6 @@ export class SystemService extends MongooseRepository<System> {
           if (amount > 0) {
             empire.resources[resource as ResourceName] -= cost * amount;
           } else {
-            console.log(builtDistrictsCount, amount);
             if (builtDistrictsCount < Math.abs(amount)) {
               throw new ConflictException(`Not enough districts of ${districtName} to destroy`);
             }
@@ -137,11 +141,6 @@ export class SystemService extends MongooseRepository<System> {
           empire.markModified('resources');
         }
       }
-    }
-
-    // Check if district slots don't exceed capacity
-    if (system.buildings.length + builtDistrictsCount + amountOfDistrictsToBeBuilt > Math.round(system.capacity)) {
-      throw new ConflictException(`System ${system._id} has not enough capacity to build the districts`);
     }
 
     // ADRIAN'S PERFECT CODE
