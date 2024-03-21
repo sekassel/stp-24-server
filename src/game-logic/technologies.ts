@@ -1541,7 +1541,7 @@ function generate_sequence(base_id: string, tags: TechnologyTag[], variable: Var
       precedes: index < count ? [base_id + '_' + (index + 1)] : undefined,
       effects: [
         {
-          description: `${(multiplier - 1) * 100}% ${variable_desc}`,
+          description: `${multiplier > 1 ? '+' : ''}${((multiplier - 1) * 100).toFixed(1)}% ${variable_desc}`,
           variable,
           multiplier,
         },
