@@ -156,6 +156,7 @@ export class SystemService extends MongooseRepository<System> {
 
         for(const [resource, resourceCost] of cost){
           empire.resources[resource as ResourceName] += resourceCost/2;
+          empire.markModified('resources');
         }
       }
     }
