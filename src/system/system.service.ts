@@ -16,9 +16,9 @@ import {District, Variable} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 import {SystemGeneratorService} from "./systemgenerator.service";
 
-function getCosts(key: 'districts' | 'buildings', district: DistrictName | BuildingName, districtVariables: any): Record<ResourceName, number> {
+function getCosts(category: 'districts' | 'buildings', district: DistrictName | BuildingName, districtVariables: any): Record<ResourceName, number> {
   const districtCostKeys = Object.keys(districtVariables).filter(key =>
-    key.startsWith(`${key}.${district}.cost.`)
+    key.startsWith(`${category}.${district}.cost.`)
   );
 
   return Object.fromEntries(districtCostKeys.map(key =>
@@ -105,14 +105,14 @@ export class SystemService extends MongooseRepository<System> {
     const newBuildings = this.buildingsOccurrences(buildings);
 
     //Find out which buildings to remove and add
-    const removeBuilings: Partial<Record<BuildingName, number>> = {};
+    const removeBuildings: Partial<Record<BuildingName, number>> = {};
     const addBuildings: Partial<Record<BuildingName, number>> = {};
 
     for(const [building, amount] of Object.entries(oldBuildings)){
       const bName = building as BuildingName;
 
       if(newBuildings[bName] < amount){
-        removeBuilings[bName] = amount - newBuildings[bName];
+        removeBuildings[bName] = amount - newBuildings[bName];
       }
       else if(newBuildings[bName] > amount){
         addBuildings[bName] = newBuildings[bName] - amount;
@@ -127,7 +127,7 @@ export class SystemService extends MongooseRepository<System> {
       costs[building as BuildingName] = Object.entries(getCosts('buildings', building, buildingVariables)) as [ResourceName,number][];
     }
 
-    this.removeBuildings(system, removeBuilings, costs, empire);
+    this.removeBuildings(system, removeBuildings, costs, empire);
     this.addBuildings(system, addBuildings, costs, empire);
 
     await this.empireService.saveAll([empire]);
@@ -156,8 +156,9 @@ export class SystemService extends MongooseRepository<System> {
 
         for(const [resource, resourceCost] of cost){
           empire.resources[resource as ResourceName] += resourceCost/2;
-          empire.markModified('resources');
         }
+
+        empire.markModified('resources');
       }
     }
   }
