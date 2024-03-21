@@ -7,7 +7,7 @@ import {Game} from "../game/game.schema";
 import {UpdateSystemDto} from './system.dto';
 import {SYSTEM_UPGRADES, SystemUpgradeName} from '../game-logic/system-upgrade';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
-import {BuildingName} from '../game-logic/buildings';
+import {BUILDING_NAMES, BuildingName, BUILDINGS} from '../game-logic/buildings';
 import {SYSTEM_TYPES} from "../game-logic/system-types";
 import {calculateVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
@@ -36,7 +36,7 @@ export class SystemService extends MongooseRepository<System> {
       this.updateDistricts(system, dto.districts);
     }
     if (dto.buildings) {
-      this.updateBuildings(system, dto.buildings);
+      await this.updateBuildings(system, dto.buildings, dto.owner);
     }
     await this.saveAll([system]) // emits update events
     return system;
@@ -84,12 +84,79 @@ export class SystemService extends MongooseRepository<System> {
     system.markModified('districts');
   }
 
-  private updateBuildings(system: SystemDocument, buildings: BuildingName[]) {
-    // TODO @Giulcoo: #17 Build and Destroy Buildings
-    //  - Determine new and removed buildings
-    //  - Check costs and resources
-    //  - Check if buildings don't exceed capacity
+  private async updateBuildings(system: SystemDocument, buildings: BuildingName[], owner?: Types.ObjectId) {
+    if(!owner){
+      throw new BadRequestException(`Owner required to explore system`);
+    }
+
+    const empire = await this.empireService.find(owner);
+    if(!empire){
+      throw new BadRequestException(`Empire ${owner} not found`);
+    }
+
+    const oldBuildings = this.buildingsOccurrences(system.buildings);
+    const newBuildings = this.buildingsOccurrences(buildings);
+
+    //Find out which buildings to remove and add
+    const removeBuilings: Partial<Record<BuildingName, number>> = {};
+    const addBuildings: Partial<Record<BuildingName, number>> = {};
+    Object.entries(oldBuildings).forEach(([building, amount]) => {
+      const bName = building as BuildingName;
+
+      if(newBuildings[bName] < amount){
+        removeBuilings[bName] = amount - newBuildings[bName];
+      }
+      else if(newBuildings[bName] > amount){
+        addBuildings[bName] = newBuildings[bName] - amount;
+      }
+    });
+
+    //Remove buildings and refund half of the cost
+    for(const [building, amount] of Object.entries(removeBuilings)){
+      const bName = building as BuildingName;
+      const cost = BUILDINGS[bName].cost;
+
+      for (let i = 0; i < amount; i++) {
+        system.buildings.splice(system.buildings.indexOf(bName), 1);
+
+        for(const [resource, amount] of Object.entries(cost)){
+          empire.resources[resource as ResourceName] += amount/2;
+        }
+      }
+    }
+
+    //Check if there is enough capacity to build the new buildings
+    const capacityLeft = system.capacity - Object.values(system.districts).sum() + system.buildings.length;
+    if(Object.values(addBuildings).sum() > capacityLeft){
+      throw new BadRequestException(`Not enough capacity to build buildings`);
+    }
+
+    //Add new building if there are enough resources
+    for(const [building, amount] of Object.entries(addBuildings)){
+      const bName = building as BuildingName;
+      const cost = Object.entries(BUILDINGS[bName].cost);
+
+      for (let i = 0; i < amount; i++) {
+        if(cost.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
+          system.buildings.push(bName);
+          cost.forEach(([resource, amount]) => empire.resources[resource as ResourceName] -= amount);
+        }
+        else{
+          throw new BadRequestException(`Not enough resources to build buildings`);
+        }
+      }
+    }
+
     system.buildings = buildings;
+    system.markModified('buildings');
+  }
+
+  private buildingsOccurrences(buildings: BuildingName[]): Record<BuildingName, number> {
+    const occurrences:Record<BuildingName, number> =
+      Object.fromEntries(BUILDING_NAMES.map(building => [building as BuildingName, 0])) as Record<BuildingName, number>;
+
+    buildings.forEach(building => occurrences[building]++);
+    return occurrences;
   }
 
   generateDistricts(system: SystemDocument, empire: Empire){
