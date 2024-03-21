@@ -111,6 +111,23 @@ export class SystemService extends MongooseRepository<System> {
       }
     });
 
+    this.removeBuildings(system, removeBuilings, empire);
+    this.addBuildings(system, addBuildings, empire);
+
+    await this.empireService.saveAll([empire]);
+    system.buildings = buildings;
+    system.markModified('buildings');
+  }
+
+  private buildingsOccurrences(buildings: BuildingName[]): Record<BuildingName, number> {
+    const occurrences:Record<BuildingName, number> =
+      Object.fromEntries(BUILDING_NAMES.map(building => [building as BuildingName, 0])) as Record<BuildingName, number>;
+
+    buildings.forEach(building => occurrences[building]++);
+    return occurrences;
+  }
+
+  private removeBuildings(system: SystemDocument, removeBuilings: Partial<Record<BuildingName, number>>, empire: EmpireDocument){
     //Remove buildings and refund half of the cost
     for(const [building, amount] of Object.entries(removeBuilings)){
       const bName = building as BuildingName;
@@ -124,7 +141,9 @@ export class SystemService extends MongooseRepository<System> {
         }
       }
     }
+  }
 
+  private addBuildings(system: SystemDocument, addBuildings: Partial<Record<BuildingName, number>>, empire: EmpireDocument){
     //Check if there is enough capacity to build the new buildings
     const capacityLeft = system.capacity - Object.values(system.districts).sum() + system.buildings.length;
     if(Object.values(addBuildings).sum() > capacityLeft){
@@ -152,18 +171,6 @@ export class SystemService extends MongooseRepository<System> {
         cost.forEach(([resource, amount]) => empire.resources[resource as ResourceName] -= amount);
       }
     }
-
-    await this.empireService.saveAll([empire]);
-    system.buildings = buildings;
-    system.markModified('buildings');
-  }
-
-  private buildingsOccurrences(buildings: BuildingName[]): Record<BuildingName, number> {
-    const occurrences:Record<BuildingName, number> =
-      Object.fromEntries(BUILDING_NAMES.map(building => [building as BuildingName, 0])) as Record<BuildingName, number>;
-
-    buildings.forEach(building => occurrences[building]++);
-    return occurrences;
   }
 
   generateDistricts(system: SystemDocument, empire: Empire){
