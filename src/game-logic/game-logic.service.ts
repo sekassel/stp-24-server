@@ -226,7 +226,7 @@ export class GameLogicService {
     };
   }
 
-  aggregateTechCost(empire: Empire, technology: Technology): AggregateResult {
+  async aggregateTechCost(empire: Empire, technology: Technology): Promise<AggregateResult> {
     return this.empireService.aggregateTechCost(empire, technology);
   }
 }
