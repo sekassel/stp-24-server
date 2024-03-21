@@ -8,12 +8,11 @@ import {MemberService} from '../member/member.service';
 import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MAX_EMPIRES} from '../game-logic/constants';
 import {generateTraits} from '../game-logic/traits';
 import {TECH_CATEGORIES, TECHNOLOGIES} from '../game-logic/technologies';
-import {UserService} from "../user/user.service";
+import {UserService} from '../user/user.service';
 import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
 import {Technology, Variable} from '../game-logic/types';
 import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
-import {Game, GameDocument} from '../game/game.schema';
-import {SYSTEM_TYPES} from '../game-logic/system-types';
+import {Game} from '../game/game.schema';
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
 import {UserDocument} from '../user/user.schema';
 import {AggregateItem, AggregateResult} from '../game-logic/aggregates';
@@ -123,7 +122,7 @@ export class EmpireService extends MongooseRepository<Empire> {
     const technologyCount = user.technologies?.[technology.id] || 0;
 
     const difficultyMultiplier = variables['empire.technologies.difficulty'] || 1;
-    let technologyCost = technology.cost;
+    let technologyCost = technology.cost * difficultyMultiplier;
 
     // step 1: if the user has already unlocked this tech, decrease the cost exponentially
     if (technologyCount) {
@@ -142,7 +141,7 @@ export class EmpireService extends MongooseRepository<Empire> {
     return Math.round(technologyCost);
   }
 
-  aggregateTechCost(empire: Empire, technology: Technology): AggregateResult {
+  async aggregateTechCost(empire: Empire, technology: Technology): Promise<AggregateResult> {
     const variables: Partial<Record<Variable, number>> = {
       'empire.technologies.cost_multiplier': EMPIRE_VARIABLES.technologies.cost_multiplier,
     };
@@ -159,13 +158,22 @@ export class EmpireService extends MongooseRepository<Empire> {
       variable: 'empire.technologies.difficulty',
       count: technology.cost,
       subtotal: total,
-    })
-    items.push({
-      variable: 'empire.technologies.cost_multiplier',
-      // TODO real user tech count and subtotal
-      count: 0,
-      subtotal: 0,
     });
+
+    const user = await this.userService.find(empire.user) ?? notFound(empire.user);
+    const technologyCount = user.technologies?.[technology.id] || 0;
+    if (technologyCount) {
+      const baseCostMultiplier = variables['empire.technologies.cost_multiplier'] || 1;
+      const unlockCostMultiplier = baseCostMultiplier ** Math.min(technologyCount, 10);
+      const newTotal = total * unlockCostMultiplier;
+      items.push({
+        variable: 'empire.technologies.cost_multiplier',
+        count: technologyCount,
+        subtotal: newTotal - total,
+      });
+      total = newTotal;
+    }
+
     for (const tag of technology.tags) {
       const tagCostMultiplier = variables[`technologies.${tag}.cost_multiplier`] || 1;
       const newTotal = total * tagCostMultiplier;
