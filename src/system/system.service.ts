@@ -1,7 +1,7 @@
 import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
-import {EventRepository, EventService, MongooseRepository, notFound} from '@mean-stream/nestx';
+import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {System, SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
 import {UpdateSystemDto} from './system.dto';
@@ -86,7 +86,6 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private async updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>) {
-    // TODO @Simolse: #15 Build and Destroy Districts
     const districtVariables = getVariables('districts');
     const districtSlots = {...system.districtSlots};
     const allDistricts = {...system.districts};
@@ -96,11 +95,9 @@ export class SystemService extends MongooseRepository<System> {
 
     if (system.owner !== undefined && Types.ObjectId.isValid(system.owner)) {
       empire = await this.empireService.find(system.owner);
-      if (!empire) {
-        throw new BadRequestException(`Empire ${system.owner} not found`);
-      }
-    } else {
-      empire = notFound(system.owner);
+    }
+    if (!empire) {
+      throw new BadRequestException(`Empire ${system.owner} not found`);
     }
     calculateVariables(districtVariables, empire);
 
@@ -128,7 +125,14 @@ export class SystemService extends MongooseRepository<System> {
         if (empireResourceAmount === undefined || empireResourceAmount < cost * amount) {
           throw new ConflictException(`Empire ${empire._id} has not enough ${resource} to buy the district`);
         } else {
-          empire.resources[resource as ResourceName] -= cost * amount;
+          console.log(empire.resources[resource as ResourceName]);
+          if (amount > 0) {
+            empire.resources[resource as ResourceName] -= cost * amount;
+          } else {
+            empire.resources[resource as ResourceName] -= cost * amount / 2;
+          }
+          empire.markModified('resources');
+          console.log(empire.resources[resource as ResourceName]);
         }
       }
     }
@@ -144,6 +148,7 @@ export class SystemService extends MongooseRepository<System> {
       system.districts[districtName] = (system.districts[districtName] ?? 0) + amount;
     }
     system.markModified('districts');
+    await this.empireService.saveAll([empire]);
   }
 
   private updateBuildings(system: SystemDocument, buildings: BuildingName[]) {
