@@ -15,7 +15,7 @@ export class AggregateFn {
   @ApiPropertyOptional({type: [String]})
   optionalParams?: string[];
 
-  compute: (service: GameLogicService, empire: Empire, systems: System[], params: Record<string, string>) => AggregateResult;
+  compute: (service: GameLogicService, empire: Empire, systems: System[], params: Record<string, string>) => AggregateResult | Promise<AggregateResult>;
 }
 
 export class AggregateItem {
