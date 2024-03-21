@@ -20,6 +20,19 @@ import {Empire, EmpireDocument} from "../empire/empire.schema";
 import {District, Variable} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 
+function getDistrictCost(district: DistrictName, districtVariables: any) {
+  const districtCostKeys = Object.keys(districtVariables).filter(key =>
+    key.startsWith(`districts.${district}.cost.`)
+  );
+
+  const cost: any = {};
+  districtCostKeys.forEach(key => {
+    const resource = key.split('.').pop() as ResourceName;
+    cost[resource] = districtVariables[key];
+  });
+  return cost;
+}
+
 @Injectable()
 @EventRepository()
 export class SystemService extends MongooseRepository<System> {
@@ -85,6 +98,8 @@ export class SystemService extends MongooseRepository<System> {
     let amountOfDistrictsToBeBuilt = 0;
     let empire;
 
+    console.log(districtVariables);
+
     if (system.owner instanceof Types.ObjectId) {
       empire = await this.empireService.find(system.owner);
     }
@@ -94,6 +109,9 @@ export class SystemService extends MongooseRepository<System> {
     calculateVariables(districtVariables, empire);
 
     for (const [district, amount] of Object.entries(districts)) {
+      if (amount === 0) {
+        continue;
+      }
       const districtName = district as DistrictName;
       const districtTypeSlots = districtSlots[districtName];
       const builtDistrictsOfType = allDistricts[districtName] ?? 0;
@@ -105,9 +123,10 @@ export class SystemService extends MongooseRepository<System> {
         throw new BadRequestException(`Insufficient district slots for ${districtName}`);
       }
 
-      const districtCost = districtVariables[`district.${district}.cost` as Variable];
+      const districtCost = getDistrictCost(districtName, districtVariables);
+      console.log(districtCost);
       // TODO: Check if empire has enough resource to buy or the given amount is negative to refund resources
-      if (districtCost * amount < empire.resources.)
+      //if (districtCost * amount < empire.resources.)
     }
 
     // Check if district slots don't exceed capacity
