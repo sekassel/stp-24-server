@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
@@ -95,8 +95,6 @@ export class SystemService extends MongooseRepository<System> {
     let amountOfDistrictsToBeBuilt = 0;
     let empire;
 
-    console.log(districtVariables);
-
     if (system.owner instanceof Types.ObjectId) {
       empire = await this.empireService.find(system.owner);
     }
@@ -117,18 +115,24 @@ export class SystemService extends MongooseRepository<System> {
 
       // Check if districts don't exceed slots
       if (districtTypeSlots !== undefined && districtTypeSlots - builtDistrictsOfType < amount) {
-        throw new BadRequestException(`Insufficient district slots for ${districtName}`);
+        throw new ConflictException(`Insufficient district slots for ${districtName}`);
       }
 
-      const districtCost = getDistrictCost(districtName, districtVariables);
-      console.log(districtCost);
-      // TODO: Check if empire has enough resource to buy or the given amount is negative to refund resources
-      //if (districtCost * amount < empire.resources.)
+      // Check if empire has enough resource to buy the district or the given amount is negative to refund resources
+      const districtCost: Record<ResourceName, number> = getDistrictCost(districtName, districtVariables);
+      const empireResources: Record<ResourceName, number> = empire.resources;
+      for (const [resource, cost] of Object.entries(districtCost)) {
+        console.log(empireResources);
+        /*const empireResourceAmount = empireResources[resource];
+        if (empireResourceAmount === undefined || empireResourceAmount < cost * amount) {
+          throw new BadRequestException(`Empire ${empire._id} has not enough ${resource} to buy the district`);
+        }*/
+      }
     }
 
     // Check if district slots don't exceed capacity
     if (system.buildings.length + builtDistrictsCount + amountOfDistrictsToBeBuilt > Math.round(system.capacity)) {
-      throw new BadRequestException(`System ${system._id} has not enough capacity to build the districts`);
+      throw new ConflictException(`System ${system._id} has not enough capacity to build the districts`);
     }
 
     // ADRIAN'S PERFECT CODE
