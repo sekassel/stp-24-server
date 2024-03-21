@@ -558,7 +558,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_military_3'],
     effects: [
       {
-        description: '+10% chance to discover $districts.energy$ on $ancient_military',
+        description: '+10% chance to discover $districts.energy$ on $systems.ancient_military$',
         variable: 'districts.energy.chance.ancient_military',
         multiplier: 1.1,
       },
@@ -591,7 +591,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['ancient_military_2'],
     effects: [
       {
-        description: '+15% chance to discover $districts.energy$ on $ancient_military',
+        description: '+15% chance to discover $districts.energy$ on $systems.ancient_military$',
         variable: 'districts.energy.chance.ancient_military',
         multiplier: 1.15,
       },
