@@ -1,7 +1,7 @@
 import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
-import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
+import {EventRepository, EventService, MongooseRepository, notFound} from '@mean-stream/nestx';
 import {System, SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
 import {UpdateSystemDto} from './system.dto';
@@ -46,7 +46,7 @@ export class SystemService extends MongooseRepository<System> {
       await this.upgradeSystem(system, dto.upgrade, dto.owner);
     }
     if (dto.districts) {
-      this.updateDistricts(system, dto.districts);
+      await this.updateDistricts(system, dto.districts);
     }
     if (dto.buildings) {
       this.updateBuildings(system, dto.buildings);
@@ -87,19 +87,20 @@ export class SystemService extends MongooseRepository<System> {
 
   private async updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>) {
     // TODO @Simolse: #15 Build and Destroy Districts
-    //   - Check costs and resources
     const districtVariables = getVariables('districts');
     const districtSlots = {...system.districtSlots};
     const allDistricts = {...system.districts};
     let builtDistrictsCount = 0;
     let amountOfDistrictsToBeBuilt = 0;
-    let empire;
+    let empire = null;
 
-    if (system.owner instanceof Types.ObjectId) {
+    if (system.owner !== undefined && Types.ObjectId.isValid(system.owner)) {
       empire = await this.empireService.find(system.owner);
-    }
-    if (!empire) {
-      throw new BadRequestException(`Empire ${system.owner} not found`);
+      if (!empire) {
+        throw new BadRequestException(`Empire ${system.owner} not found`);
+      }
+    } else {
+      empire = notFound(system.owner);
     }
     calculateVariables(districtVariables, empire);
 
@@ -121,12 +122,14 @@ export class SystemService extends MongooseRepository<System> {
       // Check if empire has enough resource to buy the district or the given amount is negative to refund resources
       const districtCost: Record<ResourceName, number> = getDistrictCost(districtName, districtVariables);
       const empireResources: Record<ResourceName, number> = empire.resources;
-      for (const [resource, cost] of Object.entries(districtCost)) {
-        console.log(empireResources);
-        /*const empireResourceAmount = empireResources[resource];
+      for (const resource of Object.keys(districtCost)) {
+        const cost = districtCost[resource as ResourceName];
+        const empireResourceAmount = empireResources[resource as ResourceName];
         if (empireResourceAmount === undefined || empireResourceAmount < cost * amount) {
-          throw new BadRequestException(`Empire ${empire._id} has not enough ${resource} to buy the district`);
-        }*/
+          throw new ConflictException(`Empire ${empire._id} has not enough ${resource} to buy the district`);
+        } else {
+          empire.resources[resource as ResourceName] -= cost * amount;
+        }
       }
     }
 
