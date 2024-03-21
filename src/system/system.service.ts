@@ -86,7 +86,7 @@ export class SystemService extends MongooseRepository<System> {
 
   private async updateBuildings(system: SystemDocument, buildings: BuildingName[], owner?: Types.ObjectId) {
     if(!owner){
-      throw new BadRequestException(`Owner required to explore system`);
+      throw new BadRequestException(`Owner required to update buildings`);
     }
 
     const empire = await this.empireService.find(owner);
@@ -128,25 +128,32 @@ export class SystemService extends MongooseRepository<System> {
     //Check if there is enough capacity to build the new buildings
     const capacityLeft = system.capacity - Object.values(system.districts).sum() + system.buildings.length;
     if(Object.values(addBuildings).sum() > capacityLeft){
-      throw new BadRequestException(`Not enough capacity to build buildings`);
+      throw new BadRequestException(`Not enough capacity to build buildings. Capacity left: ${capacityLeft} Amount of new buildings: ${Object.values(addBuildings).sum()}`);
     }
 
-    //Add new building if there are enough resources
+    //Check if there are enough resources to build the new buildings
+    for(const [building, amount] of Object.entries(addBuildings)){
+      const cost = Object.entries(BUILDINGS[building as BuildingName].cost);
+
+      for (let i = 0; i < amount; i++) {
+        if(!cost.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
+          throw new BadRequestException(`Not enough resources to build a ${building}`);
+        }
+      }
+    }
+
+    //Add buildings and remove resources
     for(const [building, amount] of Object.entries(addBuildings)){
       const bName = building as BuildingName;
       const cost = Object.entries(BUILDINGS[bName].cost);
 
       for (let i = 0; i < amount; i++) {
-        if(cost.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
-          system.buildings.push(bName);
-          cost.forEach(([resource, amount]) => empire.resources[resource as ResourceName] -= amount);
-        }
-        else{
-          throw new BadRequestException(`Not enough resources to build buildings`);
-        }
+        system.buildings.push(bName);
+        cost.forEach(([resource, amount]) => empire.resources[resource as ResourceName] -= amount);
       }
     }
 
+    await this.empireService.saveAll([empire]);
     system.buildings = buildings;
     system.markModified('buildings');
   }
