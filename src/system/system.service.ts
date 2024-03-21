@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
-import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
+import {EventRepository, EventService, MongooseRepository, notFound} from '@mean-stream/nestx';
 import {System, SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
 import {UpdateSystemDto} from './system.dto';
@@ -9,12 +9,22 @@ import {SYSTEM_UPGRADES, SystemUpgradeName} from '../game-logic/system-upgrade';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {BUILDING_NAMES, BuildingName, BUILDINGS} from '../game-logic/buildings';
 import {SYSTEM_TYPES} from "../game-logic/system-types";
-import {calculateVariables} from "../game-logic/variables";
+import {calculateVariables, getVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
 import {Empire, EmpireDocument} from "../empire/empire.schema";
 import {District, Variable} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 import {SystemGeneratorService} from "./systemgenerator.service";
+
+function getCosts(key: 'districts' | 'buildings', district: DistrictName | BuildingName, districtVariables: any): Record<ResourceName, number> {
+  const districtCostKeys = Object.keys(districtVariables).filter(key =>
+    key.startsWith(`${key}.${district}.cost.`)
+  );
+
+  return Object.fromEntries(districtCostKeys.map(key =>
+    [key.split('.').pop() as ResourceName, districtVariables[key]])
+  ) as Record<ResourceName, number>;
+}
 
 @Injectable()
 @EventRepository()
@@ -89,10 +99,7 @@ export class SystemService extends MongooseRepository<System> {
       throw new BadRequestException(`Owner required to update buildings`);
     }
 
-    const empire = await this.empireService.find(owner);
-    if(!empire){
-      throw new BadRequestException(`Empire ${owner} not found`);
-    }
+    const empire = await this.empireService.find(owner) ?? notFound(`Empire ${owner} not found`);
 
     const oldBuildings = this.buildingsOccurrences(system.buildings);
     const newBuildings = this.buildingsOccurrences(buildings);
@@ -100,7 +107,8 @@ export class SystemService extends MongooseRepository<System> {
     //Find out which buildings to remove and add
     const removeBuilings: Partial<Record<BuildingName, number>> = {};
     const addBuildings: Partial<Record<BuildingName, number>> = {};
-    Object.entries(oldBuildings).forEach(([building, amount]) => {
+
+    for(const [building, amount] of Object.entries(oldBuildings)){
       const bName = building as BuildingName;
 
       if(newBuildings[bName] < amount){
@@ -109,41 +117,46 @@ export class SystemService extends MongooseRepository<System> {
       else if(newBuildings[bName] > amount){
         addBuildings[bName] = newBuildings[bName] - amount;
       }
-    });
+    }
 
-    this.removeBuildings(system, removeBuilings, empire);
-    this.addBuildings(system, addBuildings, empire);
+    const buildingVariables = getVariables('buildings');
+    calculateVariables(buildingVariables, empire);
+
+    this.removeBuildings(system, removeBuilings, buildingVariables, empire);
+    this.addBuildings(system, addBuildings, buildingVariables, empire);
 
     await this.empireService.saveAll([empire]);
     system.buildings = buildings;
-    system.markModified('buildings');
   }
 
   private buildingsOccurrences(buildings: BuildingName[]): Record<BuildingName, number> {
     const occurrences:Record<BuildingName, number> =
       Object.fromEntries(BUILDING_NAMES.map(building => [building as BuildingName, 0])) as Record<BuildingName, number>;
 
-    buildings.forEach(building => occurrences[building]++);
+    for (const building of buildings) {
+      occurrences[building]++;
+    }
+
     return occurrences;
   }
 
-  private removeBuildings(system: SystemDocument, removeBuilings: Partial<Record<BuildingName, number>>, empire: EmpireDocument){
+  private removeBuildings(system: SystemDocument, removeBuilings: Partial<Record<BuildingName, number>>, buildingVariables: any,  empire: EmpireDocument){
     //Remove buildings and refund half of the cost
     for(const [building, amount] of Object.entries(removeBuilings)){
       const bName = building as BuildingName;
-      const cost = BUILDINGS[bName].cost;
+      const cost = getCosts('buildings', bName, buildingVariables);
 
       for (let i = 0; i < amount; i++) {
         system.buildings.splice(system.buildings.indexOf(bName), 1);
 
-        for(const [resource, amount] of Object.entries(cost)){
-          empire.resources[resource as ResourceName] += amount/2;
+        for(const [resource, resourceCost] of Object.entries(cost)){
+          empire.resources[resource as ResourceName] += resourceCost/2;
         }
       }
     }
   }
 
-  private addBuildings(system: SystemDocument, addBuildings: Partial<Record<BuildingName, number>>, empire: EmpireDocument){
+  private addBuildings(system: SystemDocument, addBuildings: Partial<Record<BuildingName, number>>, buildingVariables: any,  empire: EmpireDocument){
     //Check if there is enough capacity to build the new buildings
     const capacityLeft = system.capacity - Object.values(system.districts).sum() + system.buildings.length;
     if(Object.values(addBuildings).sum() > capacityLeft){
@@ -152,7 +165,7 @@ export class SystemService extends MongooseRepository<System> {
 
     //Check if there are enough resources to build the new buildings
     for(const [building, amount] of Object.entries(addBuildings)){
-      const cost = Object.entries(BUILDINGS[building as BuildingName].cost);
+      const cost = Object.entries(getCosts('buildings', building as BuildingName, buildingVariables));
 
       for (let i = 0; i < amount; i++) {
         if(!cost.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
@@ -164,11 +177,12 @@ export class SystemService extends MongooseRepository<System> {
     //Add buildings and remove resources
     for(const [building, amount] of Object.entries(addBuildings)){
       const bName = building as BuildingName;
-      const cost = Object.entries(BUILDINGS[bName].cost);
+      const cost = Object.entries(getCosts('buildings', building as BuildingName, buildingVariables));
 
       for (let i = 0; i < amount; i++) {
         system.buildings.push(bName);
         cost.forEach(([resource, amount]) => empire.resources[resource as ResourceName] -= amount);
+        empire.markModified('resources');
       }
     }
   }
