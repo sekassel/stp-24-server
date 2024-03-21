@@ -125,14 +125,16 @@ export class SystemService extends MongooseRepository<System> {
         if (empireResourceAmount === undefined || empireResourceAmount < cost * amount) {
           throw new ConflictException(`Empire ${empire._id} has not enough ${resource} to buy the district`);
         } else {
-          console.log(empire.resources[resource as ResourceName]);
           if (amount > 0) {
             empire.resources[resource as ResourceName] -= cost * amount;
           } else {
+            console.log(builtDistrictsCount, amount);
+            if (builtDistrictsCount < Math.abs(amount)) {
+              throw new ConflictException(`Not enough districts of ${districtName} to destroy`);
+            }
             empire.resources[resource as ResourceName] -= cost * amount / 2;
           }
           empire.markModified('resources');
-          console.log(empire.resources[resource as ResourceName]);
         }
       }
     }
