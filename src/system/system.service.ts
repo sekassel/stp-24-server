@@ -7,7 +7,7 @@ import {Game} from "../game/game.schema";
 import {UpdateSystemDto} from './system.dto';
 import {SYSTEM_UPGRADES, SystemUpgradeName} from '../game-logic/system-upgrade';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
-import {BUILDING_NAMES, BuildingName, BUILDINGS} from '../game-logic/buildings';
+import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
 import {SYSTEM_TYPES} from "../game-logic/system-types";
 import {calculateVariables, getVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
@@ -122,8 +122,13 @@ export class SystemService extends MongooseRepository<System> {
     const buildingVariables = getVariables('buildings');
     calculateVariables(buildingVariables, empire);
 
-    this.removeBuildings(system, removeBuilings, buildingVariables, empire);
-    this.addBuildings(system, addBuildings, buildingVariables, empire);
+    const costs: Record<BuildingName, [ResourceName,number][]> = {} as Record<BuildingName, [ResourceName,number][]>;
+    for(const building of buildings){
+      costs[building as BuildingName] = Object.entries(getCosts('buildings', building, buildingVariables)) as [ResourceName,number][];
+    }
+
+    this.removeBuildings(system, removeBuilings, costs, empire);
+    this.addBuildings(system, addBuildings, costs, empire);
 
     await this.empireService.saveAll([empire]);
     system.buildings = buildings;
@@ -140,23 +145,23 @@ export class SystemService extends MongooseRepository<System> {
     return occurrences;
   }
 
-  private removeBuildings(system: SystemDocument, removeBuilings: Partial<Record<BuildingName, number>>, buildingVariables: any,  empire: EmpireDocument){
+  private removeBuildings(system: SystemDocument, removeBuilings: Partial<Record<BuildingName, number>>, costs: Record<BuildingName, [ResourceName,number][]>,  empire: EmpireDocument){
     //Remove buildings and refund half of the cost
     for(const [building, amount] of Object.entries(removeBuilings)){
       const bName = building as BuildingName;
-      const cost = getCosts('buildings', bName, buildingVariables);
+      const cost: [ResourceName,number][] = costs[bName];
 
       for (let i = 0; i < amount; i++) {
         system.buildings.splice(system.buildings.indexOf(bName), 1);
 
-        for(const [resource, resourceCost] of Object.entries(cost)){
+        for(const [resource, resourceCost] of cost){
           empire.resources[resource as ResourceName] += resourceCost/2;
         }
       }
     }
   }
 
-  private addBuildings(system: SystemDocument, addBuildings: Partial<Record<BuildingName, number>>, buildingVariables: any,  empire: EmpireDocument){
+  private addBuildings(system: SystemDocument, addBuildings: Partial<Record<BuildingName, number>>, costs: Record<BuildingName, [ResourceName,number][]>, empire: EmpireDocument){
     //Check if there is enough capacity to build the new buildings
     const capacityLeft = system.capacity - Object.values(system.districts).sum() + system.buildings.length;
     if(Object.values(addBuildings).sum() > capacityLeft){
@@ -165,7 +170,7 @@ export class SystemService extends MongooseRepository<System> {
 
     //Check if there are enough resources to build the new buildings
     for(const [building, amount] of Object.entries(addBuildings)){
-      const cost = Object.entries(getCosts('buildings', building as BuildingName, buildingVariables));
+      const cost: [ResourceName,number][] = costs[building as BuildingName];
 
       for (let i = 0; i < amount; i++) {
         if(!cost.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
@@ -177,7 +182,7 @@ export class SystemService extends MongooseRepository<System> {
     //Add buildings and remove resources
     for(const [building, amount] of Object.entries(addBuildings)){
       const bName = building as BuildingName;
-      const cost = Object.entries(getCosts('buildings', building as BuildingName, buildingVariables));
+      const cost: [ResourceName,number][] = costs[building as BuildingName];
 
       for (let i = 0; i < amount; i++) {
         system.buildings.push(bName);
