@@ -119,7 +119,7 @@ export class SystemService extends MongooseRepository<System> {
       }
 
       // Check if empire has enough resource to buy the district or the given amount is negative to refund resources
-      const districtCost: Record<ResourceName, number> = getDistrictCost(districtName, districtVariables);
+      const districtCost: Record<ResourceName, number> = getCosts('districts', districtName, districtVariables);
       const empireResources: Record<ResourceName, number> = empire.resources;
       for (const resource of Object.keys(districtCost)) {
         const cost = districtCost[resource as ResourceName];
@@ -140,7 +140,6 @@ export class SystemService extends MongooseRepository<System> {
       }
     }
 
-    // ADRIAN'S PERFECT CODE
     for (const [district, amount] of Object.entries(districts)) {
       const districtName = district as DistrictName;
       system.districts[districtName] = (system.districts[districtName] ?? 0) + amount;
