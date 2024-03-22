@@ -469,24 +469,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_military_2'],
     effects: [
       {
-        description: '+5% chance to discover $districts.energy$ on $systems.ancient_military$',
-        variable: 'districts.energy.chance.ancient_military',
-        multiplier: 1.05,
-      },
-      {
-        description: '+5% chance to discover $districts.mining$ on $systems.ancient_military$',
-        variable: 'districts.mining.chance.ancient_military',
-        multiplier: 1.05,
-      },
-      {
         description: '+5% chance to discover $districts.research_site$ on $systems.ancient_military$',
         variable: 'districts.research_site.chance.ancient_military',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $districts.ancient_foundry$ on $systems.ancient_military$',
+        description: '+10% chance to discover $districts.ancient_foundry$ on $systems.ancient_military$',
         variable: 'districts.ancient_foundry.chance.ancient_military',
-        multiplier: 1.05,
+        multiplier: 1.1,
       },
       {
         description: '+5% chance to discover $districts.ancient_refinery$ on $systems.ancient_military$',
@@ -503,24 +493,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_military_3'],
     effects: [
       {
-        description: '+10% chance to discover $districts.energy$ on $systems.ancient_military$',
-        variable: 'districts.energy.chance.ancient_military',
-        multiplier: 1.1,
-      },
-      {
-        description: '+10% chance to discover $districts.mining$ on $systems.ancient_military$',
-        variable: 'districts.mining.chance.ancient_military',
-        multiplier: 1.1,
-      },
-      {
         description: '+10% chance to discover $districts.research_site$ on $systems.ancient_military$',
         variable: 'districts.research_site.chance.ancient_military',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $districts.ancient_foundry$ on $systems.ancient_military$',
+        description: '+20% chance to discover $districts.ancient_foundry$ on $systems.ancient_military$',
         variable: 'districts.ancient_foundry.chance.ancient_military',
-        multiplier: 1.1,
+        multiplier: 1.2,
       },
       {
         description: '+10% chance to discover $districts.ancient_refinery$ on $systems.ancient_military$',
@@ -536,24 +516,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['ancient_military_2'],
     effects: [
       {
-        description: '+15% chance to discover $districts.energy$ on $systems.ancient_military$',
-        variable: 'districts.energy.chance.ancient_military',
-        multiplier: 1.15,
-      },
-      {
-        description: '+15% chance to discover $districts.mining$ on $systems.ancient_military$',
-        variable: 'districts.mining.chance.ancient_military',
-        multiplier: 1.15,
-      },
-      {
         description: '+15% chance to discover $districts.research_site$ on $systems.ancient_military$',
         variable: 'districts.research_site.chance.ancient_military',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $districts.ancient_foundry$ on $systems.ancient_military$',
+        description: '+30% chance to discover $districts.ancient_foundry$ on $systems.ancient_military$',
         variable: 'districts.ancient_foundry.chance.ancient_military',
-        multiplier: 1.15,
+        multiplier: 1.3,
       },
       {
         description: '+15% chance to discover $districts.ancient_refinery$ on $systems.ancient_military$',
@@ -581,24 +551,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_industry_2'],
     effects: [
       {
-        description: '+5% chance to discover $districts.energy$ on $systems.ancient_industry$',
-        variable: 'districts.energy.chance.ancient_industry',
-        multiplier: 1.05,
-      },
-      {
-        description: '+5% chance to discover $districts.mining$ on $systems.ancient_industry$',
-        variable: 'districts.mining.chance.ancient_industry',
-        multiplier: 1.05,
-      },
-      {
         description: '+5% chance to discover $districts.research_site$ on $systems.ancient_industry$',
         variable: 'districts.research_site.chance.ancient_industry',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $districts.ancient_foundry$ on $systems.ancient_industry$',
+        description: '+10% chance to discover $districts.ancient_foundry$ on $systems.ancient_industry$',
         variable: 'districts.ancient_foundry.chance.ancient_industry',
-        multiplier: 1.05,
+        multiplier: 1.1,
       },
       {
         description: '+5% chance to discover $districts.ancient_refinery$ on $systems.ancient_industry$',
@@ -615,24 +575,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_industry_3'],
     effects: [
       {
-        description: '+10% chance to discover $districts.energy$ on $systems.ancient_industry$',
-        variable: 'districts.energy.chance.ancient_industry',
-        multiplier: 1.1,
-      },
-      {
-        description: '+10% chance to discover $districts.mining$ on $systems.ancient_industry$',
-        variable: 'districts.mining.chance.ancient_industry',
-        multiplier: 1.1,
-      },
-      {
         description: '+10% chance to discover $districts.research_site$ on $systems.ancient_industry$',
         variable: 'districts.research_site.chance.ancient_industry',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $districts.ancient_foundry$ on $systems.ancient_industry$',
+        description: '+20% chance to discover $districts.ancient_foundry$ on $systems.ancient_industry$',
         variable: 'districts.ancient_foundry.chance.ancient_industry',
-        multiplier: 1.1,
+        multiplier: 1.2,
       },
       {
         description: '+10% chance to discover $districts.ancient_refinery$ on $systems.ancient_industry$',
@@ -648,24 +598,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['ancient_industry_2'],
     effects: [
       {
-        description: '+15% chance to discover $districts.energy$ on $systems.ancient_industry$',
-        variable: 'districts.energy.chance.ancient_industry',
-        multiplier: 1.15,
-      },
-      {
-        description: '+15% chance to discover $districts.mining$ on $systems.ancient_industry$',
-        variable: 'districts.mining.chance.ancient_industry',
-        multiplier: 1.15,
-      },
-      {
         description: '+15% chance to discover $districts.research_site$ on $systems.ancient_industry$',
         variable: 'districts.research_site.chance.ancient_industry',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $districts.ancient_foundry$ on $systems.ancient_industry$',
+        description: '+30% chance to discover $districts.ancient_foundry$ on $systems.ancient_industry$',
         variable: 'districts.ancient_foundry.chance.ancient_industry',
-        multiplier: 1.15,
+        multiplier: 1.3,
       },
       {
         description: '+15% chance to discover $districts.ancient_refinery$ on $systems.ancient_industry$',
@@ -693,24 +633,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_tech_2'],
     effects: [
       {
-        description: '+5% chance to discover $districts.energy$ on $systems.ancient_technology$',
-        variable: 'districts.energy.chance.ancient_technology',
-        multiplier: 1.05,
-      },
-      {
-        description: '+5% chance to discover $districts.mining$ on $systems.ancient_technology$',
-        variable: 'districts.mining.chance.ancient_technology',
-        multiplier: 1.05,
-      },
-      {
         description: '+5% chance to discover $districts.research_site$ on $systems.ancient_technology$',
         variable: 'districts.research_site.chance.ancient_technology',
         multiplier: 1.05,
       },
       {
-        description: '+5% chance to discover $districts.ancient_foundry$ on $systems.ancient_technology$',
+        description: '+10% chance to discover $districts.ancient_foundry$ on $systems.ancient_technology$',
         variable: 'districts.ancient_foundry.chance.ancient_technology',
-        multiplier: 1.05,
+        multiplier: 1.1,
       },
       {
         description: '+5% chance to discover $districts.ancient_refinery$ on $systems.ancient_technology$',
@@ -727,24 +657,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     precedes: ['ancient_tech_3'],
     effects: [
       {
-        description: '+10% chance to discover $districts.energy$ on $systems.ancient_technology$',
-        variable: 'districts.energy.chance.ancient_technology',
-        multiplier: 1.1,
-      },
-      {
-        description: '+10% chance to discover $districts.mining$ on $systems.ancient_technology$',
-        variable: 'districts.mining.chance.ancient_technology',
-        multiplier: 1.1,
-      },
-      {
         description: '+10% chance to discover $districts.research_site$ on $systems.ancient_technology$',
         variable: 'districts.research_site.chance.ancient_technology',
         multiplier: 1.1,
       },
       {
-        description: '+10% chance to discover $districts.ancient_foundry$ on $systems.ancient_technology$',
+        description: '+20% chance to discover $districts.ancient_foundry$ on $systems.ancient_technology$',
         variable: 'districts.ancient_foundry.chance.ancient_technology',
-        multiplier: 1.1,
+        multiplier: 1.2,
       },
       {
         description: '+10% chance to discover $districts.ancient_refinery$ on $systems.ancient_technology$',
@@ -760,24 +680,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['ancient_tech_2'],
     effects: [
       {
-        description: '+15% chance to discover $districts.energy$ on $systems.ancient_technology$',
-        variable: 'districts.energy.chance.ancient_technology',
-        multiplier: 1.15,
-      },
-      {
-        description: '+15% chance to discover $districts.mining$ on $systems.ancient_technology$',
-        variable: 'districts.mining.chance.ancient_technology',
-        multiplier: 1.15,
-      },
-      {
         description: '+15% chance to discover $districts.research_site$ on $systems.ancient_technology$',
         variable: 'districts.research_site.chance.ancient_technology',
         multiplier: 1.15,
       },
       {
-        description: '+15% chance to discover $districts.ancient_foundry$ on $systems.ancient_technology$',
+        description: '+30% chance to discover $districts.ancient_foundry$ on $systems.ancient_technology$',
         variable: 'districts.ancient_foundry.chance.ancient_technology',
-        multiplier: 1.15,
+        multiplier: 1.3,
       },
       {
         description: '+15% chance to discover $districts.ancient_refinery$ on $systems.ancient_technology$',
