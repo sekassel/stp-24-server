@@ -16,6 +16,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['society'],
     cost: 200,
     effects: [
+      {
+        description: '-10% $resources.research$ for $technologies.society$',
+        variable: 'technologies.society.cost_multiplier',
+        multiplier: 0.9,
+      },
     ],
   },
   demographic: {
@@ -24,6 +29,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     cost: 100,
     requires: ['society'],
     effects: [
+      {
+        description: '-5% $resources.research$ for $technologies.society$',
+        variable: 'technologies.society.cost_multiplier',
+        multiplier: 0.95,
+      },
     ],
   },
   physics: {
@@ -31,6 +41,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['physics'],
     cost: 200,
     effects: [
+      {
+        description: '-10% $resources.research$ for $technologies.physics$',
+        variable: 'technologies.physics.cost_multiplier',
+        multiplier: 0.9,
+      },
     ],
   },
   technology: {
@@ -39,6 +54,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     cost: 100,
     requires: ['physics'],
     effects: [
+      {
+        description: '-5% $resources.research$ for $technologies.physics$',
+        variable: 'technologies.physics.cost_multiplier',
+        multiplier: 0.95,
+      },
     ],
   },
   engineering: {
@@ -46,6 +66,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['engineering'],
     cost: 200,
     effects: [
+      {
+        description: '-10% $resources.research$ for $technologies.engineering$',
+        variable: 'technologies.engineering.cost_multiplier',
+        multiplier: 0.9,
+      },
     ],
   },
   construction: {
@@ -54,6 +79,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     cost: 100,
     requires: ['engineering'],
     effects: [
+      {
+        description: '-5% $resources.research$ for $technologies.construction$',
+        variable: 'technologies.construction.cost_multiplier',
+        multiplier: 0.95,
+      },
     ],
   },
   production: {
@@ -62,6 +92,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     cost: 100,
     requires: ['engineering'],
     effects: [
+      {
+        description: '-5% $resources.research$ for $technologies.production$',
+        variable: 'technologies.production.cost_multiplier',
+        multiplier: 0.95,
+      },
     ],
   },
 
