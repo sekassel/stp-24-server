@@ -60,6 +60,6 @@ export class SystemController {
       throw new ForbiddenException('You are not the owner of this system.');
     }
 
-    return this.systemService.updateSystem(oldSystem, dto);
+    return this.systemService.updateSystem(oldSystem, dto, userEmpire);
   }
 }
