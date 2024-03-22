@@ -1,6 +1,6 @@
 import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
-import {Model, Types} from 'mongoose';
+import {Model} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {System, SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
@@ -38,18 +38,9 @@ export class SystemService extends MongooseRepository<System> {
     super(model);
   }
 
-  async updateSystem(system: SystemDocument, dto: UpdateSystemDto): Promise<SystemDocument | null> {
-    if (!dto.owner) {
-      throw new BadRequestException(`Owner required to update system`);
-    }
-
-    const empire = await this.empireService.find(dto.owner);
-    if (!empire) {
-      throw new BadRequestException(`Empire ${dto.owner} not found`);
-    }
-
+  async updateSystem(system: SystemDocument, dto: UpdateSystemDto, empire: EmpireDocument): Promise<SystemDocument | null> {
     if (dto.upgrade) {
-      await this.upgradeSystem(system, dto.upgrade, dto.owner, empire);
+      await this.upgradeSystem(system, dto.upgrade, empire);
     }
     if (dto.districts) {
       await this.updateDistricts(system, dto.districts, empire);
@@ -62,7 +53,7 @@ export class SystemService extends MongooseRepository<System> {
     return system;
   }
 
-  private async upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName, owner: Types.ObjectId, empire: EmpireDocument) {
+  private async upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName, empire: EmpireDocument) {
     system.upgrade = upgrade;
     system.capacity *= SYSTEM_UPGRADES[upgrade].capacity_multiplier;
 
@@ -71,7 +62,7 @@ export class SystemService extends MongooseRepository<System> {
         this.generateDistricts(system, empire);
         break;
       case 'colonized':
-        system.owner = owner;
+        system.owner = empire._id;
         this.applyCosts(empire, upgrade);
         break;
       case 'upgraded':
@@ -105,7 +96,7 @@ export class SystemService extends MongooseRepository<System> {
       }
 
       // Check if district slots don't exceed system capacity
-      if (system.buildings.length + builtDistrictsCount + amountOfDistrictsToBeBuilt > Math.round(system.capacity)) {
+      if (system.buildings.length + builtDistrictsCount + amountOfDistrictsToBeBuilt > system.capacity) {
         throw new ConflictException(`System ${system._id} has not enough capacity to build the districts`);
       }
 
@@ -115,19 +106,20 @@ export class SystemService extends MongooseRepository<System> {
       for (const resource of Object.keys(districtCost)) {
         const cost = districtCost[resource as ResourceName];
         const empireResourceAmount = empireResources[resource as ResourceName];
+
         if (empireResourceAmount === undefined || empireResourceAmount < cost * amount) {
           throw new ConflictException(`Empire ${empire._id} has not enough ${resource} to buy the district`);
-        } else {
-          if (amount > 0) {
-            empire.resources[resource as ResourceName] -= cost * amount;
-          } else {
-            if (builtDistrictsCount < Math.abs(amount)) {
-              throw new ConflictException(`Not enough districts of ${districtName} to destroy`);
-            }
-            empire.resources[resource as ResourceName] -= cost * amount / 2;
-          }
-          empire.markModified('resources');
         }
+
+        if (amount > 0) {
+          empire.resources[resource as ResourceName] -= cost * amount;
+        } else {
+          if (builtDistrictsCount < -amount) {
+            throw new ConflictException(`Not enough districts of ${districtName} to destroy`);
+          }
+          empire.resources[resource as ResourceName] += cost * -amount / 2;
+        }
+        empire.markModified('resources');
       }
     }
 
