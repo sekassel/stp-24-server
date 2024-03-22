@@ -69,8 +69,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * Market technologies, market fee is already a multiplier
    */
 
-  // TODO start
-
   /**
    * System technologies
    */
@@ -127,6 +125,95 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         description: '-15% $resources.fuel$ cost for $systems.developed$',
         variable: 'systems.developed.cost.fuel',
         multiplier: 0.85,
+      },
+    ],
+  },
+
+  /** systems: reduced upkeep for colonized, upgraded and developed systems */
+  efficient_systems_1: {
+    id: 'efficient_systems_1',
+    tags: ['physics', 'energy'],
+    cost: 400,
+    requires: ['technology'],
+    effects: [
+      {
+        description: '-10% $resources.energy$ upkeep for $systems.colonized$',
+        variable: 'systems.colonized.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $resources.energy$ upkeep for $systems.upgraded$',
+        variable: 'systems.upgraded.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $resources.energy$ upkeep for $systems.developed$',
+        variable: 'systems.developed.upkeep.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_systems_2: {
+    id: 'efficient_systems_2',
+    tags: ['physics', 'propulsion'],
+    cost: 800,
+    requires: ['efficient_systems_1'],
+    effects: [
+      {
+        description: '-10% $resources.fuel$ upkeep for $systems.colonized$',
+        variable: 'systems.colonized.upkeep.fuel',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $resources.fuel$ upkeep for $systems.upgraded$',
+        variable: 'systems.upgraded.upkeep.fuel',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $resources.energy$ upkeep for $systems.developed$',
+        variable: 'systems.developed.upkeep.fuel',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_systems_3: {
+    id: 'efficient_systems_3',
+    tags: ['society', 'biology'],
+    cost: 800,
+    requires: ['efficient_systems_2'],
+    effects: [
+      {
+        description: '-10% $resources.food$ upkeep for $systems.colonized$',
+        variable: 'systems.colonized.upkeep.food',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $resources.food$ upkeep for $systems.upgraded$',
+        variable: 'systems.upgraded.upkeep.food',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $resources.food$ upkeep for $systems.developed$',
+        variable: 'systems.developed.upkeep.food',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_systems_4: {
+    id: 'efficient_systems_4',
+    tags: ['engineering', 'materials'],
+    cost: 800,
+    requires: ['efficient_systems_3'],
+    effects: [
+      {
+        description: '-10% $resources.alloys$ upkeep for $systems.upgraded$',
+        variable: 'systems.upgraded.upkeep.alloys',
+        multiplier: 0.9,
+      },
+      {
+        description: '-10% $resources.alloys$ upkeep for $systems.developed$',
+        variable: 'systems.developed.upkeep.alloys',
+        multiplier: 0.9,
       },
     ],
   },
@@ -872,7 +959,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 };
 
-// TODO generate sequences
 // special resources
 generate_sequence('pop_food_consumption', ['society', 'biology'], 'empire.pop.consumption.food',
   '$resources.food$ per $resources.population$ per $period$',
