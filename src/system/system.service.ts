@@ -1,13 +1,13 @@
 import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
-import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
+import {EventRepository, EventService, MongooseRepository, notFound} from '@mean-stream/nestx';
 import {System, SystemDocument} from './system.schema';
 import {Game} from "../game/game.schema";
 import {UpdateSystemDto} from './system.dto';
 import {SYSTEM_UPGRADES, SystemUpgradeName} from '../game-logic/system-upgrade';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
-import {BuildingName} from '../game-logic/buildings';
+import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
 import {SYSTEM_TYPES} from "../game-logic/system-types";
 import {calculateVariables, getVariables} from "../game-logic/variables";
 import {EmpireService} from "../empire/empire.service";
@@ -16,17 +16,14 @@ import {District, Variable} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 import {SystemGeneratorService} from "./systemgenerator.service";
 
-function getDistrictCost(district: DistrictName, districtVariables: any) {
+function getCosts(category: 'districts' | 'buildings', district: DistrictName | BuildingName, districtVariables: any): Record<ResourceName, number> {
   const districtCostKeys = Object.keys(districtVariables).filter(key =>
-    key.startsWith(`districts.${district}.cost.`)
+    key.startsWith(`${category}.${district}.cost.`)
   );
 
-  const cost: any = {};
-  districtCostKeys.forEach(key => {
-    const resource = key.split('.').pop() as ResourceName;
-    cost[resource] = districtVariables[key];
-  });
-  return cost;
+  return Object.fromEntries(districtCostKeys.map(key =>
+    [key.split('.').pop() as ResourceName, districtVariables[key]])
+  ) as Record<ResourceName, number>;
 }
 
 @Injectable()
@@ -49,7 +46,7 @@ export class SystemService extends MongooseRepository<System> {
       await this.updateDistricts(system, dto.districts);
     }
     if (dto.buildings) {
-      this.updateBuildings(system, dto.buildings);
+      await this.updateBuildings(system, dto.buildings, dto.owner);
     }
     await this.saveAll([system]) // emits update events
     return system;
@@ -152,12 +149,104 @@ export class SystemService extends MongooseRepository<System> {
     await this.empireService.saveAll([empire]);
   }
 
-  private updateBuildings(system: SystemDocument, buildings: BuildingName[]) {
-    // TODO @Giulcoo: #17 Build and Destroy Buildings
-    //  - Determine new and removed buildings
-    //  - Check costs and resources
-    //  - Check if buildings don't exceed capacity
+  private async updateBuildings(system: SystemDocument, buildings: BuildingName[], owner?: Types.ObjectId) {
+    if(!owner){
+      throw new BadRequestException(`Owner required to update buildings`);
+    }
+
+    const empire = await this.empireService.find(owner) ?? notFound(`Empire ${owner} not found`);
+
+    const oldBuildings = this.buildingsOccurrences(system.buildings);
+    const newBuildings = this.buildingsOccurrences(buildings);
+
+    //Find out which buildings to remove and add
+    const removeBuildings: Partial<Record<BuildingName, number>> = {};
+    const addBuildings: Partial<Record<BuildingName, number>> = {};
+
+    for(const [building, amount] of Object.entries(oldBuildings)){
+      const bName = building as BuildingName;
+
+      if(newBuildings[bName] < amount){
+        removeBuildings[bName] = amount - newBuildings[bName];
+      }
+      else if(newBuildings[bName] > amount){
+        addBuildings[bName] = newBuildings[bName] - amount;
+      }
+    }
+
+    const buildingVariables = getVariables('buildings');
+    calculateVariables(buildingVariables, empire);
+
+    const costs: Record<BuildingName, [ResourceName,number][]> = {} as Record<BuildingName, [ResourceName,number][]>;
+    for(const building of buildings){
+      costs[building as BuildingName] = Object.entries(getCosts('buildings', building, buildingVariables)) as [ResourceName,number][];
+    }
+
+    this.removeBuildings(system, removeBuildings, costs, empire);
+    this.addBuildings(system, addBuildings, costs, empire);
+
+    await this.empireService.saveAll([empire]);
     system.buildings = buildings;
+  }
+
+  private buildingsOccurrences(buildings: BuildingName[]): Record<BuildingName, number> {
+    const occurrences:Record<BuildingName, number> =
+      Object.fromEntries(BUILDING_NAMES.map(building => [building as BuildingName, 0])) as Record<BuildingName, number>;
+
+    for (const building of buildings) {
+      occurrences[building]++;
+    }
+
+    return occurrences;
+  }
+
+  private removeBuildings(system: SystemDocument, removeBuilings: Partial<Record<BuildingName, number>>, costs: Record<BuildingName, [ResourceName,number][]>,  empire: EmpireDocument){
+    //Remove buildings and refund half of the cost
+    for(const [building, amount] of Object.entries(removeBuilings)){
+      const bName = building as BuildingName;
+      const cost: [ResourceName,number][] = costs[bName];
+
+      for (let i = 0; i < amount; i++) {
+        system.buildings.splice(system.buildings.indexOf(bName), 1);
+
+        for(const [resource, resourceCost] of cost){
+          empire.resources[resource as ResourceName] += resourceCost/2;
+        }
+
+        empire.markModified('resources');
+      }
+    }
+  }
+
+  private addBuildings(system: SystemDocument, addBuildings: Partial<Record<BuildingName, number>>, costs: Record<BuildingName, [ResourceName,number][]>, empire: EmpireDocument){
+    //Check if there is enough capacity to build the new buildings
+    const capacityLeft = system.capacity - Object.values(system.districts).sum() + system.buildings.length;
+    if(Object.values(addBuildings).sum() > capacityLeft){
+      throw new BadRequestException(`Not enough capacity to build buildings. Capacity left: ${capacityLeft} Amount of new buildings: ${Object.values(addBuildings).sum()}`);
+    }
+
+    //Check if there are enough resources to build the new buildings
+    for(const [building, amount] of Object.entries(addBuildings)){
+      const cost: [ResourceName,number][] = costs[building as BuildingName];
+
+      for (let i = 0; i < amount; i++) {
+        if(!cost.every(([resource, amount]) => empire.resources[resource as ResourceName] >= amount)){
+          throw new BadRequestException(`Not enough resources to build a ${building}`);
+        }
+      }
+    }
+
+    //Add buildings and remove resources
+    for(const [building, amount] of Object.entries(addBuildings)){
+      const bName = building as BuildingName;
+      const cost: [ResourceName,number][] = costs[building as BuildingName];
+
+      for (let i = 0; i < amount; i++) {
+        system.buildings.push(bName);
+        cost.forEach(([resource, amount]) => empire.resources[resource as ResourceName] -= amount);
+        empire.markModified('resources');
+      }
+    }
   }
 
   generateDistricts(system: SystemDocument, empire: Empire) {
