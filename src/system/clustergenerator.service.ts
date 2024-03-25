@@ -122,7 +122,9 @@ export class ClusterGeneratorService {
     return {
       _id: new Types.ObjectId(),
       game: game._id,
-      owner: game.owner,
+      // NB @Gio: this is not the same as the game owner (the host, a user id),
+      // this is the ingame empire that owns the system
+      owner: undefined,
       type: systemType,
       capacity: Math.randInt(capacity_range[1] - capacity_range[0]) + capacity_range[0],
       x: vertex.x * scaling + offset[0] + Math.random() * scaling * MAX_SYSTEM_DISPLACEMENT,
