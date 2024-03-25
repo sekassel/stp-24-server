@@ -36,23 +36,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  physics: {
-    id: 'physics',
-    tags: ['physics'],
-    cost: 200,
-    effects: [
-      {
-        description: '-10% $resources.research$ for $technologies.physics$',
-        variable: 'technologies.physics.cost_multiplier',
-        multiplier: 0.9,
-      },
-    ],
-  },
   technology: {
     id: 'technology',
     tags: ['physics'],
     cost: 100,
-    requires: ['physics'],
     effects: [
       {
         description: '-5% $resources.research$ for $technologies.physics$',
