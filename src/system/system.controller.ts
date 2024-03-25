@@ -56,7 +56,7 @@ export class SystemController {
     const userEmpire = await this.empireService.findOne({user: currentUser._id, game});
     const owner = oldSystem.owner ?? dto.owner;
 
-    if (!userEmpire?._id.equals(owner?._id)) {
+    if (!userEmpire?._id.equals(owner)) {
       throw new ForbiddenException('You are not the owner of this system.');
     }
 
