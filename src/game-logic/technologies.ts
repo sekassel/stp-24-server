@@ -36,9 +36,9 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  technology: {
-    id: 'technology',
-    tags: ['physics'],
+  computing: {
+    id: 'computing',
+    tags: ['physics', 'computing'],
     cost: 100,
     effects: [
       {
@@ -156,7 +156,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_systems_1',
     tags: ['physics', 'energy'],
     cost: 400,
-    requires: ['technology'],
+    requires: ['computing'],
     effects: [
       {
         description: '-10% $resources.energy$ upkeep for $systems.colonized$',
@@ -303,7 +303,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_buildings_1',
     tags: ['physics', 'energy'],
     cost: 200,
-    requires: ['technology'],
+    requires: ['computing'],
     precedes: ['efficient_buildings_2'],
     effects: [
       {
@@ -497,7 +497,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'district_specialization',
     tags: ['engineering', 'construction'],
     cost: 200,
-    requires: ['engineering', 'technology'],
+    requires: ['engineering', 'computing'],
     effects: [
     ],
   },
@@ -1004,7 +1004,7 @@ generate_sequence('unemployed_pop_cost', ['society', 'state'],
 generate_sequence('energy_production', ['physics', 'energy'],
   'buildings.power_plant.production.energy',
   '$resources.energy$ from $buildings.power_plant$ per $period$',
-  {}, ['technology']);
+  {}, ['computing']);
 generate_sequence('mineral_production', ['engineering', 'production'],
   'buildings.mine.production.minerals',
   '$resources.minerals$ from $buildings.mine$ per $period$',
@@ -1016,7 +1016,7 @@ generate_sequence('food_production', ['society', 'biology'],
 generate_sequence('research_production', ['physics', 'computing'],
   'buildings.research_lab.production.research',
   '$resources.research$ from $buildings.research_lab$ per $period$',
-  {}, ['technology']);
+  {}, ['computing']);
 generate_sequence('alloy_production', ['engineering', 'materials'],
   'buildings.foundry.production.alloys', '$resources.alloys$ from $buildings.foundry$ per $period$',
   {}, ['production']);
