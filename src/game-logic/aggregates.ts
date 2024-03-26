@@ -9,11 +9,9 @@ import {TECHNOLOGIES} from './technologies';
 import {notFound} from '@mean-stream/nestx';
 
 export class AggregateFn {
-  @ApiProperty({type: [String]})
-  params: string[];
-
-  @ApiPropertyOptional({type: [String]})
-  optionalParams?: string[];
+  description: string;
+  params?: Record<string, string>;
+  optionalParams?: Record<string, string>;
 
   compute: (service: GameLogicService, empire: Empire, systems: System[], params: Record<string, string>) => AggregateResult | Promise<AggregateResult>;
 }
@@ -39,8 +37,13 @@ export class AggregateResult {
 
 export const AGGREGATES: Record<string, AggregateFn> = {
   'resources.periodic': {
-    params: ['resource'],
-    optionalParams: ['system'],
+    description: 'Calculates the total resources produced across the empire in a period',
+    params: {
+      resource: 'The resource to calculate, e.g. `energy` or `population`',
+    },
+    optionalParams: {
+      system: 'System ID. Only calculate production of a specific system.',
+    },
     compute: (service, empire, systems, {resource, system}) => {
       if (!RESOURCE_NAMES.includes(resource as ResourceName)) {
         throw new BadRequestException(`Invalid resource: ${resource}`);
@@ -55,31 +58,43 @@ export const AGGREGATES: Record<string, AggregateFn> = {
     },
   },
   'empire.level.economy': {
-    params: [],
+    description: 'Calculates the total economy level of the empire',
     compute: (service, empire, systems) => service.aggregateEconomy(empire, systems),
   },
   'empire.compare.economy': {
-    params: ['compare'],
+    description: 'Calculates the economy level of the empire compared to another empire as a logarithmic difference',
+    params: {
+      compare: 'The ID of the empire to compare to',
+    },
     compute: (service, empire, systems, {compare}) => service.compare(empire, systems, compare, service.aggregateEconomy.bind(service)),
   },
   'empire.level.military': {
-    params: [],
+    description: 'Calculates the total military level of the empire',
     compute: (service, empire, systems) => service.aggregateMilitary(empire, systems),
   },
   'empire.compare.military': {
-    params: ['compare'],
+    description: 'Calculates the military level of the empire compared to another empire as a logarithmic difference',
+    params: {
+      compare: 'The ID of the empire to compare to',
+    },
     compute: (service, empire, systems, {compare}) => service.compare(empire, systems, compare, service.aggregateMilitary.bind(service)),
   },
   'empire.level.technology': {
-    params: [],
+    description: 'Calculates the total technology level of the empire',
     compute: (service, empire, systems) => service.aggregateTechnology(empire, systems),
   },
   'empire.compare.technology': {
-    params: ['compare'],
+    description: 'Calculates the technology level of the empire compared to another empire as a logarithmic difference',
+    params: {
+      compare: 'The ID of the empire to compare to',
+    },
     compute: (service, empire, systems, {compare}) => service.compare(empire, systems, compare, service.aggregateTechnology.bind(service)),
   },
   'technology.cost': {
-    params: ['technology'],
+    description: 'Calculates the total cost of a technology',
+    params: {
+      technology: 'The ID of the technology to calculate',
+    },
     compute: (service, empire, systems, {technology}) => {
       const tech = TECHNOLOGIES[technology] ?? notFound(technology);
       return service.aggregateTechCost(empire, tech);

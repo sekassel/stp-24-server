@@ -65,16 +65,19 @@ export class GameLogicController {
 
   @Get('aggregates/:aggregate')
   @ApiOperation({
-    summary: 'Get the value and explanation of an empire aggregate.',
+    summary: 'Get the total value and breakdown of an empire aggregate.',
     description: `Query parameters can be used to add context to the aggregate.
 
 Example: \`GET .../resources.periodic?resource=energy&system=5f4e3d2c1b0a090807060504\`
 
 These aggregates are available:
-${Object.entries(AGGREGATES).map(([key, value]) => `\
-- \`${key}\`:
-  Parameters: ${value.params.join(', ') || '-'} /
-  Optional Parameters: ${value.optionalParams?.join(', ') || '-'}
+${Object.entries(AGGREGATES).map(([id, aggregate]) => `\
+## \`${id}\`
+${aggregate.description}
+### Parameters
+${Object.entries(aggregate.params ?? {}).map(([param, desc]) => `- \`${param}\`: ${desc}`).join('\n') || '*None*'}
+### Optional Parameters
+${Object.entries(aggregate.optionalParams ?? {}).map(([param, desc]) => `- \`${param}\`: ${desc}`).join('\n') || '*None*'}
 `).join('')}
 `,
   })
@@ -93,9 +96,11 @@ ${Object.entries(AGGREGATES).map(([key, value]) => `\
     }
     const systems = await this.systemService.findAll({owner: id});
     const aggregateFn = AGGREGATES[aggregate as AggregateId] ?? notFound(aggregate);
-    const missingParams = aggregateFn.params.filter(param => !query[param]);
-    if (missingParams.length) {
-      throw new BadRequestException(`Missing required parameters: ${missingParams.join(', ')}`);
+    if (aggregateFn.params) {
+      const missingParams = Object.keys(aggregateFn.params).filter(param => !query[param]);
+      if (missingParams.length) {
+        throw new BadRequestException(`Missing required parameters: ${missingParams.join(', ')}`);
+      }
     }
     return aggregateFn.compute(this.gameLogicService, empire, systems, query);
   }
