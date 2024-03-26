@@ -13,6 +13,8 @@ import {BUILDINGS} from './buildings';
 import {SYSTEM_UPGRADES, SystemUpgradeName} from './system-upgrade';
 import {AggregateItem, AggregateResult} from './aggregates';
 import {TECHNOLOGIES} from './technologies';
+import {Types} from 'mongoose';
+import {notFound} from '@mean-stream/nestx';
 
 @Injectable()
 export class GameLogicService {
@@ -275,6 +277,23 @@ export class GameLogicService {
     return {
       total: items.map(item => item.subtotal).sum(),
       items,
+    };
+  }
+
+  async compare(empire: Empire, systems: System[], compare: string, fn: (empire: Empire, systems: System[]) => AggregateResult): Promise<AggregateResult> {
+    const compareId = new Types.ObjectId(compare);
+    const [compareEmpire, compareSystems] = await Promise.all([
+      this.empireService.find(compareId),
+      this.systemService.findAll({owner: compareId}),
+    ]);
+    if (!compareEmpire) {
+      notFound(`Empire ${compare}`);
+    }
+    const base = fn(empire, systems);
+    const compareResult = fn(compareEmpire, compareSystems);
+    return {
+      total: Math.log2(base.total / compareResult.total),
+      items: [],
     };
   }
 

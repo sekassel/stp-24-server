@@ -58,13 +58,25 @@ export const AGGREGATES: Record<string, AggregateFn> = {
     params: [],
     compute: (service, empire, systems) => service.aggregateEconomy(empire, systems),
   },
+  'empire.compare.economy': {
+    params: ['compare'],
+    compute: (service, empire, systems, {compare}) => service.compare(empire, systems, compare, service.aggregateEconomy.bind(service)),
+  },
   'empire.level.military': {
     params: [],
     compute: (service, empire, systems) => service.aggregateMilitary(empire, systems),
   },
+  'empire.compare.military': {
+    params: ['compare'],
+    compute: (service, empire, systems, {compare}) => service.compare(empire, systems, compare, service.aggregateMilitary.bind(service)),
+  },
   'empire.level.technology': {
     params: [],
     compute: (service, empire, systems) => service.aggregateTechnology(empire, systems),
+  },
+  'empire.compare.technology': {
+    params: ['compare'],
+    compute: (service, empire, systems, {compare}) => service.compare(empire, systems, compare, service.aggregateTechnology.bind(service)),
   },
   'technology.cost': {
     params: ['technology'],
