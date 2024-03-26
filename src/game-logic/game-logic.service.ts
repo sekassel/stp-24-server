@@ -9,10 +9,10 @@ import {calculateVariable, calculateVariables, getInitialVariables} from './vari
 import {Technology, Variable} from './types';
 import {ResourceName} from './resources';
 import {DistrictName, DISTRICTS} from './districts';
-import {EMPIRE_VARIABLES} from './empire-variables';
 import {BUILDINGS} from './buildings';
 import {SYSTEM_UPGRADES, SystemUpgradeName} from './system-upgrade';
 import {AggregateItem, AggregateResult} from './aggregates';
+import {TECHNOLOGIES} from './technologies';
 
 @Injectable()
 export class GameLogicService {
@@ -189,10 +189,14 @@ export class GameLogicService {
     };
   }
 
-  aggregateResource(empire: Empire, systems: System[], resource: ResourceName): AggregateResult {
-    const items: AggregateItem[] = [];
+  aggregateResources(empire: Empire, systems: System[], resources: ResourceName[]): AggregateResult[] {
     const variables = getInitialVariables();
     calculateVariables(variables, empire);
+    return resources.map(resource => this.aggregateResource(empire, systems, resource, variables));
+  }
+
+  aggregateResource(empire: Empire, systems: System[], resource: ResourceName, variables: Record<Variable, number>): AggregateResult {
+    const items: AggregateItem[] = [];
 
     // + district production
     // + building production
@@ -228,5 +232,68 @@ export class GameLogicService {
 
   async aggregateTechCost(empire: Empire, technology: Technology): Promise<AggregateResult> {
     return this.empireService.aggregateTechCost(empire, technology);
+  }
+
+  aggregateEconomy(empire: Empire, systems: System[]): AggregateResult {
+    const items = this.summarizeResources(empire, systems, [
+      ['credits', 2],
+      ['energy', 1],
+      ['minerals', 1],
+      ['food', 1],
+      ['alloys', 4],
+      ['fuel', 3],
+    ]);
+    return {
+      total: items.map(item => item.subtotal).sum(),
+      items,
+    };
+  }
+
+  aggregateMilitary(empire: Empire, systems: System[]): AggregateResult {
+    const items = this.summarizeResources(empire, systems, [
+      ['credits', 1],
+      ['alloys', 2],
+      ['fuel', 1],
+    ]);
+    // TODO consider active fleets
+    return {
+      total: items.map(item => item.subtotal).sum(),
+      items,
+    };
+  }
+
+  aggregateTechnology(empire: Empire, systems: System[]): AggregateResult {
+    const items = this.summarizeResources(empire, systems, [
+      ['research', 1],
+    ]);
+    const spentResearch = empire.technologies.map(t => TECHNOLOGIES[t]?.cost ?? 0).sum();
+    items.push({
+      variable: 'technologies.unlocked',
+      count: empire.technologies.length,
+      subtotal: spentResearch / 100,
+    });
+    return {
+      total: items.map(item => item.subtotal).sum(),
+      items,
+    };
+  }
+
+  private summarizeResources(empire: Empire, systems: System[], resources: [ResourceName, number][]) {
+    const items: AggregateItem[] = [];
+    const production = this.aggregateResources(empire, systems, resources.map(r => r[0]));
+    for (let i = 0; i < resources.length; i++) {
+      const [resource, weight] = resources[i];
+      items.push({
+        variable: `resources.${resource}.production`,
+        count: weight,
+        subtotal: production[i].total,
+      });
+      items.push({
+        variable: `resources.${resource}.stored`,
+        count: weight,
+        subtotal: empire.resources[resource as ResourceName],
+      });
+    }
+    return items;
   }
 }

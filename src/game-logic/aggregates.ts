@@ -20,7 +20,7 @@ export class AggregateFn {
 
 export class AggregateItem {
   @ApiProperty({type: String})
-  variable: Variable;
+  variable: Variable | string;
 
   @ApiProperty()
   count: number;
@@ -51,8 +51,20 @@ export const AGGREGATES: Record<string, AggregateFn> = {
       if (resource === 'population') {
         return service.aggregatePopGrowth(empire, systems);
       }
-      return service.aggregateResource(empire, systems, resource as ResourceName);
+      return service.aggregateResources(empire, systems, [resource as ResourceName])[0];
     },
+  },
+  'empire.level.economy': {
+    params: [],
+    compute: (service, empire, systems) => service.aggregateEconomy(empire, systems),
+  },
+  'empire.level.military': {
+    params: [],
+    compute: (service, empire, systems) => service.aggregateMilitary(empire, systems),
+  },
+  'empire.level.technology': {
+    params: [],
+    compute: (service, empire, systems) => service.aggregateTechnology(empire, systems),
   },
   'technology.cost': {
     params: ['technology'],
