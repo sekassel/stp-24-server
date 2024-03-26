@@ -50,7 +50,7 @@ export type EmpireEffectSources = Pick<Empire, 'traits' | 'technologies'>;
 export function getEmpireEffectSources(empire: EmpireEffectSources): EffectSource[] {
   return [
     ...empire.traits.map(t => TRAITS[t]),
-    ...getEffectiveTechnologies(empire.technologies.map(t => TECHNOLOGIES[t])),
+    ...getEffectiveTechnologies(empire.technologies.map(t => TECHNOLOGIES[t]).filter(t => t)),
   ];
 }
 
