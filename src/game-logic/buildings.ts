@@ -1,6 +1,19 @@
 import type {Building} from './types';
 
 export const BUILDINGS = {
+  exchange: {
+    id: 'exchange',
+    cost: {
+      minerals: 100,
+    },
+    upkeep: {
+      energy: 5,
+      consumer_goods: 5,
+    },
+    production: {
+      credits: 20,
+    },
+  },
   // basic resource buildings. cost should be around 75, upkeep around 5, production around 10
   power_plant: {
     id: 'power_plant',
