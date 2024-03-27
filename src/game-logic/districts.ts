@@ -1,6 +1,20 @@
 import type {District} from './types';
 
 export const DISTRICTS = {
+  city: {
+    id: 'city',
+    chance: {},
+    cost: {
+      minerals: 100,
+    },
+    upkeep: {
+      energy: 10,
+      consumer_goods: 5,
+    },
+    production: {
+      credits: 25,
+    },
+  },
   // basic resource districts. cost should be around 75, upkeep around 5, production around 10
   energy: {
     id: 'energy',
@@ -60,6 +74,22 @@ export const DISTRICTS = {
     },
   },
   // advanced resource districts. cost should be around 100, upkeep around 20, production around 10
+  industry: {
+    id: 'industry',
+    chance: {},
+    cost: {
+      minerals: 100,
+    },
+    upkeep: {
+      energy: 10,
+      minerals: 10,
+    },
+    production: {
+      alloys: 5,
+      consumer_goods: 5,
+      fuel: 5,
+    },
+  },
   research_site: {
     id: 'research_site',
     chance: {
