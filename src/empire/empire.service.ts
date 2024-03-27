@@ -143,6 +143,7 @@ export class EmpireService extends MongooseRepository<Empire> {
 
   async aggregateTechCost(empire: Empire, technology: Technology): Promise<AggregateResult> {
     const variables: Partial<Record<Variable, number>> = {
+      'empire.technologies.difficulty': EMPIRE_VARIABLES.technologies.difficulty,
       'empire.technologies.cost_multiplier': EMPIRE_VARIABLES.technologies.cost_multiplier,
     };
     for (const tag of technology.tags) {
