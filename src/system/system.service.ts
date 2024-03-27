@@ -152,7 +152,7 @@ export class SystemService extends MongooseRepository<System> {
     calculateVariables(buildingVariables, empire);
 
     const costs: Record<BuildingName, [ResourceName, number][]> = {} as Record<BuildingName, [ResourceName, number][]>;
-    for (const building of buildings) {
+    for (const building of new Set([...buildings, ...system.buildings])) {
       costs[building as BuildingName] = Object.entries(getCosts('buildings', building, buildingVariables)) as [ResourceName, number][];
     }
 
