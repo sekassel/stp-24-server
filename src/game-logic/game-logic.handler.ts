@@ -55,7 +55,8 @@ export class GameLogicHandler {
         'farm',
         'research_lab',
         'foundry',
-        // 'refinery',
+        'factory',
+        'refinery',
       ];
     }
 

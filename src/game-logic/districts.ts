@@ -73,6 +73,7 @@ export const DISTRICTS = {
     },
     upkeep: {
       energy: 15, // automated_research_archives tech tree
+      consumer_goods: 5,
     },
     production: {
       research: 10, // research_accelerators tech tree
@@ -95,6 +96,25 @@ export const DISTRICTS = {
     },
     production: {
       alloys: 10, // mythic_alloy_crafting tech tree
+    },
+  },
+  ancient_factory: {
+    id: 'ancient_factory',
+    chance: {
+      ancient_industry: 5,
+      ancient_technology: 3,
+      ancient_military: 2,
+      default: 0,
+    },
+    cost: {
+      minerals: 100,
+    },
+    upkeep: {
+      energy: 5,
+      minerals: 10,
+    },
+    production: {
+      consumer_goods: 10,
     },
   },
   ancient_refinery: {

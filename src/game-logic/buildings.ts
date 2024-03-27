@@ -49,6 +49,7 @@ export const BUILDINGS = {
     },
     upkeep: {
       energy: 20, // powering the lab // efficient_buildings tech tree
+      consumer_goods: 10,
     },
     production: {
       research: 10, // research_production tech tree
@@ -65,6 +66,19 @@ export const BUILDINGS = {
     },
     production: {
       alloys: 10, // alloy_production tech tree
+    },
+  },
+  factory: {
+    id: 'factory',
+    cost: {
+      minerals: 100,
+    },
+    upkeep: {
+      minerals: 15,
+      energy: 10,
+    },
+    production: {
+      consumer_goods: 10,
     },
   },
   refinery: { // cheap_buildings, efficient_buildings, improved_production tech trees

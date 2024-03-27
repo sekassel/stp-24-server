@@ -33,6 +33,10 @@ export const RESOURCES = {
     starting: 20,
     credit_value: 8,
   },
+  consumer_goods: {
+    starting: 20,
+    credit_value: 6,
+  },
 } as const satisfies Record<string, Resource>;
 export type ResourceName = keyof typeof RESOURCES;
 export const RESOURCE_NAMES = Object.keys(RESOURCES) as ResourceName[];
