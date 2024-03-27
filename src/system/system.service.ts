@@ -228,13 +228,22 @@ export class SystemService extends MongooseRepository<System> {
 
     for (const [key, value] of Object.entries(DISTRICTS)) {
       const chance: District['chance'] = value.chance;
-      districtChances[`districts.${key}.chance.${system.type}` as Variable] = chance[system.type] ?? value.chance.default;
+      if (chance) {
+        districtChances[`districts.${key}.chance.${system.type}` as Variable] = chance[system.type] ?? chance.default ?? 0;
+      }
     }
 
     calculateVariables(districtChances, empire);
 
     //Generate random districts depending on the chances
     this.randomDistricts(system, districtChances);
+
+    // Set slots for generic districts to capacity
+    for (const district of Object.values(DISTRICTS)) {
+      if (!('default' in district.chance)) {
+        system.districtSlots[district.id] = system.capacity;
+      }
+    }
   }
 
   private randomDistricts(system: SystemDocument, districtChances: Partial<Record<Variable, number>>) {
