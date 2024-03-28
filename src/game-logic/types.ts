@@ -11,10 +11,6 @@ export type DeepNumberKeys<T> = T extends Record<string, any> ? {
 export type Variable = DeepNumberKeys<typeof VARIABLES>;
 
 export class Effect {
-  /** a description of the effect. */
-  @ApiProperty({description: 'A description of the effect.'})
-  description: string;
-
   /** the variable that is affected. */
   @ApiProperty({type: String, description: 'The variable that is affected.'})
   variable: Variable;
