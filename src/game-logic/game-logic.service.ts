@@ -206,8 +206,9 @@ export class GameLogicService {
     // - district upkeep
     // - building upkeep
     // if food: - pop upkeep
+    const systemsPopulation = systems.map(s => s.population).sum();
     if (resource === 'food') {
-      const popUpkeep = variables['empire.pop.consumption.food'] * empire.resources.population;
+      const popUpkeep = variables['empire.pop.consumption.food'] * systemsPopulation;
       items.push({
         variable: 'empire.pop.consumption.food',
         count: empire.resources.population,
@@ -217,7 +218,7 @@ export class GameLogicService {
     // if credits: - jobless pop upkeep
     if (resource === 'credits') {
       const totalJobs = systems.map(s => Object.values(s.districts).sum() + s.buildings.length).sum();
-      const unemployedPops = empire.resources.population - totalJobs;
+      const unemployedPops = systemsPopulation - totalJobs;
       const unemployedPopUpkeep = variables['empire.pop.consumption.credits.unemployed'] * unemployedPops;
       items.push({
         variable: 'empire.pop.consumption.credits.unemployed',
