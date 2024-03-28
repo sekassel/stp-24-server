@@ -48,7 +48,9 @@ export class GameLogicHandler {
         homeSystem.type = empire.homeSystem;
       }
       this.systemService.generateDistricts(homeSystem, empire);
-      homeSystem.districts = homeSystem.districtSlots;
+      // on a regular system, we will have 5 district types so 15 in total.
+      homeSystem.districts = Object.fromEntries(Object.keys(homeSystem.districtSlots).map(district => [district, 3]));
+      // plus 7 buildings, so 22 in total.
       homeSystem.buildings = [
         'power_plant',
         'mine',
@@ -58,6 +60,7 @@ export class GameLogicHandler {
         'factory',
         'refinery',
       ];
+      // then 3 pops will be unemployed initially.
     }
 
     await this.systemService.saveAll(systems);
