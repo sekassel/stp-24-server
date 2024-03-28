@@ -200,11 +200,63 @@ export class GameLogicService {
   aggregateResource(empire: Empire, systems: System[], resource: ResourceName, variables: Record<Variable, number>): AggregateResult {
     const items: AggregateItem[] = [];
 
-    // + district production
-    // + building production
     // - system upkeep
-    // - district upkeep
-    // - building upkeep
+    for (const systemType of Object.values(SYSTEM_UPGRADES)) {
+      if (resource in systemType.upkeep) {
+        const count = systems.filter(s => s.upgrade === systemType.id).length;
+        const variable = `systems.${systemType.id}.upkeep.${resource}` as Variable;
+        items.push({
+          variable,
+          count: count,
+          subtotal: -variables[variable] * count,
+        });
+      }
+    }
+
+    for (const district of Object.values(DISTRICTS)) {
+      const count = systems.map(s => s.districts[district.id] ?? 0).sum();
+      // + district production
+      if (resource in district.production) {
+        const variable = `districts.${district.id}.production.${resource}` as Variable;
+        items.push({
+          variable,
+          count,
+          subtotal: variables[variable] * count,
+        });
+      }
+      // - district upkeep
+      if (resource in district.upkeep) {
+        const variable = `districts.${district.id}.upkeep.${resource}` as Variable;
+        items.push({
+          variable,
+          count,
+          subtotal: -variables[variable] * count,
+        });
+      }
+    }
+    const allBuildings = systems.flatMap(s => s.buildings);
+    for (const building of Object.values(BUILDINGS)) {
+      const count = allBuildings.filter(b => b === building.id).length;
+      // + building production
+      if (resource in building.production) {
+        const variable = `buildings.${building.id}.production.${resource}` as Variable;
+        items.push({
+          variable,
+          count,
+          subtotal: variables[variable] * count,
+        });
+      }
+      // - building upkeep
+      if (resource in building.upkeep) {
+        const variable = `buildings.${building.id}.upkeep.${resource}` as Variable;
+        items.push({
+          variable,
+          count,
+          subtotal: -variables[variable] * count,
+        });
+      }
+    }
+
     // if food: - pop upkeep
     const systemsPopulation = systems.map(s => s.population).sum();
     if (resource === 'food') {
