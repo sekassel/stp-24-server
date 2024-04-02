@@ -324,7 +324,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   efficient_buildings_3: {
     id: 'efficient_buildings_3',
-    tags: ['physics', 'energy'],
+    tags: ['engineering', 'construction'],
     cost: 1,
     requires: ['efficient_buildings_2'],
     effects: [
