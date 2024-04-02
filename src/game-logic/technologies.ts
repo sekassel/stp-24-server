@@ -245,6 +245,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'buildings.farm.cost.energy',
         multiplier: 0.85,
       },
+      {
+        variable: 'buildings.factory.cost.minerals',
+        multiplier: 0.85,
+      },
     ],
   },
   cheap_buildings_2: { // reduced advanced building costs
@@ -263,6 +267,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'buildings.refinery.cost.minerals',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.exchange.cost.minerals',
         multiplier: 0.85,
       },
     ],
@@ -284,6 +292,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'buildings.farm.upkeep.energy',
         multiplier: 0.85,
       },
+      {
+        variable: 'buildings.factory.upkeep.energy',
+        multiplier: 0.85,
+      },
     ],
   },
   efficient_buildings_2: { // reduced advanced building energy upkeep
@@ -302,6 +314,38 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'buildings.refinery.upkeep.energy',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.exchange.upkeep.energy',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  efficient_buildings_3: {
+    id: 'efficient_buildings_3',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['efficient_buildings_2'],
+    effects: [
+      {
+        variable: 'buildings.exchange.upkeep.consumer_goods',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.mine.upkeep.fuel',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.farm.upkeep.fuel',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.research_lab.upkeep.consumer_goods',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.factory.upkeep.minerals',
         multiplier: 0.85,
       },
     ],
@@ -327,6 +371,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'buildings.farm.production.food',
         multiplier: 1.05,
       },
+      {
+        variable: 'buildings.exchange.production.credits',
+        multiplier: 1.05,
+      },
+      {
+        variable: 'buildings.factory.production.consumer_goods',
+        multiplier: 1.05,
+      },
     ],
   },
   improved_production_2: { // further increased basic building production
@@ -346,6 +398,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'buildings.farm.production.food',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'buildings.exchange.production.credits',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'buildings.factory.production.consumer_goods',
         multiplier: 1.1,
       },
     ],
@@ -445,56 +505,49 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['engineering', 'construction'],
     cost: 1,
     requires: ['engineering', 'computing'],
-    effects: [
-    ],
+    effects: [],
   },
   district_production_increase: {
     id: 'district_production_increase',
     tags: ['engineering', 'construction'],
     cost: 1,
     requires: ['district_specialization'],
-    effects: [
-    ],
+    effects: [],
   },
   ancient_district_production_increase: {
     id: 'ancient_district_production_increase',
     tags: ['engineering', 'construction'],
     cost: 1,
     requires: ['district_production_increase'],
-    effects: [
-    ],
+    effects: [],
   },
   district_cost_reduction: {
     id: 'district_cost_reduction',
     tags: ['engineering', 'construction'],
     cost: 1,
     requires: ['district_specialization'],
-    effects: [
-    ],
+    effects: [],
   },
   ancient_district_cost_reduction: {
     id: 'ancient_district_cost_reduction',
     tags: ['engineering', 'construction'],
     cost: 1,
     requires: ['district_cost_reduction'],
-    effects: [
-    ],
+    effects: [],
   },
   district_upkeep_reduction: {
     id: 'district_upkeep_reduction',
     tags: ['engineering', 'construction'],
     cost: 1,
     requires: ['district_specialization'],
-    effects: [
-    ],
+    effects: [],
   },
   ancient_district_upkeep_reduction: {
     id: 'ancient_district_upkeep_reduction',
     tags: ['engineering', 'construction'],
     cost: 1,
     requires: ['district_upkeep_reduction'],
-    effects: [
-    ],
+    effects: [],
   },
 
   /** all districts: activate ancient military, industry and technology */
@@ -503,8 +556,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['engineering', 'construction', 'rare'],
     cost: 1,
     requires: ['district_specialization'],
-    effects: [
-    ],
+    effects: [],
   },
 
   /** all districts: chance for ancient military */
@@ -514,8 +566,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     cost: 1,
     requires: ['ancient_mastery'],
     precedes: ['ancient_military_1'],
-    effects: [
-    ],
+    effects: [],
   },
   ancient_military_1: {
     id: 'ancient_military_1',
@@ -587,8 +638,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     cost: 1,
     requires: ['ancient_mastery'],
     precedes: ['ancient_industry_1'],
-    effects: [
-    ],
+    effects: [],
   },
   ancient_industry_1: {
     id: 'ancient_industry_1',
@@ -660,8 +710,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     cost: 1,
     requires: ['ancient_mastery'],
     precedes: ['ancient_tech_1'],
-    effects: [
-    ],
+    effects: [],
   },
   ancient_tech_1: {
     id: 'ancient_tech_1',
@@ -881,7 +930,176 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
+
+  /** city: reduce upkeep */
+  efficient_city_1: {
+    id: 'efficient_city_1',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['district_upkeep_reduction'],
+    precedes: ['efficient_city_2'],
+    effects: [
+      {
+        variable: 'districts.city.upkeep.energy',
+        multiplier: 0.95,
+      },
+      {
+        variable: 'districts.city.upkeep.consumer_goods',
+        multiplier: 0.95,
+      },
+    ],
+  },
+  efficient_city_2: {
+    id: 'efficient_city_2',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['efficient_city_1'],
+    precedes: ['efficient_city_3'],
+    effects: [
+      {
+        variable: 'districts.city.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'districts.city.upkeep.consumer_goods',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_city_3: {
+    id: 'efficient_city_3',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['efficient_city_2'],
+    effects: [
+      {
+        variable: 'districts.city.upkeep.energy',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'districts.city.upkeep.consumer_goods',
+        multiplier: 0.85,
+      },
+    ],
+  },
+
+  /** industry: reduce upkeep */
+  efficient_industry_1: {
+    id: 'efficient_industry_1',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['district_upkeep_reduction'],
+    precedes: ['efficient_industry_2'],
+    effects: [
+      {
+        variable: 'districts.industry.upkeep.energy',
+        multiplier: 0.95,
+      },
+      {
+        variable: 'districts.industry.upkeep.minerals',
+        multiplier: 0.95,
+      },
+    ],
+  },
+  efficient_industry_2: {
+    id: 'efficient_industry_2',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['efficient_industry_1'],
+    precedes: ['efficient_industry_3'],
+    effects: [
+      {
+        variable: 'districts.industry.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'districts.industry.upkeep.minerals',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_industry_3: {
+    id: 'efficient_industry_3',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['efficient_industry_2'],
+    effects: [
+      {
+        variable: 'districts.industry.upkeep.energy',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'districts.industry.upkeep.minerals',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  /** industry: increase production */
+  improved_industry_1: {
+    id: 'improved_industry_1',
+    tags: ['engineering', 'production'],
+    cost: 1,
+    requires: ['production'],
+    precedes: ['improved_industry_2'],
+    effects: [
+      {
+        variable: 'districts.industry.production.alloys',
+        multiplier: 1.05,
+      },
+      {
+        variable: 'districts.industry.production.consumer_goods',
+        multiplier: 1.05,
+      },
+      {
+        variable: 'districts.industry.production.fuel',
+        multiplier: 1.05,
+      },
+    ],
+  },
+  improved_industry_2: {
+    id: 'improved_industry_2',
+    tags: ['engineering', 'production'],
+    cost: 1,
+    requires: ['improved_industry_1'],
+    precedes: ['improved_industry_3'],
+    effects: [
+      {
+        variable: 'districts.industry.production.alloys',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'districts.industry.production.consumer_goods',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'districts.industry.production.fuel',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  improved_industry_3: {
+    id: 'improved_industry_3',
+    tags: ['engineering', 'production'],
+    cost: 1,
+    requires: ['improved_industry_2'],
+    effects: [
+      {
+        variable: 'districts.industry.production.alloys',
+        multiplier: 1.15,
+      },
+      {
+        variable: 'districts.industry.production.consumer_goods',
+        multiplier: 1.15,
+      },
+      {
+        variable: 'districts.industry.production.fuel',
+        multiplier: 1.15,
+      },
+    ],
+  },
+
 };
+
 
 // special resources
 generate_sequence('pop_food_consumption', ['society', 'biology'], 'empire.pop.consumption.food',
@@ -894,9 +1112,9 @@ generate_sequence('pop_growth_upgraded', ['society', 'biology'], 'systems.upgrad
 generate_sequence('unemployed_pop_cost', ['society', 'state'],
   'empire.pop.consumption.credits.unemployed',
   {
-  multiplierIncrement: -0.05,
-  exponentialBase: 3,
-}, ['demographic']); // -5% -> -15% -> -45%
+    multiplierIncrement: -0.05,
+    exponentialBase: 3,
+  }, ['demographic']); // -5% -> -15% -> -45%
 
 // basic resources
 generate_sequence('energy_production', ['physics', 'energy'],
@@ -935,6 +1153,10 @@ generate_sequence('ancient_foundry_production', ['engineering', 'materials'],
 generate_sequence('ancient_refinery_production', ['physics', 'propulsion'],
   'districts.ancient_refinery.production.fuel',
   {}, ['ancient_district_production_increase']);
+/** city: credit production */
+generate_sequence('city_production', ['society', 'economy'],
+  'districts.city.production.credits',
+  {}, ['district_production_increase']);
 
 /** empire: market fee reduction*/
 generate_sequence('market_fee_reduction', ['society', 'economy'],
@@ -983,6 +1205,14 @@ generate_sequence('ancient_refinery_structure', ['engineering', 'construction'],
   'districts.ancient_refinery.cost.minerals',
   {multiplierIncrement: -0.1},
   ['ancient_district_cost_reduction']);
+/** city: reduce initial mineral cost */
+generate_sequence('city_structure', ['engineering', 'construction'], 'districts.city.cost.minerals',
+  {multiplierIncrement: -0.1},
+  ['district_cost_reduction']);
+/** industry: reduce initial mineral cost */
+generate_sequence('industry_structure', ['engineering', 'construction'], 'districts.industry.cost.minerals',
+  {multiplierIncrement: -0.1},
+  ['district_cost_reduction']); // TODO
 
 /**
  * Generates a sequence of technologies with increasing cost and effect.
@@ -1043,7 +1273,12 @@ generate_sequence('ancient_refinery_structure', ['engineering', 'construction'],
  * @param count the number of steps, default 3
  * @param startCost the cost of the first step, default 1
  */
-function generate_sequence(base_id: string, tags: TechnologyTag[], variable: Variable, {multiplierIncrement = +0.05, exponentialBase = 2, count = 3, startCost = 1} = {},
+function generate_sequence(base_id: string, tags: TechnologyTag[], variable: Variable, {
+                             multiplierIncrement = +0.05,
+                             exponentialBase = 2,
+                             count = 3,
+                             startCost = 1
+                           } = {},
                            requirement?: readonly string[],
 ) {
   for (let index = 1; index <= count; index++) {

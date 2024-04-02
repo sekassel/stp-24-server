@@ -4,14 +4,14 @@ export const BUILDINGS = {
   exchange: {
     id: 'exchange',
     cost: {
-      minerals: 100,
+      minerals: 100, // cheap_buildings tech tree
     },
     upkeep: {
-      energy: 5,
-      consumer_goods: 5,
+      energy: 5, // efficient_buildings tech tree
+      consumer_goods: 5, // efficient_buildings tech tree
     },
     production: {
-      credits: 20,
+      credits: 20, // improved_production tech tree
     },
   },
   // basic resource buildings. cost should be around 75, upkeep around 5, production around 10
@@ -21,7 +21,7 @@ export const BUILDINGS = {
       minerals: 75, // silicon solar collectors // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 2, // maintenance
+      minerals: 2, // efficient_resources tech tree
     },
     production: {
       energy: 20, // energy_production tech tree
@@ -35,7 +35,7 @@ export const BUILDINGS = {
     },
     upkeep: {
       energy: 2, // powering the mine // efficient_buildings tech tree
-      fuel: 2,
+      fuel: 2, // efficient_buildings tech tree
     },
     production: {
       minerals: 24, // mineral_production tech tree
@@ -48,7 +48,7 @@ export const BUILDINGS = {
     },
     upkeep: {
       energy: 2, // watering the crops // efficient_buildings tech tree
-      fuel: 2,
+      fuel: 2, // efficient_buildings tech tree
     },
     production: {
       food: 24, // food_production tech tree
@@ -62,7 +62,7 @@ export const BUILDINGS = {
     },
     upkeep: {
       energy: 20, // powering the lab // efficient_buildings tech tree
-      consumer_goods: 10,
+      consumer_goods: 10, // efficient_buildings tech tree
     },
     production: {
       research: 10, // research_production tech tree
@@ -84,14 +84,14 @@ export const BUILDINGS = {
   factory: {
     id: 'factory',
     cost: {
-      minerals: 100,
+      minerals: 100, // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 15,
-      energy: 10,
+      minerals: 15, // efficient_buildings tech tree
+      energy: 10, // efficient_buildings tech tree
     },
     production: {
-      consumer_goods: 10,
+      consumer_goods: 10, // improved_production tech tree
     },
   },
   refinery: { // cheap_buildings, efficient_buildings, improved_production tech trees
