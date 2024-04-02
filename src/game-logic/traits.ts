@@ -37,6 +37,86 @@ export function checkTraits(traitIds: string[]): string[] {
 
 export const TRAITS: Record<string, Trait> = {
 
+  /** general: starting resources */
+  prepared: {
+    id: 'prepared',
+    cost: 1,
+    conflicts: ['unprepared'],
+    effects: [
+      {
+        variable: 'resources.credits.starting',
+        bonus: 200,
+      },
+      {
+        variable: 'resources.energy.starting',
+        bonus: 20,
+      },
+      {
+        variable: 'resources.minerals.starting',
+        bonus: 20,
+      },
+      {
+        variable: 'resources.food.starting',
+        bonus: 20,
+      },
+      {
+        variable: 'resources.fuel.starting',
+        bonus: 4,
+      },
+      {
+        variable: 'resources.research.starting',
+        bonus: 4,
+      },
+      {
+        variable: 'resources.alloys.starting',
+        bonus: 4,
+      },
+      {
+        variable: 'resources.consumer_goods.starting',
+        bonus: 4,
+      },
+    ],
+  },
+  unprepared: { // clementic
+    id: 'unprepared',
+    cost: -1,
+    conflicts: ['prepared'],
+    effects: [
+      {
+        variable: 'resources.credits.starting',
+        bonus: -200,
+      },
+      {
+        variable: 'resources.energy.starting',
+        bonus: -20,
+      },
+      {
+        variable: 'resources.minerals.starting',
+        bonus: -20,
+      },
+      {
+        variable: 'resources.food.starting',
+        bonus: -20,
+      },
+      {
+        variable: 'resources.fuel.starting',
+        bonus: -4,
+      },
+      {
+        variable: 'resources.research.starting',
+        bonus: -4,
+      },
+      {
+        variable: 'resources.alloys.starting',
+        bonus: -4,
+      },
+      {
+        variable: 'resources.consumer_goods.starting',
+        bonus: -4,
+      },
+    ],
+  },
+
   /** mine: mineral production */
   strong: { // minor mineral production bonus
     id: 'strong',
