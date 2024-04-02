@@ -245,6 +245,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'buildings.farm.cost.energy',
         multiplier: 0.85,
       },
+      {
+        variable: 'buildings.factory.cost.minerals',
+        multiplier: 0.85,
+      },
     ],
   },
   cheap_buildings_2: { // reduced advanced building costs
@@ -263,6 +267,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'buildings.refinery.cost.minerals',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.exchange.cost.minerals',
         multiplier: 0.85,
       },
     ],
@@ -284,6 +292,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'buildings.farm.upkeep.energy',
         multiplier: 0.85,
       },
+      {
+        variable: 'buildings.factory.upkeep.energy',
+        multiplier: 0.85,
+      },
     ],
   },
   efficient_buildings_2: { // reduced advanced building energy upkeep
@@ -302,6 +314,38 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'buildings.refinery.upkeep.energy',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.exchange.upkeep.energy',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  efficient_buildings_3: {
+    id: 'efficient_buildings_3',
+    tags: ['physics', 'energy'],
+    cost: 1,
+    requires: ['efficient_buildings_2'],
+    effects: [
+      {
+        variable: 'buildings.exchange.upkeep.consumer_goods',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.mine.upkeep.fuel',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.farm.upkeep.fuel',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.research_lab.upkeep.consumer_goods',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.factory.upkeep.minerals',
         multiplier: 0.85,
       },
     ],
@@ -327,6 +371,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'buildings.farm.production.food',
         multiplier: 1.05,
       },
+      {
+        variable: 'buildings.exchange.production.credits',
+        multiplier: 1.05,
+      },
+      {
+        variable: 'buildings.factory.production.consumer_goods',
+        multiplier: 1.05,
+      },
     ],
   },
   improved_production_2: { // further increased basic building production
@@ -346,6 +398,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'buildings.farm.production.food',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'buildings.exchange.production.credits',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'buildings.factory.production.consumer_goods',
         multiplier: 1.1,
       },
     ],
