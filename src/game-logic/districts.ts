@@ -78,16 +78,16 @@ export const DISTRICTS = {
     id: 'industry',
     chance: {},
     cost: {
-      minerals: 100,
+      minerals: 100, // industry_structure tech tree
     },
     upkeep: {
-      energy: 10,
-      minerals: 10,
+      energy: 10, // efficient_industry tech tree
+      minerals: 10, // efficient_industry tech tree
     },
     production: {
-      alloys: 5,
-      consumer_goods: 5,
-      fuel: 5,
+      alloys: 5, // improved_industry tech tree
+      consumer_goods: 5, // improved_industry tech tree
+      fuel: 5, // improved_industry tech tree
     },
   },
   research_site: {

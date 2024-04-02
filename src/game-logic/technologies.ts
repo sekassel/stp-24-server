@@ -871,12 +871,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** city */
+  /** city: reduce upkeep */
   efficient_city_1: {
     id: 'efficient_city_1',
     tags: ['engineering', 'construction'],
     cost: 1,
-    requires: ['construction'],
+    requires: ['district_upkeep_reduction'],
     precedes: ['efficient_city_2'],
     effects: [
       {
@@ -919,6 +919,121 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       {
         variable: 'districts.city.upkeep.consumer_goods',
         multiplier: 0.85,
+      },
+    ],
+  },
+
+  /** industry: reduce upkeep */
+  efficient_industry_1: {
+    id: 'efficient_industry_1',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['district_upkeep_reduction'],
+    precedes: ['efficient_industry_2'],
+    effects: [
+      {
+        variable: 'districts.industry.upkeep.energy',
+        multiplier: 0.95,
+      },
+      {
+        variable: 'districts.industry.upkeep.minerals',
+        multiplier: 0.95,
+      },
+    ],
+  },
+  efficient_industry_2: {
+    id: 'efficient_industry_2',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['efficient_industry_1'],
+    precedes: ['efficient_industry_3'],
+    effects: [
+      {
+        variable: 'districts.industry.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'districts.industry.upkeep.minerals',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_industry_3: {
+    id: 'efficient_industry_3',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['efficient_industry_2'],
+    effects: [
+      {
+        variable: 'districts.industry.upkeep.energy',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'districts.industry.upkeep.minerals',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  /** industry: increase production */
+  improved_industry_1: {
+    id: 'improved_industry_1',
+    tags: ['engineering', 'production'],
+    cost: 1,
+    requires: ['production'],
+    precedes: ['improved_industry_2'],
+    effects: [
+      {
+        variable: 'districts.industry.production.alloys',
+        multiplier: 1.05,
+      },
+      {
+        variable: 'districts.industry.production.consumer_goods',
+        multiplier: 1.05,
+      },
+      {
+        variable: 'districts.industry.production.fuel',
+        multiplier: 1.05,
+      },
+    ],
+  },
+  improved_industry_2: {
+    id: 'improved_industry_2',
+    tags: ['engineering', 'production'],
+    cost: 1,
+    requires: ['improved_industry_1'],
+    precedes: ['improved_industry_3'],
+    effects: [
+      {
+        variable: 'districts.industry.production.alloys',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'districts.industry.production.consumer_goods',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'districts.industry.production.fuel',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  improved_industry_3: {
+    id: 'improved_industry_3',
+    tags: ['engineering', 'production'],
+    cost: 1,
+    requires: ['improved_industry_2'],
+    effects: [
+      {
+        variable: 'districts.industry.production.alloys',
+        multiplier: 1.15,
+      },
+      {
+        variable: 'districts.industry.production.consumer_goods',
+        multiplier: 1.15,
+      },
+      {
+        variable: 'districts.industry.production.fuel',
+        multiplier: 1.15,
       },
     ],
   },
@@ -1034,7 +1149,10 @@ generate_sequence('ancient_refinery_structure', ['engineering', 'construction'],
 generate_sequence('city_structure', ['engineering', 'construction'], 'districts.city.cost.minerals',
   {multiplierIncrement: -0.1},
   ['district_cost_reduction']);
-
+/** industry: reduce initial mineral cost */
+generate_sequence('industry_structure', ['engineering', 'construction'], 'districts.industry.cost.minerals',
+  {multiplierIncrement: -0.1},
+  ['district_cost_reduction']); // TODO
 
 /**
  * Generates a sequence of technologies with increasing cost and effect.
