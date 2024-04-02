@@ -1,5 +1,5 @@
-import {Body, Controller, ForbiddenException, Get, Param, Patch} from '@nestjs/common';
-import {ApiOkResponse, ApiOperation, ApiTags} from '@nestjs/swagger';
+import {Body, Controller, ForbiddenException, Get, Param, Patch, Query} from '@nestjs/common';
+import {ApiOkResponse, ApiOperation, ApiQuery, ApiTags} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
 import {Throttled} from '../util/throttled.decorator';
@@ -10,6 +10,7 @@ import {SystemService} from './system.service';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {EmpireService} from '../empire/empire.service';
+import {MONGO_ID_FORMAT} from '../util/schema';
 
 @Controller('games/:game/systems')
 @ApiTags('Game Systems')
@@ -25,10 +26,16 @@ export class SystemController {
 
   @Get()
   @ApiOkResponse({type: [System]})
+  @ApiQuery({
+    name: 'owner',
+    description: 'Filter systems by owner.',
+    ...MONGO_ID_FORMAT,
+  })
   async findAll(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
+    @Query('owner', ObjectIdPipe) owner?: Types.ObjectId,
   ): Promise<System[]> {
-    return this.systemService.findAll({game});
+    return this.systemService.findAll({game, owner});
   }
 
   @Get(':id')
