@@ -5,14 +5,14 @@ export const DISTRICTS = {
     id: 'city',
     chance: {},
     cost: {
-      minerals: 100,
+      minerals: 100, // city_structure tech tree
     },
     upkeep: {
-      energy: 10,
-      consumer_goods: 5,
+      energy: 10, // efficient_city tech tree
+      consumer_goods: 5, // efficient_city tech tree
     },
     production: {
-      credits: 25,
+      credits: 25, // city_production tech tree
     },
   },
   // basic resource districts. cost should be around 75, upkeep around 5, production around 10
