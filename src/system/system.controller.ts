@@ -7,7 +7,7 @@ import {Validated} from '../util/validated.decorator';
 import {UpdateSystemDto} from './system.dto';
 import {System} from './system.schema';
 import {SystemService} from './system.service';
-import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
+import {notFound, NotFound, ObjectIdPipe, OptionalObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {EmpireService} from '../empire/empire.service';
 import {MONGO_ID_FORMAT} from '../util/schema';
@@ -33,9 +33,9 @@ export class SystemController {
   })
   async findAll(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
-    @Query('owner', ObjectIdPipe) owner?: Types.ObjectId,
+    @Query('owner', OptionalObjectIdPipe) owner?: Types.ObjectId | undefined,
   ): Promise<System[]> {
-    return this.systemService.findAll({game, owner});
+    return this.systemService.findAll(owner ? {game, owner} : {game});
   }
 
   @Get(':id')
