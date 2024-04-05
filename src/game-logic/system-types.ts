@@ -1,6 +1,30 @@
 import {SystemType} from './types';
 
 export const SYSTEM_TYPES = {
+  uninhabitable_0: {
+    id: 'uninhabitable_0',
+    chance: 2,
+    capacity_range: [0, 0],
+    district_percentage: 0,
+  },
+  uninhabitable_1: {
+    id: 'uninhabitable_1',
+    chance: 4,
+    capacity_range: [10, 15],
+    district_percentage: 0,
+  },
+  uninhabitable_2: {
+    id: 'uninhabitable_2',
+    chance: 4,
+    capacity_range: [15, 25],
+    district_percentage: 0,
+  },
+  uninhabitable_3: {
+    id: 'uninhabitable_3',
+    chance: 2,
+    capacity_range: [25, 30],
+    district_percentage: 0,
+  },
   regular: {
     id: 'regular',
     chance: 10,

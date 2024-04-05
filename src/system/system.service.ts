@@ -224,9 +224,14 @@ export class SystemService extends MongooseRepository<System> {
 
   generateDistricts(system: SystemDocument, empire: Empire) {
     // Set slots for generic districts to capacity
+    const nDistricts = SYSTEM_TYPES[system.type].district_percentage * system.capacity;
+    if (!nDistricts) {
+      return;
+    }
+
     for (const district of Object.values(DISTRICTS)) {
       if (!('default' in district.chance)) {
-        system.districtSlots[district.id] = system.capacity;
+        system.districtSlots[district.id] = nDistricts;
       }
     }
 
@@ -243,11 +248,10 @@ export class SystemService extends MongooseRepository<System> {
     calculateVariables(districtChances, empire);
 
     //Generate random districts depending on the chances
-    this.randomDistricts(system, districtChances);
+    this.randomDistricts(system, nDistricts, districtChances);
   }
 
-  private randomDistricts(system: SystemDocument, districtChances: Partial<Record<Variable, number>>) {
-    const nDistricts = SYSTEM_TYPES[system.type].district_percentage * system.capacity;
+  private randomDistricts(system: SystemDocument, nDistricts: number, districtChances: Partial<Record<Variable, number>>) {
     for (let i = 0; i < nDistricts; i++) {
       const type = Object.entries(districtChances).randomWeighted(i => i[1])[0] as Variable;
 
