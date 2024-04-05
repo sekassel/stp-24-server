@@ -8,11 +8,11 @@ export const DISTRICTS = {
       minerals: 100, // city_structure tech tree
     },
     upkeep: {
-      energy: 10, // efficient_city tech tree
-      consumer_goods: 5, // efficient_city tech tree
+      energy: 5, // efficient_city tech tree
+      consumer_goods: 2, // efficient_city tech tree
     },
     production: {
-      credits: 25, // city_production tech tree
+      credits: 12, // city_production tech tree
     },
   },
   // basic resource districts. cost should be around 75, upkeep around 5, production around 10
@@ -29,10 +29,10 @@ export const DISTRICTS = {
       minerals: 75, // quantum_cost_reduction tech tree
     },
     upkeep: { // low_maintenance_power_grids tech tree
-      minerals: 1,
+      minerals: 2,
     },
     production: { // energetic_terraforming tech tree
-      energy: 10,
+      energy: 30,
     },
   },
   mining: {
@@ -49,11 +49,11 @@ export const DISTRICTS = {
       energy: 25, // nano_excavator_optimization tech tree
     },
     upkeep: { // autonomous_mining_protocols tech tree
-      energy: 1,
-      fuel: 1,
+      energy: 4,
+      fuel: 2,
     },
     production: { //improved_extraction_tech_1 tech tree
-      minerals: 12,
+      minerals: 24,
     },
   },
   agriculture: {
@@ -66,11 +66,11 @@ export const DISTRICTS = {
       energy: 75, // permaculture_ecosystem_engineering tech tree
     },
     upkeep: {
-      energy: 1, // self_replenishment tech tree
-      fuel: 1,
+      energy: 2, // self_replenishment tech tree
+      fuel: 3,
     },
     production: {
-      food: 12, // superior_crops tech tree
+      food: 16, // superior_crops tech tree
     },
   },
   // advanced resource districts. cost should be around 100, upkeep around 20, production around 10
@@ -81,8 +81,8 @@ export const DISTRICTS = {
       minerals: 100, // industry_structure tech tree
     },
     upkeep: {
-      energy: 10, // efficient_industry tech tree
-      minerals: 10, // efficient_industry tech tree
+      energy: 6, // efficient_industry tech tree
+      minerals: 8, // efficient_industry tech tree
     },
     production: {
       alloys: 5, // improved_industry tech tree

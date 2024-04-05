@@ -9,19 +9,19 @@ export const SYSTEM_TYPES = {
   },
   energy: {
     id: 'energy',
-    chance: 3,
+    chance: 8,
     capacity_range: [12, 25],
     district_percentage: 1,
   },
   mining: {
     id: 'mining',
-    chance: 3,
+    chance: 8,
     capacity_range: [13, 28],
     district_percentage: 1,
   },
   agriculture: {
     id: 'agriculture',
-    chance: 3,
+    chance: 8,
     capacity_range: [15, 30],
     district_percentage: 1,
   },
