@@ -118,6 +118,8 @@ export class GameLogicService {
       this.popGrowth(systems, variables);
     }
 
+    this.migratePopulation(systems, empire);
+
     // ensure empire population is up to date
     empire.resources.population = systems.map(s => s.population).sum();
 
@@ -149,6 +151,49 @@ export class GameLogicService {
     } else {
       empire.resources[resource] -= amount;
       return true;
+    }
+  }
+
+  private migratePopulation(systems: SystemDocument[], empire: EmpireDocument) {
+    const migrationSources = systems.filter(s => s.population > s.capacity);
+    const migrationTargets = systems.filter(s => s.population < s.capacity);
+
+    // how many pops can migrate
+    const totalMigration = migrationSources.map(s => s.population - s.capacity).sum();
+    // how many pops can be accepted
+    const totalCapacity = migrationTargets.map(s => s.capacity - s.population).sum();
+    const migratingPops = Math.min(totalMigration, totalCapacity) * 0.1;
+    if (!migratingPops) {
+      return;
+    }
+
+    // lets say there are 4 systems:
+    // A: 20/30
+    // B: 25/30
+    // C: 40/30
+    // D: 50/30
+    // totalMigration should be (40-30) + (50-30) = 10 + 20 = 30
+    // totalCapacity should be (30-20) + (30-25) = 10 + 5 = 15
+    // so we can only migrate 15 pops
+    // C should lose (40-30) / 30 * 15 = 5 pops
+    // D should lose (50-30) / 30 * 15 = 10 pops
+    // A should gain (30-20) / 15 * 15 = 10 pops
+    // B should gain (30-25) / 15 * 15 = 5 pops
+
+    console.log(`----- Migrating ${migratingPops} pops -----`);
+
+    for (const system of migrationSources) {
+      const migrationFraction = (system.population - system.capacity) / totalMigration;
+      const migrationAmount = migratingPops * migrationFraction;
+      system.population -= migrationAmount;
+      console.log(`Migrating from ${system.id}: (${system.population}-${system.capacity})/${totalMigration} * ${migratingPops} = ${migrationAmount}`);
+    }
+
+    for (const system of migrationTargets) {
+      const migrationFraction = (system.capacity - system.population) / totalCapacity;
+      const migrationAmount = migratingPops * migrationFraction;
+      system.population += migrationAmount;
+      console.log(`Migrating to ${system.id}: (${system.capacity}-${system.population})/${totalCapacity} * ${migratingPops} = ${migrationAmount}`);
     }
   }
 
