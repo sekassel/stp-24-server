@@ -367,7 +367,7 @@ export class GameLogicService {
     items.push({
       variable: 'technologies.unlocked',
       count: empire.technologies.length,
-      subtotal: spentResearch / 100,
+      subtotal: spentResearch,
     });
     return {
       total: items.map(item => item.subtotal).sum(),
