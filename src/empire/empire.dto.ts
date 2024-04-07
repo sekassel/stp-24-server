@@ -10,6 +10,7 @@ export class ReadEmpireDto extends OmitType(Empire, [
 
 export class EmpireTemplate extends PickType(Empire, [
   'name',
+  'description',
   'color',
   'flag',
   'homeSystem',

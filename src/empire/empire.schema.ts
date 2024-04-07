@@ -37,6 +37,12 @@ export class Empire extends GlobalSchema {
   name: string;
 
   @Prop()
+  @ApiPropertyOptional({description: 'Optional description/lore for this empire.'})
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @Prop()
   @ApiProperty()
   @IsHexColor()
   color: string;
