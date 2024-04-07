@@ -13,8 +13,9 @@ class GameWithPassword extends Game {
 export class CreateGameDto extends PickType(GameWithPassword, [
   'name',
   'password',
-  'started',
   'settings',
+  'started',
+  'speed',
 ] as const) {
 }
 

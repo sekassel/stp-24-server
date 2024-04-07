@@ -1,7 +1,7 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {Type} from 'class-transformer';
-import {IsBoolean, IsInt, IsNotEmpty, IsOptional, Max, MaxLength, Min, ValidateNested} from 'class-validator';
+import {IsBoolean, IsIn, IsInt, IsNotEmpty, IsOptional, Max, MaxLength, Min, ValidateNested} from 'class-validator';
 import {Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {Doc, Ref} from '@mean-stream/nestx';
@@ -37,6 +37,15 @@ export class Game extends GlobalSchema {
   @IsOptional()
   @IsBoolean()
   started?: boolean;
+
+  @Prop({default: 1})
+  @ApiProperty({
+    description: 'The speed of the game in x*15 seconds per period.',
+    default: 1,
+    enum: [0, 1, 2, 4],
+  })
+  @IsIn([0, 1, 2, 4])
+  speed?: boolean;
 
   @Prop()
   @ApiPropertyOptional()

@@ -73,7 +73,7 @@ export class GameController {
     if (!user._id.equals(existing.owner)) {
       throw new ForbiddenException('Only the owner can change the game.');
     }
-    if (existing.started) {
+    if (existing.started && !(Object.keys(dto).length === 1 && dto.speed !== undefined)) {
       throw new ConflictException('Cannot change a running game.');
     }
     return this.gameService.update(id, dto);

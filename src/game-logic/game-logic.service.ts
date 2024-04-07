@@ -25,8 +25,8 @@ export class GameLogicService {
   ) {
   }
 
-  async updateGames() {
-    const games = await this.gameService.findAll({started: true});
+  async updateGames(speed: number) {
+    const games = await this.gameService.findAll({started: true, speed});
     const gameIds = games.map(game => game._id);
     const empires = await this.empireService.findAll({game: {$in: gameIds}});
     const systems = await this.systemService.findAll({game: {$in: gameIds}});
@@ -226,6 +226,8 @@ export class GameLogicService {
       item.subtotal += systemGrowth;
       total += systemGrowth;
     }
+
+    // TODO migration
 
     return {
       total,

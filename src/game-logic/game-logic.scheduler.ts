@@ -9,8 +9,20 @@ export class GameLogicScheduler {
   ) {
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
-  async updateGames() {
-    return this.gameLogicService.updateGames();
+  // Games with speed 0 are not updated, aka paused
+
+  @Cron("*/15 * * * * *") // Every 15 seconds
+  async updateGames1() {
+    return this.gameLogicService.updateGames(1);
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async updateGames2() {
+    return this.gameLogicService.updateGames(2);
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async updateGames4() {
+    return this.gameLogicService.updateGames(4);
   }
 }
