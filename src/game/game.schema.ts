@@ -45,7 +45,7 @@ export class Game extends GlobalSchema {
     enum: [0, 1, 2, 4],
   })
   @IsIn([0, 1, 2, 4])
-  speed?: boolean;
+  speed?: number;
 
   @Prop()
   @ApiPropertyOptional()
