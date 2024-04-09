@@ -1,7 +1,7 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Types} from 'mongoose';
-import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
-import {Doc, Ref} from '@mean-stream/nestx';
+import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema, MONGO_ID_FORMAT} from '../util/schema';
+import {Doc, IsObjectId, OptionalRef, Ref} from '@mean-stream/nestx';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {
   ArrayMaxSize,
@@ -71,14 +71,12 @@ export class Empire extends GlobalSchema {
   @Max(MAX_EMPIRES)
   portrait: number;
 
-  @Prop({type: String})
   @ApiPropertyOptional({
-    description: 'The type of home system for this empire. Random if not specified.',
-    enum: Object.keys(SYSTEM_TYPES),
+    ...MONGO_ID_FORMAT,
+    description: 'The home system of this empire. Undefined until systems are generated',
   })
-  @IsOptional()
-  @IsIn(Object.keys(SYSTEM_TYPES))
-  homeSystem?: SystemTypeName;
+  @OptionalRef('System')
+  homeSystem?: Types.ObjectId;
 
   @Prop()
   @ApiProperty({

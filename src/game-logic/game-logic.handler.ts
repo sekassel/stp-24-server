@@ -5,10 +5,12 @@ import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {SystemDocument} from '../system/system.schema';
 import {SYSTEM_UPGRADES} from './system-upgrade';
+import {MemberService} from '../member/member.service';
 
 @Injectable()
 export class GameLogicHandler {
   constructor(
+    private memberService: MemberService,
     private empireService: EmpireService,
     private systemService: SystemService,
   ) {
@@ -20,7 +22,18 @@ export class GameLogicHandler {
       return;
     }
 
-    const empires = await this.empireService.initEmpires(game);
+    const existingEmpires = await this.empireService.count({
+      game: game._id,
+    });
+    if (existingEmpires) {
+      return;
+    }
+
+    const members = await this.memberService.findAll({
+      game: game._id,
+      empire: {$exists: true},
+    });
+    const empires = await this.empireService.initEmpires(members);
     if (!empires.length) {
       // game was already started
       return;
@@ -30,7 +43,9 @@ export class GameLogicHandler {
     const homeSystems = new Set<string>();
 
     // select a home system for each empire
-    for (const empire of empires) {
+    for (let i = 0; i < empires.length; i++){
+      const empire = empires[i];
+      const member = members[i];
       let homeSystem: SystemDocument;
       do {
         homeSystem = systems.random();
@@ -44,8 +59,8 @@ export class GameLogicHandler {
       homeSystem.population = empire.resources.population;
       homeSystem.upgrade = 'developed';
       homeSystem.capacity *= SYSTEM_UPGRADES.developed.capacity_multiplier;
-      if (empire.homeSystem) {
-        homeSystem.type = empire.homeSystem;
+      if (member.empire!.homeSystem) {
+        homeSystem.type = member.empire!.homeSystem;
       }
       this.systemService.generateDistricts(homeSystem, empire);
       // on a regular system, we will have 5 district types so 15 in total.
@@ -61,8 +76,10 @@ export class GameLogicHandler {
         'refinery',
       ];
       // then 3 pops will be unemployed initially.
+      empire.homeSystem = homeSystem._id;
     }
 
+    await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
   }
 }

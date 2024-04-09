@@ -16,6 +16,7 @@ import {Game} from '../game/game.schema';
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
 import {UserDocument} from '../user/user.schema';
 import {AggregateItem, AggregateResult} from '../game-logic/aggregates';
+import {Member} from '../member/member.schema';
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -228,20 +229,8 @@ export class EmpireService extends MongooseRepository<Empire> {
     }
   }
 
-  async initEmpires(game: Game): Promise<EmpireDocument[]> {
-    const existingEmpires = await this.findAll({
-      game: game._id,
-    });
-    if (existingEmpires.length) {
-      return [];
-    }
-
-    const members = await this.memberService.findAll({
-      game: game._id,
-    });
-    return this.createMany(members
-      .filter(m => m.empire)
-      .map(member => {
+  async initEmpires(members: Member[]): Promise<EmpireDocument[]> {
+    return this.createMany(members.map(member => {
         const resourceVariables: Record<Variable & `resources.${string}`, number> = flatten(RESOURCES, 'resources.');
         calculateVariables(resourceVariables, {
           traits: member.empire!.traits,
@@ -253,10 +242,11 @@ export class EmpireService extends MongooseRepository<Empire> {
         }
         return ({
           ...member.empire!,
-          game: game._id,
+          game: member.game,
           user: member.user,
           technologies: [],
           resources,
+          homeSystem: undefined,
         });
       })
     );
