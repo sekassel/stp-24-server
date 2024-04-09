@@ -6,6 +6,7 @@ import {SystemService} from '../system/system.service';
 import {SystemDocument} from '../system/system.schema';
 import {SYSTEM_UPGRADES} from './system-upgrade';
 import {MemberService} from '../member/member.service';
+import {DistrictName} from './districts';
 
 @Injectable()
 export class GameLogicHandler {
@@ -63,9 +64,26 @@ export class GameLogicHandler {
         homeSystem.type = member.empire!.homeSystem;
       }
       this.systemService.generateDistricts(homeSystem, empire);
-      // on a regular system, we will have 5 district types so 15 in total.
-      homeSystem.districts = Object.fromEntries(Object.keys(homeSystem.districtSlots).map(district => [district, 3]));
-      // plus 7 buildings, so 22 in total.
+
+      // every home system starts with 15 districts
+      const baseDistricts: DistrictName[] = [
+        'city',
+        'industry',
+        'mining',
+        'energy',
+        'agriculture',
+      ];
+      const baseDistrictCount = 3;
+      for (const district of baseDistricts) {
+        homeSystem.districts[district] = baseDistrictCount;
+        if (!homeSystem.districtSlots[district] || homeSystem.districtSlots[district]! < baseDistrictCount) {
+          homeSystem.districtSlots[district] = baseDistrictCount;
+          homeSystem.markModified('districtSlots');
+        }
+      }
+      homeSystem.markModified('districts');
+
+      // plus 7 buildings, so 22 jobs in total
       homeSystem.buildings = [
         'power_plant',
         'mine',
@@ -75,6 +93,12 @@ export class GameLogicHandler {
         'factory',
         'refinery',
       ];
+
+      const totalJobs = baseDistricts.length * baseDistrictCount + homeSystem.buildings.length;
+      if (homeSystem.capacity < totalJobs) {
+        homeSystem.capacity = totalJobs;
+      }
+
       // then 3 pops will be unemployed initially.
       empire.homeSystem = homeSystem._id;
     }
