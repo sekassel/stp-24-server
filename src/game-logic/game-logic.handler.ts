@@ -7,6 +7,7 @@ import {SystemDocument} from '../system/system.schema';
 import {SYSTEM_UPGRADES} from './system-upgrade';
 import {MemberService} from '../member/member.service';
 import {DistrictName} from './districts';
+import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from './constants';
 
 @Injectable()
 export class GameLogicHandler {
@@ -47,14 +48,7 @@ export class GameLogicHandler {
     for (let i = 0; i < empires.length; i++){
       const empire = empires[i];
       const member = members[i];
-      let homeSystem: SystemDocument;
-      do {
-        homeSystem = systems.random();
-      } while (
-        homeSystems.has(homeSystem._id.toString())
-        || Object.keys(homeSystem.links).some(link => homeSystems.has(link))
-      );
-      homeSystems.add(homeSystem._id.toString());
+      const homeSystem = this.selectHomeSystem(systems, homeSystems);
 
       homeSystem.owner = empire._id;
       homeSystem.population = empire.resources.population;
@@ -66,35 +60,12 @@ export class GameLogicHandler {
       this.systemService.generateDistricts(homeSystem, empire);
 
       // every home system starts with 15 districts
-      const baseDistricts: DistrictName[] = [
-        'city',
-        'industry',
-        'mining',
-        'energy',
-        'agriculture',
-      ];
-      const baseDistrictCount = 3;
-      for (const district of baseDistricts) {
-        homeSystem.districts[district] = baseDistrictCount;
-        if (!homeSystem.districtSlots[district] || homeSystem.districtSlots[district]! < baseDistrictCount) {
-          homeSystem.districtSlots[district] = baseDistrictCount;
-          homeSystem.markModified('districtSlots');
-        }
-      }
-      homeSystem.markModified('districts');
+      this.generateDistricts(homeSystem);
 
       // plus 7 buildings, so 22 jobs in total
-      homeSystem.buildings = [
-        'power_plant',
-        'mine',
-        'farm',
-        'research_lab',
-        'foundry',
-        'factory',
-        'refinery',
-      ];
+      homeSystem.buildings = HOMESYSTEM_BUILDINGS;
 
-      const totalJobs = baseDistricts.length * baseDistrictCount + homeSystem.buildings.length;
+      const totalJobs = Object.values(homeSystem.districts).sum() + homeSystem.buildings.length;
       if (homeSystem.capacity < totalJobs) {
         homeSystem.capacity = totalJobs;
       }
@@ -105,5 +76,28 @@ export class GameLogicHandler {
 
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
+  }
+
+  private selectHomeSystem(systems: SystemDocument[], homeSystems: Set<string>) {
+    let homeSystem: SystemDocument;
+    do {
+      homeSystem = systems.random();
+    } while (
+      homeSystems.has(homeSystem._id.toString())
+      || Object.keys(homeSystem.links).some(link => homeSystems.has(link))
+      );
+    homeSystems.add(homeSystem._id.toString());
+    return homeSystem;
+  }
+
+  private generateDistricts(homeSystem: SystemDocument) {
+    for (const district of HOMESYSTEM_DISTRICTS) {
+      homeSystem.districts[district] = HOMESYSTEM_DISTRICT_COUNT;
+      if (!homeSystem.districtSlots[district] || homeSystem.districtSlots[district]! < HOMESYSTEM_DISTRICT_COUNT) {
+        homeSystem.districtSlots[district] = HOMESYSTEM_DISTRICT_COUNT;
+        homeSystem.markModified('districtSlots');
+      }
+    }
+    homeSystem.markModified('districts');
   }
 }

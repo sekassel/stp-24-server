@@ -1,6 +1,27 @@
+import {DistrictName} from './districts';
+import {BuildingName} from './buildings';
+
 export const MAX_EMPIRES = 16;
 export const MAX_TRAITS = 5;
 export const MAX_TRAIT_POINTS = 5;
+
+export const HOMESYSTEM_DISTRICTS: DistrictName[] = [
+  'city',
+  'industry',
+  'mining',
+  'energy',
+  'agriculture',
+];
+export const HOMESYSTEM_DISTRICT_COUNT = 3;
+export const HOMESYSTEM_BUILDINGS: BuildingName[] = [
+  'power_plant',
+  'mine',
+  'farm',
+  'research_lab',
+  'foundry',
+  'factory',
+  'refinery',
+];
 
 export const COLOR_PALETTE = [
   '#ff0000',
