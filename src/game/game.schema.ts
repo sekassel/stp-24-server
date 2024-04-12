@@ -40,11 +40,11 @@ export class Game extends GlobalSchema {
 
   @Prop({default: 1})
   @ApiProperty({
-    description: 'The speed of the game in x*15 seconds per period.',
+    description: 'The speed of the game in periods per minute.',
     default: 1,
-    enum: [0, 1, 2, 4],
+    enum: [0, 1, 2, 3],
   })
-  @IsIn([0, 1, 2, 4])
+  @IsIn([0, 1, 2, 3])
   speed?: number;
 
   @Prop({default: 0})
