@@ -47,6 +47,15 @@ export class Game extends GlobalSchema {
   @IsIn([0, 1, 2, 4])
   speed?: number;
 
+  @Prop({default: 0})
+  @ApiProperty({
+    description: 'The current period of the game.',
+    default: 0,
+  })
+  @IsInt()
+  @Min(0)
+  period: number;
+
   @Prop()
   @ApiPropertyOptional()
   @IsOptional()

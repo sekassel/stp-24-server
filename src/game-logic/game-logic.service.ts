@@ -31,12 +31,14 @@ export class GameLogicService {
     const empires = await this.empireService.findAll({game: {$in: gameIds}});
     const systems = await this.systemService.findAll({game: {$in: gameIds}});
     for (const game of games) {
+      game.$inc('period', 1);
       const gameEmpires = empires.filter(empire => empire.game.equals(game._id));
       const gameSystems = systems.filter(system => system.game.equals(game._id));
       this.updateGame(game, gameEmpires, gameSystems);
     }
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
+    await this.gameService.saveAll(games);
     for (const game of games) {
       this.gameService.emit('ticked', game);
     }
