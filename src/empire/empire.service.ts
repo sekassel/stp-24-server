@@ -190,7 +190,7 @@ export class EmpireService extends MongooseRepository<Empire> {
     return {items, total};
   }
 
-  private resourceTrading(empire: Empire, resources: Record<ResourceName, number>) {
+  private resourceTrading(empire: EmpireDocument, resources: Record<ResourceName, number>) {
     const resourceVariables = getVariables('resources');
     calculateVariables(resourceVariables, empire);
     const marketFee = calculateVariable('empire.market.fee', empire);
@@ -227,6 +227,7 @@ export class EmpireService extends MongooseRepository<Empire> {
         empire.resources[resource as ResourceName] += resourceAmount;
       }
     }
+    empire.markModified('resources');
   }
 
   async initEmpires(members: Member[]): Promise<EmpireDocument[]> {
