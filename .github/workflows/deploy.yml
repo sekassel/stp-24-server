@@ -36,7 +36,7 @@ jobs:
         with:
           context: .
           push: true
-          tags:
+          tags: |
             ${{ secrets.DOCKER_REGISTRY }}/stp/server-24:${{ steps.deployment.outputs.version }}
             ${{ secrets.DOCKER_REGISTRY }}/stp/server-24:${{ steps.deployment.outputs.major }}
           cache-to: type=gha,mode=max
