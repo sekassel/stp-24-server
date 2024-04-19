@@ -391,7 +391,7 @@ export class GameLogicService {
     const base = fn(empire, systems);
     const compareResult = fn(compareEmpire, compareSystems);
     return {
-      total: Math.log2(base.total / compareResult.total),
+      total: Math.log2(compareResult.total / base.total),
       items: [],
     };
   }
