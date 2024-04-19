@@ -5,14 +5,13 @@ import {EventRepository, EventService, MongooseRepository, notFound} from '@mean
 import {Empire, EmpireDocument} from './empire.schema';
 import {EmpireTemplate, ReadEmpireDto, UpdateEmpireDto} from './empire.dto';
 import {MemberService} from '../member/member.service';
-import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MAX_EMPIRES} from '../game-logic/constants';
+import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MIN_EMPIRES} from '../game-logic/constants';
 import {generateTraits} from '../game-logic/traits';
 import {TECH_CATEGORIES, TECHNOLOGIES} from '../game-logic/technologies';
 import {UserService} from '../user/user.service';
 import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
 import {Technology, Variable} from '../game-logic/types';
 import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
-import {Game} from '../game/game.schema';
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
 import {UserDocument} from '../user/user.schema';
 import {AggregateItem, AggregateResult} from '../game-logic/aggregates';
@@ -46,8 +45,8 @@ export class EmpireService extends MongooseRepository<Empire> {
     return {
       name: EMPIRE_PREFIX_PALETTE.random() + ' ' + EMPIRE_SUFFIX_PALETTE.random(),
       color: COLOR_PALETTE.random(),
-      flag: Math.randInt(MAX_EMPIRES) + 1,
-      portrait: Math.randInt(MAX_EMPIRES) + 1,
+      flag: Math.randInt(MIN_EMPIRES),
+      portrait: Math.randInt(MIN_EMPIRES),
       traits: generateTraits(),
     };
   }

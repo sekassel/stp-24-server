@@ -51,11 +51,11 @@ export class Empire extends GlobalSchema {
   @ApiProperty({
     type: 'integer',
     description: 'ID of the flag this empire will use.',
-    minimum: 1,
+    minimum: 0,
     maximum: MAX_EMPIRES,
   })
   @IsInt()
-  @Min(1)
+  @Min(0)
   @Max(MAX_EMPIRES)
   flag: number;
 
@@ -63,11 +63,11 @@ export class Empire extends GlobalSchema {
   @ApiProperty({
     type: 'integer',
     description: 'ID of the portrait this empire\'s population will use.',
-    minimum: 1,
+    minimum: 0,
     maximum: MAX_EMPIRES,
   })
   @IsInt()
-  @Min(1)
+  @Min(0)
   @Max(MAX_EMPIRES)
   portrait: number;
 

@@ -1,7 +1,11 @@
 import {DistrictName} from './districts';
 import {BuildingName} from './buildings';
 
-export const MAX_EMPIRES = 16;
+/** How many different flags and portraits are required for clients */
+export const MIN_EMPIRES = 16;
+/** How many different flags and portraits are available */
+export const MAX_EMPIRES = 32;
+
 export const MAX_TRAITS = 5;
 export const MAX_TRAIT_POINTS = 5;
 
