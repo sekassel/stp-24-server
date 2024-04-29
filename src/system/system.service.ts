@@ -83,6 +83,11 @@ export class SystemService extends MongooseRepository<System> {
     let amountOfDistrictsToBeBuilt = 0;
 
     calculateVariables(districtVariables, empire);
+
+    for (const [district] of Object.entries(system.districts)) {
+      builtDistrictsCount += allDistricts[district as DistrictName] ?? 0
+    }
+
     for (const [district, amount] of Object.entries(districts)) {
       if (amount === 0) {
         continue;
@@ -90,7 +95,6 @@ export class SystemService extends MongooseRepository<System> {
       const districtName = district as DistrictName;
       const districtTypeSlots = districtSlots[districtName];
       const builtDistrictsOfType = allDistricts[districtName] ?? 0;
-      builtDistrictsCount += builtDistrictsOfType;
       amountOfDistrictsToBeBuilt += amount ?? 0;
 
       // Check if districts don't exceed districtSlots
