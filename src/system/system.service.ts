@@ -79,15 +79,10 @@ export class SystemService extends MongooseRepository<System> {
     const districtVariables = getVariables('districts');
     const districtSlots = {...system.districtSlots};
     const allDistricts = {...system.districts};
-    let builtDistrictsCount = 0;
+    const builtDistrictsCount = Object.values(system.districts).sum();
     let amountOfDistrictsToBeBuilt = 0;
 
     calculateVariables(districtVariables, empire);
-
-    for (const [district] of Object.entries(system.districts)) {
-      builtDistrictsCount += allDistricts[district as DistrictName] ?? 0
-    }
-
     for (const [district, amount] of Object.entries(districts)) {
       if (amount === 0) {
         continue;
