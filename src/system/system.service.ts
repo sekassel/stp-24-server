@@ -79,7 +79,7 @@ export class SystemService extends MongooseRepository<System> {
     const districtVariables = getVariables('districts');
     const districtSlots = {...system.districtSlots};
     const allDistricts = {...system.districts};
-    let builtDistrictsCount = 0;
+    const builtDistrictsCount = Object.values(system.districts).sum();
     let amountOfDistrictsToBeBuilt = 0;
 
     calculateVariables(districtVariables, empire);
@@ -90,7 +90,6 @@ export class SystemService extends MongooseRepository<System> {
       const districtName = district as DistrictName;
       const districtTypeSlots = districtSlots[districtName];
       const builtDistrictsOfType = allDistricts[districtName] ?? 0;
-      builtDistrictsCount += builtDistrictsOfType;
       amountOfDistrictsToBeBuilt += amount ?? 0;
 
       // Check if districts don't exceed districtSlots
@@ -196,8 +195,8 @@ export class SystemService extends MongooseRepository<System> {
 
   private addBuildings(system: SystemDocument, addBuildings: Partial<Record<BuildingName, number>>, costs: Record<BuildingName, [ResourceName, number][]>, empire: EmpireDocument) {
     //Check if there is enough capacity to build the new buildings
-    const capacityLeft = system.capacity - Object.values(system.districts).sum() + system.buildings.length;
-    if (Object.values(addBuildings).sum() > capacityLeft) {
+    const capacityLeft = system.capacity - Object.values(system.districts).sum() - system.buildings.length;
+    if (capacityLeft <= 0) {
       throw new BadRequestException(`Not enough capacity to build buildings. Capacity left: ${capacityLeft} Amount of new buildings: ${Object.values(addBuildings).sum()}`);
     }
 
