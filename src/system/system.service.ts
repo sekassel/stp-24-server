@@ -200,8 +200,8 @@ export class SystemService extends MongooseRepository<System> {
 
   private addBuildings(system: SystemDocument, addBuildings: Partial<Record<BuildingName, number>>, costs: Record<BuildingName, [ResourceName, number][]>, empire: EmpireDocument) {
     //Check if there is enough capacity to build the new buildings
-    const capacityLeft = system.capacity - Object.values(system.districts).sum() + system.buildings.length;
-    if (Object.values(addBuildings).sum() > capacityLeft) {
+    const capacityLeft = system.capacity - Object.values(system.districts).sum() - system.buildings.length;
+    if (capacityLeft <= 0) {
       throw new BadRequestException(`Not enough capacity to build buildings. Capacity left: ${capacityLeft} Amount of new buildings: ${Object.values(addBuildings).sum()}`);
     }
 
