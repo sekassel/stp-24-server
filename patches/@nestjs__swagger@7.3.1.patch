@@ -1,0 +1,14 @@
+diff --git a/dist/services/schema-object-factory.js b/dist/services/schema-object-factory.js
+index 089e8c703995499f81ebe34468321874472b3b88..6f93985352592bc820a6278f08dd3f633f6f865d 100644
+--- a/dist/services/schema-object-factory.js
++++ b/dist/services/schema-object-factory.js
+@@ -53,6 +53,9 @@ class SchemaObjectFactory {
+         if ((0, is_date_ctor_util_1.isDateCtor)(param.type)) {
+             return Object.assign(Object.assign({ format: 'date-time' }, param), { type: 'string' });
+         }
++        if (param.type?.name === 'ObjectId') {
++            return Object.assign(Object.assign({ format: 'objectid' }, param), { type: 'string' });
++        }
+         if (this.isBigInt(param.type)) {
+             return Object.assign(Object.assign({ format: 'int64' }, param), { type: 'integer' });
+         }
