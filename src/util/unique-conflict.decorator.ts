@@ -1,7 +1,8 @@
-import {applyDecorators, ArgumentsHost, Catch, ConflictException, UseFilters} from '@nestjs/common';
+import {applyDecorators, ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger, UseFilters} from '@nestjs/common';
 import {ApiConflictResponse} from '@nestjs/swagger';
 import {mongo} from 'mongoose';
 import {BaseExceptionFilter} from '@nestjs/core';
+import {MESSAGES} from '@nestjs/core/constants';
 
 // TODO move everything to @mean-stream/nestx
 
@@ -9,23 +10,36 @@ import {BaseExceptionFilter} from '@nestjs/core';
  * Converts a MongoServerError with code 11000 into a ConflictException with a configurable message.
  */
 @Catch(mongo.MongoServerError)
-class ConflictExceptionFilter extends BaseExceptionFilter {
+class ConflictExceptionFilter implements ExceptionFilter {
+  private logger = new Logger(ConflictExceptionFilter.name);
+
   constructor(
     private description: Partial<Record<string, string>>,
   ) {
-    super();
   }
 
   catch(exception: mongo.MongoServerError, host: ArgumentsHost): any {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
     if (exception.code !== 11000) {
-      return super.catch(exception, host);
+      this.logger.error(exception.message, exception.stack);
+      response.status(500).json({
+        statusCode: 500,
+        error: 'Internal Server Error',
+        message: MESSAGES.UNKNOWN_EXCEPTION_MESSAGE,
+      });
+      return;
     }
 
     const keyPattern = exception.keyPattern; // e.g. { username: 1 }
     const values = exception.keyValue; // e.g. { username: 'test' }
     const indexKey = Object.keys(keyPattern).join('_');
-    const http = new ConflictException(this.description[indexKey] ?? `Unique constraint violation on '${indexKey}' with value ${JSON.stringify(values)}.`);
-    return super.catch(http, host);
+    const message = this.description[indexKey] ?? `Unique constraint violation on '${indexKey}' with value ${JSON.stringify(values)}.`;
+    response.status(HttpStatus.CONFLICT).json({
+      statusCode: HttpStatus.CONFLICT,
+      error: 'Conflict',
+      message,
+    });
   }
 }
 
