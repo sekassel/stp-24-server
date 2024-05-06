@@ -58,7 +58,6 @@ export class SystemController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() dto: UpdateSystemDto,
   ): Promise<System | null> {
-    // TODO Promise.all
     const oldSystem = await this.systemService.find(id) ?? notFound(id);
     const userEmpire = await this.empireService.findOne({user: currentUser._id, game});
     const owner = oldSystem.owner ?? dto.owner;
