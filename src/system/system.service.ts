@@ -15,6 +15,7 @@ import {Empire, EmpireDocument} from "../empire/empire.schema";
 import {District, Variable} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 import {SystemGeneratorService} from "./systemgenerator.service";
+import {MemberService} from '../member/member.service';
 
 function getCosts(category: 'districts' | 'buildings', district: DistrictName | BuildingName, districtVariables: any): Record<ResourceName, number> {
   const districtCostKeys = Object.keys(districtVariables).filter(key =>
@@ -32,6 +33,7 @@ export class SystemService extends MongooseRepository<System> {
   constructor(
     @InjectModel(System.name) model: Model<System>,
     private eventEmitter: EventService,
+    private memberService: MemberService,
     private empireService: EmpireService,
     private systemGenerator: SystemGeneratorService,
   ) {
@@ -284,8 +286,9 @@ export class SystemService extends MongooseRepository<System> {
     return this.createMany(this.systemGenerator.generateMap(game));
   }
 
-  private emit(event: string, system: System): void {
+  private async emit(event: string, system: System) {
+    const members = await this.memberService.findAll({game: system.game}, {projection: {user: 1}});
     // TODO mask population, districts and buildings
-    this.eventEmitter.emit(`games.${system.game}.systems.${system._id}.${event}`, system);
+    this.eventEmitter.emit(`games.${system.game}.systems.${system._id}.${event}`, system, members.map(m => m.user.toString()));
   }
 }
