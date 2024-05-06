@@ -58,7 +58,10 @@ export class MemberController {
   @ApiCreatedResponse({type: Member})
   @ApiNotFoundResponse({description: 'Game not found.'})
   @ApiForbiddenResponse({description: 'Incorrect password.'})
-  @ApiConflictResponse({description: 'Game already started, user already joined, or invalid empire traits.'})
+  @ApiConflictResponse({
+    description: 'Game already started, user already joined, or invalid empire traits. ' +
+      'Note: Joining without an empire (i.e. as spectator) is always allowed.'
+  })
   @UniqueConflict<Member>({game_user: 'User is already a member of this game.'})
   async create(
     @AuthUser() currentUser: User,
