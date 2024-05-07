@@ -8,6 +8,7 @@ import {SystemService} from './system.service';
 import {EmpireModule} from '../empire/empire.module';
 import {SystemGeneratorService} from "./systemgenerator.service";
 import {ClusterGeneratorService} from "./clustergenerator.service";
+import {MemberModule} from '../member/member.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import {ClusterGeneratorService} from "./clustergenerator.service";
       schema: SystemSchema,
     }]),
     GameModule,
+    MemberModule,
     EmpireModule,
   ],
   controllers: [SystemController],
