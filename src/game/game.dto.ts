@@ -16,6 +16,7 @@ export class CreateGameDto extends PickType(GameWithPassword, [
   'settings',
   'started',
   'speed',
+  'maxMembers',
 ] as const) {
 }
 
