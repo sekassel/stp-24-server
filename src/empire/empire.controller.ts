@@ -22,7 +22,7 @@ export class EmpireController {
   }
 
   @Get()
-  @ApiOkResponse({type: [Empire]})
+  @ApiOkResponse({type: [ReadEmpireDto]})
   async findAll(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
   ): Promise<ReadEmpireDto[]> {
