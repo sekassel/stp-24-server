@@ -7,15 +7,17 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseBoolPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
-  ApiOperation,
+  ApiOperation, ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
@@ -48,8 +50,14 @@ export class GameController {
 
   @Get()
   @ApiOkResponse({type: [Game]})
-  async findAll(): Promise<Game[]> {
-    return this.gameService.findAll(undefined, {populate: 'members'});
+  @ApiQuery({
+    name: 'members',
+    description: 'Count the members of the game.',
+  })
+  async findAll(
+    @Query('members', new ParseBoolPipe({optional: true})) members?: boolean,
+  ): Promise<Game[]> {
+    return this.gameService.findAll(undefined, members ? {populate: 'members'} : {});
   }
 
   @Get(':id')
