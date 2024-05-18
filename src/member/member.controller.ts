@@ -147,11 +147,14 @@ export class MemberController {
     @Param('user', ObjectIdPipe) user: Types.ObjectId,
   ): Promise<Member | null> {
     const gameDoc = await this.gameService.find(game) ?? notFound(game);
-    if (!currentUser._id.equals(user)) {
-      throw new ForbiddenException('Cannot kick another user.');
-    }
     if (currentUser._id.equals(gameDoc.owner)) {
-      throw new ConflictException('Cannot leave game as owner.');
+      // owner can kick anyone but cannot leave
+      if (currentUser._id.equals(user)) {
+        throw new ConflictException('Cannot leave game as owner.');
+      }
+    } else if (!currentUser._id.equals(user)) {
+      // other users can only leave themselves
+      throw new ForbiddenException('Cannot kick another user.');
     }
     if (gameDoc.started) {
       throw new ConflictException('Cannot leave running game.');
