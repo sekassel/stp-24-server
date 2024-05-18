@@ -59,7 +59,7 @@ export class MemberController {
   @ApiNotFoundResponse({description: 'Game not found.'})
   @ApiForbiddenResponse({description: 'Incorrect password.'})
   @ApiConflictResponse({
-    description: 'Game already started, user already joined, or invalid empire traits. ' +
+    description: 'Game already started, too many members, user already joined, or invalid empire traits. ' +
       'Note: Joining without an empire (i.e. as spectator) is always allowed.'
   })
   @UniqueConflict<Member>({game_user: 'User is already a member of this game.'})
@@ -77,6 +77,13 @@ export class MemberController {
 
     if (gameDoc.started && member.empire) {
       throw new ConflictException('Game already started');
+    }
+
+    if (gameDoc.maxMembers) {
+      const nMembers = await this.memberService.count({game});
+      if (nMembers >= gameDoc.maxMembers) {
+        throw new ConflictException(`Maximum members (${gameDoc.maxMembers}) reached`);
+      }
     }
 
     this.checkTraits(member);

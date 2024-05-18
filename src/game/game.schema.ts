@@ -1,7 +1,18 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {Type} from 'class-transformer';
-import {IsBoolean, IsIn, IsInt, IsNotEmpty, IsOptional, Max, MaxLength, Min, ValidateNested} from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsPositive,
+  Max,
+  MaxLength,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import {Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {Doc, Ref} from '@mean-stream/nestx';
@@ -31,6 +42,17 @@ export class Game extends GlobalSchema {
 
   @Ref('User')
   owner: Types.ObjectId;
+
+  @ApiProperty()
+  @IsInt()
+  members: number;
+
+  @Prop()
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  maxMembers?: number;
 
   @Prop()
   @ApiPropertyOptional()
