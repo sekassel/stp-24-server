@@ -7,15 +7,17 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseBoolPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
-  ApiOperation,
+  ApiOperation, ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
@@ -48,15 +50,21 @@ export class GameController {
 
   @Get()
   @ApiOkResponse({type: [Game]})
-  async findAll(): Promise<Game[]> {
-    return this.gameService.findAll();
+  @ApiQuery({
+    name: 'members',
+    description: 'Count the members of the game.',
+  })
+  async findAll(
+    @Query('members', new ParseBoolPipe({optional: true})) members?: boolean,
+  ): Promise<Game[]> {
+    return this.gameService.findAll(undefined, members ? {populate: 'members'} : {});
   }
 
   @Get(':id')
   @ApiOkResponse({type: Game})
   @NotFound()
   async findOne(@Param('id', ObjectIdPipe) id: Types.ObjectId): Promise<Game | null> {
-    return this.gameService.find(id);
+    return this.gameService.find(id, {populate: 'members'});
   }
 
   @Patch(':id')
@@ -76,7 +84,7 @@ export class GameController {
     if (existing.started && !(Object.keys(dto).length === 1 && dto.speed !== undefined)) {
       throw new ConflictException('Cannot change a running game.');
     }
-    return this.gameService.update(id, dto);
+    return this.gameService.update(id, dto, {populate: 'members'});
   }
 
   @Delete(':id')
@@ -92,6 +100,6 @@ export class GameController {
     if (!user._id.equals(existing.owner)) {
       throw new ForbiddenException('Only the owner can delete the game.');
     }
-    return this.gameService.delete(id);
+    return this.gameService.delete(id, {populate: 'members'});
   }
 }
