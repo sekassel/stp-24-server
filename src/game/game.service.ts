@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
-import {Model, Types, UpdateQuery} from 'mongoose';
+import {Model, QueryOptions, Types, UpdateQuery} from 'mongoose';
 import {CreateGameDto, UpdateGameDto} from './game.dto';
 import {Game, GameDocument} from './game.schema';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
@@ -32,8 +32,8 @@ export class GameService extends MongooseRepository<Game> {
     return super.create((await this.hash(game)) as Omit<Game, keyof GlobalSchema>);
   }
 
-  async update(id: Types.ObjectId, game: UpdateGameDto | UpdateQuery<Game>): Promise<GameDocument | null> {
-    return super.update(id, await this.hash(game));
+  async update(id: Types.ObjectId, game: UpdateGameDto | UpdateQuery<Game>, options?: QueryOptions<Game>): Promise<GameDocument | null> {
+    return super.update(id, await this.hash(game), options);
   }
 
   emit(event: string, game: Game): void {
