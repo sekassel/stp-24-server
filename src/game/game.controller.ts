@@ -53,6 +53,7 @@ export class GameController {
   @ApiQuery({
     name: 'members',
     description: 'Count the members of the game.',
+    required: false,
   })
   async findAll(
     @Query('members', new ParseBoolPipe({optional: true})) members?: boolean,
