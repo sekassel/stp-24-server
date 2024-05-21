@@ -23,3 +23,16 @@
 ## Documentation
 
 * Clarified the behavior of the `POST .../members` endpoint wrt. spectators.
+
+# v1.1.0 (2024-05-21)
+
+## New Features
+
++ Added `members` and `maxMembers` to Games. [#2](https://github.com/sekassel/stp-24-server-tracker/issues/2)
++ Added the `members` boolean query parameter to `GET /games`.
++ The game owner can now kick other members before and during the game. [#3](https://github.com/sekassel/stp-24-server-tracker/issues/3)
+
+## Bugfixes
+
+* The `GET /games/:game/empires` endpoint now returns `ReadEmpireDto`s.
+* The `PATCH /games/:game` endpoint now updates the password correctly. [#4](https://github.com/sekassel/stp-24-server-tracker/issues/4)
