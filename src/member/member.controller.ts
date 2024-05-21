@@ -152,12 +152,16 @@ export class MemberController {
       if (currentUser._id.equals(user)) {
         throw new ConflictException('Cannot leave game as owner.');
       }
-    } else if (!currentUser._id.equals(user)) {
+    } else {
       // other users can only leave themselves
-      throw new ForbiddenException('Cannot kick another user.');
-    }
-    if (gameDoc.started) {
-      throw new ConflictException('Cannot leave running game.');
+      if (!currentUser._id.equals(user)) {
+        throw new ForbiddenException('Cannot kick another user.');
+      }
+      // other users cannot leave running games
+      // NB: the owner CAN kick members from a running game
+      if (gameDoc.started) {
+        throw new ConflictException('Cannot leave running game.');
+      }
     }
     return this.memberService.deleteOne({game, user});
   }
