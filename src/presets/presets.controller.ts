@@ -63,10 +63,9 @@ export class PresetsController {
     return Object.values(TECHNOLOGIES);
   }
 
-
   @Get('technologies/tree')
   @Header('Content-Type', 'image/svg+xml')
-  @ApiOperation({description: 'Get the tech tree as an SVG'})
+  @ApiOperation({summary: 'Get the tech tree as an SVG'})
   @ApiOkResponse({content: {'image/svg+xml': {schema: {type: 'string', format: 'svg'}}}})
   async getTechTree(
     @Res() response: Response,
@@ -149,13 +148,13 @@ export class PresetsController {
   }
 
   @Get('variables')
-  @ApiOperation({description: 'Get all variables and their default values'})
+  @ApiOperation({summary: 'Get all variables and their default values'})
   getVariables() {
     return getInitialVariables();
   }
 
   @Get('variables/effects')
-  @ApiOperation({description: 'Get all variables and the technologies and traits that affect them'})
+  @ApiOperation({summary: 'Get all variables and the technologies and traits that affect them'})
   getVariablesEffects() {
     const variables = Object.fromEntries(Object.keys(getInitialVariables()).map(k => [k, [] as string[]]));
     for (const technology of [...Object.values(TECHNOLOGIES), ...Object.values(TRAITS)]) {
