@@ -92,8 +92,8 @@ export class Empire extends GlobalSchema {
   @Prop({type: Object})
   @IsObject()
   @ApiProperty({
-    type: 'object',
-    properties: RESOURCES_SCHEMA_PROPERTIES,
+    description: 'Resources that this empire starts with. Defaults to 0 for all resources.',
+    ...RESOURCES_SCHEMA_PROPERTIES,
   })
   resources: Record<ResourceName, number>;
 

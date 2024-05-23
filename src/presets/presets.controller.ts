@@ -24,7 +24,9 @@ export class PresetsController {
   @Get('resources')
   @ApiOkResponse({
     schema: {
-      properties: Object.fromEntries(Object.keys(RESOURCES).map(k => [k, {$ref: getSchemaPath(Resource)}])),
+      description: 'A map of resource ID to resource',
+      type: 'object',
+      additionalProperties: {$ref: getSchemaPath(Resource)},
     },
   })
   getResources(): typeof RESOURCES {
@@ -44,7 +46,9 @@ export class PresetsController {
   @Get('system-types')
   @ApiOkResponse({
     schema: {
-      properties: Object.fromEntries(Object.keys(SYSTEM_TYPES).map(k => [k, {$ref: getSchemaPath(SystemType)}])),
+      description: 'A map of system type ID to system type',
+      type: 'object',
+      additionalProperties: {$ref: getSchemaPath(SystemType)},
     },
   })
   getSystemTypes(): typeof SYSTEM_TYPES {

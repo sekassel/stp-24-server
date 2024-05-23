@@ -1,9 +1,8 @@
-import {ResourceName, RESOURCES} from './resources';
+import {ResourceName} from './resources';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {VARIABLES} from './variables';
 import {SYSTEM_TYPES, SystemTypeName} from './system-types';
 import {SchemaObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
-import {ArrayMaxSize, ArrayMinSize, IsInt} from 'class-validator';
 
 export type DeepNumberKeys<T> = T extends Record<string, any> ? {
   [K in keyof T]-?: T[K] extends object ? `${K & string}.${DeepNumberKeys<T[K]>}` : T[K] extends number ? K & string : never;
@@ -126,11 +125,18 @@ export class Resource {
   credit_value?: number;
 }
 
-export const RESOURCES_SCHEMA_PROPERTIES = Object.fromEntries(Object.keys(RESOURCES).map(id => [id, {
-  type: 'integer',
-  default: 0,
-  minimum: 0,
-} satisfies SchemaObject]));
+export const RESOURCES_SCHEMA_PROPERTIES = {
+  example: {
+    energy: 10,
+    minerals: 20,
+  },
+  type: 'object',
+  additionalProperties: {
+    type: 'integer',
+    default: 0,
+    minimum: 0,
+  },
+};
 
 export class SystemType {
   @ApiProperty()
@@ -175,13 +181,13 @@ export class SystemUpgrade {
 
   @ApiProperty({
     description: 'The cost to upgrade the system, specified in various resources.',
-    properties: RESOURCES_SCHEMA_PROPERTIES,
+    ...RESOURCES_SCHEMA_PROPERTIES,
   })
   cost: Partial<Record<ResourceName, number>>;
 
   @ApiProperty({
     description: 'The ongoing upkeep of the system, specified in various resources, required to maintain its benefits.',
-    properties: RESOURCES_SCHEMA_PROPERTIES,
+    ...RESOURCES_SCHEMA_PROPERTIES,
   })
   upkeep: Partial<Record<ResourceName, number>>;
 
@@ -197,19 +203,19 @@ export class Building {
 
   @ApiProperty({
     description: 'The cost to construct the building, specified in various resources.',
-    properties: RESOURCES_SCHEMA_PROPERTIES,
+    ...RESOURCES_SCHEMA_PROPERTIES,
   })
   cost: Partial<Record<ResourceName, number>>;
 
   @ApiProperty({
     description: 'The ongoing upkeep of the building, specified in various resources, required to maintain operation.',
-    properties: RESOURCES_SCHEMA_PROPERTIES,
+    ...RESOURCES_SCHEMA_PROPERTIES,
   })
   upkeep: Partial<Record<ResourceName, number>>;
 
   @ApiProperty({
     description: 'The production output of the building, specified in various resources, that it contributes to the empire\'s economy.',
-    properties: RESOURCES_SCHEMA_PROPERTIES,
+    ...RESOURCES_SCHEMA_PROPERTIES,
   })
   production: Partial<Record<ResourceName, number>>;
 }
@@ -230,19 +236,19 @@ export class District {
 
   @ApiProperty({
     description: 'The cost to establish the district, specified in various resources.',
-    properties: RESOURCES_SCHEMA_PROPERTIES,
+    ...RESOURCES_SCHEMA_PROPERTIES,
   })
   cost: Partial<Record<ResourceName, number>>;
 
   @ApiProperty({
     description: 'The ongoing upkeep of the district, specified in various resources, required to maintain its benefits.',
-    properties: RESOURCES_SCHEMA_PROPERTIES,
+    ...RESOURCES_SCHEMA_PROPERTIES,
   })
   upkeep: Partial<Record<ResourceName, number>>;
 
   @ApiProperty({
     description: 'The production output of the district, specified in various resources, contributing to the empire\'s economy.',
-    properties: RESOURCES_SCHEMA_PROPERTIES,
+    ...RESOURCES_SCHEMA_PROPERTIES,
   })
   production: Partial<Record<ResourceName, number>>;
 }
