@@ -29,6 +29,7 @@ export class SystemController {
   @ApiQuery({
     name: 'owner',
     description: 'Filter systems by owner.',
+    required: false,
     ...MONGO_ID_FORMAT,
   })
   async findAll(
