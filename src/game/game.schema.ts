@@ -69,20 +69,19 @@ export class Game extends GlobalSchema {
   @Min(1)
   maxMembers?: number;
 
-  @Prop()
-  @ApiPropertyOptional()
-  @IsOptional()
+  @Prop({default: false})
+  @ApiProperty()
   @IsBoolean()
-  started?: boolean;
+  started: boolean;
 
-  @Prop({default: 1})
+  @Prop({default: 0})
   @ApiProperty({
     description: 'The speed of the game in periods per minute.',
     default: 1,
     enum: [0, 1, 2, 3],
   })
   @IsIn([0, 1, 2, 3])
-  speed?: number;
+  speed: number;
 
   @Prop({default: 0})
   @ApiProperty({
