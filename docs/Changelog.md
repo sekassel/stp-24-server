@@ -36,3 +36,17 @@
 
 * The `GET /games/:game/empires` endpoint now returns `ReadEmpireDto`s.
 * The `PATCH /games/:game` endpoint now updates the password correctly. [#4](https://github.com/sekassel/stp-24-server-tracker/issues/4)
+
+# v1.1.1 (2024-05-23)
+
+## Bugfixes
+
+* The `Game.settings` property is now checked for being an object. [#5](https://github.com/sekassel/stp-24-server-tracker/issues/5)
+* Games are now deleted after 2 days by default.
+* The `GET /games/:game/systems` endpoint no longer requires the `owner` query parameter.
+* Removed the `started` and `speed` properties from `CreateGameDto`. This means the game speed needs to be set when/after the game is started.
+
+## Documentation
+
+* Clarified a few endpoints.
+* Changed some schemas to reduce redundant information in map-like objects.
