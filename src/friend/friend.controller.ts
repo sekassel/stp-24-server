@@ -1,42 +1,92 @@
-import {Controller, Delete, ForbiddenException, Get, Param, Patch, Put, Query, Req} from "@nestjs/common";
-import {FriendsService} from "./friend.service";
-import {ApiTags} from "@nestjs/swagger";
+import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Put, Query} from '@nestjs/common';
+import {ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags} from '@nestjs/swagger';
+import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
+import {Types} from 'mongoose';
 import {Validated} from "../util/validated.decorator";
 import {Throttled} from "../util/throttled.decorator";
+import {FriendsService} from "./friend.service";
+import {Auth, AuthUser} from "../auth/auth.decorator";
+import {Friend} from "./friend.schema";
+import {UpdateFriendDto} from "./friend.dto";
 
 @Controller('users/:from/friends')
 @ApiTags('Friends')
 @Validated()
 @Throttled()
 export class FriendsController {
-  constructor(private readonly friendsService: FriendsService) {
+  @Get()
+  @Auth()
+  @ApiOperation({description: 'Get friends list with optional status filter.'})
+  @ApiOkResponse({type: [Friend]})
+  async getFriends(
+    @Param('from', ObjectIdPipe) from: Types.ObjectId,
+    /*
+    @ApiQuery({
+      name: "status",
+      type: String,
+      description: "Filter friends by status.",
+      required: false,
+    })
+    */
+    @Query('status') status: string,
+    @AuthUser() user: { _id: Types.ObjectId },
+  ): Promise<Friend[]> {
+    if (!from.equals(user._id)) {
+      throw new ForbiddenException('You can only access your own friends list.');
+    }
+    return this.friendsService.getFriends(from, status);
   }
 
-  @Get()
-  async getFriends(
-    @Param('from') from: string,
-    @Query('status') status: string,
-    @Req() req: any
+  constructor(
+    private readonly friendsService: FriendsService,
   ) {
-    if (req.user.id !== from) throw new ForbiddenException('You can only access your own friends list.');
-    // TODO return this.friendsService.getFriends(from, status);
   }
 
   @Put(':to')
-  async createFriendRequest(@Param('from') from: string, @Param('to') to: string, @Req() req: any) {
-    if (req.user.id !== from) throw new ForbiddenException('You can only create friend requests from your own account.');
-    // TODO return this.friendsService.createFriendRequest(from, to);
+  @Auth()
+  @ApiOperation({description: 'Create a friend request.'})
+  @ApiCreatedResponse({type: Friend})
+  async createFriendRequest(
+    @Param('from', ObjectIdPipe) from: Types.ObjectId,
+    @Param('to', ObjectIdPipe) to: Types.ObjectId,
+    @AuthUser() user: { _id: Types.ObjectId },
+  ): Promise<Friend> {
+    if (!from.equals(user._id)) {
+      throw new ForbiddenException('You can only create friend requests from your own account.');
+    }
+    return this.friendsService.createFriendRequest(from, to);
   }
 
   @Patch(':to')
-  async acceptFriendRequest(@Param('from') from: string, @Param('to') to: string, @Req() req: any) {
-    if (req.user.id !== to) throw new ForbiddenException('You can only accept friend requests to your own account.');
-    // TODO return this.friendsService.acceptFriendRequest(from, to);
+  @Auth()
+  @ApiOperation({description: 'Accept a friend request.'})
+  @ApiOkResponse({type: Friend})
+  @NotFound()
+  async acceptFriendRequest(
+    @Param('from', ObjectIdPipe) from: Types.ObjectId,
+    @Param('to', ObjectIdPipe) to: Types.ObjectId,
+    @Body() dto: UpdateFriendDto,
+    @AuthUser() user: { _id: Types.ObjectId },
+  ): Promise<Friend> {
+    if (!to.equals(user._id)) {
+      throw new ForbiddenException('You can only accept friend requests to your own account.');
+    }
+    return this.friendsService.acceptFriendRequest(to, from);
   }
 
   @Delete(':to')
-  async deleteFriend(@Param('from') from: string, @Param('to') to: string, @Req() req: any) {
-    if (req.user.id !== from) throw new ForbiddenException('You can only delete friends from your own account.');
-    // TODO return this.friendsService.deleteFriend(from, to);
+  @Auth()
+  @ApiOperation({description: 'Delete a friend relationship.'})
+  @ApiOkResponse({type: Friend})
+  @NotFound()
+  async deleteFriend(
+    @Param('from', ObjectIdPipe) from: Types.ObjectId,
+    @Param('to', ObjectIdPipe) to: Types.ObjectId,
+    @AuthUser() user: { _id: Types.ObjectId },
+  ): Promise<Friend> {
+    if (!from.equals(user._id)) {
+      throw new ForbiddenException('You can only delete friends from your own account.');
+    }
+    return this.friendsService.deleteFriend(from, to);
   }
 }
