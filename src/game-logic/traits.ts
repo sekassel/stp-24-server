@@ -36,7 +36,44 @@ export function checkTraits(traitIds: string[]): string[] {
 }
 
 export const TRAITS: Record<string, Trait> = {
-
+  __dev__: {
+    id: '__dev__',
+    cost: 0,
+    effects: [
+      {
+        variable: 'resources.credits.starting',
+        bonus: 1e9,
+      },
+      {
+        variable: 'resources.energy.starting',
+        bonus: 1e9,
+      },
+      {
+        variable: 'resources.minerals.starting',
+        bonus: 1e9,
+      },
+      {
+        variable: 'resources.food.starting',
+        bonus: 1e9,
+      },
+      {
+        variable: 'resources.fuel.starting',
+        bonus: 1e9,
+      },
+      {
+        variable: 'resources.research.starting',
+        bonus: 1e9,
+      },
+      {
+        variable: 'resources.alloys.starting',
+        bonus: 1e9,
+      },
+      {
+        variable: 'resources.consumer_goods.starting',
+        bonus: 1e9,
+      },
+    ],
+  },
   /** general: starting resources */
   prepared: {
     id: 'prepared',
