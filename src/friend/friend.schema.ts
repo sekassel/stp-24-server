@@ -1,4 +1,3 @@
-// src/friends/schemas/friend.schema.ts
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from "../util/schema";
