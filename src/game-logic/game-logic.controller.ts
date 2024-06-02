@@ -72,12 +72,18 @@ Example: \`GET .../resources.periodic?resource=energy&system=5f4e3d2c1b0a0908070
 
 These aggregates are available:
 ${Object.entries(AGGREGATES).map(([id, aggregate]) => `\
-## \`${id}\`
+<details><summary>
+\`${id}\`
+---
+</summary>
 ${aggregate.description}
 ### Parameters
 ${Object.entries(aggregate.params ?? {}).map(([param, desc]) => `- \`${param}\`: ${desc}`).join('\n') || '*None*'}
 ### Optional Parameters
 ${Object.entries(aggregate.optionalParams ?? {}).map(([param, desc]) => `- \`${param}\`: ${desc}`).join('\n') || '*None*'}
+
+---
+</details>
 `).join('')}
 `,
   })
