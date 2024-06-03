@@ -18,7 +18,6 @@ export class FriendsService {
     return this.friendModel.find(query).exec();
   }
 
-
   async createFriendRequest(from: Types.ObjectId, to: Types.ObjectId): Promise<Friend> {
     const existingFriend = await this.friendModel.findOne({from, to}).exec();
     if (existingFriend) {

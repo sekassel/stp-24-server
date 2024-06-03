@@ -8,7 +8,6 @@ import {FriendsService} from "./friend.service";
 import {Auth, AuthUser} from "../auth/auth.decorator";
 import {Friend} from "./friend.schema";
 import {UpdateFriendDto} from "./friend.dto";
-import {MONGO_ID_FORMAT} from "../util/schema";
 
 @Controller('users/:from/friends')
 @ApiTags('Friends')
@@ -44,7 +43,7 @@ export class FriendsController {
 
   @Put(':to')
   @Auth()
-  @ApiOperation({description: 'Create a friend request.'})
+  @ApiOperation({description: 'Creates a friend request by adding a Friend with from, to and status = requested.'})
   @ApiCreatedResponse({type: Friend})
   async createFriendRequest(
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
@@ -59,7 +58,9 @@ export class FriendsController {
 
   @Patch(':to')
   @Auth()
-  @ApiOperation({description: 'Accept a friend request.'})
+  @ApiOperation({description: 'Accepts a friend request. Note that the order of path parameters is swapped. ' +
+      'This is done by the receiver. Creates a second Friend object with from = to, to = from, status = \'accepted\' ' +
+      '(the bidirectional inverse).'})
   @ApiOkResponse({type: Friend})
   @NotFound()
   async acceptFriendRequest(
@@ -76,7 +77,7 @@ export class FriendsController {
 
   @Delete(':to')
   @Auth()
-  @ApiOperation({description: 'Delete a friend relationship.'})
+  @ApiOperation({description: 'Deletes the {from, to} Friend object and, if necessary, the {from: to, to: from} inverse object.'})
   @ApiOkResponse({type: Friend})
   @NotFound()
   async deleteFriend(
