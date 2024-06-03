@@ -7,5 +7,6 @@ export class UpdateSystemDto extends PartialType(PickType(System, [
   'owner',
   'districts',
   'buildings',
+  '_public',
 ] as const)) {
 }
