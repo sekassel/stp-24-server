@@ -15,6 +15,16 @@ export class FriendsService {
     } else {
       query.status = 'accepted';
     }
+
+    if (query.status === 'requested') {
+      const toPromise = this.friendModel.find({to: from, status: 'requested'}).exec();
+      const fromPromise = this.friendModel.find({from: from, status: 'requested'}).exec();
+      return Promise.all([toPromise, fromPromise])
+        .then(([toFriends, fromFriends]) => {
+          return [...toFriends, ...fromFriends];
+        });
+    }
+
     return this.friendModel.find(query).exec();
   }
 

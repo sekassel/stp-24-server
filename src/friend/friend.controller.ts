@@ -14,6 +14,11 @@ import {UpdateFriendDto} from "./friend.dto";
 @Validated()
 @Throttled()
 export class FriendsController {
+  constructor(
+    private readonly friendsService: FriendsService,
+  ) {
+  }
+
   @Get()
   @Auth()
   @ApiOperation({description: 'Get friends list with optional status filter.'})
@@ -34,11 +39,6 @@ export class FriendsController {
       throw new ForbiddenException('You can only access your own friends list.');
     }
     return this.friendsService.getFriends(from, status);
-  }
-
-  constructor(
-    private readonly friendsService: FriendsService,
-  ) {
   }
 
   @Put(':to')
