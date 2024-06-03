@@ -47,4 +47,8 @@ export class FriendsService {
     await this.friendModel.findOneAndDelete({from: to, to: from}).exec();
     return friend;
   }
+
+  async deleteAllFriendsForUser(userId: Types.ObjectId): Promise<void> {
+    await this.friendModel.deleteMany({$or: [{from: userId}, {to: userId}]}).exec();
+  }
 }

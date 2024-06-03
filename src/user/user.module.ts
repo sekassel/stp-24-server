@@ -7,6 +7,7 @@ import {UserController} from './user.controller';
 import {UserScheduler} from './user.scheduler';
 import {UserSchema} from './user.schema';
 import {UserService} from './user.service';
+import {FriendsModule} from "../friend/friend.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import {UserService} from './user.service';
       },
     ]),
     forwardRef(() => AuthModule),
+    FriendsModule,
   ],
   providers: environment.passive ? [UserService] : [UserService, UserScheduler],
   controllers: [UserController],

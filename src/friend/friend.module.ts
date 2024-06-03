@@ -8,6 +8,7 @@ import {FriendsController} from "./friend.controller";
   imports: [MongooseModule.forFeature([{name: Friend.name, schema: FriendSchema}])],
   providers: [FriendsService],
   controllers: [FriendsController],
+  exports: [FriendsService],
 })
 export class FriendsModule {
 }
