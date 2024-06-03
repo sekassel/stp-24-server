@@ -1,5 +1,5 @@
 import {BadRequestException, Controller, ForbiddenException, Get, Param, ParseArrayPipe, Query} from '@nestjs/common';
-import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags} from '@nestjs/swagger';
+import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags} from '@nestjs/swagger';
 import {AggregateId, AggregateResult, AGGREGATES} from './aggregates';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Auth, AuthUser} from '../auth/auth.decorator';
@@ -72,12 +72,18 @@ Example: \`GET .../resources.periodic?resource=energy&system=5f4e3d2c1b0a0908070
 
 These aggregates are available:
 ${Object.entries(AGGREGATES).map(([id, aggregate]) => `\
-## \`${id}\`
+<details><summary>
+\`${id}\`
+---
+</summary>
 ${aggregate.description}
 ### Parameters
 ${Object.entries(aggregate.params ?? {}).map(([param, desc]) => `- \`${param}\`: ${desc}`).join('\n') || '*None*'}
 ### Optional Parameters
 ${Object.entries(aggregate.optionalParams ?? {}).map(([param, desc]) => `- \`${param}\`: ${desc}`).join('\n') || '*None*'}
+
+---
+</details>
 `).join('')}
 `,
   })
@@ -104,4 +110,24 @@ ${Object.entries(aggregate.optionalParams ?? {}).map(([param, desc]) => `- \`${p
     }
     return aggregateFn.compute(this.gameLogicService, empire, systems, query);
   }
+}
+
+const paramDescriptions: Record<string, string> = {};
+for (const [key, aggregate] of Object.entries(AGGREGATES)) {
+  for (const [param, desc] of Object.entries(aggregate.params ?? {})) {
+    paramDescriptions[param] ??= '';
+    paramDescriptions[param] += `- For \`${key}\` (required): ${desc}\n`;
+  }
+  for (const [param, desc] of Object.entries(aggregate.optionalParams ?? {})) {
+    paramDescriptions[param] ??= '';
+    paramDescriptions[param] += `- For \`${key}\` (optional): ${desc}\n`;
+  }
+}
+
+for (const [name, description] of Object.entries(paramDescriptions)) {
+  ApiQuery({
+    name,
+    description,
+    required: false,
+  })(GameLogicController.prototype, 'getAggregate', Reflect.getOwnPropertyDescriptor(GameLogicController.prototype, 'getAggregate')!);
 }

@@ -6,6 +6,7 @@ import {AsObjectId} from '@mean-stream/nestx';
 export const GLOBAL_SCHEMA_OPTIONS: SchemaOptions = {
   timestamps: true,
   versionKey: false,
+  minimize: false,
 };
 
 export const GLOBAL_SCHEMA_WITHOUT_ID_OPTIONS: SchemaOptions = {

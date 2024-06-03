@@ -45,12 +45,13 @@ export function getInitialValue(variable: Variable): number {
   return value;
 }
 
-export type EmpireEffectSources = Pick<Empire, 'traits' | 'technologies'>;
+export type EmpireEffectSources = Pick<Empire, 'traits' | 'technologies' | 'effects'>;
 
 export function getEmpireEffectSources(empire: EmpireEffectSources): EffectSource[] {
   return [
     ...empire.traits.map(t => TRAITS[t]),
     ...getEffectiveTechnologies(empire.technologies.map(t => TECHNOLOGIES[t]).filter(t => t)),
+    ...empire.effects ?? [],
   ];
 }
 

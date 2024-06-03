@@ -41,17 +41,16 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   async updateSystem(system: SystemDocument, dto: UpdateSystemDto, empire: EmpireDocument): Promise<SystemDocument | null> {
-    if (dto.name) {
-      system.name = dto.name;
+    const {upgrade, districts, buildings, ...rest} = dto;
+    system.set(rest);
+    if (upgrade) {
+      await this.upgradeSystem(system, upgrade, empire);
     }
-    if (dto.upgrade) {
-      await this.upgradeSystem(system, dto.upgrade, empire);
+    if (districts) {
+      await this.updateDistricts(system, districts, empire);
     }
-    if (dto.districts) {
-      await this.updateDistricts(system, dto.districts, empire);
-    }
-    if (dto.buildings) {
-      await this.updateBuildings(system, dto.buildings, empire);
+    if (buildings) {
+      await this.updateBuildings(system, buildings, empire);
     }
     await this.empireService.saveAll([empire]);
     await this.saveAll([system]) // emits update events

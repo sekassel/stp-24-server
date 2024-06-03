@@ -58,15 +58,25 @@ export class Game extends GlobalSchema {
   @Ref('User')
   owner: Types.ObjectId;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The number of members in the game.',
+    type: 'integer',
+    readOnly: true,
+  })
   @IsInt()
   members: number;
 
   @Prop()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'The maximum number of members allowed in the game.',
+    type: 'integer',
+    minimum: 1,
+    maximum: 100,
+  })
   @IsOptional()
   @IsInt()
   @Min(1)
+  @Max(100)
   maxMembers?: number;
 
   @Prop({default: false})

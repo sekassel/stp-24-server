@@ -3,6 +3,8 @@ import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {VARIABLES} from './variables';
 import {SYSTEM_TYPES, SystemTypeName} from './system-types';
 import {SchemaObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import {IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested} from 'class-validator';
+import {Type} from 'class-transformer';
 
 export type DeepNumberKeys<T> = T extends Record<string, any> ? {
   [K in keyof T]-?: T[K] extends object ? `${K & string}.${DeepNumberKeys<T[K]>}` : T[K] extends number ? K & string : never;
@@ -12,23 +14,36 @@ export type Variable = DeepNumberKeys<typeof VARIABLES>;
 export class Effect {
   /** the variable that is affected. */
   @ApiProperty({type: String, description: 'The variable that is affected.'})
+  @IsString()
+  @IsNotEmpty()
   variable: Variable;
 
   /** the additive to apply to the variable before multipliers */
   @ApiPropertyOptional({description: 'The additive bonus to apply to the variable before multipliers.'})
+  @IsOptional()
+  @IsNumber()
   base?: number;
 
   /** the multiplier to apply to the variable. */
-  @ApiPropertyOptional({description: 'The multiplier to apply to the variable.'})
+  @ApiPropertyOptional({description: 'The multiplier to apply to the variable.', minimum: 0})
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
   multiplier?: number;
 
   /** the additive to apply to the variable after multipliers. */
   @ApiPropertyOptional({description: 'The additive bonus to apply to the variable after multipliers.'})
+  @IsOptional()
+  @IsNumber()
   bonus?: number;
 }
 
 export class EffectSource {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'A unique identifier. Does not include the type (trait, technology, etc.)',
+  })
+  @IsString()
+  @IsNotEmpty()
   id: string;
 
   /** the effects that this source provides. */
@@ -36,14 +51,17 @@ export class EffectSource {
     type: [Effect],
     description: 'The effects that this source provides.',
   })
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => Effect)
   effects: readonly Effect[];
 }
 
 export class ExplainedVariable {
-  @ApiProperty()
+  @ApiProperty({description: 'The affected variable.'})
   variable: string;
 
-  @ApiProperty({description: 'The initial value of the variable'})
+  @ApiProperty({description: 'The initial value of the variable (before effects, the same for all empires)'})
   initial: number;
 
   @ApiProperty({
@@ -52,7 +70,7 @@ export class ExplainedVariable {
   })
   sources: EffectSource[];
 
-  @ApiProperty({description: 'The final value of the variable'})
+  @ApiProperty({description: 'The final value of the variable (after effects, specific to each empire)'})
   final: number;
 }
 
@@ -78,11 +96,9 @@ export const TECHNOLOGY_TAGS = [
 ] as const;
 export type TechnologyTag = typeof TECHNOLOGY_TAGS[number];
 
-export class Technology {
-  @ApiProperty()
-  id: string;
-
+export class Technology extends EffectSource {
   @ApiProperty({
+    description: 'The category, sub-category and other tags classifying this technology.',
     enum: TECHNOLOGY_TAGS,
   })
   tags: readonly TechnologyTag[];
@@ -101,9 +117,6 @@ export class Technology {
     description: 'If the empire has the specified technologies, this technology will be unlocked, but has no effect.',
   })
   precedes?: readonly string[];
-
-  @ApiProperty({type: [Effect]})
-  effects: readonly Effect[];
 }
 
 export class Trait extends EffectSource {

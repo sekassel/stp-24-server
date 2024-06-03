@@ -1,13 +1,16 @@
-import {ApiPropertyOptional, OmitType, PickType} from '@nestjs/swagger';
+import {ApiProperty, ApiPropertyOptional, OmitType, PickType} from '@nestjs/swagger';
 import {Empire} from './empire.schema';
 import {Prop} from '@nestjs/mongoose';
 import {SYSTEM_TYPES, SystemTypeName} from '../game-logic/system-types';
 import {IsIn, IsOptional} from 'class-validator';
+import {PartialType} from '../util/partial-type';
+import {RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
 
 export class ReadEmpireDto extends OmitType(Empire, [
   'resources',
   'technologies',
   'traits',
+  '_private',
 ] as const) {
 }
 
@@ -18,6 +21,9 @@ export class EmpireTemplate extends PickType(Empire, [
   'flag',
   'portrait',
   'traits',
+  'effects',
+  '_private',
+  '_public',
 ] as const) {
   @Prop({type: String})
   @ApiPropertyOptional({
@@ -29,8 +35,21 @@ export class EmpireTemplate extends PickType(Empire, [
   homeSystem?: SystemTypeName;
 }
 
-export class UpdateEmpireDto extends PickType(Empire, [
+export class UpdateEmpireDto extends PartialType(PickType(Empire, [
   'resources',
   'technologies',
-] as const) {
+  'effects',
+  '_private',
+  '_public',
+] as const)) {
+  @ApiPropertyOptional({
+    ...RESOURCES_SCHEMA_PROPERTIES,
+    description: 'Update resources for market trades. The credits are automatically updated as well.',
+  })
+  resources?: Record<string, number>;
+
+  @ApiProperty({
+    description: 'Unlock technologies. Only new technologies should be specified, not already unlocked ones.',
+  })
+  technologies?: string[];
 }

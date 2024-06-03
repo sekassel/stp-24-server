@@ -74,7 +74,7 @@ export class System extends GlobalSchema {
 
   @Prop()
   @ApiProperty({
-    description: 'The extra buildings built in the system.'
+    description: 'The buildings in the system.'
   })
   @IsArray()
   @IsIn(BUILDING_NAMES, {each: true})
@@ -118,6 +118,16 @@ export class System extends GlobalSchema {
 
   @OptionalRef('Empire')
   owner?: Types.ObjectId;
+
+  @Prop({type: Object})
+  @ApiPropertyOptional({
+    description: 'Custom extra information shared by all empires.',
+    type: 'object',
+    additionalProperties: true,
+  })
+  @IsOptional()
+  @IsObject()
+  _public?: Record<string, unknown>;
 }
 
 export type SystemDocument = Doc<System>;

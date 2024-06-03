@@ -1,8 +1,8 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema, MONGO_ID_FORMAT} from '../util/schema';
-import {Doc, OptionalRef, Ref} from '@mean-stream/nestx';
-import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
+import {Doc, IsObjectId, OptionalRef, Ref} from '@mean-stream/nestx';
+import {ApiProperty, ApiPropertyOptional, getSchemaPath} from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   IsArray,
@@ -13,13 +13,15 @@ import {
   IsObject, IsOptional,
   IsString,
   Max,
-  Min,
+  Min, ValidateNested,
 } from 'class-validator';
 import {MAX_EMPIRES, MAX_TRAITS} from '../game-logic/constants';
-import {ResourceName} from '../game-logic/resources';
+import {ResourceName, RESOURCES} from '../game-logic/resources';
 import {TRAITS} from '../game-logic/traits';
 import {TECHNOLOGIES} from '../game-logic/technologies';
-import {RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
+import {Effect, EffectSource, RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
+import {SYSTEM_TYPES, SystemTypeName} from '../game-logic/system-types';
+import {Type} from 'class-transformer';
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class Empire extends GlobalSchema {
@@ -103,6 +105,37 @@ export class Empire extends GlobalSchema {
   @IsArray()
   @IsIn(Object.keys(TECHNOLOGIES), {each: true})
   technologies: string[];
+
+  @Prop()
+  @ApiPropertyOptional({
+    description: 'Empire-wide custom effects.',
+    type: [EffectSource],
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => EffectSource)
+  effects?: EffectSource[];
+
+  @Prop({type: Object})
+  @ApiPropertyOptional({
+    description: 'Custom extra information private to this empire.',
+    type: 'object',
+    additionalProperties: true,
+  })
+  @IsOptional()
+  @IsObject()
+  _private?: Record<string, unknown>;
+
+  @Prop({type: Object})
+  @ApiPropertyOptional({
+    description: 'Custom extra information shared with other empires.',
+    type: 'object',
+    additionalProperties: true,
+  })
+  @IsOptional()
+  @IsObject()
+  _public?: Record<string, unknown>;
 }
 
 export type EmpireDocument = Doc<Empire>;
