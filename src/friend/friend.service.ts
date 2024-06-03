@@ -8,30 +8,35 @@ export class FriendsService {
   constructor(@InjectModel(Friend.name) private friendModel: Model<FriendDocument>) {
   }
 
-  async getFriends(userId: Types.ObjectId, status?: string): Promise<Friend[]> {
-    const query: { userId: Types.ObjectId; status?: string } = {userId};
+  async getFriends(from: Types.ObjectId, status?: string): Promise<Friend[]> {
+    const query: { from: Types.ObjectId; status?: string } = {from};
     query.status = status || 'accepted';
 
     if (query.status === 'requested') {
-      const toFriendsPromise = this.friendModel.find({to: userId, status: 'requested'}).exec();
-      const fromFriendsPromise = this.friendModel.find({from: userId, status: 'requested'}).exec();
+      const toFriendsPromise = this.friendModel.find({to: from, status: 'requested'}).exec();
+      const fromFriendsPromise = this.friendModel.find({from: from, status: 'requested'}).exec();
 
       return Promise.all([toFriendsPromise, fromFriendsPromise])
         .then(([toFriends, fromFriends]) => [...toFriends, ...fromFriends]);
     }
-
     return this.friendModel.find(query).exec();
   }
 
-
   async createFriendRequest(from: Types.ObjectId, to: Types.ObjectId): Promise<Friend> {
-    const existingFriend = await this.friendModel.findOne({from, to}).exec();
+    const existingRequest = await this.friendModel.findOne({ from: to, to: from }).exec();
+    if (existingRequest) {
+      throw new ConflictException('You already have a friend request from this user.');
+    }
+
+    const existingFriend = await this.friendModel.findOne({ from, to }).exec();
     if (existingFriend) {
       throw new ConflictException('Friend request already exists.');
     }
-    const friend = new this.friendModel({from, to, status: 'requested'});
+
+    const friend = new this.friendModel({ from, to, status: 'requested' });
     return friend.save();
   }
+
 
   async acceptFriendRequest(to: Types.ObjectId, from: Types.ObjectId): Promise<Friend> {
     const friendRequest = await this.friendModel.findOne({from, to}).exec();
