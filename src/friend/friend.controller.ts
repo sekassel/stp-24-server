@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  Param,
-  Patch,
-  Put,
-  Query
-} from '@nestjs/common';
+import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Put, Query} from '@nestjs/common';
 import {ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags} from '@nestjs/swagger';
 import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
@@ -72,9 +62,11 @@ export class FriendsController {
 
   @Patch(':to')
   @Auth()
-  @ApiOperation({description: 'Accepts a friend request. Note that the order of path parameters is swapped. ' +
+  @ApiOperation({
+    description: 'Accepts a friend request. Note that the order of path parameters is swapped. ' +
       'This is done by the receiver. Also creates a second Friend object with from = to, to = from, status = \'accepted\' ' +
-      '(the bidirectional inverse).'})
+      '(the bidirectional inverse).'
+  })
   @ApiOkResponse({type: Friend})
   @NotFound()
   async acceptFriendRequest(
