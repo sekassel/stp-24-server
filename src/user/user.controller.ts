@@ -9,7 +9,6 @@ import {User} from './user.schema';
 import {UserService} from './user.service';
 import {FilterQuery, Types} from 'mongoose';
 import {UniqueConflict} from '../util/unique-conflict.decorator';
-import {FriendsService} from "../friend/friend.service";
 
 @Controller('users')
 @ApiTags('Users')
@@ -18,7 +17,6 @@ import {FriendsService} from "../friend/friend.service";
 export class UserController {
   constructor(
     private userService: UserService,
-    private friendService: FriendsService,
   ) {
   }
 
@@ -82,7 +80,6 @@ export class UserController {
     if (!id.equals(user._id)) {
       throw new ForbiddenException('Cannot delete someone else\'s user.');
     }
-    await this.friendService.deleteAllFriendsForUser(id);
     return this.userService.delete(id);
   }
 }

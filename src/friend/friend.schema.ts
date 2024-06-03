@@ -1,15 +1,16 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from "../util/schema";
+import {Ref} from "@mean-stream/nestx";
 
 export type FriendDocument = Friend & Document<Types.ObjectId>;
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class Friend extends GlobalSchema {
-  @Prop({type: Types.ObjectId, required: true, ref: 'User'})
+  @Ref('User')
   from: Types.ObjectId;
 
-  @Prop({type: Types.ObjectId, required: true, ref: 'User'})
+  @Ref('User')
   to: Types.ObjectId;
 
   @Prop({required: true, enum: ['requested', 'accepted']})

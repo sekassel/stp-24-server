@@ -1,23 +1,24 @@
 import {ConflictException, Injectable, NotFoundException} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {Friend, FriendDocument} from "./friend.schema";
-import {Model, Types} from "mongoose";
+import {FilterQuery, Model, Types} from "mongoose";
+import {EventRepository, EventService} from "@mean-stream/nestx";
 
 @Injectable()
+@EventRepository()
 export class FriendsService {
-  constructor(@InjectModel(Friend.name) private friendModel: Model<FriendDocument>) {
+  constructor(
+    @InjectModel(Friend.name) private friendModel: Model<FriendDocument>,
+    private eventEmitter: EventService,
+  ) {
   }
 
   async getFriends(from: Types.ObjectId, status?: string): Promise<Friend[]> {
-    const query: { from: Types.ObjectId; status?: string } = {from};
+    const query: FilterQuery<Friend> = {from};
     query.status = status || 'accepted';
 
     if (query.status === 'requested') {
-      const toFriendsPromise = this.friendModel.find({to: from, status: 'requested'}).exec();
-      const fromFriendsPromise = this.friendModel.find({from: from, status: 'requested'}).exec();
-
-      return Promise.all([toFriendsPromise, fromFriendsPromise])
-        .then(([toFriends, fromFriends]) => [...toFriends, ...fromFriends]);
+      return this.friendModel.find({status: 'requested', $or: [{from}, {to: from}]}).exec();
     }
     return this.friendModel.find(query).exec();
   }
@@ -61,5 +62,9 @@ export class FriendsService {
 
   async deleteAllFriendsForUser(userId: Types.ObjectId): Promise<void> {
     await this.friendModel.deleteMany({$or: [{from: userId}, {to: userId}]}).exec();
+  }
+
+  private emit(event: string, friend: Friend) {
+    this.eventEmitter.emit(`friends.${friend._id}.${event}`, friend);
   }
 }

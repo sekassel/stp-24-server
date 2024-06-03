@@ -1,4 +1,14 @@
-import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Put, Query} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  Param,
+  Patch,
+  Put,
+  Query
+} from '@nestjs/common';
 import {ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags} from '@nestjs/swagger';
 import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
@@ -8,6 +18,8 @@ import {FriendsService} from "./friend.service";
 import {Auth, AuthUser} from "../auth/auth.decorator";
 import {Friend} from "./friend.schema";
 import {UpdateFriendDto} from "./friend.dto";
+import {User} from "../user/user.schema";
+import {UniqueConflict} from "../util/unique-conflict.decorator";
 
 @Controller('users/:from/friends')
 @ApiTags('Friends')
@@ -32,8 +44,8 @@ export class FriendsController {
   })
   async getFriends(
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
-    @AuthUser() user: { _id: Types.ObjectId },
-    @Query('status') status?: string | undefined,
+    @AuthUser() user: User,
+    @Query('status') status?: string,
   ): Promise<Friend[]> {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only access your own friends list.');
@@ -43,12 +55,14 @@ export class FriendsController {
 
   @Put(':to')
   @Auth()
+  @NotFound()
+  @UniqueConflict<Friend>({to: 'Friend request already exists.'})
   @ApiOperation({description: 'Creates a friend request by adding a Friend with from, to and status = requested.'})
   @ApiCreatedResponse({type: Friend})
   async createFriendRequest(
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
     @Param('to', ObjectIdPipe) to: Types.ObjectId,
-    @AuthUser() user: { _id: Types.ObjectId },
+    @AuthUser() user: User,
   ): Promise<Friend> {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only create friend requests from your own account.');
@@ -59,7 +73,7 @@ export class FriendsController {
   @Patch(':to')
   @Auth()
   @ApiOperation({description: 'Accepts a friend request. Note that the order of path parameters is swapped. ' +
-      'This is done by the receiver. Creates a second Friend object with from = to, to = from, status = \'accepted\' ' +
+      'This is done by the receiver. Also creates a second Friend object with from = to, to = from, status = \'accepted\' ' +
       '(the bidirectional inverse).'})
   @ApiOkResponse({type: Friend})
   @NotFound()
@@ -67,7 +81,7 @@ export class FriendsController {
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
     @Param('to', ObjectIdPipe) to: Types.ObjectId,
     @Body() dto: UpdateFriendDto,
-    @AuthUser() user: { _id: Types.ObjectId },
+    @AuthUser() user: User,
   ): Promise<Friend> {
     if (!to.equals(user._id)) {
       throw new ForbiddenException('You can only accept friend requests to your own account.');
@@ -83,7 +97,7 @@ export class FriendsController {
   async deleteFriend(
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
     @Param('to', ObjectIdPipe) to: Types.ObjectId,
-    @AuthUser() user: { _id: Types.ObjectId },
+    @AuthUser() user: User,
   ): Promise<Friend> {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only delete friends from your own account.');
