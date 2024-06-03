@@ -20,6 +20,7 @@ export class EmpireTemplate extends PickType(Empire, [
   'flag',
   'portrait',
   'traits',
+  'effects',
   '_private',
   '_public',
 ] as const) {
@@ -36,6 +37,7 @@ export class EmpireTemplate extends PickType(Empire, [
 export class UpdateEmpireDto extends PartialType(PickType(Empire, [
   'resources',
   'technologies',
+  'effects',
   '_private',
   '_public',
 ] as const)) {
