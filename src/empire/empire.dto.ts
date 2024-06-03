@@ -8,6 +8,7 @@ export class ReadEmpireDto extends OmitType(Empire, [
   'resources',
   'technologies',
   'traits',
+  '_private',
 ] as const) {
 }
 
@@ -18,6 +19,8 @@ export class EmpireTemplate extends PickType(Empire, [
   'flag',
   'portrait',
   'traits',
+  '_private',
+  '_public',
 ] as const) {
   @Prop({type: String})
   @ApiPropertyOptional({
@@ -32,5 +35,7 @@ export class EmpireTemplate extends PickType(Empire, [
 export class UpdateEmpireDto extends PickType(Empire, [
   'resources',
   'technologies',
+  '_private',
+  '_public',
 ] as const) {
 }

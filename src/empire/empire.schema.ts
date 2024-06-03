@@ -104,6 +104,26 @@ export class Empire extends GlobalSchema {
   @IsArray()
   @IsIn(Object.keys(TECHNOLOGIES), {each: true})
   technologies: string[];
+
+  @Prop({type: Object})
+  @ApiPropertyOptional({
+    description: 'Custom extra information private to this empire.',
+    type: 'object',
+    additionalProperties: true,
+  })
+  @IsOptional()
+  @IsObject()
+  _private?: Record<string, unknown>;
+
+  @Prop({type: Object})
+  @ApiPropertyOptional({
+    description: 'Custom extra information shared with other empires.',
+    type: 'object',
+    additionalProperties: true,
+  })
+  @IsOptional()
+  @IsObject()
+  _public?: Record<string, unknown>;
 }
 
 export type EmpireDocument = Doc<Empire>;

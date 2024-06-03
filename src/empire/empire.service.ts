@@ -55,16 +55,18 @@ export class EmpireService extends MongooseRepository<Empire> {
     if (empire instanceof Document) {
       empire = empire.toObject();
     }
-    const {resources, technologies, traits, ...rest} = empire;
+    const {resources, technologies, traits, _private, ...rest} = empire;
     return rest;
   }
 
   async updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto): Promise<EmpireDocument> {
-    if (dto.technologies) {
-      await this.unlockTechnology(empire, dto.technologies);
+    const {technologies, resources, ...rest} = dto;
+    empire.set(rest);
+    if (technologies) {
+      await this.unlockTechnology(empire, technologies);
     }
-    if (dto.resources) {
-      this.resourceTrading(empire, dto.resources);
+    if (resources) {
+      this.resourceTrading(empire, resources);
     }
     await this.saveAll([empire]); // emits update event
     return empire;
