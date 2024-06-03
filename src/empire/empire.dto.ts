@@ -3,6 +3,7 @@ import {Empire} from './empire.schema';
 import {Prop} from '@nestjs/mongoose';
 import {SYSTEM_TYPES, SystemTypeName} from '../game-logic/system-types';
 import {IsIn, IsOptional} from 'class-validator';
+import {PartialType} from '../util/partial-type';
 
 export class ReadEmpireDto extends OmitType(Empire, [
   'resources',
@@ -32,10 +33,10 @@ export class EmpireTemplate extends PickType(Empire, [
   homeSystem?: SystemTypeName;
 }
 
-export class UpdateEmpireDto extends PickType(Empire, [
+export class UpdateEmpireDto extends PartialType(PickType(Empire, [
   'resources',
   'technologies',
   '_private',
   '_public',
-] as const) {
+] as const)) {
 }
