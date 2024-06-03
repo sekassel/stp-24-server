@@ -74,7 +74,7 @@ export class System extends GlobalSchema {
 
   @Prop()
   @ApiProperty({
-    description: 'The extra buildings built in the system.'
+    description: 'The buildings in the system.'
   })
   @IsArray()
   @IsIn(BUILDING_NAMES, {each: true})
