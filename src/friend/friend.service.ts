@@ -23,17 +23,17 @@ export class FriendsService {
   }
 
   async createFriendRequest(from: Types.ObjectId, to: Types.ObjectId): Promise<Friend> {
-    const existingRequest = await this.friendModel.findOne({ from: to, to: from }).exec();
+    const existingRequest = await this.friendModel.findOne({from: to, to: from}).exec();
     if (existingRequest) {
       throw new ConflictException('You already have a friend request from this user.');
     }
 
-    const existingFriend = await this.friendModel.findOne({ from, to }).exec();
+    const existingFriend = await this.friendModel.findOne({from, to}).exec();
     if (existingFriend) {
       throw new ConflictException('Friend request already exists.');
     }
 
-    const friend = new this.friendModel({ from, to, status: 'requested' });
+    const friend = new this.friendModel({from, to, status: 'requested'});
     return friend.save();
   }
 
