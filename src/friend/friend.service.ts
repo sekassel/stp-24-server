@@ -8,25 +8,21 @@ export class FriendsService {
   constructor(@InjectModel(Friend.name) private friendModel: Model<FriendDocument>) {
   }
 
-  async getFriends(from: Types.ObjectId, status?: string): Promise<Friend[]> {
-    const query: { from: Types.ObjectId; status?: string } = {from};
-    if (status) {
-      query.status = status;
-    } else {
-      query.status = 'accepted';
-    }
+  async getFriends(userId: Types.ObjectId, status?: string): Promise<Friend[]> {
+    const query: { userId: Types.ObjectId; status?: string } = {userId};
+    query.status = status || 'accepted';
 
     if (query.status === 'requested') {
-      const toPromise = this.friendModel.find({to: from, status: 'requested'}).exec();
-      const fromPromise = this.friendModel.find({from: from, status: 'requested'}).exec();
-      return Promise.all([toPromise, fromPromise])
-        .then(([toFriends, fromFriends]) => {
-          return [...toFriends, ...fromFriends];
-        });
+      const toFriendsPromise = this.friendModel.find({to: userId, status: 'requested'}).exec();
+      const fromFriendsPromise = this.friendModel.find({from: userId, status: 'requested'}).exec();
+
+      return Promise.all([toFriendsPromise, fromFriendsPromise])
+        .then(([toFriends, fromFriends]) => [...toFriends, ...fromFriends]);
     }
 
     return this.friendModel.find(query).exec();
   }
+
 
   async createFriendRequest(from: Types.ObjectId, to: Types.ObjectId): Promise<Friend> {
     const existingFriend = await this.friendModel.findOne({from, to}).exec();
