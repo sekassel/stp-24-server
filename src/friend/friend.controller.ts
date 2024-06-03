@@ -1,5 +1,5 @@
 import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Put, Query} from '@nestjs/common';
-import {ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags} from '@nestjs/swagger';
+import {ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags} from '@nestjs/swagger';
 import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {Validated} from "../util/validated.decorator";
@@ -8,6 +8,7 @@ import {FriendsService} from "./friend.service";
 import {Auth, AuthUser} from "../auth/auth.decorator";
 import {Friend} from "./friend.schema";
 import {UpdateFriendDto} from "./friend.dto";
+import {MONGO_ID_FORMAT} from "../util/schema";
 
 @Controller('users/:from/friends')
 @ApiTags('Friends')
@@ -18,18 +19,17 @@ export class FriendsController {
   @Auth()
   @ApiOperation({description: 'Get friends list with optional status filter.'})
   @ApiOkResponse({type: [Friend]})
+  @ApiQuery({
+    name: 'status',
+    description: 'Filter friends by status.',
+    required: false,
+    type: String,
+    example: 'accepted',
+  })
   async getFriends(
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
-    /*
-    @ApiQuery({
-      name: "status",
-      type: String,
-      description: "Filter friends by status.",
-      required: false,
-    })
-    */
-    @Query('status') status: string,
     @AuthUser() user: { _id: Types.ObjectId },
+    @Query('status') status?: string | undefined,
   ): Promise<Friend[]> {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only access your own friends list.');
