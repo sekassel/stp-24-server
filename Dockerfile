@@ -14,6 +14,7 @@ COPY assets ./assets
 RUN find assets -name '*.json' -exec sh -c 'grep -v "//" "$1" | jq -c . | sponge "$1"' _ {} \;
 
 FROM node:20-slim
+RUN apt update -y && apt install -y graphviz && apt clean
 WORKDIR /app
 ENV NODE_ENV=production
 COPY package.json pnpm-lock.yaml ./
