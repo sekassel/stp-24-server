@@ -46,7 +46,7 @@ export class FriendsController {
   @Put(':to')
   @Auth()
   @NotFound()
-  @UniqueConflict<Friend>({to: 'Friend request already exists.'})
+  @UniqueConflict<Friend>({from_to: 'Friend request already exists.'})
   @ApiOperation({description: 'Creates a friend request by adding a Friend with from, to and status = requested.'})
   @ApiCreatedResponse({type: Friend})
   async createFriendRequest(

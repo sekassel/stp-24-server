@@ -1,7 +1,7 @@
 import {ConflictException, Injectable, NotFoundException} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {Friend, FriendDocument} from "./friend.schema";
-import {FilterQuery, Model, Types} from "mongoose";
+import {Model, Types} from "mongoose";
 import {EventRepository, EventService} from "@mean-stream/nestx";
 
 @Injectable()
@@ -13,14 +13,11 @@ export class FriendsService {
   ) {
   }
 
-  async getFriends(from: Types.ObjectId, status?: string): Promise<Friend[]> {
-    const query: FilterQuery<Friend> = {from};
-    query.status = status || 'accepted';
-
-    if (query.status === 'requested') {
+  async getFriends(from: Types.ObjectId, status: string = 'accepted'): Promise<Friend[]> {
+    if (status === 'requested') {
       return this.friendModel.find({status: 'requested', $or: [{from}, {to: from}]}).exec();
     }
-    return this.friendModel.find(query).exec();
+    return this.friendModel.find({from, status}).exec();
   }
 
   async createFriendRequest(from: Types.ObjectId, to: Types.ObjectId): Promise<Friend> {
@@ -65,6 +62,6 @@ export class FriendsService {
   }
 
   private emit(event: string, friend: Friend) {
-    this.eventEmitter.emit(`friends.${friend._id}.${event}`, friend);
+    this.eventEmitter.emit(`users.${friend.from}.friends.${friend.to}.${event}`, friend);
   }
 }
