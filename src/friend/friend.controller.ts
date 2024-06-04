@@ -6,7 +6,7 @@ import {Validated} from "../util/validated.decorator";
 import {Throttled} from "../util/throttled.decorator";
 import {FriendsService} from "./friend.service";
 import {Auth, AuthUser} from "../auth/auth.decorator";
-import {Friend} from "./friend.schema";
+import {Friend, FriendDocument} from "./friend.schema";
 import {UpdateFriendDto} from "./friend.dto";
 import {User} from "../user/user.schema";
 import {UniqueConflict} from "../util/unique-conflict.decorator";
@@ -27,7 +27,7 @@ export class FriendsController {
   @ApiOkResponse({type: [Friend]})
   @ApiQuery({
     name: 'status',
-    description: 'Filter friends by status.',
+    description: 'Filter friends by status (accepted, requested).',
     required: false,
     type: String,
     example: 'accepted',
@@ -36,7 +36,7 @@ export class FriendsController {
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
     @AuthUser() user: User,
     @Query('status') status?: string,
-  ): Promise<Friend[]> {
+  ): Promise<FriendDocument[]> {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only access your own friends list.');
     }
@@ -53,11 +53,15 @@ export class FriendsController {
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
     @Param('to', ObjectIdPipe) to: Types.ObjectId,
     @AuthUser() user: User,
-  ): Promise<Friend> {
+  ): Promise<FriendDocument> {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only create friend requests from your own account.');
     }
-    return this.friendsService.createFriendRequest(from, to);
+    const existingRequest = await this.friendsService.findOne({$or: [{from, to}, {from: to, to: from}]});
+    if (existingRequest) {
+      throw new ForbiddenException('Friend request already exists.');
+    }
+    return await this.friendsService.create({from, to, status: 'requested'});
   }
 
   @Patch(':to')
@@ -68,13 +72,13 @@ export class FriendsController {
       '(the bidirectional inverse).'
   })
   @ApiOkResponse({type: Friend})
-  @NotFound()
+  @NotFound('Friend request not found.')
   async acceptFriendRequest(
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
     @Param('to', ObjectIdPipe) to: Types.ObjectId,
     @Body() dto: UpdateFriendDto,
     @AuthUser() user: User,
-  ): Promise<Friend> {
+  ): Promise<FriendDocument | null> {
     if (!to.equals(user._id)) {
       throw new ForbiddenException('You can only accept friend requests to your own account.');
     }
@@ -85,15 +89,18 @@ export class FriendsController {
   @Auth()
   @ApiOperation({description: 'Deletes the {from, to} Friend object and, if necessary, the {from: to, to: from} inverse object.'})
   @ApiOkResponse({type: Friend})
-  @NotFound()
+  @NotFound('Friend not found.')
   async deleteFriend(
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
     @Param('to', ObjectIdPipe) to: Types.ObjectId,
     @AuthUser() user: User,
-  ): Promise<Friend> {
+  ): Promise<FriendDocument[]> {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only delete friends from your own account.');
     }
-    return this.friendsService.deleteFriend(from, to);
+    const query = {$or: [{from, to}, {from: to, to: from}]};
+    const friends = await this.friendsService.findAll(query);
+    await this.friendsService.deleteMany(query);
+    return friends;
   }
 }

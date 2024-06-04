@@ -12,6 +12,6 @@ export class FriendsHandler {
 
   @OnEvent('users.*.deleted')
   async onUserDeleted(user: User): Promise<void> {
-    await this.friendsService.deleteAllFriendsForUser(user._id);
+    await this.friendsService.deleteMany({$or: [{from: user._id}, {to: user._id}]});
   }
 }

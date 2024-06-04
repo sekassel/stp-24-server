@@ -3,7 +3,7 @@ import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from "../util/schema";
 import {Ref} from "@mean-stream/nestx";
 import {ApiProperty} from "@nestjs/swagger";
-import {IsIn} from "class-validator";
+import {IsIn, IsOptional} from "class-validator";
 
 export type FriendDocument = Friend & Document<Types.ObjectId>;
 
@@ -16,6 +16,7 @@ export class Friend extends GlobalSchema {
   to: Types.ObjectId;
 
   @Prop({required: true, enum: ['requested', 'accepted']})
+  @IsOptional()
   @ApiProperty({enum: ['requested', 'accepted']})
   @IsIn(['requested', 'accepted'])
   status: string;
