@@ -62,6 +62,11 @@ export class SystemGeneratorService {
     //Connect clusters
     this.connectClusters(clusters, clustersCenter, avgRadius*3);
 
+    //Remove systems with no neighbors
+    for(let i = 0; i < clusters.length; i++){
+      clusters[i] = clusters[i].filter(system => Object.keys(system.links).length > 0);
+    }
+
     return this.removeIntersectingEdges(clusters.flat());
   }
 
