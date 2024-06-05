@@ -31,6 +31,6 @@ export class FriendsService extends MongooseRepository<Friend> {
   }
 
   private emit(event: string, friend: Friend) {
-    this.eventEmitter.emit(`users.${friend.from}.friends.${friend.to}.${event}`, friend);
+    this.eventEmitter.emit(`users.${friend.from}.friends.${friend.to}.${event}`, friend, [friend.from.toString(), friend.to.toString()]);
   }
 }
