@@ -95,8 +95,8 @@ export class FriendsController {
     @Param('to', ObjectIdPipe) to: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<Friend | null> {
-    if (!from.equals(user._id)) {
-      throw new ForbiddenException('You can only delete friends from your own account.');
+    if (!from.equals(user._id) && !to.equals(user._id)) {
+      throw new ForbiddenException('You can only delete friends from or to your own account.');
     }
     const deleted = await this.friendsService.deleteOne({from, to});
     if (deleted) await this.friendsService.deleteOne({from: to, to: from});
