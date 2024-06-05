@@ -78,6 +78,9 @@ export class FriendsController {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only create friend requests from your own account.');
     }
+    if (from.equals(to)) {
+      throw new ConflictException('You cannot send a friend request to yourself.');
+    }
     const existingRequest = await this.friendsService.findOne({$or: [{from, to}, {from: to, to: from}]});
     if (existingRequest) {
       throw new ConflictException('Friend request already exists.');
