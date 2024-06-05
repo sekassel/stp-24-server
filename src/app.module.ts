@@ -21,6 +21,7 @@ import {SystemModule} from "./system/system.module";
 import { GameLogicModule } from './game-logic/game-logic.module';
 import {IncomingMessage} from 'http';
 import {AuthService} from './auth/auth.service';
+import {FriendsModule} from "./friend/friend.module";
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import {AuthService} from './auth/auth.service';
     }),
     AuthModule,
     UserModule,
+    FriendsModule,
     GameModule,
     MemberModule,
     SystemModule,
