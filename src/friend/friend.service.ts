@@ -22,9 +22,9 @@ export class FriendsService extends MongooseRepository<Friend> {
   }
 
   async acceptFriendRequest(to: Types.ObjectId, from: Types.ObjectId): Promise<FriendDocument | null> {
-    await this.updateOne({from, to, status: 'requested'}, {status: 'accepted'}, {new: true});
-    const inverseFriend = new this.friendModel({from: to, to: from, status: 'accepted'});
-    return inverseFriend.save();
+    const updated = await this.updateOne({from, to, status: 'requested'}, {status: 'accepted'}, {new: true});
+    if (updated) await this.create({from: to, to: from, status: 'accepted'});
+    return updated;
   }
 
   private emit(event: string, friend: Friend) {

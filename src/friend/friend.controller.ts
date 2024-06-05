@@ -6,7 +6,7 @@ import {Validated} from "../util/validated.decorator";
 import {Throttled} from "../util/throttled.decorator";
 import {FriendsService} from "./friend.service";
 import {Auth, AuthUser} from "../auth/auth.decorator";
-import {Friend, FriendDocument} from "./friend.schema";
+import {Friend} from "./friend.schema";
 import {UpdateFriendDto} from "./friend.dto";
 import {User} from "../user/user.schema";
 import {UniqueConflict} from "../util/unique-conflict.decorator";
@@ -36,7 +36,7 @@ export class FriendsController {
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
     @AuthUser() user: User,
     @Query('status') status?: string,
-  ): Promise<FriendDocument[]> {
+  ): Promise<Friend[]> {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only access your own friends list.');
     }
@@ -53,7 +53,7 @@ export class FriendsController {
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
     @Param('to', ObjectIdPipe) to: Types.ObjectId,
     @AuthUser() user: User,
-  ): Promise<FriendDocument> {
+  ): Promise<Friend> {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only create friend requests from your own account.');
     }
@@ -61,7 +61,7 @@ export class FriendsController {
     if (existingRequest) {
       throw new ForbiddenException('Friend request already exists.');
     }
-    return await this.friendsService.create({from, to, status: 'requested'});
+    return this.friendsService.create({from, to, status: 'requested'});
   }
 
   @Patch(':to')
@@ -78,7 +78,7 @@ export class FriendsController {
     @Param('to', ObjectIdPipe) to: Types.ObjectId,
     @Body() dto: UpdateFriendDto,
     @AuthUser() user: User,
-  ): Promise<FriendDocument | null> {
+  ): Promise<Friend | null> {
     if (!to.equals(user._id)) {
       throw new ForbiddenException('You can only accept friend requests to your own account.');
     }
@@ -94,13 +94,12 @@ export class FriendsController {
     @Param('from', ObjectIdPipe) from: Types.ObjectId,
     @Param('to', ObjectIdPipe) to: Types.ObjectId,
     @AuthUser() user: User,
-  ): Promise<FriendDocument[]> {
+  ): Promise<Friend | null> {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only delete friends from your own account.');
     }
-    const query = {$or: [{from, to}, {from: to, to: from}]};
-    const friends = await this.friendsService.findAll(query);
-    await this.friendsService.deleteMany(query);
-    return friends;
+    const deleted = await this.friendsService.deleteOne({from, to});
+    if (deleted) await this.friendsService.deleteOne({from: to, to: from});
+    return deleted;
   }
 }

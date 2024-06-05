@@ -17,7 +17,7 @@ export class Friend extends GlobalSchema {
 
   @Prop({required: true, enum: ['requested', 'accepted']})
   @IsOptional()
-  @ApiProperty({enum: ['requested', 'accepted']})
+  @ApiProperty({enum: ['requested', 'accepted'], default: 'accepted'})
   @IsIn(['requested', 'accepted'])
   status: string;
 }
