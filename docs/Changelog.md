@@ -50,3 +50,27 @@
 
 * Clarified a few endpoints.
 * Changed some schemas to reduce redundant information in map-like objects.
+
+# v1.2.0 (2024-06-05)
+
+## New Features
+
++ Added Friends and Friend Requests. [#7](https://github.com/sekassel/stp-24-server-tracker/issues/7)
++ Added the `__dev__` trait that starts the empire with lots of extra resources.
++ Added the `_private` and `_public` properties to Empires for custom data.
++ Added the `_public` property to Systems for custom data.
++ Added the `effects` property to Empire for events and other custom modifiers.
+
+## Bugfixes
+
+* Fixed the `GET /presets/technologies/tree` endpoint. [#8](https://github.com/sekassel/stp-24-server-tracker/issues/8)
+* The `Game.maxMembers` property is now limited to a maximum of 100. [#9](https://github.com/sekassel/stp-24-server-tracker/issues/9)
+* The `UpdateEmpireDto` no longer needs to specify all properties.
+* Systems can no longer generate without any links.
+
+## Documentation
+
+* Added a way to specify aggregate query parameters in Swagger.
+* Improved the aggregate documentation.
+* Improved the `UpdateEmpireDto` and `UpdateSystemDto` documentation.
+* Added additional descriptions for some game concept properties.
