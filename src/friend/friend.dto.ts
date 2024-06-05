@@ -1,7 +1,7 @@
 import {ApiProperty} from '@nestjs/swagger';
 import {IsEnum} from 'class-validator';
 
-enum FriendStatus {
+export enum FriendStatus {
   ACCEPTED = 'accepted',
   REQUESTED = 'requested',
 }
