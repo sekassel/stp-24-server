@@ -256,6 +256,20 @@ export class GameLogicService {
     return resources.map(r => aggregates[r]!);
   }
 
+  aggregateAllResources(empire: Empire, systems: System[]): AggregateResult {
+    const initial = {...empire.resources};
+    this.updateEmpire(empire as EmpireDocument, systems as SystemDocument[]);
+    const items = Object.entries(empire.resources).map(([resource, value]) => ({
+      variable: `resources.${resource}.periodic`,
+      count: 1,
+      subtotal: value - initial[resource as ResourceName],
+    }));
+    return {
+      total: items.map(item => item.subtotal).sum(),
+      items,
+    };
+  }
+
   async aggregateTechCost(empire: Empire, technology: Technology): Promise<AggregateResult> {
     return this.empireService.aggregateTechCost(empire, technology);
   }

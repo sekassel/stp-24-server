@@ -38,20 +38,22 @@ export class AggregateResult {
 export const AGGREGATES: Record<string, AggregateFn> = {
   'resources.periodic': {
     description: 'Calculates the total resources produced across the empire in a period',
-    params: {
-      resource: 'The resource to calculate, e.g. `energy` or `population`',
-    },
     optionalParams: {
+      resource: 'The resource to calculate, e.g. `energy` or `population`',
       system: 'System ID. Only calculate production of a specific system.',
     },
     compute: (service, empire, systems, {resource, system}) => {
-      if (!RESOURCE_NAMES.includes(resource as ResourceName)) {
+      if (resource && !RESOURCE_NAMES.includes(resource as ResourceName)) {
         throw new BadRequestException(`Invalid resource: ${resource}`);
       }
       if (system) {
         systems = systems.filter(s => s._id.equals(system));
       }
-      return service.aggregateResources(empire, systems, [resource as ResourceName])[0];
+      if (resource) {
+        return service.aggregateResources(empire, systems, [resource as ResourceName])[0];
+      } else {
+        return service.aggregateAllResources(empire, systems);
+      }
     },
   },
   'empire.level.economy': {
