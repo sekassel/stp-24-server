@@ -22,6 +22,7 @@ import { GameLogicModule } from './game-logic/game-logic.module';
 import {IncomingMessage} from 'http';
 import {AuthService} from './auth/auth.service';
 import {FriendsModule} from "./friend/friend.module";
+import {JobsModule} from "./job/job.module";
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import {FriendsModule} from "./friend/friend.module";
     MemberModule,
     SystemModule,
     EmpireModule,
+    JobsModule,
     AchievementSummaryModule,
     AchievementModule,
     PresetsModule,
