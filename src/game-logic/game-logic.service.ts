@@ -55,15 +55,15 @@ export class GameLogicService {
     const variables = getInitialVariables();
     calculateVariables(variables, empire);
 
-    // deduct pop upkeep
-    const popUpkeep = variables['empire.pop.consumption.food'] * empire.resources.population;
-    this.deductResource(empire, 'food', popUpkeep);
-
     // handle districts and buildings
     for (const system of systems) {
       if (system.upgrade === 'unexplored' || system.upgrade === 'explored') {
         continue;
       }
+
+      // deduct pop upkeep
+      const popUpkeep = variables['empire.pop.consumption.food'] * system.population;
+      this.deductResource(empire, 'food', popUpkeep);
 
       const systemUpkeepPaid = this.deductSystemUpkeep(system.upgrade, empire, variables);
 
@@ -111,13 +111,13 @@ export class GameLogicService {
           empire.resources[resource as ResourceName] += variables[variable] * productionMultiplier;
         }
       }
-    }
 
-    this.deductJoblessUpkeep(systems, empire, variables);
+      this.deductJoblessUpkeep(system, empire, variables);
 
-    // spawn pops on systems
-    if (empire.resources.food) {
-      this.popGrowth(systems, variables);
+      // spawn pops on systems
+      if (empire.resources.food) {
+        this.popGrowth(system, variables);
+      }
     }
 
     this.migratePopulation(systems, empire);
@@ -128,11 +128,9 @@ export class GameLogicService {
     empire.markModified('resources');
   }
 
-  private deductJoblessUpkeep(systems: SystemDocument[], empire: EmpireDocument, variables: Record<Variable, number>) {
-    const totalJobs = systems
-      .map(s => Object.values(s.districts).sum() + s.buildings.length)
-      .sum();
-    const joblessPops = empire.resources.population - totalJobs;
+  private deductJoblessUpkeep(system: SystemDocument, empire: EmpireDocument, variables: Record<Variable, number>) {
+    const totalJobs = Object.values(system.districts).sum() + system.buildings.length;
+    const joblessPops = system.population - totalJobs;
     const joblessPopUpkeep = variables['empire.pop.consumption.credits.unemployed'] * joblessPops;
     this.deductResource(empire, 'credits', joblessPopUpkeep);
   }
@@ -199,14 +197,12 @@ export class GameLogicService {
     }
   }
 
-  private popGrowth(systems: SystemDocument[], variables: Record<Variable, number>) {
-    for (const system of systems) {
-      const {population, capacity} = system;
-      const growthVariable: Variable = population >= capacity
-        ? 'systems.developed.pop_growth'
-        : `systems.${system.upgrade}.pop_growth`;
-      system.population = variables[growthVariable] * population;
-    }
+  private popGrowth(system: SystemDocument, variables: Record<Variable, number>) {
+    const {population, capacity} = system;
+    const growthVariable: Variable = population >= capacity
+      ? 'systems.developed.pop_growth'
+      : `systems.${system.upgrade}.pop_growth`;
+    system.population = variables[growthVariable] * population;
   }
 
   aggregatePopGrowth(empire: Empire, systems: System[]): AggregateResult {
