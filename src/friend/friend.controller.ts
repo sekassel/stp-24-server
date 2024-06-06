@@ -22,20 +22,20 @@ import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {Validated} from '../util/validated.decorator';
 import {Throttled} from '../util/throttled.decorator';
-import {FriendsService} from './friend.service';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {Friend} from './friend.schema';
 import {FriendStatus, UpdateFriendDto} from './friend.dto';
 import {User} from '../user/user.schema';
 import {UniqueConflict} from '../util/unique-conflict.decorator';
+import {FriendService} from "./friend.service";
 
 @Controller('users/:from/friends')
 @ApiTags('Friends')
 @Validated()
 @Throttled()
-export class FriendsController {
+export class FriendController {
   constructor(
-    private readonly friendsService: FriendsService,
+    private readonly friendService: FriendService,
   ) {
   }
 
@@ -60,7 +60,7 @@ export class FriendsController {
     if (!from.equals(user._id)) {
       throw new ForbiddenException('You can only access your own friends list.');
     }
-    return this.friendsService.getFriends(from, status as FriendStatus);
+    return this.friendService.getFriends(from, status as FriendStatus);
   }
 
   @Put(':to')
@@ -81,11 +81,11 @@ export class FriendsController {
     if (from.equals(to)) {
       throw new ConflictException('You cannot send a friend request to yourself.');
     }
-    const existingRequest = await this.friendsService.findOne({$or: [{from, to}, {from: to, to: from}]});
+    const existingRequest = await this.friendService.findOne({$or: [{from, to}, {from: to, to: from}]});
     if (existingRequest) {
       throw new ConflictException('Friend request already exists.');
     }
-    return this.friendsService.create({from, to, status: 'requested'});
+    return this.friendService.create({from, to, status: 'requested'});
   }
 
   @Patch(':to')
@@ -106,7 +106,7 @@ export class FriendsController {
     if (!to.equals(user._id)) {
       throw new ForbiddenException('You can only accept friend requests to your own account.');
     }
-    return this.friendsService.acceptFriendRequest(to, from, dto);
+    return this.friendService.acceptFriendRequest(to, from, dto);
   }
 
   @Delete(':to')
@@ -125,8 +125,8 @@ export class FriendsController {
     if (!from.equals(user._id) && !to.equals(user._id)) {
       throw new ForbiddenException('You can only delete friends from or to your own account.');
     }
-    const deleted = await this.friendsService.deleteOne({from, to});
-    const inverse = await this.friendsService.deleteOne({from: to, to: from});
+    const deleted = await this.friendService.deleteOne({from, to});
+    const inverse = await this.friendService.deleteOne({from: to, to: from});
     return deleted || inverse;
   }
 }

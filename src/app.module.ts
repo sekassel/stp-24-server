@@ -16,13 +16,13 @@ import {Transport} from '@nestjs/microservices';
 import {GameModule} from './game/game.module';
 import {MemberModule} from './member/member.module';
 import {EmpireModule} from './empire/empire.module';
-import { PresetsModule } from './presets/presets.module';
+import {PresetsModule} from './presets/presets.module';
 import {SystemModule} from "./system/system.module";
-import { GameLogicModule } from './game-logic/game-logic.module';
+import {GameLogicModule} from './game-logic/game-logic.module';
 import {IncomingMessage} from 'http';
 import {AuthService} from './auth/auth.service';
-import {FriendsModule} from "./friend/friend.module";
-import {JobsModule} from "./job/job.module";
+import {FriendModule} from "./friend/friend.module";
+import {JobModule} from "./job/job.module";
 
 @Module({
   imports: [
@@ -54,12 +54,12 @@ import {JobsModule} from "./job/job.module";
     }),
     AuthModule,
     UserModule,
-    FriendsModule,
+    FriendModule,
     GameModule,
     MemberModule,
     SystemModule,
     EmpireModule,
-    JobsModule,
+    JobModule,
     AchievementSummaryModule,
     AchievementModule,
     PresetsModule,

@@ -6,7 +6,7 @@ import {EventRepository, EventService, MongooseRepository} from "@mean-stream/ne
 
 @Injectable()
 @EventRepository()
-export class JobsService extends MongooseRepository<Job> {
+export class JobService extends MongooseRepository<Job> {
   constructor(
     @InjectModel(Job.name) private jobModel: Model<Job>,
     private eventEmitter: EventService,

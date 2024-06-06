@@ -22,17 +22,17 @@ import {Throttled} from '../util/throttled.decorator';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {Job} from './job.schema';
 import {User} from '../user/user.schema';
-import {JobsService} from "./job.service";
 import {CreateJobDto} from "./job.dto";
 import {System} from "../system/system.schema";
+import {JobService} from "./job.service";
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')
 @Validated()
 @Throttled()
-export class JobsController {
+export class JobController {
   constructor(
-    private readonly jobsService: JobsService,
+    private readonly jobService: JobService,
   ) {
   }
 
