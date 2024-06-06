@@ -1,6 +1,6 @@
 import {PickType} from '@nestjs/swagger';
 import {Types} from 'mongoose';
-import {IsEnum, IsOptional} from 'class-validator';
+import {IsIn, IsOptional} from 'class-validator';
 import {BuildingName} from "../game-logic/buildings";
 import {DistrictName} from "../game-logic/districts";
 import {Building, District, Technology, TechnologyTag} from "../game-logic/types";
@@ -14,7 +14,7 @@ export class CreateJobDto extends PickType(Job, ['system', 'type', 'building', '
   system?: Types.ObjectId;
 
   @ApiPropertyOptional({enum: ['building', 'district', 'upgrade', 'technology'], description: 'Type of the job'})
-  @IsEnum(['building', 'district', 'upgrade', 'technology'])
+  @IsIn(['building', 'district', 'upgrade', 'technology'])
   type: string;
 
   @ApiPropertyOptional({type: Building, required: false})
