@@ -50,7 +50,7 @@ export class GameLogicService {
     }
   }
 
-  private updateEmpire(empire: EmpireDocument, systems: SystemDocument[]) {
+  private updateEmpire(empire: EmpireDocument, systems: SystemDocument[], aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
     const variables = getInitialVariables();
     calculateVariables(variables, empire);
 
@@ -68,20 +68,20 @@ export class GameLogicService {
         calculateVariables(systemVariables, empire, system);
       }
 
-      const popUpkeepPaid = this.deductPopUpkeep(system, empire, systemVariables);
+      const popUpkeepPaid = this.deductPopUpkeep(system, empire, systemVariables, aggregates);
 
-      const systemUpkeepPaid = this.deductSystemUpkeep(system.upgrade, empire, systemVariables);
+      const systemUpkeepPaid = this.deductSystemUpkeep(system.upgrade, empire, systemVariables, aggregates);
 
       const jobs = Object.values(system.districts).sum() + system.buildings.length;
       const popCoverage = Math.clamp(system.population / jobs, 0, 1);
 
-      this.processDistricts(system, systemUpkeepPaid, popCoverage, empire, systemVariables);
-      this.processBuildings(system, systemUpkeepPaid, popCoverage, empire, systemVariables);
+      this.processDistricts(system, systemUpkeepPaid, popCoverage, empire, systemVariables, aggregates);
+      this.processBuildings(system, systemUpkeepPaid, popCoverage, empire, systemVariables, aggregates);
 
-      this.deductJoblessUpkeep(system, empire, systemVariables);
+      this.deductJoblessUpkeep(system, empire, systemVariables, aggregates);
 
       if (popUpkeepPaid) {
-        this.popGrowth(system, systemVariables);
+        this.popGrowth(system, systemVariables, aggregates);
       }
     }
 
@@ -93,12 +93,26 @@ export class GameLogicService {
     empire.markModified('resources');
   }
 
-  private deductPopUpkeep(system: SystemDocument, empire: EmpireDocument, variables: Record<Variable, number>): boolean {
+  private updateAggregate(aggregate: AggregateResult | undefined, variable: Variable, count: number, subtotal: number) {
+    if (!aggregate) {
+      return;
+    }
+    const item = aggregate.items.find(item => item.variable === variable);
+    if (item) {
+      item.count += count;
+      item.subtotal += subtotal;
+    } else {
+      aggregate.items.push({variable, count, subtotal});
+    }
+  }
+
+  private deductPopUpkeep(system: SystemDocument, empire: EmpireDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>): boolean {
     const popUpkeep = variables['empire.pop.consumption.food'] * system.population;
+    this.updateAggregate(aggregates?.food, 'empire.pop.consumption.food', system.population, -popUpkeep);
     return this.deductResource(empire, 'food', popUpkeep);
   }
 
-  private processDistricts(system: SystemDocument, systemUpkeepPaid: boolean, popCoverage: number, empire: EmpireDocument, variables: Record<Variable, number>) {
+  private processDistricts(system: SystemDocument, systemUpkeepPaid: boolean, popCoverage: number, empire: EmpireDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
     for (const [districtType, count] of Object.entries(system.districts)) {
       const district = DISTRICTS[districtType as DistrictName];
 
@@ -108,7 +122,9 @@ export class GameLogicService {
       let districtUpkeepPaid = true;
       for (const resource of Object.keys(district.upkeep)) {
         const variable = `districts.${districtType}.upkeep.${resource}` as Variable;
-        districtUpkeepPaid = this.deductResource(empire, resource as ResourceName, variables[variable] * upkeepMultiplier) && districtUpkeepPaid;
+        const amount = variables[variable] * upkeepMultiplier;
+        this.updateAggregate(aggregates?.[resource as ResourceName], variable, count, -amount);
+        districtUpkeepPaid = this.deductResource(empire, resource as ResourceName, amount) && districtUpkeepPaid;
       }
 
       const productionMultiplier = (districtUpkeepPaid ? 1 : 0.75) * (systemUpkeepPaid ? 1 : 0.75) * count * popCoverage;
@@ -116,12 +132,14 @@ export class GameLogicService {
       // add district production
       for (const resource of Object.keys(district.production)) {
         const variable = `districts.${districtType}.production.${resource}` as Variable;
-        empire.resources[resource as ResourceName] += variables[variable] * productionMultiplier;
+        const amount = variables[variable] * productionMultiplier;
+        this.updateAggregate(aggregates?.[resource as ResourceName], variable, count, amount);
+        empire.resources[resource as ResourceName] += amount;
       }
     }
   }
 
-  private processBuildings(system: SystemDocument, systemUpkeepPaid: boolean, popCoverage: number, empire: EmpireDocument, variables: Record<Variable, number>) {
+  private processBuildings(system: SystemDocument, systemUpkeepPaid: boolean, popCoverage: number, empire: EmpireDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
     for (const buildingType of system.buildings) {
       const building = BUILDINGS[buildingType];
 
@@ -131,7 +149,9 @@ export class GameLogicService {
       let buildingUpkeepPaid = true;
       for (const resource of Object.keys(building.upkeep)) {
         const variable = `buildings.${buildingType}.upkeep.${resource}` as Variable;
-        buildingUpkeepPaid = this.deductResource(empire, resource as ResourceName, variables[variable] * upkeepMultiplier) && buildingUpkeepPaid;
+        const amount = variables[variable] * upkeepMultiplier;
+        this.updateAggregate(aggregates?.[resource as ResourceName], variable, 1, -amount);
+        buildingUpkeepPaid = this.deductResource(empire, resource as ResourceName, amount) && buildingUpkeepPaid;
       }
 
       const productionMultiplier = (buildingUpkeepPaid ? 1 : 0.75) * (systemUpkeepPaid ? 1 : 0.75) * popCoverage;
@@ -139,23 +159,29 @@ export class GameLogicService {
       // add building production
       for (const resource of Object.keys(building.production)) {
         const variable = `buildings.${buildingType}.production.${resource}` as Variable;
-        empire.resources[resource as ResourceName] += variables[variable] * productionMultiplier;
+        const amount = variables[variable] * productionMultiplier;
+        this.updateAggregate(aggregates?.[resource as ResourceName], variable, 1, amount);
+        empire.resources[resource as ResourceName] += amount;
       }
     }
   }
 
-  private deductJoblessUpkeep(system: SystemDocument, empire: EmpireDocument, variables: Record<Variable, number>) {
+  private deductJoblessUpkeep(system: SystemDocument, empire: EmpireDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
     const totalJobs = Object.values(system.districts).sum() + system.buildings.length;
     const joblessPops = system.population - totalJobs;
-    const joblessPopUpkeep = variables['empire.pop.consumption.credits.unemployed'] * joblessPops;
+    const variable = 'empire.pop.consumption.credits.unemployed';
+    const joblessPopUpkeep = variables[variable] * joblessPops;
+    this.updateAggregate(aggregates?.credits, variable, joblessPops, -joblessPopUpkeep);
     this.deductResource(empire, 'credits', joblessPopUpkeep);
   }
 
-  private deductSystemUpkeep(upgrade: 'colonized' | 'upgraded' | 'developed', empire: EmpireDocument, variables: Record<Variable, number>) {
+  private deductSystemUpkeep(upgrade: 'colonized' | 'upgraded' | 'developed', empire: EmpireDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
     let systemUpkeepPaid = true;
     for (const resource of Object.keys(SYSTEM_UPGRADES[upgrade].upkeep)) {
       const variable = `systems.${upgrade}.upkeep.${resource}` as Variable;
-      systemUpkeepPaid = this.deductResource(empire, resource as ResourceName, variables[variable]) && systemUpkeepPaid;
+      const amount = variables[variable];
+      this.updateAggregate(aggregates?.[resource as ResourceName], variable, 1, -amount);
+      systemUpkeepPaid = this.deductResource(empire, resource as ResourceName, amount) && systemUpkeepPaid;
     }
     return systemUpkeepPaid;
   }
@@ -213,12 +239,14 @@ export class GameLogicService {
     }
   }
 
-  private popGrowth(system: SystemDocument, variables: Record<Variable, number>) {
+  private popGrowth(system: SystemDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
     const {population, capacity} = system;
     const growthVariable: Variable = population >= capacity
       ? 'systems.developed.pop_growth'
       : `systems.${system.upgrade}.pop_growth`;
-    system.population = variables[growthVariable] * population;
+    const newValue = variables[growthVariable] * population;
+    this.updateAggregate(aggregates?.population, growthVariable, 1, newValue - population);
+    system.population = newValue;
   }
 
   aggregatePopGrowth(empire: Empire, systems: System[]): AggregateResult {
