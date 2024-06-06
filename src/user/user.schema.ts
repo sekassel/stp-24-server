@@ -1,6 +1,6 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {ApiProperty} from '@nestjs/swagger';
-import {IsByteLength, IsDataURI, IsNotEmpty, IsOptional, IsString, MaxLength} from 'class-validator';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
+import {IsByteLength, IsDataURI, IsNotEmpty, IsObject, IsOptional, IsString, MaxLength} from 'class-validator';
 import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {TECHNOLOGIES} from "../game-logic/technologies";
@@ -32,6 +32,16 @@ export class User extends GlobalSchema {
     maxLength: MAX_AVATAR_LENGTH,
   })
   avatar?: string;
+
+  @Prop({type: Object})
+  @ApiPropertyOptional({
+    description: 'Custom extra information shared with other users.',
+    type: 'object',
+    additionalProperties: true,
+  })
+  @IsOptional()
+  @IsObject()
+  _public?: Record<string, unknown>;
 
   @Prop({transform: () => undefined})
   passwordHash: string;
