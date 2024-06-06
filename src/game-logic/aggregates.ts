@@ -51,9 +51,6 @@ export const AGGREGATES: Record<string, AggregateFn> = {
       if (system) {
         systems = systems.filter(s => s._id.equals(system));
       }
-      if (resource === 'population') {
-        return service.aggregatePopGrowth(empire, systems);
-      }
       return service.aggregateResources(empire, systems, [resource as ResourceName])[0];
     },
   },
