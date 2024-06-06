@@ -34,7 +34,7 @@ export class GameLogicService {
       game.$inc('period', 1);
       const gameEmpires = empires.filter(empire => empire.game.equals(game._id));
       const gameSystems = systems.filter(system => system.game.equals(game._id));
-      this.updateGame(game, gameEmpires, gameSystems);
+      this.updateGame(gameEmpires, gameSystems);
     }
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
@@ -44,7 +44,7 @@ export class GameLogicService {
     }
   }
 
-  private updateGame(game: GameDocument, empires: EmpireDocument[], systems: SystemDocument[]) {
+  private updateGame(empires: EmpireDocument[], systems: SystemDocument[]) {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
       this.updateEmpire(empire, empireSystems);
@@ -61,71 +61,80 @@ export class GameLogicService {
         continue;
       }
 
-      // deduct pop upkeep
-      const popUpkeep = variables['empire.pop.consumption.food'] * system.population;
-      this.deductResource(empire, 'food', popUpkeep);
+      const popUpkeepPaid = this.deductPopUpkeep(system, empire, variables);
 
       const systemUpkeepPaid = this.deductSystemUpkeep(system.upgrade, empire, variables);
 
       const jobs = Object.values(system.districts).sum() + system.buildings.length;
       const popCoverage = Math.clamp(system.population / jobs, 0, 1);
 
-      for (const [districtType, count] of Object.entries(system.districts)) {
-        const district = DISTRICTS[districtType as DistrictName];
-
-        const upkeepMultiplier = (systemUpkeepPaid ? 1 : 0.75) * count * popCoverage;
-
-        // deduct district upkeep
-        let districtUpkeepPaid = true;
-        for (const resource of Object.keys(district.upkeep)) {
-          const variable = `districts.${districtType}.upkeep.${resource}` as Variable;
-          districtUpkeepPaid = this.deductResource(empire, resource as ResourceName, variables[variable] * upkeepMultiplier) && districtUpkeepPaid;
-        }
-
-        const productionMultiplier = (districtUpkeepPaid ? 1 : 0.75) * (systemUpkeepPaid ? 1 : 0.75) * count * popCoverage;
-
-        // add district production
-        for (const resource of Object.keys(district.production)) {
-          const variable = `districts.${districtType}.production.${resource}` as Variable;
-          empire.resources[resource as ResourceName] += variables[variable] * productionMultiplier;
-        }
-      }
-
-      for (const buildingType of system.buildings) {
-        const building = BUILDINGS[buildingType];
-
-        const upkeepMultiplier = (systemUpkeepPaid ? 1 : 0.75) * popCoverage;
-
-        // deduct building upkeep
-        let buildingUpkeepPaid = true;
-        for (const resource of Object.keys(building.upkeep)) {
-          const variable = `buildings.${buildingType}.upkeep.${resource}` as Variable;
-          buildingUpkeepPaid = this.deductResource(empire, resource as ResourceName, variables[variable] * upkeepMultiplier) && buildingUpkeepPaid;
-        }
-
-        const productionMultiplier = (buildingUpkeepPaid ? 1 : 0.75) * (systemUpkeepPaid ? 1 : 0.75) * popCoverage;
-
-        // add building production
-        for (const resource of Object.keys(building.production)) {
-          const variable = `buildings.${buildingType}.production.${resource}` as Variable;
-          empire.resources[resource as ResourceName] += variables[variable] * productionMultiplier;
-        }
-      }
+      this.processDistricts(system, systemUpkeepPaid, popCoverage, empire, variables);
+      this.processBuildings(system, systemUpkeepPaid, popCoverage, empire, variables);
 
       this.deductJoblessUpkeep(system, empire, variables);
 
-      // spawn pops on systems
-      if (empire.resources.food) {
+      if (popUpkeepPaid) {
         this.popGrowth(system, variables);
       }
     }
 
-    this.migratePopulation(systems, empire);
+    this.migratePopulation(systems);
 
     // ensure empire population is up to date
     empire.resources.population = systems.map(s => s.population).sum();
 
     empire.markModified('resources');
+  }
+
+  private deductPopUpkeep(system: SystemDocument, empire: EmpireDocument, variables: Record<Variable, number>): boolean {
+    const popUpkeep = variables['empire.pop.consumption.food'] * system.population;
+    return this.deductResource(empire, 'food', popUpkeep);
+  }
+
+  private processDistricts(system: SystemDocument, systemUpkeepPaid: boolean, popCoverage: number, empire: EmpireDocument, variables: Record<Variable, number>) {
+    for (const [districtType, count] of Object.entries(system.districts)) {
+      const district = DISTRICTS[districtType as DistrictName];
+
+      const upkeepMultiplier = (systemUpkeepPaid ? 1 : 0.75) * count * popCoverage;
+
+      // deduct district upkeep
+      let districtUpkeepPaid = true;
+      for (const resource of Object.keys(district.upkeep)) {
+        const variable = `districts.${districtType}.upkeep.${resource}` as Variable;
+        districtUpkeepPaid = this.deductResource(empire, resource as ResourceName, variables[variable] * upkeepMultiplier) && districtUpkeepPaid;
+      }
+
+      const productionMultiplier = (districtUpkeepPaid ? 1 : 0.75) * (systemUpkeepPaid ? 1 : 0.75) * count * popCoverage;
+
+      // add district production
+      for (const resource of Object.keys(district.production)) {
+        const variable = `districts.${districtType}.production.${resource}` as Variable;
+        empire.resources[resource as ResourceName] += variables[variable] * productionMultiplier;
+      }
+    }
+  }
+
+  private processBuildings(system: SystemDocument, systemUpkeepPaid: boolean, popCoverage: number, empire: EmpireDocument, variables: Record<Variable, number>) {
+    for (const buildingType of system.buildings) {
+      const building = BUILDINGS[buildingType];
+
+      const upkeepMultiplier = (systemUpkeepPaid ? 1 : 0.75) * popCoverage;
+
+      // deduct building upkeep
+      let buildingUpkeepPaid = true;
+      for (const resource of Object.keys(building.upkeep)) {
+        const variable = `buildings.${buildingType}.upkeep.${resource}` as Variable;
+        buildingUpkeepPaid = this.deductResource(empire, resource as ResourceName, variables[variable] * upkeepMultiplier) && buildingUpkeepPaid;
+      }
+
+      const productionMultiplier = (buildingUpkeepPaid ? 1 : 0.75) * (systemUpkeepPaid ? 1 : 0.75) * popCoverage;
+
+      // add building production
+      for (const resource of Object.keys(building.production)) {
+        const variable = `buildings.${buildingType}.production.${resource}` as Variable;
+        empire.resources[resource as ResourceName] += variables[variable] * productionMultiplier;
+      }
+    }
   }
 
   private deductJoblessUpkeep(system: SystemDocument, empire: EmpireDocument, variables: Record<Variable, number>) {
@@ -154,7 +163,7 @@ export class GameLogicService {
     }
   }
 
-  private migratePopulation(systems: SystemDocument[], empire: EmpireDocument) {
+  private migratePopulation(systems: SystemDocument[]) {
     const migrationSources = systems.filter(s => s.population > s.capacity);
     const migrationTargets = systems.filter(s => s.population < s.capacity);
 
