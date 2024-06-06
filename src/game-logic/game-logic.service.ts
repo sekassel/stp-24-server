@@ -2,7 +2,6 @@ import {Injectable} from '@nestjs/common';
 import {GameService} from '../game/game.service';
 import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
-import {GameDocument} from '../game/game.schema';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
 import {calculateVariable, calculateVariables, getInitialVariables} from './variables';
@@ -61,20 +60,28 @@ export class GameLogicService {
         continue;
       }
 
-      const popUpkeepPaid = this.deductPopUpkeep(system, empire, variables);
+      let systemVariables = variables;
+      if (system.effects?.length) {
+        // this system has custom effects, we need to re-run the variable calculations
+        // (just applying the system effects on top of the empire effects messes up the order of operations)
+        systemVariables = getInitialVariables();
+        calculateVariables(systemVariables, empire, system);
+      }
 
-      const systemUpkeepPaid = this.deductSystemUpkeep(system.upgrade, empire, variables);
+      const popUpkeepPaid = this.deductPopUpkeep(system, empire, systemVariables);
+
+      const systemUpkeepPaid = this.deductSystemUpkeep(system.upgrade, empire, systemVariables);
 
       const jobs = Object.values(system.districts).sum() + system.buildings.length;
       const popCoverage = Math.clamp(system.population / jobs, 0, 1);
 
-      this.processDistricts(system, systemUpkeepPaid, popCoverage, empire, variables);
-      this.processBuildings(system, systemUpkeepPaid, popCoverage, empire, variables);
+      this.processDistricts(system, systemUpkeepPaid, popCoverage, empire, systemVariables);
+      this.processBuildings(system, systemUpkeepPaid, popCoverage, empire, systemVariables);
 
-      this.deductJoblessUpkeep(system, empire, variables);
+      this.deductJoblessUpkeep(system, empire, systemVariables);
 
       if (popUpkeepPaid) {
-        this.popGrowth(system, variables);
+        this.popGrowth(system, systemVariables);
       }
     }
 

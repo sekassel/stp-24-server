@@ -7,6 +7,7 @@ import {EMPIRE_VARIABLES} from './empire-variables';
 import {RESOURCES} from './resources';
 import {DISTRICTS} from './districts';
 import {SYSTEM_UPGRADES} from './system-upgrade';
+import {SystemDocument} from '../system/system.schema';
 
 export const VARIABLES = {
   districts: DISTRICTS,
@@ -47,11 +48,12 @@ export function getInitialValue(variable: Variable): number {
 
 export type EmpireEffectSources = Pick<Empire, 'traits' | 'technologies' | 'effects'>;
 
-export function getEmpireEffectSources(empire: EmpireEffectSources): EffectSource[] {
+export function getEmpireEffectSources(empire: EmpireEffectSources, system?: SystemDocument): EffectSource[] {
   return [
     ...empire.traits.map(t => TRAITS[t]),
     ...getEffectiveTechnologies(empire.technologies.map(t => TECHNOLOGIES[t]).filter(t => t)),
     ...empire.effects ?? [],
+    ...system?.effects ?? [],
   ];
 }
 
@@ -61,12 +63,12 @@ export function calculateVariable(variable: Variable, empire: EmpireEffectSource
   return variables[variable];
 }
 
-export function calculateVariables(variables: Partial<Record<Variable, number>>, empire: EmpireEffectSources) {
-  const sources = getEmpireEffectSources(empire);
+export function calculateVariables(variables: Partial<Record<Variable, number>>, empire: EmpireEffectSources, system?: SystemDocument) {
+  const sources = getEmpireEffectSources(empire, system);
   applyEffects(variables, sources.flatMap(source => source.effects));
 }
 
-function applyEffects(variables: Partial<Record<Variable, number>>, effects: readonly Effect[]) {
+export function applyEffects(variables: Partial<Record<Variable, number>>, effects: readonly Effect[]) {
   effects = effects.filter(effect => variables[effect.variable] !== undefined);
 
   // step 1: apply base
