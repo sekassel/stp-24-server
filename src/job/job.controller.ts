@@ -83,7 +83,8 @@ export class JobController {
     @AuthUser() user: User,
     @Body() createJobDto: CreateJobDto,
   ): Promise<Job> {
-    if (!empire.equals(user._id)) {
+    const userEmpire = await this.empireService.findOne({game, user: user._id});
+    if (!userEmpire || !empire.equals(userEmpire._id)) {
       throw new ForbiddenException('You can only create jobs for your own empire.');
     }
     // TODO: Create job
@@ -102,8 +103,9 @@ export class JobController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<Job | null> {
-    if (!empire.equals(user._id)) {
-      throw new ForbiddenException('You can only delete jobs from your own empire.');
+    const userEmpire = await this.empireService.findOne({game, user: user._id});
+    if (!userEmpire || !empire.equals(userEmpire._id)) {
+      throw new ForbiddenException('You can only delete jobs for your own empire.');
     }
     // TODO: Delete job
     return null;
