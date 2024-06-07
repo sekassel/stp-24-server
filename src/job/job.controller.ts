@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Delete,
+  Delete, ForbiddenException,
   Get,
   Param,
   Post,
@@ -22,9 +22,9 @@ import {Throttled} from '../util/throttled.decorator';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {Job} from './job.schema';
 import {User} from '../user/user.schema';
-import {CreateJobDto} from "./job.dto";
-import {System} from "../system/system.schema";
-import {JobService} from "./job.service";
+import {CreateJobDto} from './job.dto';
+import {JobService} from './job.service';
+import {EmpireService} from "../empire/empire.service";
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')
@@ -33,6 +33,7 @@ import {JobService} from "./job.service";
 export class JobController {
   constructor(
     private readonly jobService: JobService,
+    private readonly empireService: EmpireService,
   ) {
   }
 
@@ -46,12 +47,12 @@ export class JobController {
     name: 'system',
     description: 'Filter jobs by system',
     required: false,
-    type: System,
+    type: String,
     example: '60d6f7eb8b4b8a001d6f7eb1',
   })
   @ApiQuery({
     name: 'type',
-    description: 'Filter jobs by type (`buildings`, `district`, `upgrade`, `technology`.)',
+    description: 'Filter jobs by type (`building`, `district`, `upgrade`, `technology`).',
     required: false,
     enum: ['building', 'district', 'upgrade', 'technology'],
   })
@@ -62,6 +63,11 @@ export class JobController {
     @Query('system') system?: Types.ObjectId,
     @Query('type') type?: string,
   ): Promise<Job[]> {
+    const userEmpire = await this.empireService.findOne({game, user: user._id});
+    if (!userEmpire || !empire.equals(userEmpire._id)) {
+      throw new ForbiddenException('You can only access jobs for your own empire.');
+    }
+    // TODO: Return jobs with given filters
     return Array.of(new Job());
   }
 
@@ -77,6 +83,10 @@ export class JobController {
     @AuthUser() user: User,
     @Body() createJobDto: CreateJobDto,
   ): Promise<Job> {
+    if (!empire.equals(user._id)) {
+      throw new ForbiddenException('You can only create jobs for your own empire.');
+    }
+    // TODO: Create job
     return new Job();
   }
 
@@ -92,6 +102,10 @@ export class JobController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<Job | null> {
+    if (!empire.equals(user._id)) {
+      throw new ForbiddenException('You can only delete jobs from your own empire.');
+    }
+    // TODO: Delete job
     return null;
   }
 }
