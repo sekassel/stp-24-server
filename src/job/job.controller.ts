@@ -22,7 +22,7 @@ import {Throttled} from '../util/throttled.decorator';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {Job} from './job.schema';
 import {User} from '../user/user.schema';
-import {CreateJobDto} from './job.dto';
+import {CreateJobDto, JobType} from './job.dto';
 import {JobService} from './job.service';
 import {EmpireService} from "../empire/empire.service";
 
@@ -54,13 +54,13 @@ export class JobController {
     name: 'type',
     description: 'Filter jobs by type (`building`, `district`, `upgrade`, `technology`).',
     required: false,
-    enum: ['building', 'district', 'upgrade', 'technology'],
+    enum: JobType,
   })
   async getJobs(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('empire', ObjectIdPipe) empire: Types.ObjectId,
     @AuthUser() user: User,
-    @Query('system') system?: Types.ObjectId,
+    @Query('system', ObjectIdPipe) system?: Types.ObjectId,
     @Query('type') type?: string,
   ): Promise<Job[]> {
     const userEmpire = await this.empireService.findOne({game, user: user._id});
