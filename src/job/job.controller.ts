@@ -22,9 +22,10 @@ import {Throttled} from '../util/throttled.decorator';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {Job} from './job.schema';
 import {User} from '../user/user.schema';
-import {CreateJobDto, JobType} from './job.dto';
+import {CreateJobDto} from './job.dto';
 import {JobService} from './job.service';
 import {EmpireService} from "../empire/empire.service";
+import {JobType} from "./job-type.enum";
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')

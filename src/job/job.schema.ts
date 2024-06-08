@@ -7,8 +7,8 @@ import {ResourceName} from "../game-logic/resources";
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {IsEnum, IsIn, IsNumber, IsOptional} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
-import {JobType} from "./job.dto";
 import {OptionalRef, Ref} from "@mean-stream/nestx";
+import {JobType} from "./job-type.enum";
 
 export type JobDocument = Job & Document<Types.ObjectId>;
 
