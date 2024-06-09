@@ -1,17 +1,17 @@
 import {Injectable} from "@nestjs/common";
-import {FriendsService} from "./friend.service";
 import {OnEvent} from "@nestjs/event-emitter";
 import {User} from "../user/user.schema";
+import {FriendService} from "./friend.service";
 
 @Injectable()
-export class FriendsHandler {
+export class FriendHandler {
   constructor(
-    private friendsService: FriendsService,
+    private friendService: FriendService,
   ) {
   }
 
   @OnEvent('users.*.deleted')
   async onUserDeleted(user: User): Promise<void> {
-    await this.friendsService.deleteMany({$or: [{from: user._id}, {to: user._id}]});
+    await this.friendService.deleteMany({$or: [{from: user._id}, {to: user._id}]});
   }
 }

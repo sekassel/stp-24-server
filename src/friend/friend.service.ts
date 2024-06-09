@@ -7,7 +7,7 @@ import {FriendStatus, UpdateFriendDto} from './friend.dto';
 
 @Injectable()
 @EventRepository()
-export class FriendsService extends MongooseRepository<Friend> {
+export class FriendService extends MongooseRepository<Friend> {
   constructor(
     @InjectModel(Friend.name) private friendModel: Model<Friend>,
     private eventEmitter: EventService,
