@@ -33,10 +33,10 @@ export class Job extends GlobalSchema {
   @OptionalRef('System')
   system?: Types.ObjectId;
 
-  @Prop({required: true, enum: JobType})
+  @Prop({required: true, type: String, enum: JobType})
   @ApiProperty({enum: JobType, description: 'Type of the job'})
   @IsEnum(JobType)
-  type: string;
+  type: JobType;
 
   @Prop({type: String})
   @IsOptional()
