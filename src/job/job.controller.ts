@@ -43,7 +43,6 @@ export class JobController {
   @ApiOperation({description: 'Get the job list with optional filters for system and type.'})
   @ApiOkResponse({type: [Job]})
   @ApiForbiddenResponse({description: 'You can only access jobs for your own empire.'})
-  @NotFound()
   @ApiQuery({
     name: 'system',
     description: 'Filter jobs by system',
@@ -70,6 +69,26 @@ export class JobController {
     }
     // TODO: Return jobs with given filters
     return Array.of(new Job());
+  }
+
+  @Get(':id')
+  @Auth()
+  @ApiOperation({description: 'Get a single job by ID.'})
+  @ApiOkResponse({type: Job})
+  @ApiForbiddenResponse({description: 'You can only access jobs for your own empire.'})
+  @NotFound()
+  async getJob(
+    @Param('game', ObjectIdPipe) game: Types.ObjectId,
+    @Param('empire', ObjectIdPipe) empire: Types.ObjectId,
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @AuthUser() user: User,
+  ): Promise<Job | null> {
+    const userEmpire = await this.empireService.findOne({game, user: user._id});
+    if (!userEmpire || !empire.equals(userEmpire._id)) {
+      throw new ForbiddenException('You can only access jobs for your own empire.');
+    }
+    // FIXME A malicious user could pass their own empire ID and get another empire's job
+    return this.jobService.find(id);
   }
 
   @Post()
