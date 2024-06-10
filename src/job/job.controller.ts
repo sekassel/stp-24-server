@@ -63,10 +63,7 @@ export class JobController {
     @Query('system', ObjectIdPipe) system?: Types.ObjectId,
     @Query('type') type?: string,
   ): Promise<Job[]> {
-    const userEmpire = await this.empireService.findOne({game, user: user._id});
-    if (!userEmpire || !empire.equals(userEmpire._id)) {
-      throw new ForbiddenException('You can only access jobs for your own empire.');
-    }
+    await this.checkUserAccess(game, user, empire);
     // TODO: Return jobs with given filters
     return Array.of(new Job());
   }
@@ -83,11 +80,7 @@ export class JobController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<Job | null> {
-    const userEmpire = await this.empireService.findOne({game, user: user._id});
-    if (!userEmpire || !empire.equals(userEmpire._id)) {
-      throw new ForbiddenException('You can only access jobs for your own empire.');
-    }
-    // FIXME A malicious user could pass their own empire ID and get another empire's job
+    await this.checkUserAccess(game, user, empire);
     return this.jobService.find(id);
   }
 
@@ -103,10 +96,7 @@ export class JobController {
     @AuthUser() user: User,
     @Body() createJobDto: CreateJobDto,
   ): Promise<Job> {
-    const userEmpire = await this.empireService.findOne({game, user: user._id});
-    if (!userEmpire || !empire.equals(userEmpire._id)) {
-      throw new ForbiddenException('You can only create jobs for your own empire.');
-    }
+    await this.checkUserAccess(game, user, empire);
     // TODO: Create job
     return new Job();
   }
@@ -123,11 +113,16 @@ export class JobController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<Job | null> {
-    const userEmpire = await this.empireService.findOne({game, user: user._id});
-    if (!userEmpire || !empire.equals(userEmpire._id)) {
-      throw new ForbiddenException('You can only delete jobs for your own empire.');
-    }
+    await this.checkUserAccess(game, user, empire);
     // TODO: Delete job
     return null;
+  }
+
+  private async checkUserAccess(game: Types.ObjectId, user: User, empire: Types.ObjectId) {
+    // FIXME A malicious user could pass their own empire ID and get/modify another empire's job
+    const userEmpire = await this.empireService.findOne({game, user: user._id});
+    if (!userEmpire || !empire.equals(userEmpire._id)) {
+      throw new ForbiddenException('You can only access jobs for your own empire.');
+    }
   }
 }
