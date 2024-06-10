@@ -1,5 +1,5 @@
 import {Body, Controller, ForbiddenException, Get, Param, Patch, Query} from '@nestjs/common';
-import {ApiOkResponse, ApiOperation, ApiQuery, ApiTags} from '@nestjs/swagger';
+import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
 import {Throttled} from '../util/throttled.decorator';
@@ -52,6 +52,7 @@ export class SystemController {
   @Patch(':id')
   @ApiOperation({description: 'Update system details.'})
   @ApiOkResponse({type: System})
+  @ApiForbiddenResponse({description: 'You are not the owner of this system.'})
   @NotFound('Game or system not found.')
   async update(
     @AuthUser() currentUser: User,
@@ -63,6 +64,7 @@ export class SystemController {
     const userEmpire = await this.empireService.findOne({user: currentUser._id, game});
     const owner = oldSystem.owner ?? dto.owner;
 
+    // TODO v3: Allow "explore" upgrade without being owner (handled by upgrade Job)
     if (!userEmpire?._id.equals(owner)) {
       throw new ForbiddenException('You are not the owner of this system.');
     }
