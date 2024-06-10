@@ -341,7 +341,7 @@ export class GameLogicService {
     for (let i = 0; i < resources.length; i++) {
       const [resource, weight] = resources[i];
       items.push({
-        variable: `resources.${resource}.production`,
+        variable: `resources.${resource}.periodic`,
         count: weight,
         subtotal: production[i].total,
       });
