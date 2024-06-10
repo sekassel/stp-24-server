@@ -45,17 +45,16 @@ export class GameLogicHandler {
     const homeSystems = new Set<string>();
 
     // select a home system for each empire
-    for (let i = 0; i < empires.length; i++){
-      const empire = empires[i];
-      const member = members[i];
+    for (const empire of empires) { // NB: cannot be indexed because some members may not have empires (spectators)
+      const member = members.find(m => empire.user.equals(m.user));
       const homeSystem = this.selectHomeSystem(systems, homeSystems);
 
       homeSystem.owner = empire._id;
       homeSystem.population = empire.resources.population;
       homeSystem.upgrade = 'developed';
       homeSystem.capacity *= SYSTEM_UPGRADES.developed.capacity_multiplier;
-      if (member.empire!.homeSystem) {
-        homeSystem.type = member.empire!.homeSystem;
+      if (member?.empire?.homeSystem) {
+        homeSystem.type = member.empire.homeSystem;
       }
       this.systemService.generateDistricts(homeSystem, empire);
 

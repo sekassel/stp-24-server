@@ -232,7 +232,7 @@ export class EmpireService extends MongooseRepository<Empire> {
   }
 
   async initEmpires(members: Member[]): Promise<EmpireDocument[]> {
-    return this.createMany(members.map(member => {
+    return this.createMany(members.filter(m => m.empire).map(member => {
         const resourceVariables: Record<Variable & `resources.${string}`, number> = flatten(RESOURCES, 'resources.');
         calculateVariables(resourceVariables, {
           traits: member.empire!.traits,
