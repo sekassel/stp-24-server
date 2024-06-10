@@ -9,6 +9,7 @@ import {IsEnum, IsIn, IsNumber, IsObject, IsOptional, ValidateIf} from 'class-va
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {OptionalRef, Ref} from "@mean-stream/nestx";
 import {JobType} from "./job-type.enum";
+import {TECHNOLOGIES, TECHNOLOGY_IDS} from '../game-logic/technologies';
 
 export type JobDocument = Job & Document<Types.ObjectId>;
 
@@ -58,12 +59,13 @@ export class Job extends GlobalSchema {
 
   @Prop({type: String})
   @ApiPropertyOptional({
-    enum: TECHNOLOGY_TAGS,
+    example: 'improved_production_1',
+    enum: TECHNOLOGY_IDS,
     description: 'Technology name for the job. Required for type=technology.',
   })
   @ValidateIf((job, value) => value || job.type === JobType.TECHNOLOGY)
-  @IsIn(TECHNOLOGY_TAGS)
-  technology?: TechnologyTag;
+  @IsIn(TECHNOLOGY_IDS)
+  technology?: string;
 
   @Prop({type: Map, of: Number, default: {}})
   @ApiPropertyOptional({
