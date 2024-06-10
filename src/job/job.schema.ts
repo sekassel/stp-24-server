@@ -5,7 +5,7 @@ import {DISTRICT_NAMES, DistrictName} from "../game-logic/districts";
 import {RESOURCES_SCHEMA_PROPERTIES, TECHNOLOGY_TAGS, TechnologyTag} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
-import {IsEnum, IsIn, IsNumber, IsObject, IsOptional} from 'class-validator';
+import {IsEnum, IsIn, IsNumber, IsObject, IsOptional, ValidateIf} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {OptionalRef, Ref} from "@mean-stream/nestx";
 import {JobType} from "./job-type.enum";
@@ -43,7 +43,7 @@ export class Job extends GlobalSchema {
     enum: BUILDING_NAMES,
     description: 'Building name for the job. Required for type=building.',
   })
-  @IsOptional()
+  @ValidateIf((job, value) => value || job.type === JobType.BUILDING)
   @IsIn(BUILDING_NAMES)
   building?: BuildingName;
 
@@ -52,7 +52,7 @@ export class Job extends GlobalSchema {
     enum: DISTRICT_NAMES,
     description: 'District name for the job. Required for type=district.',
   })
-  @IsOptional()
+  @ValidateIf((job, value) => value || job.type === JobType.DISTRICT)
   @IsIn(DISTRICT_NAMES)
   district?: DistrictName;
 
@@ -61,7 +61,7 @@ export class Job extends GlobalSchema {
     enum: TECHNOLOGY_TAGS,
     description: 'Technology name for the job. Required for type=technology.',
   })
-  @IsOptional()
+  @ValidateIf((job, value) => value || job.type === JobType.TECHNOLOGY)
   @IsIn(TECHNOLOGY_TAGS)
   technology?: TechnologyTag;
 
