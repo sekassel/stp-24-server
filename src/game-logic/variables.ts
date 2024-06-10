@@ -8,6 +8,7 @@ import {RESOURCES} from './resources';
 import {DISTRICTS} from './districts';
 import {SYSTEM_UPGRADES} from './system-upgrade';
 import {SystemDocument} from '../system/system.schema';
+import {notFound} from '@mean-stream/nestx';
 
 export const VARIABLES = {
   districts: DISTRICTS,
@@ -41,6 +42,9 @@ export function getInitialValue(variable: Variable): number {
   // deep key access
   let value: any = VARIABLES;
   for (const key of variable.split('.')) {
+    if (!(key in value)) {
+      notFound(variable);
+    }
     value = value[key];
   }
   return value;
