@@ -223,20 +223,20 @@ export class GameLogicService {
     // A should gain (30-20) / 15 * 15 = 10 pops
     // B should gain (30-25) / 15 * 15 = 5 pops
 
-    console.log(`----- Migrating ${migratingPops} pops -----`);
+    // console.log(`----- Migrating ${migratingPops} pops -----`);
 
     for (const system of migrationSources) {
       const migrationFraction = (system.population - system.capacity) / totalMigration;
       const migrationAmount = migratingPops * migrationFraction;
       system.population -= migrationAmount;
-      console.log(`Migrating from ${system.id}: (${system.population}-${system.capacity})/${totalMigration} * ${migratingPops} = ${migrationAmount}`);
+      // console.log(`Migrating from ${system.id}: (${system.population}-${system.capacity})/${totalMigration} * ${migratingPops} = ${migrationAmount}`);
     }
 
     for (const system of migrationTargets) {
       const migrationFraction = (system.capacity - system.population) / totalCapacity;
       const migrationAmount = migratingPops * migrationFraction;
       system.population += migrationAmount;
-      console.log(`Migrating to ${system.id}: (${system.capacity}-${system.population})/${totalCapacity} * ${migratingPops} = ${migrationAmount}`);
+      // console.log(`Migrating to ${system.id}: (${system.capacity}-${system.population})/${totalCapacity} * ${migratingPops} = ${migrationAmount}`);
     }
   }
 
@@ -259,6 +259,9 @@ export class GameLogicService {
   aggregateAllResources(empire: Empire, systems: System[]): AggregateResult {
     const initial = {...empire.resources};
     this.updateEmpire(empire as EmpireDocument, systems as SystemDocument[]);
+    // FIXME migration will never be accounted for
+    //   - when querying all systems, migration is zero across them (since it's zero-sum)
+    //   - when querying a single system, migration cannot happen
     const items = Object.entries(empire.resources).map(([resource, value]) => ({
       variable: `resources.${resource}.periodic`,
       count: 1,
