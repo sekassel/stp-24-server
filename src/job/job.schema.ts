@@ -5,7 +5,7 @@ import {DISTRICT_NAMES, DistrictName} from "../game-logic/districts";
 import {RESOURCES_SCHEMA_PROPERTIES, TECHNOLOGY_TAGS, TechnologyTag} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
-import {IsEnum, IsIn, IsNumber, IsOptional} from 'class-validator';
+import {IsEnum, IsIn, IsNumber, IsObject, IsOptional} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {OptionalRef, Ref} from "@mean-stream/nestx";
 import {JobType} from "./job-type.enum";
@@ -39,29 +39,39 @@ export class Job extends GlobalSchema {
   type: JobType;
 
   @Prop({type: String})
+  @ApiPropertyOptional({
+    enum: BUILDING_NAMES,
+    description: 'Building name for the job. Required for type=building.',
+  })
   @IsOptional()
-  @ApiPropertyOptional({required: false, description: 'Building name for the job'})
   @IsIn(BUILDING_NAMES)
   building?: BuildingName;
 
   @Prop({type: String})
+  @ApiPropertyOptional({
+    enum: DISTRICT_NAMES,
+    description: 'District name for the job. Required for type=district.',
+  })
   @IsOptional()
-  @ApiPropertyOptional({required: false, description: 'District name for the job'})
   @IsIn(DISTRICT_NAMES)
   district?: DistrictName;
 
   @Prop({type: String})
+  @ApiPropertyOptional({
+    enum: TECHNOLOGY_TAGS,
+    description: 'Technology name for the job. Required for type=technology.',
+  })
   @IsOptional()
-  @ApiPropertyOptional({required: false, description: 'Technology name for the job'})
   @IsIn(TECHNOLOGY_TAGS)
   technology?: TechnologyTag;
 
   @Prop({type: Map, of: Number, default: {}})
-  @IsOptional()
   @ApiPropertyOptional({
     description: 'Initial cost of resources for the job',
     ...RESOURCES_SCHEMA_PROPERTIES,
   })
+  @IsOptional()
+  @IsObject()
   cost?: Record<ResourceName, number>;
 }
 
