@@ -74,3 +74,29 @@
 * Improved the aggregate documentation.
 * Improved the `UpdateEmpireDto` and `UpdateSystemDto` documentation.
 * Added additional descriptions for some game concept properties.
+
+# v1.3.0 (2024-06-10)
+
+## New Features
+
++ Added the `_public` property to Users for custom data. [#17](https://github.com/sekassel/stp-24-server-tracker/issues/17)
++ Added the `effects` property to Systems for events and other custom modifiers. [#18](https://github.com/sekassel/stp-24-server-tracker/issues/18)
+
+## Preview Features
+
++ Added Jobs REST endpoints and schemas (not yet functional).
+
+## Improvements
+
+* Made the `resources.periodic` query parameter `resource` optional to get all resources at once. [#10](https://github.com/sekassel/stp-24-server-tracker/issues/10)
+* Renamed the pseudo-variables for resource production in the `empire.level.*` aggregates from `resources.*.production` to `resources.*.periodic`.
+
+## Bugfixes
+
+* Fixed a rare issue where a system would be linked to itself. [#16](https://github.com/sekassel/stp-24-server-tracker/issues/16)
+* Fixed `500 Internal Server Error` when attempting to explain an unknown variable.
+* Fixed an error when starting a game with members without empires (spectators).
+
+## Documentation
+
+* Documented the possible `403 Forbidden` error in the `PATCH .../systems/:system` endpoint.
