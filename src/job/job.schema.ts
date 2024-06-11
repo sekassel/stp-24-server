@@ -1,15 +1,15 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
-import {BUILDING_NAMES, BuildingName} from "../game-logic/buildings";
-import {DISTRICT_NAMES, DistrictName} from "../game-logic/districts";
-import {RESOURCES_SCHEMA_PROPERTIES, TECHNOLOGY_TAGS, TechnologyTag} from "../game-logic/types";
-import {ResourceName} from "../game-logic/resources";
+import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
+import {DISTRICT_NAMES, DistrictName} from '../game-logic/districts';
+import {RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
+import {ResourceName} from '../game-logic/resources';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {IsEnum, IsIn, IsNumber, IsObject, IsOptional, ValidateIf} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
-import {OptionalRef, Ref} from "@mean-stream/nestx";
-import {JobType} from "./job-type.enum";
-import {TECHNOLOGIES, TECHNOLOGY_IDS} from '../game-logic/technologies';
+import {AsObjectId, Ref} from '@mean-stream/nestx';
+import {JobType} from './job-type.enum';
+import {TECHNOLOGY_IDS} from '../game-logic/technologies';
 
 export type JobDocument = Job & Document<Types.ObjectId>;
 
@@ -31,7 +31,10 @@ export class Job extends GlobalSchema {
   @Ref('Empire')
   empire: Types.ObjectId;
 
-  @OptionalRef('System')
+  @Prop({type: Types.ObjectId, ref: 'System', required: false})
+  @ApiPropertyOptional({description: 'System ID for the job. Required for type=building, type=district, type=upgrade.'})
+  @ValidateIf((job, value) => value || job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE)
+  @AsObjectId()
   system?: Types.ObjectId;
 
   @Prop({required: true, type: String, enum: JobType})
