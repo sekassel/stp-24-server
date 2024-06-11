@@ -97,8 +97,10 @@ export class Game extends GlobalSchema {
 
   @Prop({default: 0})
   @ApiProperty({
-    description: 'The current period of the game.',
+    description: 'The current period of the game. Increments by one each tick.',
     default: 0,
+    type: 'integer',
+    minimum: 0,
   })
   @IsInt()
   @Min(0)
