@@ -1,49 +1,110 @@
 import {Injectable} from '@nestjs/common';
-import {GameService} from '../game/game.service';
 import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
-import {calculateVariable, calculateVariables, getInitialVariables} from './variables';
+import {calculateVariables, getInitialVariables} from './variables';
 import {Technology, Variable} from './types';
 import {ResourceName} from './resources';
 import {DistrictName, DISTRICTS} from './districts';
 import {BUILDINGS} from './buildings';
-import {SYSTEM_UPGRADES, SystemUpgradeName} from './system-upgrade';
+import {SYSTEM_UPGRADES} from './system-upgrade';
 import {AggregateItem, AggregateResult} from './aggregates';
 import {TECHNOLOGIES} from './technologies';
 import {Types} from 'mongoose';
 import {notFound} from '@mean-stream/nestx';
+import {Game} from '../game/game.schema';
+import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from './constants';
+import {MemberService} from '../member/member.service';
 
 @Injectable()
 export class GameLogicService {
   constructor(
-    private gameService: GameService,
+    private memberService: MemberService,
     private empireService: EmpireService,
     private systemService: SystemService,
   ) {
   }
 
-  async updateGames(speed: number) {
-    const games = await this.gameService.findAll({started: true, speed});
-    const gameIds = games.map(game => game._id);
-    const empires = await this.empireService.findAll({game: {$in: gameIds}});
-    const systems = await this.systemService.findAll({game: {$in: gameIds}});
-    for (const game of games) {
-      game.$inc('period', 1);
-      const gameEmpires = empires.filter(empire => empire.game.equals(game._id));
-      const gameSystems = systems.filter(system => system.game.equals(game._id));
-      this.updateGame(gameEmpires, gameSystems);
+  async startGame(game: Game): Promise<void> {
+    const members = await this.memberService.findAll({
+      game: game._id,
+      empire: {$exists: true},
+    });
+    const empires = await this.empireService.initEmpires(members);
+    if (!empires.length) {
+      // game was already started
+      return;
     }
+
+    const systems = await this.systemService.generateMap(game);
+    const homeSystems = new Set<string>();
+
+    // select a home system for each empire
+    for (const empire of empires) { // NB: cannot be indexed because some members may not have empires (spectators)
+      const member = members.find(m => empire.user.equals(m.user));
+      const homeSystem = this.selectHomeSystem(systems, homeSystems);
+
+      homeSystem.owner = empire._id;
+      homeSystem.population = empire.resources.population;
+      homeSystem.upgrade = 'developed';
+      homeSystem.capacity *= SYSTEM_UPGRADES.developed.capacity_multiplier;
+      if (member?.empire?.homeSystem) {
+        homeSystem.type = member.empire.homeSystem;
+      }
+      this.systemService.generateDistricts(homeSystem, empire);
+
+      // every home system starts with 15 districts
+      this.generateDistricts(homeSystem);
+
+      // plus 7 buildings, so 22 jobs in total
+      homeSystem.buildings = HOMESYSTEM_BUILDINGS;
+
+      const totalJobs = Object.values(homeSystem.districts).sum() + homeSystem.buildings.length;
+      if (homeSystem.capacity < totalJobs) {
+        homeSystem.capacity = totalJobs;
+      }
+
+      // then 3 pops will be unemployed initially.
+      empire.homeSystem = homeSystem._id;
+    }
+
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
-    await this.gameService.saveAll(games);
-    for (const game of games) {
-      this.gameService.emit('ticked', game);
-    }
   }
 
-  private updateGame(empires: EmpireDocument[], systems: SystemDocument[]) {
+  private selectHomeSystem(systems: SystemDocument[], homeSystems: Set<string>) {
+    let homeSystem: SystemDocument;
+    do {
+      homeSystem = systems.random();
+    } while (
+      homeSystems.has(homeSystem._id.toString())
+      || Object.keys(homeSystem.links).some(link => homeSystems.has(link))
+      );
+    homeSystems.add(homeSystem._id.toString());
+    return homeSystem;
+  }
+
+  private generateDistricts(homeSystem: SystemDocument) {
+    for (const district of HOMESYSTEM_DISTRICTS) {
+      homeSystem.districts[district] = HOMESYSTEM_DISTRICT_COUNT;
+      if (!homeSystem.districtSlots[district] || homeSystem.districtSlots[district]! < HOMESYSTEM_DISTRICT_COUNT) {
+        homeSystem.districtSlots[district] = HOMESYSTEM_DISTRICT_COUNT;
+        homeSystem.markModified('districtSlots');
+      }
+    }
+    homeSystem.markModified('districts');
+  }
+
+  async updateGame(game: Game) {
+    const empires = await this.empireService.findAll({game: game._id});
+    const systems = await this.systemService.findAll({game: game._id});
+    this._updateGame(empires, systems);
+    await this.empireService.saveAll(empires);
+    await this.systemService.saveAll(systems);
+  }
+
+  private _updateGame(empires: EmpireDocument[], systems: SystemDocument[]) {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
       this.updateEmpire(empire, empireSystems);
