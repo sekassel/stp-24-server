@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import {MongooseModule} from '@nestjs/mongoose';
 import {environment} from '../environment';
 import {GameController} from './game.controller';
@@ -13,6 +13,7 @@ import {GameService} from './game.service';
       name: Game.name,
       schema: GameSchema,
     }]),
+    forwardRef(() => require('../game-logic/game-logic.module').GameLogicModule),
   ],
   controllers: [GameController],
   providers: [

@@ -29,6 +29,7 @@ import {Game} from './game.schema';
 import {GameService} from './game.service';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types, UpdateQuery} from 'mongoose';
+import {GameLogicService} from '../game-logic/game-logic.service';
 
 @Controller('games')
 @ApiTags('Games')
@@ -38,6 +39,7 @@ import {Types, UpdateQuery} from 'mongoose';
 export class GameController {
   constructor(
     private readonly gameService: GameService,
+    private readonly gameLogicService: GameLogicService,
   ) {
   }
 
@@ -100,7 +102,11 @@ export class GameController {
       update.tickedAt = new Date();
     }
     const result = await this.gameService.update(id, dto, {populate: 'members'});
+    if (result && !existing.started && result.started) {
+      await this.gameLogicService.startGame(result);
+    }
     if (tick && result) {
+      await this.gameLogicService.updateGame(result);
       this.gameService.emit('ticked', result);
     }
     return result;
