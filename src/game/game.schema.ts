@@ -2,8 +2,8 @@ import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {Type} from 'class-transformer';
 import {
-  IsBoolean, IsDate,
-  IsIn,
+  IsBoolean,
+  IsDate,
   IsInt,
   IsNotEmpty,
   IsObject,
@@ -86,11 +86,13 @@ export class Game extends GlobalSchema {
 
   @Prop({default: 0})
   @ApiProperty({
-    description: 'The speed of the game in periods per minute.',
-    default: 1,
-    enum: [0, 1, 2, 3],
+    description: 'The speed of the game, interpreted by clients.',
+    default: 0,
+    type: 'integer',
+    minimum: 0,
   })
-  @IsIn([0, 1, 2, 3])
+  @IsInt()
+  @Min(0)
   speed: number;
 
   @Prop({default: 0})
