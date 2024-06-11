@@ -27,8 +27,8 @@ import {Validated} from '../util/validated.decorator';
 import {CreateGameDto, UpdateGameDto} from './game.dto';
 import {Game} from './game.schema';
 import {GameService} from './game.service';
-import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
-import {Types} from 'mongoose';
+import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
+import {Types, UpdateQuery} from 'mongoose';
 
 @Controller('games')
 @ApiTags('Games')
@@ -74,18 +74,36 @@ export class GameController {
   @ApiOkResponse({type: Game})
   @ApiConflictResponse({description: 'Game is already running.'})
   @ApiForbiddenResponse({description: 'Attempt to change a game that the current user does not own.'})
-  async update(@AuthUser() user: User, @Param('id', ObjectIdPipe) id: Types.ObjectId, @Body() dto: UpdateGameDto): Promise<Game | null> {
-    const existing = await this.gameService.find(id);
-    if (!existing) {
-      throw new NotFoundException(id);
-    }
+  @ApiQuery({
+    name: 'tick',
+    description: 'Advance the game by one period and run all empire and system calculations.',
+    type: 'boolean',
+    required: false,
+  })
+  async update(
+    @AuthUser() user: User,
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+    @Body() dto: UpdateGameDto,
+    @Query('tick', new ParseBoolPipe({optional: true})) tick?: boolean,
+  ): Promise<Game | null> {
+    const existing = await this.gameService.find(id) ?? notFound(id);
     if (!user._id.equals(existing.owner)) {
       throw new ForbiddenException('Only the owner can change the game.');
     }
     if (existing.started && !(Object.keys(dto).length === 1 && dto.speed !== undefined)) {
       throw new ConflictException('Cannot change a running game.');
     }
-    return this.gameService.update(id, dto, {populate: 'members'});
+    const update: UpdateQuery<Game> = dto;
+    if (tick) {
+      update.started = true;
+      update.$inc = {period: 1};
+      update.tickedAt = new Date();
+    }
+    const result = await this.gameService.update(id, dto, {populate: 'members'});
+    if (tick && result) {
+      this.gameService.emit('ticked', result);
+    }
+    return result;
   }
 
   @Delete(':id')

@@ -2,7 +2,7 @@ import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {Type} from 'class-transformer';
 import {
-  IsBoolean,
+  IsBoolean, IsDate,
   IsIn,
   IsInt,
   IsNotEmpty,
@@ -101,6 +101,13 @@ export class Game extends GlobalSchema {
   @IsInt()
   @Min(0)
   period: number;
+
+  @Prop()
+  @ApiProperty({
+    description: 'The timestamp when the game ticked.',
+  })
+  @IsDate()
+  tickedAt: Date;
 
   @Prop()
   @ApiPropertyOptional()

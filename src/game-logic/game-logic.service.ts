@@ -1,49 +1,39 @@
 import {Injectable} from '@nestjs/common';
-import {GameService} from '../game/game.service';
 import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
-import {calculateVariable, calculateVariables, getInitialVariables} from './variables';
+import {calculateVariables, getInitialVariables} from './variables';
 import {Technology, Variable} from './types';
 import {ResourceName} from './resources';
 import {DistrictName, DISTRICTS} from './districts';
 import {BUILDINGS} from './buildings';
-import {SYSTEM_UPGRADES, SystemUpgradeName} from './system-upgrade';
+import {SYSTEM_UPGRADES} from './system-upgrade';
 import {AggregateItem, AggregateResult} from './aggregates';
 import {TECHNOLOGIES} from './technologies';
 import {Types} from 'mongoose';
 import {notFound} from '@mean-stream/nestx';
+import {Game} from '../game/game.schema';
+import {OnEvent} from '@nestjs/event-emitter';
 
 @Injectable()
 export class GameLogicService {
   constructor(
-    private gameService: GameService,
     private empireService: EmpireService,
     private systemService: SystemService,
   ) {
   }
 
-  async updateGames(speed: number) {
-    const games = await this.gameService.findAll({started: true, speed});
-    const gameIds = games.map(game => game._id);
-    const empires = await this.empireService.findAll({game: {$in: gameIds}});
-    const systems = await this.systemService.findAll({game: {$in: gameIds}});
-    for (const game of games) {
-      game.$inc('period', 1);
-      const gameEmpires = empires.filter(empire => empire.game.equals(game._id));
-      const gameSystems = systems.filter(system => system.game.equals(game._id));
-      this.updateGame(gameEmpires, gameSystems);
-    }
+  @OnEvent('games.*.ticked')
+  async updateGame(game: Game) {
+    const empires = await this.empireService.findAll({game: game._id});
+    const systems = await this.systemService.findAll({game: game._id});
+    this._updateGame(empires, systems);
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
-    await this.gameService.saveAll(games);
-    for (const game of games) {
-      this.gameService.emit('ticked', game);
-    }
   }
 
-  private updateGame(empires: EmpireDocument[], systems: SystemDocument[]) {
+  private _updateGame(empires: EmpireDocument[], systems: SystemDocument[]) {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
       this.updateEmpire(empire, empireSystems);
