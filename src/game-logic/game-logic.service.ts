@@ -4,12 +4,12 @@ import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
-import {calculateVariable, calculateVariables, getInitialVariables} from './variables';
+import {calculateVariables, getInitialVariables} from './variables';
 import {Technology, Variable} from './types';
 import {ResourceName} from './resources';
 import {DistrictName, DISTRICTS} from './districts';
 import {BUILDINGS} from './buildings';
-import {SYSTEM_UPGRADES, SystemUpgradeName} from './system-upgrade';
+import {SYSTEM_UPGRADES} from './system-upgrade';
 import {AggregateItem, AggregateResult} from './aggregates';
 import {TECHNOLOGIES} from './technologies';
 import {Types} from 'mongoose';
@@ -242,12 +242,11 @@ export class GameLogicService {
 
   private popGrowth(system: SystemDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
     const {population, capacity} = system;
-    const growthVariable: Variable = population >= capacity
-      ? 'systems.developed.pop_growth'
-      : `systems.${system.upgrade}.pop_growth`;
-    const newValue = variables[growthVariable] * population;
-    this.updateAggregate(aggregates?.population, growthVariable, 1, newValue - population);
-    system.population = newValue;
+    const growthVariable: Variable = `systems.${system.upgrade}.pop_growth`;
+    const growthRate = variables[growthVariable];
+    const growth = growthRate * population * Math.clamp(1 - population / capacity, 0, 1); // logistic growth
+    this.updateAggregate(aggregates?.population, growthVariable, 1, growth);
+    system.population = population + growth;
   }
 
   aggregateResources(empire: Empire, systems: System[], resources: ResourceName[]): AggregateResult[] {

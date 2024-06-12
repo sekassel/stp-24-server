@@ -17,7 +17,7 @@ export const SYSTEM_UPGRADES = {
   },
   colonized: {
     id: 'colonized',
-    pop_growth: 1.05, // pop_growth_colonized tech tree
+    pop_growth: 0.05, // pop_growth_colonized tech tree
     cost: {
       minerals: 100, // cheap_claims tech tree
       energy: 100, // cheap_claims tech tree
@@ -31,7 +31,7 @@ export const SYSTEM_UPGRADES = {
   },
   upgraded: {
     id: 'upgraded',
-    pop_growth: 1.02, // pop_growth_upgraded tech tree
+    pop_growth: 0.02, // pop_growth_upgraded tech tree
     cost: {
       minerals: 100, // cheap_claims tech tree
       alloys: 100, // cheap_claims tech tree
@@ -46,7 +46,7 @@ export const SYSTEM_UPGRADES = {
   },
   developed: {
     id: 'developed',
-    pop_growth: 1.01,
+    pop_growth: 0.01,
     cost: {
       alloys: 200, // cheap_claims tech tree
       fuel: 100, // cheap_claims tech tree
