@@ -51,8 +51,8 @@ export class GameLogicHandler {
 
       homeSystem.owner = empire._id;
       homeSystem.population = empire.resources.population;
-      homeSystem.upgrade = 'developed';
-      homeSystem.capacity *= SYSTEM_UPGRADES.developed.capacity_multiplier;
+      homeSystem.upgrade = 'upgraded';
+      homeSystem.capacity *= SYSTEM_UPGRADES.upgraded.capacity_multiplier;
       if (member?.empire?.homeSystem) {
         homeSystem.type = member.empire.homeSystem;
       }

@@ -4,9 +4,9 @@ export const EMPIRE_VARIABLES = {
   },
   pop: {
     consumption: {
-      food: 0.1, // nutrition tech tree
+      food: 1, // nutrition tech tree
       credits: {
-        unemployed: 0.1, // social benefits tech tree
+        unemployed: 1, // social benefits tech tree
       },
     },
   },

@@ -182,20 +182,20 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   efficient_systems_3: {
     id: 'efficient_systems_3',
-    tags: ['society', 'biology'],
+    tags: ['engineering', 'materials'],
     cost: 8,
     requires: ['efficient_systems_2'],
     effects: [
       {
-        variable: 'systems.colonized.upkeep.food',
+        variable: 'systems.colonized.upkeep.minerals',
         multiplier: 0.9,
       },
       {
-        variable: 'systems.upgraded.upkeep.food',
+        variable: 'systems.upgraded.upkeep.minerals',
         multiplier: 0.9,
       },
       {
-        variable: 'systems.developed.upkeep.food',
+        variable: 'systems.developed.upkeep.minerals',
         multiplier: 0.9,
       },
     ],

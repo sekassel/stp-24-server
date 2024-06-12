@@ -17,29 +17,29 @@ export const SYSTEM_UPGRADES = {
   },
   colonized: {
     id: 'colonized',
-    pop_growth: 1.10, // pop_growth_colonized tech tree
+    pop_growth: 1.05, // pop_growth_colonized tech tree
     cost: {
       minerals: 100, // cheap_claims tech tree
       energy: 100, // cheap_claims tech tree
     },
     upkeep: {
       energy: 1,
+      minerals: 1,
       fuel: 1,
-      food: 1,
     },
     capacity_multiplier: 1,
   },
   upgraded: {
     id: 'upgraded',
-    pop_growth: 1.05, // pop_growth_upgraded tech tree
+    pop_growth: 1.02, // pop_growth_upgraded tech tree
     cost: {
       minerals: 100, // cheap_claims tech tree
       alloys: 100, // cheap_claims tech tree
     },
     upkeep: {
       energy: 2,
+      minerals: 2,
       fuel: 2,
-      food: 2,
       alloys: 1, // upgraded systems provide defense that must be maintained
     },
     capacity_multiplier: 1.25,
@@ -53,8 +53,8 @@ export const SYSTEM_UPGRADES = {
     },
     upkeep: {
       energy: 4,
+      minerals: 4,
       fuel: 4,
-      food: 4,
       alloys: 3,
     },
     capacity_multiplier: 1.25,
