@@ -4,7 +4,7 @@ import {JobService} from "./job.service";
 import {Game} from "../game/game.schema";
 
 @Injectable()
-export class FriendHandler {
+export class JobHandler {
   constructor(
     private jobService: JobService,
   ) {
