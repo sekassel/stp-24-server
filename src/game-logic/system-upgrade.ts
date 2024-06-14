@@ -3,14 +3,14 @@ import {SystemUpgrade} from './types';
 export const SYSTEM_UPGRADES = {
   unexplored: {
     id: 'unexplored',
-    pop_growth: 1,
+    pop_growth: 0,
     cost: {},
     upkeep: {},
     capacity_multiplier: 1,
   },
   explored: {
     id: 'explored',
-    pop_growth: 1,
+    pop_growth: 0,
     cost: {},
     upkeep: {},
     capacity_multiplier: 1,
