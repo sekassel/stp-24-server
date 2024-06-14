@@ -40,13 +40,21 @@ export class ClusterGeneratorService {
     return Object.values(systems);
   }
 
+  /**
+   * Creates a spanning tree using Prim's algorithm
+   * @param grid The grid to create the tree on
+   * @param vertices The vertices on the grid to create the tree with
+   * @private
+   */
   private createSpanningTree(grid: Grid, vertices: number[]): number[][] {
     const edges: number[][] = [];
 
+    //Start with a random vertex
     const visited = [vertices[Math.randInt(vertices.length)]];
 
+    //Repeat until all vertices are visited
     while(visited.length < vertices.length) {
-      const candidateEdges = [];
+      const candidateEdges = []; //Edges that can be added to the tree
 
       for(const vertex of visited) {
         const validNeighborEdges = grid.vertices[vertex].neighbors
@@ -58,8 +66,8 @@ export class ClusterGeneratorService {
       }
 
       const newEdge = candidateEdges[Math.randInt(candidateEdges.length)];
-      edges.push(newEdge);
-      visited.push(newEdge.find(vertex => !visited.includes(vertex))!);
+      edges.push(newEdge); //Add the edge to the tree
+      visited.push(newEdge.find(vertex => !visited.includes(vertex))!); //Add the new vertex to the visited list
     }
 
     return edges;
