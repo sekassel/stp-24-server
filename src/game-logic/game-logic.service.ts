@@ -47,8 +47,8 @@ export class GameLogicService {
 
       homeSystem.owner = empire._id;
       homeSystem.population = empire.resources.population;
-      homeSystem.upgrade = 'developed';
-      homeSystem.capacity *= SYSTEM_UPGRADES.developed.capacity_multiplier;
+      homeSystem.upgrade = 'upgraded';
+      homeSystem.capacity *= SYSTEM_UPGRADES.upgraded.capacity_multiplier;
       if (member?.empire?.homeSystem) {
         homeSystem.type = member.empire.homeSystem;
       }
@@ -303,12 +303,11 @@ export class GameLogicService {
 
   private popGrowth(system: SystemDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
     const {population, capacity} = system;
-    const growthVariable: Variable = population >= capacity
-      ? 'systems.developed.pop_growth'
-      : `systems.${system.upgrade}.pop_growth`;
-    const newValue = variables[growthVariable] * population;
-    this.updateAggregate(aggregates?.population, growthVariable, 1, newValue - population);
-    system.population = newValue;
+    const growthVariable: Variable = `systems.${system.upgrade}.pop_growth`;
+    const growthRate = variables[growthVariable];
+    const growth = growthRate * population * Math.clamp(1 - population / capacity, 0, 1); // logistic growth
+    this.updateAggregate(aggregates?.population, growthVariable, 1, growth);
+    system.population = population + growth;
   }
 
   aggregateResources(empire: Empire, systems: System[], resources: ResourceName[]): AggregateResult[] {
