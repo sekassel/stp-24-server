@@ -182,20 +182,20 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   efficient_systems_3: {
     id: 'efficient_systems_3',
-    tags: ['society', 'biology'],
+    tags: ['engineering', 'materials'],
     cost: 8,
     requires: ['efficient_systems_2'],
     effects: [
       {
-        variable: 'systems.colonized.upkeep.food',
+        variable: 'systems.colonized.upkeep.minerals',
         multiplier: 0.9,
       },
       {
-        variable: 'systems.upgraded.upkeep.food',
+        variable: 'systems.upgraded.upkeep.minerals',
         multiplier: 0.9,
       },
       {
-        variable: 'systems.developed.upkeep.food',
+        variable: 'systems.developed.upkeep.minerals',
         multiplier: 0.9,
       },
     ],
@@ -1104,11 +1104,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 // special resources
 generate_sequence('pop_food_consumption', ['society', 'biology'], 'empire.pop.consumption.food',
   {multiplierIncrement: -0.05}, ['demographic']);
-// pop growth is already a multiplier, so it will be 1.05 -> 1.05 * 1.025 = 1.07625 -> 1.05 * 1.025^2 = 1.10390625
+// pop growth is already a multiplier, so it will be 0.05 -> 0.05 * 1.1 = 0.055 -> 0.05 * 1.2 = 0.06
 generate_sequence('pop_growth_colonized', ['society', 'biology'], 'systems.colonized.pop_growth',
-  {multiplierIncrement: +0.025}, ['demographic']);
+  {multiplierIncrement: +0.1}, ['demographic']);
 generate_sequence('pop_growth_upgraded', ['society', 'biology'], 'systems.upgraded.pop_growth',
-  {multiplierIncrement: +0.025}, ['demographic']);
+  {multiplierIncrement: +0.1}, ['demographic']);
 generate_sequence('unemployed_pop_cost', ['society', 'state'],
   'empire.pop.consumption.credits.unemployed',
   {
