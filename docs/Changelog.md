@@ -100,3 +100,17 @@
 ## Documentation
 
 * Documented the possible `403 Forbidden` error in the `PATCH .../systems/:system` endpoint.
+
+# v1.3.1 (2024-06-14)
+
+## Balancing
+
+* Pops consume way more food and (if unemployed) more credits.
+* Home systems start as developed instead of upgraded.
+* Replaced system food consumption with minerals.
+* Halved pop growth for colonized and developed systems.
+* Pop growth now follows a logistic curve.
+
+## Bugfixes
+
+* Fixed isolated system clusters without outgoing links. [#19](https://github.com/sekassel/stp-24-server-tracker/issues/19)
