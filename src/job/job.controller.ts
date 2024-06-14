@@ -1,5 +1,5 @@
 import {
-  Body,
+  Body, ConflictException,
   Controller,
   Delete, ForbiddenException,
   Get, NotFoundException,
@@ -26,6 +26,9 @@ import {CreateJobDto} from './job.dto';
 import {JobService} from './job.service';
 import {EmpireService} from "../empire/empire.service";
 import {JobType} from "./job-type.enum";
+import {UniqueConflict} from "../util/unique-conflict.decorator";
+import {Friend} from "../friend/friend.schema";
+import {EmpireDocument} from "../empire/empire.schema";
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')
@@ -94,9 +97,13 @@ export class JobController {
     @Param('empire', ObjectIdPipe) empire: Types.ObjectId,
     @AuthUser() user: User,
     @Body() createJobDto: CreateJobDto,
-  ): Promise<Job> {
-    await this.checkUserAccess(game, user, empire);
-    return this.jobService.createJob(game, empire, createJobDto);
+  ): Promise<Job | null> {
+    const userEmpire = await this.checkUserAccess(game, user, empire);
+    const job = this.jobService.createJob(userEmpire, createJobDto);
+    if (!job) {
+      throw new ConflictException('The empire does not have the required resources for this job.');
+    }
+    return job;
   }
 
   @Delete(':id')
@@ -111,15 +118,15 @@ export class JobController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<Job | null> {
-    await this.checkUserAccess(game, user, empire);
-    const job = await this.jobService.refundResources(game, empire, id);
+    const userEmpire = await this.checkUserAccess(game, user, empire);
+    const job = await this.jobService.refundResources(userEmpire, id);
     if (!job) {
       throw new NotFoundException('Job not found.');
     }
     return this.jobService.delete(id);
   }
 
-  private async checkUserAccess(game: Types.ObjectId, user: User, empire: Types.ObjectId) {
+  private async checkUserAccess(game: Types.ObjectId, user: User, empire: Types.ObjectId): Promise<EmpireDocument> {
     const userEmpire = await this.empireService.findOne({game, user: user._id});
     if (!userEmpire) {
       throw new ForbiddenException('You do not own an empire in this game.');
@@ -129,5 +136,6 @@ export class JobController {
     if (!requestedEmpire || !requestedEmpire._id.equals(userEmpire._id)) {
       throw new ForbiddenException('You can only access jobs for your own empire.');
     }
+    return userEmpire;
   }
 }
