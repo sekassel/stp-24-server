@@ -9,7 +9,7 @@ import {SYSTEM_UPGRADES, SystemUpgradeName} from '../game-logic/system-upgrade';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
 import {SYSTEM_TYPES} from "../game-logic/system-types";
-import {calculateVariables, getVariables} from "../game-logic/variables";
+import {calculateVariable, calculateVariables, getVariables} from '../game-logic/variables';
 import {EmpireService} from "../empire/empire.service";
 import {Empire, EmpireDocument} from "../empire/empire.schema";
 import {District, Variable} from "../game-logic/types";
@@ -67,6 +67,7 @@ export class SystemService extends MongooseRepository<System> {
         break;
       case 'colonized':
         system.owner = empire._id;
+        system.population = calculateVariable('empire.pop.colonists', empire, system);
         this.applyCosts(empire, upgrade);
         break;
       case 'upgraded':

@@ -61,9 +61,9 @@ export function getEmpireEffectSources(empire: EmpireEffectSources, system?: Sys
   ];
 }
 
-export function calculateVariable(variable: Variable, empire: EmpireEffectSources): number {
+export function calculateVariable(variable: Variable, empire: EmpireEffectSources, system?: SystemDocument): number {
   const variables = {[variable]: getInitialValue(variable)};
-  calculateVariables(variables, empire);
+  calculateVariables(variables, empire, system);
   return variables[variable];
 }
 
