@@ -18,7 +18,7 @@ import {
 import {MAX_EMPIRES, MAX_TRAITS} from '../game-logic/constants';
 import {ResourceName, RESOURCES} from '../game-logic/resources';
 import {TRAITS} from '../game-logic/traits';
-import {TECHNOLOGIES} from '../game-logic/technologies';
+import {TECHNOLOGIES, TECHNOLOGY_IDS} from '../game-logic/technologies';
 import {Effect, EffectSource, RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
 import {SYSTEM_TYPES, SystemTypeName} from '../game-logic/system-types';
 import {Type} from 'class-transformer';
@@ -103,7 +103,7 @@ export class Empire extends GlobalSchema {
     description: 'Unlocked technologies.',
   })
   @IsArray()
-  @IsIn(Object.keys(TECHNOLOGIES), {each: true})
+  @IsIn(TECHNOLOGY_IDS, {each: true})
   technologies: string[];
 
   @Prop()

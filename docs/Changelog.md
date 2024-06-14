@@ -50,3 +50,53 @@
 
 * Clarified a few endpoints.
 * Changed some schemas to reduce redundant information in map-like objects.
+
+# v1.2.0 (2024-06-05)
+
+## New Features
+
++ Added Friends and Friend Requests. [#7](https://github.com/sekassel/stp-24-server-tracker/issues/7)
++ Added the `__dev__` trait that starts the empire with lots of extra resources.
++ Added the `_private` and `_public` properties to Empires for custom data.
++ Added the `_public` property to Systems for custom data.
++ Added the `effects` property to Empire for events and other custom modifiers.
+
+## Bugfixes
+
+* Fixed the `GET /presets/technologies/tree` endpoint. [#8](https://github.com/sekassel/stp-24-server-tracker/issues/8)
+* The `Game.maxMembers` property is now limited to a maximum of 100. [#9](https://github.com/sekassel/stp-24-server-tracker/issues/9)
+* The `UpdateEmpireDto` no longer needs to specify all properties.
+* Systems can no longer generate without any links.
+
+## Documentation
+
+* Added a way to specify aggregate query parameters in Swagger.
+* Improved the aggregate documentation.
+* Improved the `UpdateEmpireDto` and `UpdateSystemDto` documentation.
+* Added additional descriptions for some game concept properties.
+
+# v1.3.0 (2024-06-10)
+
+## New Features
+
++ Added the `_public` property to Users for custom data. [#17](https://github.com/sekassel/stp-24-server-tracker/issues/17)
++ Added the `effects` property to Systems for events and other custom modifiers. [#18](https://github.com/sekassel/stp-24-server-tracker/issues/18)
+
+## Preview Features
+
++ Added Jobs REST endpoints and schemas (not yet functional).
+
+## Improvements
+
+* Made the `resources.periodic` query parameter `resource` optional to get all resources at once. [#10](https://github.com/sekassel/stp-24-server-tracker/issues/10)
+* Renamed the pseudo-variables for resource production in the `empire.level.*` aggregates from `resources.*.production` to `resources.*.periodic`.
+
+## Bugfixes
+
+* Fixed a rare issue where a system would be linked to itself. [#16](https://github.com/sekassel/stp-24-server-tracker/issues/16)
+* Fixed `500 Internal Server Error` when attempting to explain an unknown variable.
+* Fixed an error when starting a game with members without empires (spectators).
+
+## Documentation
+
+* Documented the possible `403 Forbidden` error in the `PATCH .../systems/:system` endpoint.

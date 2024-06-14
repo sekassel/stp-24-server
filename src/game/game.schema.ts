@@ -3,7 +3,7 @@ import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {Type} from 'class-transformer';
 import {
   IsBoolean,
-  IsIn,
+  IsDate,
   IsInt,
   IsNotEmpty,
   IsObject,
@@ -86,21 +86,32 @@ export class Game extends GlobalSchema {
 
   @Prop({default: 0})
   @ApiProperty({
-    description: 'The speed of the game in periods per minute.',
-    default: 1,
-    enum: [0, 1, 2, 3],
+    description: 'The speed of the game, interpreted by clients.',
+    default: 0,
+    type: 'integer',
+    minimum: 0,
   })
-  @IsIn([0, 1, 2, 3])
+  @IsInt()
+  @Min(0)
   speed: number;
 
   @Prop({default: 0})
   @ApiProperty({
-    description: 'The current period of the game.',
+    description: 'The current period of the game. Increments by one each tick.',
     default: 0,
+    type: 'integer',
+    minimum: 0,
   })
   @IsInt()
   @Min(0)
   period: number;
+
+  @Prop()
+  @ApiProperty({
+    description: 'The timestamp when the game ticked.',
+  })
+  @IsDate()
+  tickedAt: Date;
 
   @Prop()
   @ApiPropertyOptional()

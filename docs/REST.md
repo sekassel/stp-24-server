@@ -36,12 +36,13 @@ The following table shows which delete operations trigger other deletes.
 Cascading deletes are transitive, meaning a cascading deletion can trigger more cascading deletions.
 All delete operations, whether manual, cleanup or cascading, trigger the same events.
 
-| Deleting a... | Also deletes...            |
-|---------------|----------------------------|
-| User          | Their Achievements         |
-| User          | Their Games                |
-| User          | Their Empires in Games     |
-| User          | Their Memberships in Games |
-| Game          | All Empires                |
-| Game          | All Members                |
-| Game          | All Systems                |
+| Deleting a... | Also deletes...                     |
+|---------------|-------------------------------------|
+| User          | Their Achievements                  |
+| User          | Their Games                         |
+| User          | Their Empires in Games              |
+| User          | Their Memberships in Games          |
+| User          | Their Friend Requests and Relations |
+| Game          | All Empires                         |
+| Game          | All Members                         |
+| Game          | All Systems                         |

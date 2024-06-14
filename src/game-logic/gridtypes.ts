@@ -46,7 +46,7 @@ export const GRIDS  = [
       { id: 5, x: 3, y: 1, neighbors: [1,4,8,9] },
       { id: 6, x: 0, y: 2, neighbors: [2,3,7,10] },
       { id: 7, x: 1, y: 2, neighbors: [2,3,4,6,8,10,11] },
-      { id: 8, x: 2, y: 2, neighbors: [3,4,5,7,8,10,11] },
+      { id: 8, x: 2, y: 2, neighbors: [3,4,5,7,9,10,11] },
       { id: 9, x: 3, y: 2, neighbors: [4,5,8,11] },
       { id: 10, x: 1, y: 3, neighbors: [6,7,8,11] },
       { id: 11, x: 2, y: 3, neighbors: [7,8,9,10] },

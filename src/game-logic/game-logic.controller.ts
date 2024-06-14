@@ -30,7 +30,7 @@ export class GameLogicController {
   @ApiOperation({summary: 'Get the value and explanation of multiple empire variable.'})
   @ApiOkResponse({type: [ExplainedVariable]})
   @ApiForbiddenResponse({description: 'Cannot view another user\'s empire variables.'})
-  @NotFound()
+  @NotFound('Empire or one of the variables not found.')
   async getVariables(
     @AuthUser() currentUser: User,
     @Param('empire', ObjectIdPipe) id: Types.ObjectId,
@@ -49,7 +49,7 @@ export class GameLogicController {
   @ApiParam({name: 'variable', type: String})
   @ApiOkResponse({type: ExplainedVariable})
   @ApiForbiddenResponse({description: 'Cannot view another user\'s empire variable.'})
-  @NotFound()
+  @NotFound('Empire or variable not found.')
   async getVariable(
     @AuthUser() currentUser: User,
     @Param('empire', ObjectIdPipe) id: Types.ObjectId,
@@ -89,7 +89,7 @@ ${Object.entries(aggregate.optionalParams ?? {}).map(([param, desc]) => `- \`${p
   })
   @ApiOkResponse({type: AggregateResult})
   @ApiForbiddenResponse({description: 'Cannot view another user\'s empire aggregate.'})
-  @NotFound()
+  @NotFound('Empire or aggregate not found.')
   async getAggregate(
     @AuthUser() currentUser: User,
     @Param('empire', ObjectIdPipe) id: Types.ObjectId,

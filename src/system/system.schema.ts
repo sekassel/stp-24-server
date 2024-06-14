@@ -4,10 +4,23 @@ import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {Doc, OptionalRef, Ref} from '@mean-stream/nestx';
 import {DistrictName, DISTRICTS} from "../game-logic/districts";
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
-import {IsArray, IsEnum, IsIn, IsInt, IsNumber, IsObject, IsOptional, IsString, Min} from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsIn,
+  IsInt,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
 import {SYSTEM_UPGRADE_NAMES, SystemUpgradeName} from '../game-logic/system-upgrade';
 import {SystemTypeName} from "../game-logic/system-types";
+import {EffectSource} from '../game-logic/types';
+import {Type} from 'class-transformer';
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
 export class System extends GlobalSchema {
@@ -118,6 +131,17 @@ export class System extends GlobalSchema {
 
   @OptionalRef('Empire')
   owner?: Types.ObjectId;
+
+  @Prop()
+  @ApiPropertyOptional({
+    description: 'System-specific custom effects.',
+    type: [EffectSource],
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => EffectSource)
+  effects?: EffectSource[];
 
   @Prop({type: Object})
   @ApiPropertyOptional({

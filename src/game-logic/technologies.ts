@@ -1214,6 +1214,8 @@ generate_sequence('industry_structure', ['engineering', 'construction'], 'distri
   {multiplierIncrement: -0.1},
   ['district_cost_reduction']); // TODO
 
+export const TECHNOLOGY_IDS = Object.keys(TECHNOLOGIES);
+
 /**
  * Generates a sequence of technologies with increasing cost and effect.
  * @example
