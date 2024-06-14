@@ -72,7 +72,7 @@ export class GameLogicService {
 
       const systemUpkeepPaid = this.deductSystemUpkeep(system.upgrade, empire, systemVariables, aggregates);
 
-      const jobs = Object.values(system.districts).sum() + system.buildings.length;
+      const jobs = this.getJobs(system);
       const popCoverage = Math.clamp(system.population / jobs, 0, 1);
 
       this.processDistricts(system, systemUpkeepPaid, popCoverage, empire, systemVariables, aggregates);
@@ -91,6 +91,10 @@ export class GameLogicService {
     empire.resources.population = systems.map(s => s.population).sum();
 
     empire.markModified('resources');
+  }
+
+  private getJobs(system: SystemDocument): number {
+    return Object.values(system.districts).sum() + system.buildings.length;
   }
 
   private updateAggregate(aggregate: AggregateResult | undefined, variable: Variable, count: number, subtotal: number) {
@@ -168,7 +172,7 @@ export class GameLogicService {
   }
 
   private deductJoblessUpkeep(system: SystemDocument, empire: EmpireDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
-    const totalJobs = Object.values(system.districts).sum() + system.buildings.length;
+    const totalJobs = this.getJobs(system);
     const joblessPops = system.population - totalJobs;
     const variable = 'empire.pop.consumption.credits.unemployed';
     const joblessPopUpkeep = variables[variable] * joblessPops;
@@ -198,13 +202,13 @@ export class GameLogicService {
   }
 
   private migratePopulation(systems: SystemDocument[]) {
-    const migrationSources = systems.filter(s => s.population > s.capacity);
-    const migrationTargets = systems.filter(s => s.population < s.capacity);
+    const migrationSources = systems.filter(s => s.population > this.getJobs(s));
+    const migrationTargets = systems.filter(s => s.population < this.getJobs(s));
 
     // how many pops can migrate
-    const totalMigration = migrationSources.map(s => s.population - s.capacity).sum();
+    const totalMigration = migrationSources.map(s => s.population - this.getJobs(s)).sum();
     // how many pops can be accepted
-    const totalCapacity = migrationTargets.map(s => s.capacity - s.population).sum();
+    const totalCapacity = migrationTargets.map(s => this.getJobs(s) - s.population).sum();
     const migratingPops = Math.min(totalMigration, totalCapacity) * 0.1;
     if (!migratingPops) {
       return;
@@ -226,17 +230,19 @@ export class GameLogicService {
     // console.log(`----- Migrating ${migratingPops} pops -----`);
 
     for (const system of migrationSources) {
-      const migrationFraction = (system.population - system.capacity) / totalMigration;
+      const jobs = this.getJobs(system);
+      const migrationFraction = (system.population - jobs) / totalMigration;
       const migrationAmount = migratingPops * migrationFraction;
       system.population -= migrationAmount;
-      // console.log(`Migrating from ${system.id}: (${system.population}-${system.capacity})/${totalMigration} * ${migratingPops} = ${migrationAmount}`);
+      // console.log(`Migrating from ${system.id}: (${system.population}-${jobs})/${totalMigration} * ${migratingPops} = ${migrationAmount}`);
     }
 
     for (const system of migrationTargets) {
-      const migrationFraction = (system.capacity - system.population) / totalCapacity;
+      const jobs = this.getJobs(system);
+      const migrationFraction = (jobs - system.population) / totalCapacity;
       const migrationAmount = migratingPops * migrationFraction;
       system.population += migrationAmount;
-      // console.log(`Migrating to ${system.id}: (${system.capacity}-${system.population})/${totalCapacity} * ${migratingPops} = ${migrationAmount}`);
+      // console.log(`Migrating to ${system.id}: (${jobs}-${system.population})/${totalCapacity} * ${migratingPops} = ${migrationAmount}`);
     }
   }
 
