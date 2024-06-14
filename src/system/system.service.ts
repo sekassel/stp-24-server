@@ -44,6 +44,10 @@ export class SystemService extends MongooseRepository<System> {
     const {upgrade, districts, buildings, ...rest} = dto;
     system.set(rest);
     if (upgrade) {
+      const upgrades = Object.keys(SYSTEM_UPGRADES);
+      if (upgrades.indexOf(upgrade) !== upgrades.indexOf(system.upgrade) + 1) {
+        throw new BadRequestException(`Invalid upgrade ${upgrade} for system ${system._id}`);
+      }
       await this.upgradeSystem(system, upgrade, empire);
     }
     if (districts) {
