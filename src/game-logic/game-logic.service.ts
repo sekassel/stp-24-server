@@ -262,7 +262,13 @@ export class GameLogicService {
   }
 
   aggregateAllResources(empire: Empire, systems: System[]): AggregateResult {
-    const initial = {...empire.resources};
+    const initial = {
+      ...empire.resources,
+      // NB: This is necessary for single-system queries,
+      // where empire.resources.population starts at the whole population and is then reduced by the system's population
+      // which would result in a very negative population delta.
+      population: systems.map(s => s.population).sum(),
+    };
     this.updateEmpire(empire as EmpireDocument, systems as SystemDocument[]);
     // FIXME migration will never be accounted for
     //   - when querying all systems, migration is zero across them (since it's zero-sum)
