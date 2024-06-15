@@ -76,26 +76,22 @@ export function applyEffects(variables: Partial<Record<Variable, number>>, effec
   // step 1: apply base
   for (const effect of effects) {
     if (effect.base !== undefined) {
-      if (effect.variable in variables) {
-        variables[effect.variable] += effect.base;
-      } else {
-        // Allow effects to create new variables (though they may not be recognized)
-        variables[effect.variable] = effect.base;
-      }
+      // Allow effects to create new variables (though they may not be recognized)
+      variables[effect.variable] = (variables[effect.variable] ?? 0) + effect.base;
     }
   }
 
   // step 2: apply multiplier
   for (const effect of effects) {
-    if (effect.multiplier !== undefined && effect.variable in variables) {
-      variables[effect.variable] *= effect.multiplier;
+    if (effect.multiplier !== undefined && variables[effect.variable] !== undefined) {
+      variables[effect.variable]! *= effect.multiplier;
     }
   }
 
   // step 3: apply bonus
   for (const effect of effects) {
-    if (effect.bonus !== undefined && effect.variable in variables) {
-      variables[effect.variable] += effect.bonus;
+    if (effect.bonus !== undefined && variables[effect.variable] !== undefined) {
+      variables[effect.variable]! += effect.bonus;
     }
   }
 }
