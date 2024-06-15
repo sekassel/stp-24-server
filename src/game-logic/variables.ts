@@ -73,21 +73,30 @@ export function calculateVariables(variables: Partial<Record<Variable, number>>,
 }
 
 export function applyEffects(variables: Partial<Record<Variable, number>>, effects: readonly Effect[]) {
-  effects = effects.filter(effect => variables[effect.variable] !== undefined);
-
   // step 1: apply base
   for (const effect of effects) {
-    variables[effect.variable]! += effect.base ?? 0;
+    if (effect.base !== undefined) {
+      if (effect.variable in variables) {
+        variables[effect.variable] += effect.base;
+      } else {
+        // Allow effects to create new variables (though they may not be recognized)
+        variables[effect.variable] = effect.base;
+      }
+    }
   }
 
   // step 2: apply multiplier
   for (const effect of effects) {
-    variables[effect.variable]! *= effect.multiplier ?? 1;
+    if (effect.multiplier !== undefined && effect.variable in variables) {
+      variables[effect.variable] *= effect.multiplier;
+    }
   }
 
   // step 3: apply bonus
   for (const effect of effects) {
-    variables[effect.variable]! += effect.bonus ?? 0;
+    if (effect.bonus !== undefined && effect.variable in variables) {
+      variables[effect.variable] += effect.bonus;
+    }
   }
 }
 
