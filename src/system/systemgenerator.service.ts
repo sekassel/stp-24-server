@@ -201,7 +201,7 @@ export class SystemGeneratorService {
       }
     }
 
-    if(!this.areEdgesIntersecting(nearestSystems, connectedSystems)){
+    if(!this.isEdgeIntersecting(nearestSystems, connectedSystems)){
       connectedSystems.push(nearestSystems[0]);
       connectedSystems.push(nearestSystems[1]);
       this.clusterGenerator.connectSystems(nearestSystems[0], nearestSystems[1]);
