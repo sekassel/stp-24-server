@@ -44,10 +44,6 @@ export class SystemService extends MongooseRepository<System> {
     const {upgrade, districts, buildings, ...rest} = dto;
     system.set(rest);
     if (upgrade) {
-      const upgrades = Object.keys(SYSTEM_UPGRADES);
-      if (upgrades.indexOf(upgrade) !== upgrades.indexOf(system.upgrade) + 1) {
-        throw new BadRequestException(`Invalid upgrade ${upgrade} for system ${system._id}`);
-      }
       await this.upgradeSystem(system, upgrade, empire);
     }
     if (districts) {
@@ -62,6 +58,11 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   private async upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName, empire: EmpireDocument) {
+    const upgrades = Object.keys(SYSTEM_UPGRADES);
+    if (upgrades.indexOf(upgrade) !== upgrades.indexOf(system.upgrade) + 1) {
+      throw new BadRequestException(`Invalid upgrade ${upgrade} for system ${system._id}`);
+    }
+
     system.upgrade = upgrade;
     system.capacity *= SYSTEM_UPGRADES[upgrade].capacity_multiplier;
 
