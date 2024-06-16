@@ -248,6 +248,10 @@ export class GameLogicService {
 
   private popGrowth(system: SystemDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
     const {population, capacity} = system;
+    if (!capacity) {
+      // Growth calculation will yield NaN. This is probably an uninhabitable system, so just do nothing.
+      return;
+    }
     const growthVariable: Variable = `systems.${system.upgrade}.pop_growth`;
     const growthRate = variables[growthVariable];
     const growth = growthRate * population * Math.clamp(1 - population / capacity, 0, 1); // logistic growth
