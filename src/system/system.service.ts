@@ -247,14 +247,14 @@ export class SystemService extends MongooseRepository<System> {
     //Get district chances for this system type
     const districtChances: Partial<Record<Variable, number>> = {};
 
-    for (const [key, value] of Object.entries(DISTRICTS)) {
-      const chance: District['chance'] = value.chance;
+    for (const district of Object.values(DISTRICTS)) {
+      const chance: District['chance'] = district.chance;
       if (chance) {
-        districtChances[`districts.${key}.chance.${system.type}` as Variable] = chance[system.type] ?? chance.default ?? 0;
+        districtChances[`districts.${district.id}.chance.${system.type}` as Variable] = chance[system.type] ?? chance.default ?? 0;
       }
     }
 
-    calculateVariables(districtChances, empire);
+    calculateVariables(districtChances, empire, system);
 
     //Generate random districts depending on the chances
     this.randomDistricts(system, nDistricts, districtChances);
@@ -264,12 +264,9 @@ export class SystemService extends MongooseRepository<System> {
     for (let i = 0; i < nDistricts; i++) {
       const type = Object.entries(districtChances).randomWeighted(i => i[1])[0] as Variable;
 
+      // This also allows custom variables to add new district chances
       const district = type.split('.')[1] as DistrictName;
-      if (system.districtSlots[district]) {
-        system.districtSlots[district]!++;
-      } else {
-        system.districtSlots[district] = 1;
-      }
+      system.districtSlots[district] = (system.districtSlots[district] ?? 0) + 1;
     }
     system.markModified('districtSlots');
   }
