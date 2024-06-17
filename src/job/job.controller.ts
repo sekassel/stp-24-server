@@ -26,8 +26,6 @@ import {CreateJobDto} from './job.dto';
 import {JobService} from './job.service';
 import {EmpireService} from "../empire/empire.service";
 import {JobType} from "./job-type.enum";
-import {UniqueConflict} from "../util/unique-conflict.decorator";
-import {Friend} from "../friend/friend.schema";
 import {EmpireDocument} from "../empire/empire.schema";
 
 @Controller('games/:game/empires/:empire/jobs')

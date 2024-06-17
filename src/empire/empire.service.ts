@@ -72,7 +72,7 @@ export class EmpireService extends MongooseRepository<Empire> {
     return empire;
   }
 
-  private async unlockTechnology(empire: EmpireDocument, technologies: string[]) {
+  async unlockTechnology(empire: EmpireDocument, technologies: string[]) {
     const user = await this.userService.find(empire.user) ?? notFound(empire.user);
     const variables = {
       ...getVariables('technologies'),
@@ -120,7 +120,7 @@ export class EmpireService extends MongooseRepository<Empire> {
     await this.userService.saveAll([user]);
   }
 
-  getTechnologyCost(user: UserDocument, technology: Technology, variables: Partial<Record<Variable, number>>) {
+  private getTechnologyCost(user: UserDocument, technology: Technology, variables: Partial<Record<Variable, number>>) {
     const technologyCount = user.technologies?.[technology.id] || 0;
 
     const difficultyMultiplier = variables['empire.technologies.difficulty'] || 1;

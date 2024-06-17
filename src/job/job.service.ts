@@ -1,13 +1,20 @@
-import {Injectable} from "@nestjs/common";
+import {BadRequestException, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {Job, JobDocument} from "./job.schema";
 import {Model, Types} from "mongoose";
 import {EventRepository, EventService, MongooseRepository} from "@mean-stream/nestx";
 import {CreateJobDto} from "./job.dto";
 import {EmpireService} from "../empire/empire.service";
-import {Empire} from "../empire/empire.schema";
+import {Empire, EmpireDocument} from "../empire/empire.schema";
 import {ResourceName} from "../game-logic/resources";
 import {calculateVariables, getInitialVariables, getVariables} from "../game-logic/variables";
+import {JobType} from "./job-type.enum";
+import {SystemService} from "../system/system.service";
+import {SYSTEM_UPGRADES} from "../game-logic/system-upgrade";
+import {System, SystemDocument} from "../system/system.schema";
+import {BuildingName} from "../game-logic/buildings";
+import {DistrictName} from "../game-logic/districts";
+import {TechnologyTag} from "../game-logic/types";
 
 @Injectable()
 @EventRepository()
@@ -16,11 +23,12 @@ export class JobService extends MongooseRepository<Job> {
     @InjectModel(Job.name) private jobModel: Model<Job>,
     private eventEmitter: EventService,
     private empireService: EmpireService,
+    private systemService: SystemService,
   ) {
     super(jobModel);
   }
 
-  async createJob(empire: Empire, createJobDto: CreateJobDto): Promise<JobDocument | null> {
+  async createJob(empire: EmpireDocument, createJobDto: CreateJobDto): Promise<JobDocument | null> {
     // Calculate resource requirements for the job
     const cost = this.calculateCost(empire, createJobDto);
 
@@ -64,17 +72,42 @@ export class JobService extends MongooseRepository<Job> {
     ]);
   }
 
-  private calculateCost(empire: Empire, createJobDto: CreateJobDto): Record<ResourceName, number> {
-    const variables = {
-      ...getInitialVariables(),
-      ...getVariables('buildings'),
-      ...getVariables('districts'),
-      ...getVariables('technologies'),
-      ...getVariables('systems'),
+  private async calculateCost(empire: EmpireDocument, createJobDto: CreateJobDto) {
+    if (!createJobDto.system) {
+      throw new BadRequestException('System ID is required for this job type.');
     }
-    calculateVariables(variables, empire);
-    // TOD0: Calculate cost based on the job type and variables
-    return {} as Record<ResourceName, number>;
+    const system = await this.systemService.findOne(createJobDto.system);
+    if (!system) {
+      throw new BadRequestException('System not found.');
+    }
+    switch (createJobDto.type) {
+      case JobType.BUILDING:
+        const building = createJobDto.building as BuildingName;
+        if (!createJobDto.building) {
+          throw new BadRequestException('Building name is required for this job type.');
+        }
+        await this.systemService.updateBuildings(system, [building], empire);
+        break;
+      case JobType.DISTRICT:
+        const district: Partial<Record<DistrictName, number>> = {[createJobDto.district as DistrictName]: 1};
+        if (!district) {
+          throw new BadRequestException('District name is required for this job type.');
+        }
+        await this.systemService.updateDistricts(system, district, empire);
+        break;
+      case JobType.UPGRADE:
+        await this.systemService.upgradeSystem(system, 'upgraded', empire);
+        break;
+      case JobType.TECHNOLOGY:
+        const technology = createJobDto.technology as TechnologyTag;
+        if (!technology) {
+          throw new BadRequestException('Technology ID is required for this job type.');
+        }
+        await this.empireService.unlockTechnology(empire, [technology]);
+        break;
+      default:
+        throw new BadRequestException('Invalid job type.');
+    }
   }
 
   private async checkResources(empire: Empire, cost: Record<ResourceName, number>): Promise<boolean> {

@@ -57,7 +57,7 @@ export class SystemService extends MongooseRepository<System> {
     return system;
   }
 
-  private async upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName, empire: EmpireDocument) {
+  async upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName, empire: EmpireDocument) {
     system.upgrade = upgrade;
     system.capacity *= SYSTEM_UPGRADES[upgrade].capacity_multiplier;
 
@@ -76,7 +76,7 @@ export class SystemService extends MongooseRepository<System> {
     }
   }
 
-  private async updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>, empire: EmpireDocument) {
+  async updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>, empire: EmpireDocument) {
     const districtVariables = getVariables('districts');
     const districtSlots = {...system.districtSlots};
     const allDistricts = {...system.districts};
@@ -133,7 +133,7 @@ export class SystemService extends MongooseRepository<System> {
     system.markModified('districts');
   }
 
-  private async updateBuildings(system: SystemDocument, buildings: BuildingName[], empire: EmpireDocument) {
+  async updateBuildings(system: SystemDocument, buildings: BuildingName[], empire: EmpireDocument) {
     const oldBuildings = this.buildingsOccurrences(system.buildings);
     const newBuildings = this.buildingsOccurrences(buildings);
 
