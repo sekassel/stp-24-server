@@ -1,16 +1,11 @@
-export enum SystemType {
-  EXPLORED = 'explored',
-  COLONIZED = 'colonized',
-  UPGRADED = 'upgraded',
-  DEVELOPED = 'developed',
-}
+import {SystemUpgradeName} from "../game-logic/system-upgrade";
 
-const nextSystemType: { [key in SystemType]?: SystemType } = {
-  [SystemType.EXPLORED]: SystemType.COLONIZED,
-  [SystemType.COLONIZED]: SystemType.UPGRADED,
-  [SystemType.UPGRADED]: SystemType.DEVELOPED,
+const nextSystemType: Partial<Record<SystemUpgradeName, SystemUpgradeName>> = {
+  explored: 'colonized',
+  colonized: 'upgraded',
+  upgraded: 'developed',
 };
 
-export function getNextSystemType(currentType: SystemType): SystemType | undefined {
+export function getNextSystemType(currentType: SystemUpgradeName): SystemUpgradeName | undefined {
   return nextSystemType[currentType];
 }

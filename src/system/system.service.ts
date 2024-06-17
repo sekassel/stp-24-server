@@ -16,7 +16,6 @@ import {District, Variable} from "../game-logic/types";
 import {ResourceName} from "../game-logic/resources";
 import {SystemGeneratorService} from "./systemgenerator.service";
 import {MemberService} from '../member/member.service';
-import {SystemType} from "./system-type.enum";
 
 function getCosts(category: 'districts' | 'buildings', district: DistrictName | BuildingName, districtVariables: any): Record<ResourceName, number> {
   const districtCostKeys = Object.keys(districtVariables).filter(key =>
@@ -67,16 +66,16 @@ export class SystemService extends MongooseRepository<System> {
     system.capacity *= SYSTEM_UPGRADES[upgrade].capacity_multiplier;
 
     switch (upgrade) {
-      case SystemType.EXPLORED:
+      case 'explored':
         this.generateDistricts(system, empire);
         break;
-      case SystemType.COLONIZED:
+      case 'colonized':
         system.owner = empire._id;
         system.population = calculateVariable('empire.pop.colonists', empire, system);
         this.applyCosts(empire, upgrade);
         break;
-      case SystemType.UPGRADED:
-      case SystemType.DEVELOPED:
+      case 'upgraded':
+      case 'developed':
         this.applyCosts(empire, upgrade);
         break;
     }
