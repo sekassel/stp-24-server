@@ -7,14 +7,12 @@ import {CreateJobDto} from "./job.dto";
 import {EmpireService} from "../empire/empire.service";
 import {Empire, EmpireDocument} from "../empire/empire.schema";
 import {ResourceName} from "../game-logic/resources";
-import {calculateVariables, getInitialVariables, getVariables} from "../game-logic/variables";
 import {JobType} from "./job-type.enum";
 import {SystemService} from "../system/system.service";
-import {SYSTEM_UPGRADES} from "../game-logic/system-upgrade";
-import {System, SystemDocument} from "../system/system.schema";
 import {BuildingName} from "../game-logic/buildings";
 import {DistrictName} from "../game-logic/districts";
 import {TechnologyTag} from "../game-logic/types";
+import {getNextSystemType, SystemType} from "../system/system-type.enum";
 
 @Injectable()
 @EventRepository()
@@ -96,7 +94,11 @@ export class JobService extends MongooseRepository<Job> {
         await this.systemService.updateDistricts(system, district, empire);
         break;
       case JobType.UPGRADE:
-        await this.systemService.upgradeSystem(system, 'upgraded', empire);
+        const type = getNextSystemType(system.type as SystemType);
+        if (!type) {
+          throw new BadRequestException('System type cannot be upgraded further.');
+        }
+        await this.systemService.upgradeSystem(system, type, empire);
         break;
       case JobType.TECHNOLOGY:
         const technology = createJobDto.technology as TechnologyTag;
