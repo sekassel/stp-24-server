@@ -100,3 +100,30 @@
 ## Documentation
 
 * Documented the possible `403 Forbidden` error in the `PATCH .../systems/:system` endpoint.
+
+# v1.3.1 (2024-06-14)
+
+## Balancing
+
+* Pops consume way more food and (if unemployed) more credits.
+* Home systems start as developed instead of upgraded.
+* Replaced system food consumption with minerals.
+* Halved pop growth for colonized and developed systems.
+* Pop growth now follows a logistic curve.
+
+## Bugfixes
+
+* Fixed isolated system clusters without outgoing links. [#19](https://github.com/sekassel/stp-24-server-tracker/issues/19)
+
+# v1.3.2 (2024-06-17)
+
+## Improvements
+
+* Pop migration now depends on free jobs instead of free capacity.
+* New colonies (`colonized`) start with at least one pop.
+* Attempting to upgrade a system in the wrong order now results in a `400 Bad Request` error.
+
+## Bugfixes
+
+* Fixed a wrong population delta value in the system resource aggregate.
+* Fixed invalid pop growth when a system with capacity 0 is somehow colonized.

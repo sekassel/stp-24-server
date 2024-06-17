@@ -67,7 +67,7 @@ export class SystemGeneratorService {
       clusters[i] = clusters[i].filter(system => Object.keys(system.links).length > 0);
     }
 
-    return this.removeIntersectingEdges(clusters.flat());
+    return clusters.flat();
   }
 
   private moveCluster(cluster: System[], movement: number[]): System[] {
@@ -103,35 +103,46 @@ export class SystemGeneratorService {
   }
 
   private connectClusters(clusters: System[][], centers: number[][], maxDistance: number): void {
-    const edges: number[][] = [];
-    let cycleEdges: number[][] = [];
-    let edgesMassCenter:number[] = [];
-
-    //Connect clusters as a spanning tree
+    //Create a queue with all possible edges between clusters
     let queue: number[][] = [];
     for(let i = 0; i < clusters.length; i++){
       for(let j = 0; j < clusters.length; j++){
         if(i !== j && i < j) queue.push([i,j]);
       }
     }
+
+    //Sort the queue by length of the edges
     queue = this.sortEdgesByLength(centers, queue, maxDistance);
 
+    //Connect clusters as a minimal spanning tree
+    const edges: number[][] = []; //Edges of the spanning tree
+    let cycleEdges: number[][] = []; //Edges that create a cycle
+    let edgesMassCenter:number[] = []; //Mass center of the edges to avoid that all majority of the edges are at the same point of the map
+    const newConnectedSystems: System[] = []; //Systems that will be connected by the new edges of the spanning tree
+
+    //Repeat until all possible edges are checked
     while (queue.length > 0) {
       const edge = queue.shift()!;
 
       edges.push(edge);
       if(!this.hasCycle(edge, edges)){
-        this.connectCluster(clusters[edge[0]], clusters[edge[1]]);
-
-        const edgeCenter = [(centers[edge[0]][0] + centers[edge[1]][0])/2, (centers[edge[0]][1] + centers[edge[1]][1])/2];
-        if(edgesMassCenter.length == 0){
-          edgesMassCenter = edgeCenter;
+        //The new edge doesn't create a cycle, so we connect the clusters
+        if(this.connectCluster(clusters[edge[0]], clusters[edge[1]], newConnectedSystems)){
+          //Calculate the mass center of the edges
+          const edgeCenter = [(centers[edge[0]][0] + centers[edge[1]][0])/2, (centers[edge[0]][1] + centers[edge[1]][1])/2];
+          if(edgesMassCenter.length == 0){
+            edgesMassCenter = edgeCenter;
+          }
+          else{
+            edgesMassCenter = [(edgesMassCenter[0] + edgeCenter[0])/2, (edgesMassCenter[1] + edgeCenter[1])/2];
+          }
         }
         else{
-          edgesMassCenter = [(edgesMassCenter[0] + edgeCenter[0])/2, (edgesMassCenter[1] + edgeCenter[1])/2];
+          edges.pop();
         }
       }
       else{
+        //The new edge creates a cycle, so we store it to the cycle edges and don't connect the clusters
         edges.pop();
         cycleEdges.push(edge);
       }
@@ -140,11 +151,12 @@ export class SystemGeneratorService {
     //Add random cycle edges
     for(let i = 0; i < clusters.length * MAP_CYCLE_PERCENTAGE; i++){
       if(cycleEdges.length == 0) break;
+      //Sort the cycle edges by distance from the mass center of the edges, so that edges that are further away from the mass center are added first
       cycleEdges = this.sortEdgesByDistanceFromPoint(centers, cycleEdges, edgesMassCenter);
       const edge = cycleEdges.pop()!;
       const edgeCenter = [(centers[edge[0]][0] + centers[edge[1]][0])/2, (centers[edge[0]][1] + centers[edge[1]][1])/2];
 
-      this.connectCluster(clusters[edge[0]], clusters[edge[1]]);
+      this.connectCluster(clusters[edge[0]], clusters[edge[1]], newConnectedSystems);
       edgesMassCenter = [(edgesMassCenter[0] + edgeCenter[0])/2, (edgesMassCenter[1] + edgeCenter[1])/2];
     }
   }
@@ -175,7 +187,7 @@ export class SystemGeneratorService {
   /**
    * Connects the two nearest systems of two clusters
    * */
-  private connectCluster(cluster1: System[], cluster2: System[]) {
+  private connectCluster(cluster1: System[], cluster2: System[], connectedSystems: System[]) : boolean {
     let nearestSystems: System[] = [];
     let nearestSystemDistance = -1;
 
@@ -189,44 +201,66 @@ export class SystemGeneratorService {
       }
     }
 
-    this.clusterGenerator.connectSystems(nearestSystems[0], nearestSystems[1]);
+    if(!this.isEdgeIntersecting(nearestSystems, connectedSystems)){
+      connectedSystems.push(nearestSystems[0]);
+      connectedSystems.push(nearestSystems[1]);
+      this.clusterGenerator.connectSystems(nearestSystems[0], nearestSystems[1]);
+      return true;
+    }
+
+    return false;
   }
 
-  private removeIntersectingEdges(systems: System[]): System[] {
+  // private removeIntersectingEdges(systems: System[]): System[] {
+  //   for(let i = 0; i < systems.length; i++) {
+  //     for(let j = i+1; j < systems.length; j++) {
+  //       this.checkLinks(systems, i, j);
+  //     }
+  //   }
+  //
+  //   return systems;
+  // }
+  //
+  // /**
+  //  * Checks if two systems have links that intersect with each other
+  //  */
+  // private checkLinks(systems: System[], system1: number, system2: number) {
+  //   const links1:System[][] = Array.from(Object.keys(systems[system1].links).map(key => {
+  //     const otherSystem = systems.find(system => system._id.toString() === key)!;
+  //     return [systems[system1], otherSystem];
+  //   }));
+  //
+  //   for(const key of Object.keys(systems[system2].links)){
+  //     const system = systems.find(system => system._id.toString() === key)!;
+  //     if(system._id.toString() === systems[system1]._id.toString()) continue;
+  //
+  //     const link2 = [systems[system2], system];
+  //     const link1 = links1.find(link1 =>
+  //       link1[1]._id.toString() !== system._id.toString() && link1[1]._id.toString() !== systems[system2]._id.toString() && this.areEdgesIntersecting(link1, link2));
+  //
+  //     if(link1){
+  //       this.removeLink(systems[system2], system);
+  //       break;
+  //     }
+  //   }
+  // }
+
+  private isEdgeIntersecting(link: System[], systems: System[]) : boolean{
     for(let i = 0; i < systems.length; i++) {
       for(let j = i+1; j < systems.length; j++) {
-        this.checkLinks(systems, i, j);
+        const link2 = [systems[i], systems[j]];
+        if(link.includes(link2[0]) || link.includes(link2[1])) continue;
+
+        if(this.areEdgesIntersecting(link, link2)) {
+          return true;
+        }
       }
     }
 
-    return systems;
+    return false;
   }
 
-  /**
-   * Checks if two systems have links that intersect with each other
-   */
-  private checkLinks(systems: System[], system1: number, system2: number) {
-    const links1:System[][] = Array.from(Object.keys(systems[system1].links).map(key => {
-      const otherSystem = systems.find(system => system._id.toString() === key)!;
-      return [systems[system1], otherSystem];
-    }));
-
-    for(const key of Object.keys(systems[system2].links)){
-      const system = systems.find(system => system._id.toString() === key)!;
-      if(system._id.toString() === systems[system1]._id.toString()) continue;
-
-      const link2 = [systems[system2], system];
-      const link1 = links1.find(link1 =>
-        link1[1]._id.toString() !== system._id.toString() && link1[1]._id.toString() !== systems[system2]._id.toString() && this.isEdgesIntersecting(link1, link2));
-
-      if(link1){
-        this.removeLink(systems[system2], system);
-        break;
-      }
-    }
-  }
-
-  private isEdgesIntersecting(link1: System[], link2: System[]): boolean {
+  private areEdgesIntersecting(link1: System[], link2: System[]): boolean {
     //https://www.jeffreythompson.org/collision-detection/line-line.php
     const x1 = link1[0].x;
     const y1 = link1[0].y;

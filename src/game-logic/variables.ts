@@ -61,9 +61,9 @@ export function getEmpireEffectSources(empire: EmpireEffectSources, system?: Sys
   ];
 }
 
-export function calculateVariable(variable: Variable, empire: EmpireEffectSources): number {
+export function calculateVariable(variable: Variable, empire: EmpireEffectSources, system?: SystemDocument): number {
   const variables = {[variable]: getInitialValue(variable)};
-  calculateVariables(variables, empire);
+  calculateVariables(variables, empire, system);
   return variables[variable];
 }
 
@@ -73,21 +73,26 @@ export function calculateVariables(variables: Partial<Record<Variable, number>>,
 }
 
 export function applyEffects(variables: Partial<Record<Variable, number>>, effects: readonly Effect[]) {
-  effects = effects.filter(effect => variables[effect.variable] !== undefined);
-
   // step 1: apply base
   for (const effect of effects) {
-    variables[effect.variable]! += effect.base ?? 0;
+    if (effect.base !== undefined) {
+      // Allow effects to create new variables (though they may not be recognized)
+      variables[effect.variable] = (variables[effect.variable] ?? 0) + effect.base;
+    }
   }
 
   // step 2: apply multiplier
   for (const effect of effects) {
-    variables[effect.variable]! *= effect.multiplier ?? 1;
+    if (effect.multiplier !== undefined && variables[effect.variable] !== undefined) {
+      variables[effect.variable]! *= effect.multiplier;
+    }
   }
 
   // step 3: apply bonus
   for (const effect of effects) {
-    variables[effect.variable]! += effect.bonus ?? 0;
+    if (effect.bonus !== undefined && variables[effect.variable] !== undefined) {
+      variables[effect.variable]! += effect.bonus;
+    }
   }
 }
 
