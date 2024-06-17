@@ -5,11 +5,13 @@ export const EMPIRE_VARIABLES = {
   pop: {
     /** How many pops a colonized system starts with */
     colonists: 1, // TODO(Maiswaffeln): colonization tech tree
+    /** Periodic costs for pops */
     consumption: {
       food: 1, // nutrition tech tree
-      credits: {
-        unemployed: 1, // social benefits tech tree
-      },
+    },
+    /** Periodic costs for unemployed pops */
+    unemployed_upkeep: {
+      credits: 1, // unemployed_pop_cost tech tree
     },
   },
   technologies: {

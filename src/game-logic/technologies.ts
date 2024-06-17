@@ -1110,7 +1110,7 @@ generate_sequence('pop_growth_colonized', ['society', 'biology'], 'systems.colon
 generate_sequence('pop_growth_upgraded', ['society', 'biology'], 'systems.upgraded.pop_growth',
   {multiplierIncrement: +0.1}, ['demographic']);
 generate_sequence('unemployed_pop_cost', ['society', 'state'],
-  'empire.pop.consumption.credits.unemployed',
+  'empire.pop.unemployed_upkeep.credits',
   {
     multiplierIncrement: -0.05,
     exponentialBase: 3,

@@ -170,10 +170,17 @@ export class GameLogicService {
   }
 
   private deductPopUpkeep(system: SystemDocument, empire: EmpireDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>): boolean {
-    // TODO allow custom variables to define other pop upkeep costs
-    const popUpkeep = variables['empire.pop.consumption.food'] * system.population;
-    this.updateAggregate(aggregates?.food, 'empire.pop.consumption.food', system.population, -popUpkeep);
-    return this.deductResource(empire, 'food', popUpkeep);
+    let popUpkeepPaid = true;
+    for (const resource of RESOURCE_NAMES) {
+      const variable = `empire.pop.consumption.${resource}` as Variable;
+      const upkeep = variables[variable];
+      if (upkeep) {
+        const popUpkeep = upkeep * system.population;
+        this.updateAggregate(aggregates?.food, variable, system.population, -popUpkeep);
+        popUpkeepPaid = this.deductResource(empire, 'food', popUpkeep) && popUpkeepPaid;
+      }
+    }
+    return popUpkeepPaid;
   }
 
   private processDistricts(system: SystemDocument, systemUpkeepPaid: boolean, popCoverage: number, empire: EmpireDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
@@ -235,13 +242,17 @@ export class GameLogicService {
   }
 
   private deductJoblessUpkeep(system: SystemDocument, empire: EmpireDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
-    // TODO allow custom variables to define other jobless upkeep costs
     const totalJobs = this.getJobs(system);
     const joblessPops = system.population - totalJobs;
-    const variable = 'empire.pop.consumption.credits.unemployed';
-    const joblessPopUpkeep = variables[variable] * joblessPops;
-    this.updateAggregate(aggregates?.credits, variable, joblessPops, -joblessPopUpkeep);
-    this.deductResource(empire, 'credits', joblessPopUpkeep);
+    for (const resource of RESOURCE_NAMES) {
+      const variable = `empire.pop.unemployed_upkeep.${resource}` as Variable;
+      const upkeep = variables[variable];
+      if (upkeep) {
+        const joblessPopUpkeep = upkeep * joblessPops;
+        this.updateAggregate(aggregates?.credits, variable, joblessPops, -joblessPopUpkeep);
+        this.deductResource(empire, 'credits', joblessPopUpkeep);
+      }
+    }
   }
 
   private deductSystemUpkeep(upgrade: 'colonized' | 'upgraded' | 'developed', empire: EmpireDocument, variables: Record<Variable, number>, aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
