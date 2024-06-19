@@ -102,6 +102,7 @@ export class JobController {
       throw new ConflictException('The empire does not have the required resources for this job.');
     }
     return job;
+    return null;
   }
 
   @Delete(':id')

@@ -13,6 +13,7 @@ import {notFound} from '@mean-stream/nestx';
 import {Game} from '../game/game.schema';
 import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from './constants';
 import {MemberService} from '../member/member.service';
+import {SYSTEM_UPGRADES} from "./system-upgrade";
 
 @Injectable()
 export class GameLogicService {
@@ -96,6 +97,7 @@ export class GameLogicService {
   async updateGame(game: Game) {
     const empires = await this.empireService.findAll({game: game._id});
     const systems = await this.systemService.findAll({game: game._id});
+    // TOD0: Check job progress with total and update the job progress
     this._updateGame(empires, systems);
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
