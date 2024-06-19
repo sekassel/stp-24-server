@@ -1,5 +1,5 @@
 import {
-  Body, ConflictException,
+  Body,
   Controller,
   Delete, ForbiddenException,
   Get, NotFoundException,
@@ -97,12 +97,7 @@ export class JobController {
     @Body() createJobDto: CreateJobDto,
   ): Promise<Job | null> {
     const userEmpire = await this.checkUserAccess(game, user, empire);
-    const job = this.jobService.createJob(userEmpire, createJobDto);
-    if (!job) {
-      throw new ConflictException('The empire does not have the required resources for this job.');
-    }
-    return job;
-    return null;
+    return await this.jobService.createJob(userEmpire, createJobDto);
   }
 
   @Delete(':id')
