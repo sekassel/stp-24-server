@@ -8,6 +8,12 @@ import {EmpireService} from "../empire/empire.service";
 import {EmpireDocument} from "../empire/empire.schema";
 import {ResourceName} from "../game-logic/resources";
 import {SystemService} from "../system/system.service";
+import {JobType} from "./job-type.enum";
+import {BuildingName} from "../game-logic/buildings";
+import {DistrictName} from "../game-logic/districts";
+import {getNextSystemType} from "../system/system-type.enum";
+import {SystemUpgradeName} from "../game-logic/system-upgrade";
+import {TechnologyTag} from "../game-logic/types";
 
 @Injectable()
 @EventRepository()
@@ -59,7 +65,7 @@ export class JobService extends MongooseRepository<Job> {
       throw new BadRequestException('System not found.');
     }
 
-    /*switch (createJobDto.type) {
+    switch (createJobDto.type) {
       case JobType.BUILDING:
         const building = createJobDto.building as BuildingName;
         if (!createJobDto.building) {
@@ -87,7 +93,7 @@ export class JobService extends MongooseRepository<Job> {
           throw new BadRequestException('Technology ID is required for this job type.');
         }
         await this.empireService.unlockTechnology(empire, [technology]);
-    }*/
+    }
     return {
       alloys: 0,
       consumer_goods: 0,

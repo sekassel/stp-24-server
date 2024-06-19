@@ -159,15 +159,20 @@ export class SystemService extends MongooseRepository<System> {
     const buildingVariables = getVariables('buildings');
     calculateVariables(buildingVariables, empire);
 
-    const costs: Record<BuildingName, [ResourceName, number][]> = {} as Record<BuildingName, [ResourceName, number][]>;
-    for (const building of new Set([...buildings, ...system.buildings])) {
-      costs[building as BuildingName] = Object.entries(getCosts('buildings', building, buildingVariables)) as [ResourceName, number][];
-    }
+    const costs: Record<BuildingName, [ResourceName, number][]> = this.getBuildingCosts(system, buildings, buildingVariables);
 
     this.removeBuildings(system, removeBuildings, costs, empire);
     this.addBuildings(system, addBuildings, costs, empire);
 
     system.buildings = buildings;
+  }
+
+  public getBuildingCosts(system: SystemDocument, buildings: BuildingName[], buildingVariables: any): Record<BuildingName, [ResourceName, number][]> {
+    const costs: Record<BuildingName, [ResourceName, number][]> = {} as Record<BuildingName, [ResourceName, number][]>;
+    for (const building of new Set([...buildings, ...system.buildings])) {
+      costs[building as BuildingName] = Object.entries(getCosts('buildings', building, buildingVariables)) as [ResourceName, number][];
+    }
+    return costs;
   }
 
   private buildingsOccurrences(buildings: BuildingName[]): Record<BuildingName, number> {
