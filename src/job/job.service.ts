@@ -2,7 +2,7 @@ import {BadRequestException, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {Job} from "./job.schema";
 import {Model, Types} from "mongoose";
-import {EventRepository, EventService, MongooseRepository} from "@mean-stream/nestx";
+import {EventRepository, EventService, MongooseRepository, notFound} from "@mean-stream/nestx";
 import {CreateJobDto} from "./job.dto";
 import {EmpireService} from "../empire/empire.service";
 import {EmpireDocument} from "../empire/empire.schema";
@@ -13,7 +13,8 @@ import {BuildingName} from "../game-logic/buildings";
 import {DistrictName} from "../game-logic/districts";
 import {getNextSystemType} from "../system/system-type.enum";
 import {SystemUpgradeName} from "../game-logic/system-upgrade";
-import {TechnologyTag} from "../game-logic/types";
+import {UserService} from "../user/user.service";
+import {TECHNOLOGIES} from "../game-logic/technologies";
 
 @Injectable()
 @EventRepository()
@@ -23,6 +24,7 @@ export class JobService extends MongooseRepository<Job> {
     private eventEmitter: EventService,
     private empireService: EmpireService,
     private systemService: SystemService,
+    private userService: UserService,
   ) {
     super(jobModel);
   }
@@ -51,7 +53,7 @@ export class JobService extends MongooseRepository<Job> {
       game: empire.game,
       progress: 0,
       total,
-      cost,
+      cost: cost as Record<ResourceName, number>,
       type: createJobDto.type,
     };
 
@@ -68,7 +70,7 @@ export class JobService extends MongooseRepository<Job> {
     return await this.jobModel.create(jobData);
   }
 
-  private async checkResources(empire: EmpireDocument, createJobDto: CreateJobDto): Promise<Record<ResourceName, number>> {
+  private async checkResources(empire: EmpireDocument, createJobDto: CreateJobDto): Promise<Partial<Record<ResourceName, number>>> {
     if (!createJobDto.system) {
       throw new BadRequestException('System ID is required for this job type.');
     }
@@ -100,11 +102,15 @@ export class JobService extends MongooseRepository<Job> {
         //await this.systemService.upgradeSystem(system, type, empire);
         break;
       case JobType.TECHNOLOGY:
-        const technology = createJobDto.technology as TechnologyTag;
+        if (!createJobDto.technology) {
+          throw new BadRequestException('Technology ID is required for this job type.');
+        }
+        const technology = TECHNOLOGIES[createJobDto.technology];
         if (!technology) {
           throw new BadRequestException('Technology ID is required for this job type.');
         }
-        //await this.empireService.unlockTechnology(empire, [technology]);
+        const user = await this.userService.find(empire.user) ?? notFound(empire.user);
+        return {research: this.empireService.getTechnologyCost(user, empire, technology)};
     }
     return {
       alloys: 0,

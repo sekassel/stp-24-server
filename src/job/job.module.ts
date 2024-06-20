@@ -6,12 +6,14 @@ import {JobService} from "./job.service";
 import {EmpireModule} from "../empire/empire.module";
 import {JobHandler} from "./job.handler";
 import {SystemModule} from "../system/system.module";
+import {UserModule} from "../user/user.module";
 
 @Module({
   imports: [
     MongooseModule.forFeature([{name: Job.name, schema: JobSchema}]),
     EmpireModule,
     SystemModule,
+    UserModule,
   ],
   controllers: [JobController],
   providers: [JobService, JobHandler],
