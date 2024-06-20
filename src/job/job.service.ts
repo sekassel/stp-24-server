@@ -12,7 +12,7 @@ import {JobType} from "./job-type.enum";
 import {BuildingName} from "../game-logic/buildings";
 import {DistrictName} from "../game-logic/districts";
 import {getNextSystemType} from "../system/system-type.enum";
-import {SystemUpgradeName} from "../game-logic/system-upgrade";
+import {SYSTEM_UPGRADES, SystemUpgradeName} from "../game-logic/system-upgrade";
 import {UserService} from "../user/user.service";
 import {TECHNOLOGIES} from "../game-logic/technologies";
 
@@ -88,19 +88,25 @@ export class JobService extends MongooseRepository<Job> {
         }
         const buildingCosts = this.systemService.getBuildingCosts(system, [building], empire);
         return this.aggregateCosts(buildingCosts, building);
+
       case JobType.DISTRICT:
         const district = createJobDto.district as DistrictName;
         if (!district) {
           throw new BadRequestException('District name is required for this job type.');
         }
         return this.systemService.getDistrictCosts(district, empire);
+
       case JobType.UPGRADE:
         const type = getNextSystemType(system.type as SystemUpgradeName);
         if (!type) {
           throw new BadRequestException('System type cannot be upgraded further.');
         }
-        //await this.systemService.upgradeSystem(system, type, empire);
-        break;
+        return Object.entries(SYSTEM_UPGRADES[type].cost)
+          .reduce((acc, [key, value]) => {
+            acc[key as ResourceName] = value;
+            return acc;
+          }, {} as Record<ResourceName, number>);
+
       case JobType.TECHNOLOGY:
         if (!createJobDto.technology) {
           throw new BadRequestException('Technology ID is required for this job type.');
@@ -112,17 +118,6 @@ export class JobService extends MongooseRepository<Job> {
         const user = await this.userService.find(empire.user) ?? notFound(empire.user);
         return {research: this.empireService.getTechnologyCost(user, empire, technology)};
     }
-    return {
-      alloys: 0,
-      consumer_goods: 0,
-      credits: 100,
-      food: 0,
-      fuel: 0,
-      minerals: 50,
-      population: 0,
-      research: 0,
-      energy: 25
-    };
   }
 
   async refundResources(userEmpire: EmpireDocument, id: Types.ObjectId): Promise<EmpireDocument | null> {
