@@ -243,20 +243,20 @@ export class SystemGeneratorService {
   private connectSingleSystems(system: System[]): System[]{
     const unvisited: System[] = system;
 
-    const visisted: System[] = [];
-    const queue: System[] = [unvisited[0]];
+    const visited: System[] = [];
+
 
     while(unvisited.length > 0){
       const nextUnvisited = unvisited[Math.randInt(unvisited.length)];
 
       //Check if this is not the first round of the loop
-      if(visisted.length != 0){
+      if(visited.length != 0){
         //Connect the nearest systems of the new system to the existing connected systems
-        const nearestSystems = this.clusterGenerator.nearestSystems([nextUnvisited], visisted)
+        const nearestSystems = this.clusterGenerator.nearestSystems([nextUnvisited], visited)
         this.clusterGenerator.connectSystems(nearestSystems[0], nearestSystems[1]);
       }
 
-      queue.push(nextUnvisited);
+      const queue: System[] = [nextUnvisited];
 
       while (queue.length > 0) {
           const current = queue.shift();
@@ -265,14 +265,18 @@ export class SystemGeneratorService {
           //Add neighbors to the queue
           for(const neighbor of Object.keys(current.links)
             .map(id => system.find(s => s._id.toString() === id))
-            .filter(s => s && !visisted.includes(s))) {
+            .filter(s => s && !visited.includes(s)))
+          {
             if(neighbor) queue.push(neighbor);
           }
 
-          visisted.push(current);
+          if(!visited.includes(current)){
+            visited.push(current);
+            unvisited.splice(unvisited.indexOf(current), 1);
+          }
         }
     }
 
-    return visisted;
+    return visited;
   }
 }
