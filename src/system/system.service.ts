@@ -43,6 +43,7 @@ export class SystemService extends MongooseRepository<System> {
   async updateSystem(system: SystemDocument, dto: UpdateSystemDto, empire: EmpireDocument): Promise<SystemDocument | null> {
     const {upgrade, districts, buildings, ...rest} = dto;
     system.set(rest);
+    console.log(dto);
     if (upgrade) {
       await this.upgradeSystem(system, upgrade, empire);
     }
