@@ -127,3 +127,13 @@
 
 * Fixed a wrong population delta value in the system resource aggregate.
 * Fixed invalid pop growth when a system with capacity 0 is somehow colonized.
+
+# v1.3.3 (2024-06-20)
+
+## Improvements
+
+* Creating a new game now pauses all other games of the same owner.
+
+## Documentation
+
+* Improved the `403 Forbidden` error documentation for updating a running game.
