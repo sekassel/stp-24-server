@@ -253,6 +253,27 @@ export class EmpireService extends MongooseRepository<Empire> {
     );
   }
 
+  async achieveTechnology(empire: EmpireDocument, technologies: string[]) {
+    for (const technologyId of technologies) {
+      const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
+
+      const hasAllRequiredTechnologies = !technology.requires || technology.requires.every(
+        (requiredTechnology: string) => empire.technologies.includes(requiredTechnology)
+      );
+
+      if (!hasAllRequiredTechnologies) {
+        const missingTechnologies = findMissingTechnologies(technologyId);
+        throw new BadRequestException(`Required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
+      }
+
+      if (!empire.technologies.includes(technologyId)) {
+        empire.technologies.push(technologyId);
+      }
+    }
+
+    await this.saveAll([empire]);
+  }
+
   private async emit(event: string, empire: Empire) {
     this.eventEmitter.emit(`games.${empire.game}.empires.${empire._id}.${event}`, empire, [empire.user.toString()]);
     const otherMembers = await this.memberService.findAll({

@@ -189,9 +189,9 @@ export class SystemService extends MongooseRepository<System> {
     return occurrences;
   }
 
-  private removeBuildings(system: SystemDocument, removeBuilings: Partial<Record<BuildingName, number>>, costs: Record<BuildingName, [ResourceName, number][]>, empire: EmpireDocument) {
+  private removeBuildings(system: SystemDocument, removeBuildings: Partial<Record<BuildingName, number>>, costs: Record<BuildingName, [ResourceName, number][]>, empire: EmpireDocument) {
     //Remove buildings and refund half of the cost
-    for (const [building, amount] of Object.entries(removeBuilings)) {
+    for (const [building, amount] of Object.entries(removeBuildings)) {
       const bName = building as BuildingName;
       const cost: [ResourceName, number][] = costs[bName];
 
@@ -293,6 +293,52 @@ export class SystemService extends MongooseRepository<System> {
 
   async generateMap(game: Game): Promise<SystemDocument[]> {
     return this.createMany(this.systemGenerator.generateMap(game));
+  }
+
+  async buildBuilding(system: SystemDocument, addBuildings: Partial<Record<BuildingName, number>>) {
+    for (const [building, amount] of Object.entries(addBuildings)) {
+      for (let i = 0; i < amount; i++) {
+        system.buildings.push(building as BuildingName);
+      }
+    }
+    await system.save();
+    return system;
+  }
+
+  async buildDistrict(system: SystemDocument, districts: Partial<Record<DistrictName, number>>) {
+    for (const [district, amount] of Object.entries(districts)) {
+      const districtName = district as DistrictName;
+      system.districts[districtName] = (system.districts[districtName] ?? 0) + amount;
+    }
+    system.markModified('districts');
+    await system.save();
+    return system;
+  }
+
+  async developSystem(system: SystemDocument, empire: EmpireDocument) {
+    const upgrades = Object.keys(SYSTEM_UPGRADES);
+    const nextUpgradeIndex = upgrades.indexOf(system.upgrade) + 1;
+    if (nextUpgradeIndex >= upgrades.length) {
+      throw new BadRequestException(`System ${system._id} is already fully upgraded.`);
+    }
+    const nextUpgrade = upgrades[nextUpgradeIndex] as SystemUpgradeName;
+    system.upgrade = nextUpgrade;
+    system.capacity *= SYSTEM_UPGRADES[nextUpgrade].capacity_multiplier;
+
+    switch (nextUpgrade) {
+      case 'explored':
+        this.generateDistricts(system, empire);
+        break;
+      case 'colonized':
+        system.owner = empire._id;
+        system.population = calculateVariable('empire.pop.colonists', empire, system);
+        break;
+      case 'upgraded':
+      case 'developed':
+        break;
+    }
+    await system.save();
+    return system;
   }
 
   private async emit(event: string, system: System) {

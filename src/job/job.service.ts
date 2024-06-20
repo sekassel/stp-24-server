@@ -1,6 +1,6 @@
 import {BadRequestException, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
-import {Job} from "./job.schema";
+import {Job, JobDocument} from "./job.schema";
 import {Model, Types} from "mongoose";
 import {EventRepository, EventService, MongooseRepository, notFound} from "@mean-stream/nestx";
 import {CreateJobDto} from "./job.dto";
@@ -120,20 +120,50 @@ export class JobService extends MongooseRepository<Job> {
     }
   }
 
+  public async completeJob(job: JobDocument) {
+    if (!job.system || !job.type || !job.empire || !job.building || !job.district || !job.technology) {
+      return null;
+    }
+    const system = await this.systemService.findOne(job.system);
+    const empire = await this.empireService.findOne(job.empire);
+    if (!system || !empire) {
+      return null;
+    }
+    switch (job.type) {
+      case JobType.BUILDING:
+        return this.systemService.buildBuilding(system, {[job.building as BuildingName]: 1});
+
+      case JobType.DISTRICT:
+        const districtUpdate = {[job.district as DistrictName]: 1};
+        return this.systemService.buildDistrict(system, districtUpdate);
+
+      case JobType.UPGRADE:
+        return this.systemService.developSystem(system, empire);
+
+      case JobType.TECHNOLOGY:
+        return this.empireService.achieveTechnology(empire, [job.technology as string]);
+
+      default:
+        throw new BadRequestException(`Invalid job type: ${job.type}`);
+    }
+  }
+
   async refundResources(userEmpire: EmpireDocument, id: Types.ObjectId): Promise<EmpireDocument | null> {
     const job = await this.jobModel.findOne(id);
     if (!job) {
       return null;
     }
 
-    for (const [resource, amount] of Object.entries(job.cost as Record<ResourceName, number>)) {
-      if (userEmpire.resources[resource as ResourceName] !== undefined) {
-        userEmpire.resources[resource as ResourceName] += amount;
+    for (const [resourceId, amount] of Object.entries(job.cost as Record<ResourceName, number>)) {
+      const resource = resourceId as ResourceName;
+      if (userEmpire.resources[resource] !== undefined) {
+        userEmpire.resources[resource] += amount;
       } else {
-        userEmpire.resources[resource as ResourceName] = amount;
+        userEmpire.resources[resource] = amount;
       }
     }
-    await userEmpire.save();
+    userEmpire.markModified('resources');
+    await this.empireService.saveAll([userEmpire]);
     return userEmpire;
   }
 

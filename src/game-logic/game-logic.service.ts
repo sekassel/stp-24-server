@@ -14,6 +14,8 @@ import {Game} from '../game/game.schema';
 import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from './constants';
 import {MemberService} from '../member/member.service';
 import {SYSTEM_UPGRADES} from "./system-upgrade";
+import {JobService} from "../job/job.service";
+import {JobDocument} from "../job/job.schema";
 
 @Injectable()
 export class GameLogicService {
@@ -21,6 +23,7 @@ export class GameLogicService {
     private memberService: MemberService,
     private empireService: EmpireService,
     private systemService: SystemService,
+    private jobService: JobService,
   ) {
   }
 
@@ -97,16 +100,31 @@ export class GameLogicService {
   async updateGame(game: Game) {
     const empires = await this.empireService.findAll({game: game._id});
     const systems = await this.systemService.findAll({game: game._id});
-    // TOD0: Check job progress with total and update the job progress
+    const jobs = await this.jobService.findAll({game: game._id});
+
     this._updateGame(empires, systems);
+    await this.updateJobs(jobs);
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
+    await this.jobService.saveAll(jobs);
   }
 
   private _updateGame(empires: EmpireDocument[], systems: SystemDocument[]) {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
       this.updateEmpire(empire, empireSystems);
+    }
+  }
+
+  private async updateJobs(jobs: JobDocument[]) {
+    for (const job of jobs) {
+      job.progress += 1;
+      if (job.progress >= job.total) {
+        this.jobService.completeJob(job);
+        await this.jobService.delete(job._id);
+      } else {
+        job.markModified('progress');
+      }
     }
   }
 
@@ -339,7 +357,10 @@ export class GameLogicService {
   }
 
   aggregateResources(empire: Empire, systems: System[], resources: ResourceName[]): AggregateResult[] {
-    const aggregates: Partial<Record<ResourceName, AggregateResult>> = Object.fromEntries(resources.map(r => [r, {total: 0, items: []}]));
+    const aggregates: Partial<Record<ResourceName, AggregateResult>> = Object.fromEntries(resources.map(r => [r, {
+      total: 0,
+      items: []
+    }]));
     this.updateEmpire(empire as EmpireDocument, systems as SystemDocument[], aggregates); // NB: this mutates empire and systems, but does not save them.
     return resources.map(r => aggregates[r]!);
   }
