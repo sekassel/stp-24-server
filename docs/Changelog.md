@@ -114,3 +114,16 @@
 ## Bugfixes
 
 * Fixed isolated system clusters without outgoing links. [#19](https://github.com/sekassel/stp-24-server-tracker/issues/19)
+
+# v1.3.2 (2024-06-17)
+
+## Improvements
+
+* Pop migration now depends on free jobs instead of free capacity.
+* New colonies (`colonized`) start with at least one pop.
+* Attempting to upgrade a system in the wrong order now results in a `400 Bad Request` error.
+
+## Bugfixes
+
+* Fixed a wrong population delta value in the system resource aggregate.
+* Fixed invalid pop growth when a system with capacity 0 is somehow colonized.
