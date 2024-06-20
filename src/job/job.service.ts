@@ -6,7 +6,7 @@ import {EventRepository, EventService, MongooseRepository, notFound} from "@mean
 import {CreateJobDto} from "./job.dto";
 import {EmpireService} from "../empire/empire.service";
 import {EmpireDocument} from "../empire/empire.schema";
-import {ResourceName} from "../game-logic/resources";
+import {RESOURCE_NAMES, ResourceName} from "../game-logic/resources";
 import {SystemService} from "../system/system.service";
 import {JobType} from "./job-type.enum";
 import {BuildingName} from "../game-logic/buildings";
@@ -36,7 +36,6 @@ export class JobService extends MongooseRepository<Job> {
     // Deduct resources from the empire
     for (const [resource, amount] of Object.entries(cost)) {
       const resourceName = resource as ResourceName;
-      console.log(resourceName, amount);
       if (empire.resources[resourceName] < amount) {
         throw new BadRequestException(`Not enough resources: ${resource}`);
       }
@@ -80,7 +79,7 @@ export class JobService extends MongooseRepository<Job> {
       throw new BadRequestException('System not found.');
     }
 
-    switch (createJobDto.type) {
+    switch (createJobDto.type as JobType) {
       case JobType.BUILDING:
         const building = createJobDto.building as BuildingName;
         if (!createJobDto.building) {
@@ -121,7 +120,7 @@ export class JobService extends MongooseRepository<Job> {
   }
 
   public async completeJob(job: JobDocument) {
-    if (!job.system || !job.type || !job.empire || !job.building || !job.district || !job.technology) {
+    if (!job.system || !job.empire) {
       return null;
     }
     const system = await this.systemService.findOne(job.system);
@@ -129,27 +128,35 @@ export class JobService extends MongooseRepository<Job> {
     if (!system || !empire) {
       return null;
     }
-    switch (job.type) {
+    switch (job.type as JobType) {
       case JobType.BUILDING:
-        return this.systemService.buildBuilding(system, {[job.building as BuildingName]: 1});
+        return this.systemService.updateBuildings(system, [job.building as BuildingName], empire);
 
       case JobType.DISTRICT:
         const districtUpdate = {[job.district as DistrictName]: 1};
-        return this.systemService.buildDistrict(system, districtUpdate);
+        return this.systemService.updateDistricts(system, districtUpdate, empire);
 
       case JobType.UPGRADE:
-        return this.systemService.developSystem(system, empire);
+        const type = getNextSystemType(system.type as SystemUpgradeName);
+        if (!type) {
+          throw new BadRequestException('System type cannot be upgraded further.');
+        }
+        return this.systemService.upgradeSystem(system, type, empire);
 
       case JobType.TECHNOLOGY:
-        return this.empireService.achieveTechnology(empire, [job.technology as string]);
+        if (!job.technology) {
+          return null;
+        }
+        return this.empireService.unlockTechnology(empire, [job.technology]);
 
       default:
         throw new BadRequestException(`Invalid job type: ${job.type}`);
     }
   }
 
-  async refundResources(empire: EmpireDocument, cost: Record<ResourceName, number>): Promise<EmpireDocument | null> {
-    for (const [resource, amount] of Object.entries(cost)) {
+  async refundResources(empire: EmpireDocument, cost: Map<string, number>): Promise<EmpireDocument | null> {
+    const jobCostRecord: Record<ResourceName, number> = this.convertCostMapToRecord(cost);
+    for (const [resource, amount] of Object.entries(jobCostRecord)) {
       const resourceName = resource as ResourceName;
       if (empire.resources[resourceName] !== undefined) {
         empire.resources[resourceName] += amount;
@@ -172,6 +179,16 @@ export class JobService extends MongooseRepository<Job> {
       aggregated[resource] += amount;
     }
     return aggregated;
+  }
+
+  private convertCostMapToRecord(costMap: Map<string, number>): Record<ResourceName, number> {
+    const costRecord: Record<ResourceName, number> = {} as Record<ResourceName, number>;
+    for (const [key, value] of costMap.entries()) {
+      if (RESOURCE_NAMES.includes(key as ResourceName)) {
+        costRecord[key as ResourceName] = value;
+      }
+    }
+    return costRecord;
   }
 
   private emit(event: string, job: Job) {
