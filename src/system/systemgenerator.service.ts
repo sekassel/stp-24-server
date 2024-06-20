@@ -235,11 +235,6 @@ export class SystemGeneratorService {
     return uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1;
   }
 
-  private removeLink(system1: System, system2: System) {
-    delete system1.links[system2._id.toString()];
-    delete system2.links[system1._id.toString()];
-  }
-
   private connectSingleSystems(system: System[]): System[]{
     const unvisited: System[] = system;
 
