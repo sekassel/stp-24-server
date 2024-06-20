@@ -73,7 +73,7 @@ export class GameController {
   @ApiOperation({description: 'Change a game as owner.'})
   @ApiOkResponse({type: Game})
   @ApiConflictResponse({description: 'Game is already running.'})
-  @ApiForbiddenResponse({description: 'Attempt to change a game that the current user does not own.'})
+  @ApiForbiddenResponse({description: 'Cannot change a running game (only `speed` is allowed).'})
   async update(@AuthUser() user: User, @Param('id', ObjectIdPipe) id: Types.ObjectId, @Body() dto: UpdateGameDto): Promise<Game | null> {
     const existing = await this.gameService.find(id);
     if (!existing) {
@@ -82,7 +82,7 @@ export class GameController {
     if (!user._id.equals(existing.owner)) {
       throw new ForbiddenException('Only the owner can change the game.');
     }
-    if (existing.started && !(Object.keys(dto).length === 1 && dto.speed !== undefined)) {
+    if (existing.started && !(Object.keys(dto).every(key => key === 'speed'))) {
       throw new ConflictException('Cannot change a running game.');
     }
     return this.gameService.update(id, dto, {populate: 'members'});
