@@ -84,7 +84,7 @@ export class Game extends GlobalSchema {
   @IsBoolean()
   started: boolean;
 
-  @Prop({default: 0})
+  @Prop({default: 0, index: 1})
   @ApiProperty({
     description: 'The speed of the game in periods per minute.',
     default: 1,
