@@ -34,16 +34,15 @@ export class JobService extends MongooseRepository<Job> {
     const cost = await this.checkResources(empire, createJobDto);
 
     // Deduct resources from the empire
-    const resourceUpdates: Partial<Record<ResourceName, number>> = {};
     for (const [resource, amount] of Object.entries(cost)) {
       const resourceName = resource as ResourceName;
       console.log(resourceName, amount);
       if (empire.resources[resourceName] < amount) {
         throw new BadRequestException(`Not enough resources: ${resource}`);
       }
-      resourceUpdates[resourceName] = empire.resources[resourceName] - amount;
+      empire.resources[resourceName] -= amount;
     }
-    await this.empireService.updateOne({_id: empire._id}, {$set: {resources: resourceUpdates}});
+    empire.markModified('resources');
 
     // TODO: Calculate total (depending on action), replace 5 with variable
     const total = 5;
@@ -63,10 +62,11 @@ export class JobService extends MongooseRepository<Job> {
       jobData.system = createJobDto.system;
       if (createJobDto.type === JobType.BUILDING) {
         jobData.building = createJobDto.building;
-      } else {
+      } else if (createJobDto.type === JobType.DISTRICT) {
         jobData.district = createJobDto.district;
       }
     }
+    await this.empireService.saveAll([empire]);
     return await this.jobModel.create(jobData);
   }
 
