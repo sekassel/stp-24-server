@@ -25,7 +25,13 @@ export class GameLogicService {
   }
 
   async updateGames(speed: number) {
-    const games = await this.gameService.findAll({started: true, speed});
+    const games = await this.gameService.findAll({
+      started: true,
+      speed,
+      // The v3 version, where ticks are not scheduled by the server, has this property.
+      // We ignore those newer games here.
+      tickedAt: {$exists: false},
+    });
     const gameIds = games.map(game => game._id);
     const empires = await this.empireService.findAll({game: {$in: gameIds}});
     const systems = await this.systemService.findAll({game: {$in: gameIds}});
