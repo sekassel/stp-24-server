@@ -13,6 +13,7 @@ import {notFound} from '@mean-stream/nestx';
 import {Game} from '../game/game.schema';
 import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from './constants';
 import {MemberService} from '../member/member.service';
+import {SYSTEM_UPGRADES} from './system-upgrade';
 
 @Injectable()
 export class GameLogicService {
