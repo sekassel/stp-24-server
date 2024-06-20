@@ -27,6 +27,7 @@ import {JobService} from './job.service';
 import {EmpireService} from "../empire/empire.service";
 import {JobType} from "./job-type.enum";
 import {EmpireDocument} from "../empire/empire.schema";
+import {RESOURCE_NAMES, ResourceName} from "../game-logic/resources";
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')
@@ -113,10 +114,12 @@ export class JobController {
     @AuthUser() user: User,
   ): Promise<Job | null> {
     const userEmpire = await this.checkUserAccess(game, user, empire);
-    const job = await this.jobService.refundResources(userEmpire, id);
-    if (!job) {
+    const job = await this.jobService.findOne(id);
+    if (!job || !job.cost) {
       throw new NotFoundException('Job not found.');
     }
+    const jobCostRecord: Record<ResourceName, number> = this.convertCostMapToRecord(job.cost as unknown as Map<string, number>);
+    await this.jobService.refundResources(userEmpire, jobCostRecord);
     return this.jobService.delete(id);
   }
 
@@ -131,5 +134,15 @@ export class JobController {
       throw new ForbiddenException('You can only access jobs for your own empire.');
     }
     return userEmpire;
+  }
+
+  private convertCostMapToRecord(costMap: Map<string, number>): Record<ResourceName, number> {
+    const costRecord: Record<ResourceName, number> = {} as Record<ResourceName, number>;
+    for (const [key, value] of costMap.entries()) {
+      if (RESOURCE_NAMES.includes(key as ResourceName)) {
+        costRecord[key as ResourceName] = value;
+      }
+    }
+    return costRecord;
   }
 }

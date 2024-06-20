@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {Job, JobDocument} from "./job.schema";
-import {Model, Types} from "mongoose";
+import {Model} from "mongoose";
 import {EventRepository, EventService, MongooseRepository, notFound} from "@mean-stream/nestx";
 import {CreateJobDto} from "./job.dto";
 import {EmpireService} from "../empire/empire.service";
@@ -148,23 +148,18 @@ export class JobService extends MongooseRepository<Job> {
     }
   }
 
-  async refundResources(userEmpire: EmpireDocument, id: Types.ObjectId): Promise<EmpireDocument | null> {
-    const job = await this.jobModel.findOne(id);
-    if (!job) {
-      return null;
-    }
-
-    for (const [resourceId, amount] of Object.entries(job.cost as Record<ResourceName, number>)) {
-      const resource = resourceId as ResourceName;
-      if (userEmpire.resources[resource] !== undefined) {
-        userEmpire.resources[resource] += amount;
+  async refundResources(empire: EmpireDocument, cost: Record<ResourceName, number>): Promise<EmpireDocument | null> {
+    for (const [resource, amount] of Object.entries(cost)) {
+      const resourceName = resource as ResourceName;
+      if (empire.resources[resourceName] !== undefined) {
+        empire.resources[resourceName] += amount;
       } else {
-        userEmpire.resources[resource] = amount;
+        empire.resources[resourceName] = amount;
       }
     }
-    userEmpire.markModified('resources');
-    await this.empireService.saveAll([userEmpire]);
-    return userEmpire;
+    empire.markModified('resources');
+    await this.empireService.saveAll([empire]);
+    return empire;
   }
 
   private aggregateCosts(costs: Record<string, [ResourceName, number][]>, building: BuildingName): Record<ResourceName, number> {
