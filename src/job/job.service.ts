@@ -87,12 +87,11 @@ export class JobService extends MongooseRepository<Job> {
         const buildingCosts = this.systemService.getBuildingCosts(system, [building], empire);
         return this.aggregateCosts(buildingCosts, building);
       case JobType.DISTRICT:
-        const district: Partial<Record<DistrictName, number>> = {[createJobDto.district as DistrictName]: 1};
+        const district = createJobDto.district as DistrictName;
         if (!district) {
           throw new BadRequestException('District name is required for this job type.');
         }
-        //await this.systemService.updateDistricts(system, district, empire);
-        break;
+        return this.systemService.getDistrictCosts(district, empire);
       case JobType.UPGRADE:
         const type = getNextSystemType(system.type as SystemUpgradeName);
         if (!type) {

@@ -82,13 +82,11 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   async updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>, empire: EmpireDocument) {
-    const districtVariables = getVariables('districts');
     const districtSlots = {...system.districtSlots};
     const allDistricts = {...system.districts};
     const builtDistrictsCount = Object.values(system.districts).sum();
     let amountOfDistrictsToBeBuilt = 0;
 
-    calculateVariables(districtVariables, empire);
     for (const [district, amount] of Object.entries(districts)) {
       if (amount === 0) {
         continue;
@@ -109,7 +107,7 @@ export class SystemService extends MongooseRepository<System> {
       }
 
       // Check if empire has enough resource to buy the district or the given amount is negative to refund resources
-      const districtCost: Record<ResourceName, number> = getCosts('districts', districtName, districtVariables);
+      const districtCost: Record<ResourceName, number> = this.getDistrictCosts(districtName, empire);
       const empireResources: Record<ResourceName, number> = empire.resources;
       for (const resource of Object.keys(districtCost)) {
         const cost = districtCost[resource as ResourceName];
@@ -172,6 +170,12 @@ export class SystemService extends MongooseRepository<System> {
       costs[building as BuildingName] = Object.entries(getCosts('buildings', building, buildingVariables)) as [ResourceName, number][];
     }
     return costs;
+  }
+
+  public getDistrictCosts(districtName: DistrictName, empire: EmpireDocument): Record<ResourceName, number> {
+    const districtVariables = getVariables('districts');
+    calculateVariables(districtVariables, empire);
+    return getCosts('districts', districtName, districtVariables);
   }
 
   private buildingsOccurrences(buildings: BuildingName[]): Record<BuildingName, number> {
