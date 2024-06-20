@@ -62,12 +62,12 @@ export class SystemGeneratorService {
     //Connect clusters
     this.connectClusters(clusters, clustersCenter, avgRadius*3);
 
-    //Remove systems with no neighbors
-    for(let i = 0; i < clusters.length; i++){
-      clusters[i] = clusters[i].filter(system => Object.keys(system.links).length > 0);
-    }
+    // //Remove systems with no neighbors
+    // for(let i = 0; i < clusters.length; i++){
+    //   clusters[i] = clusters[i].filter(system => Object.keys(system.links).length > 0);
+    // }
 
-    return clusters.flat();
+    return this.connectSingleSystems(clusters.flat());
   }
 
   private moveCluster(cluster: System[], movement: number[]): System[] {
@@ -188,18 +188,7 @@ export class SystemGeneratorService {
    * Connects the two nearest systems of two clusters
    * */
   private connectCluster(cluster1: System[], cluster2: System[], connectedSystems: System[]) : boolean {
-    let nearestSystems: System[] = [];
-    let nearestSystemDistance = -1;
-
-    for(const system1 of cluster1){
-      for(const system2 of cluster2){
-        const distance = Math.hypot(system1.x - system2.x, system1.y - system2.y);
-        if(nearestSystemDistance === -1 || distance < nearestSystemDistance){
-          nearestSystems = [system1, system2];
-          nearestSystemDistance = distance;
-        }
-      }
-    }
+    const nearestSystems: System[] = this.clusterGenerator.nearestSystems(cluster1, cluster2);
 
     if(!this.isEdgeIntersecting(nearestSystems, connectedSystems)){
       connectedSystems.push(nearestSystems[0]);
@@ -210,40 +199,6 @@ export class SystemGeneratorService {
 
     return false;
   }
-
-  // private removeIntersectingEdges(systems: System[]): System[] {
-  //   for(let i = 0; i < systems.length; i++) {
-  //     for(let j = i+1; j < systems.length; j++) {
-  //       this.checkLinks(systems, i, j);
-  //     }
-  //   }
-  //
-  //   return systems;
-  // }
-  //
-  // /**
-  //  * Checks if two systems have links that intersect with each other
-  //  */
-  // private checkLinks(systems: System[], system1: number, system2: number) {
-  //   const links1:System[][] = Array.from(Object.keys(systems[system1].links).map(key => {
-  //     const otherSystem = systems.find(system => system._id.toString() === key)!;
-  //     return [systems[system1], otherSystem];
-  //   }));
-  //
-  //   for(const key of Object.keys(systems[system2].links)){
-  //     const system = systems.find(system => system._id.toString() === key)!;
-  //     if(system._id.toString() === systems[system1]._id.toString()) continue;
-  //
-  //     const link2 = [systems[system2], system];
-  //     const link1 = links1.find(link1 =>
-  //       link1[1]._id.toString() !== system._id.toString() && link1[1]._id.toString() !== systems[system2]._id.toString() && this.areEdgesIntersecting(link1, link2));
-  //
-  //     if(link1){
-  //       this.removeLink(systems[system2], system);
-  //       break;
-  //     }
-  //   }
-  // }
 
   private isEdgeIntersecting(link: System[], systems: System[]) : boolean{
     for(let i = 0; i < systems.length; i++) {
@@ -283,5 +238,41 @@ export class SystemGeneratorService {
   private removeLink(system1: System, system2: System) {
     delete system1.links[system2._id.toString()];
     delete system2.links[system1._id.toString()];
+  }
+
+  private connectSingleSystems(system: System[]): System[]{
+    const unvisited: System[] = system;
+
+    const visisted: System[] = [];
+    const queue: System[] = [unvisited[0]];
+
+    while(unvisited.length > 0){
+      const nextUnvisited = unvisited[Math.randInt(unvisited.length)];
+
+      //Check if this is not the first round of the loop
+      if(visisted.length != 0){
+        //Connect the nearest systems of the new system to the existing connected systems
+        const nearestSystems = this.clusterGenerator.nearestSystems([nextUnvisited], visisted)
+        this.clusterGenerator.connectSystems(nearestSystems[0], nearestSystems[1]);
+      }
+
+      queue.push(nextUnvisited);
+
+      while (queue.length > 0) {
+          const current = queue.shift();
+          if (!current) break;
+
+          //Add neighbors to the queue
+          for(const neighbor of Object.keys(current.links)
+            .map(id => system.find(s => s._id.toString() === id))
+            .filter(s => s && !visisted.includes(s))) {
+            if(neighbor) queue.push(neighbor);
+          }
+
+          visisted.push(current);
+        }
+    }
+
+    return visisted;
   }
 }
