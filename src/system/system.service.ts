@@ -156,10 +156,7 @@ export class SystemService extends MongooseRepository<System> {
       }
     }
 
-    const buildingVariables = getVariables('buildings');
-    calculateVariables(buildingVariables, empire);
-
-    const costs: Record<BuildingName, [ResourceName, number][]> = this.getBuildingCosts(system, buildings, buildingVariables);
+    const costs: Record<BuildingName, [ResourceName, number][]> = this.getBuildingCosts(system, buildings, empire);
 
     this.removeBuildings(system, removeBuildings, costs, empire);
     this.addBuildings(system, addBuildings, costs, empire);
@@ -167,7 +164,9 @@ export class SystemService extends MongooseRepository<System> {
     system.buildings = buildings;
   }
 
-  public getBuildingCosts(system: SystemDocument, buildings: BuildingName[], buildingVariables: any): Record<BuildingName, [ResourceName, number][]> {
+  public getBuildingCosts(system: SystemDocument, buildings: BuildingName[], empire: EmpireDocument): Record<BuildingName, [ResourceName, number][]> {
+    const buildingVariables = getVariables('buildings');
+    calculateVariables(buildingVariables, empire);
     const costs: Record<BuildingName, [ResourceName, number][]> = {} as Record<BuildingName, [ResourceName, number][]>;
     for (const building of new Set([...buildings, ...system.buildings])) {
       costs[building as BuildingName] = Object.entries(getCosts('buildings', building, buildingVariables)) as [ResourceName, number][];

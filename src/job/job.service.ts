@@ -29,12 +29,13 @@ export class JobService extends MongooseRepository<Job> {
 
   async createJob(empire: EmpireDocument, createJobDto: CreateJobDto): Promise<Job | null> {
     // Calculate resource requirements for the job
-    const cost: Record<ResourceName, number> = await this.checkResources(empire, createJobDto);
+    const cost = await this.checkResources(empire, createJobDto);
 
     // Deduct resources from the empire
     const resourceUpdates: Partial<Record<ResourceName, number>> = {};
     for (const [resource, amount] of Object.entries(cost)) {
       const resourceName = resource as ResourceName;
+      console.log(resourceName, amount);
       if (empire.resources[resourceName] < amount) {
         throw new BadRequestException(`Not enough resources: ${resource}`);
       }
@@ -45,14 +46,26 @@ export class JobService extends MongooseRepository<Job> {
     // TODO: Calculate total (depending on action), replace 5 with variable
     const total = 5;
 
-    return await this.jobModel.create({
-      ...createJobDto,
+    const jobData: Partial<Job> = {
       empire: empire._id,
       game: empire.game,
       progress: 0,
       total,
       cost,
-    });
+      type: createJobDto.type,
+    };
+
+    if (createJobDto.type === JobType.TECHNOLOGY) {
+      jobData.technology = createJobDto.technology;
+    } else {
+      jobData.system = createJobDto.system;
+      if (createJobDto.type === JobType.BUILDING) {
+        jobData.building = createJobDto.building;
+      } else {
+        jobData.district = createJobDto.district;
+      }
+    }
+    return await this.jobModel.create(jobData);
   }
 
   private async checkResources(empire: EmpireDocument, createJobDto: CreateJobDto): Promise<Record<ResourceName, number>> {
@@ -71,28 +84,28 @@ export class JobService extends MongooseRepository<Job> {
         if (!createJobDto.building) {
           throw new BadRequestException('Building name is required for this job type.');
         }
-        await this.systemService.updateBuildings(system, [building], empire);
-        break;
+        const buildingCosts = this.systemService.getBuildingCosts(system, [building], empire);
+        return this.aggregateCosts(buildingCosts, building);
       case JobType.DISTRICT:
         const district: Partial<Record<DistrictName, number>> = {[createJobDto.district as DistrictName]: 1};
         if (!district) {
           throw new BadRequestException('District name is required for this job type.');
         }
-        await this.systemService.updateDistricts(system, district, empire);
+        //await this.systemService.updateDistricts(system, district, empire);
         break;
       case JobType.UPGRADE:
         const type = getNextSystemType(system.type as SystemUpgradeName);
         if (!type) {
           throw new BadRequestException('System type cannot be upgraded further.');
         }
-        await this.systemService.upgradeSystem(system, type, empire);
+        //await this.systemService.upgradeSystem(system, type, empire);
         break;
       case JobType.TECHNOLOGY:
         const technology = createJobDto.technology as TechnologyTag;
         if (!technology) {
           throw new BadRequestException('Technology ID is required for this job type.');
         }
-        await this.empireService.unlockTechnology(empire, [technology]);
+        //await this.empireService.unlockTechnology(empire, [technology]);
     }
     return {
       alloys: 0,
@@ -122,6 +135,18 @@ export class JobService extends MongooseRepository<Job> {
     }
     await userEmpire.save();
     return userEmpire;
+  }
+
+  private aggregateCosts(costs: Record<string, [ResourceName, number][]>, building: BuildingName): Record<ResourceName, number> {
+    const aggregated: Record<ResourceName, number> = {} as Record<ResourceName, number>;
+    const filteredCosts = costs[building];
+    for (const [resource, amount] of filteredCosts) {
+      if (!aggregated[resource]) {
+        aggregated[resource] = 0;
+      }
+      aggregated[resource] += amount;
+    }
+    return aggregated;
   }
 
   private emit(event: string, job: Job) {
