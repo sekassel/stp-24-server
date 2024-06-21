@@ -179,7 +179,7 @@ export class JobService extends MongooseRepository<Job> {
       }
     } catch (error) {
       if (error instanceof ConflictException || error instanceof BadRequestException) {
-        await this.emitJobFailedEvent(job, error.message);
+        this.emitJobFailedEvent(job, error.message, empire);
       }
     }
     return null;
@@ -222,16 +222,18 @@ export class JobService extends MongooseRepository<Job> {
     return costRecord;
   }
 
-  public async emitJobFailedEvent(job: JobDocument, errorMessage: string) {
+  private emitJobFailedEvent(job: JobDocument, errorMessage: string, empire: EmpireDocument) {
     const event = `games.${job.game}.empire.${job.empire}.jobs.${job._id}.failed`;
     const data = {message: errorMessage};
-    this.eventEmitter.emit(event, data);
+    this.eventEmitter.emit(event, data, [empire.user.toString()]);
   }
 
-  private emit(event: string, job: Job) {
-    this.eventEmitter.emit(`games.${job.game}.empires.${job.empire}.jobs.${event}`, job, [
-      job.game.toString(),
-      job.empire.toString(),
-    ]);
+  private async emit(event: string, job: Job) {
+    const empire = await this.empireService.find(job.empire);
+    if (!empire) {
+      // no one to emit to
+      return;
+    }
+    this.eventEmitter.emit(`games.${job.game}.empires.${job.empire}.jobs.${event}`, job, [empire.user.toString()]);
   }
 }
