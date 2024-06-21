@@ -13,7 +13,6 @@ import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
 import {Technology, Variable} from '../game-logic/types';
 import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
-import {UserDocument} from '../user/user.schema';
 import {AggregateItem, AggregateResult} from '../game-logic/aggregates';
 import {Member} from '../member/member.schema';
 import {JobDocument} from '../job/job.schema';
@@ -56,34 +55,6 @@ export class EmpireService extends MongooseRepository<Empire> {
     }
     await this.saveAll([empire]); // emits update event
     return empire;
-  }
-
-  public getTechnologyCost(user: UserDocument, empire: EmpireDocument, technology: Technology) {
-    const variables = {
-      ...getVariables('technologies'),
-      ...getVariables('empire'),
-    };
-    calculateVariables(variables, empire);
-    const technologyCount = user.technologies?.[technology.id] || 0;
-
-    const difficultyMultiplier = variables['empire.technologies.difficulty'] || 1;
-    let technologyCost = technology.cost * difficultyMultiplier;
-
-    // step 1: if the user has already unlocked this tech, decrease the cost exponentially
-    if (technologyCount) {
-      const baseCostMultiplier = variables['empire.technologies.cost_multiplier'] || 1;
-      const unlockCostMultiplier = baseCostMultiplier ** Math.min(technologyCount, 10);
-      technologyCost *= unlockCostMultiplier;
-    }
-
-    // step 2: apply tag multipliers
-    for (const tag of technology.tags) {
-      const tagCostMultiplier = variables[`technologies.${tag}.cost_multiplier`] || 1;
-      technologyCost *= tagCostMultiplier;
-    }
-
-    // step 3: round the cost
-    return Math.round(technologyCost);
   }
 
   async aggregateTechCost(empire: Empire, technology: Technology): Promise<AggregateResult> {
