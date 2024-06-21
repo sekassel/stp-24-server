@@ -9,6 +9,7 @@ import {EmpireModule} from '../empire/empire.module';
 import {SystemGeneratorService} from "./systemgenerator.service";
 import {ClusterGeneratorService} from "./clustergenerator.service";
 import {MemberModule} from '../member/member.module';
+import {JobModule} from "../job/job.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import {MemberModule} from '../member/member.module';
     GameModule,
     MemberModule,
     EmpireModule,
+    JobModule,
   ],
   controllers: [SystemController],
   providers: [SystemService, SystemGeneratorService, ClusterGeneratorService, SystemHandler],

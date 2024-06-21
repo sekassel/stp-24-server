@@ -1,4 +1,4 @@
-import {BadRequestException, ConflictException, Injectable} from "@nestjs/common";
+import {BadRequestException, ConflictException, forwardRef, Inject, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {Job, JobDocument} from "./job.schema";
 import {Model} from "mongoose";
@@ -25,9 +25,9 @@ import {TechnologyTag} from "../game-logic/types";
 export class JobService extends MongooseRepository<Job> {
   constructor(
     @InjectModel(Job.name) private jobModel: Model<Job>,
+    @Inject(forwardRef(() => EmpireService)) private empireService: EmpireService,
+    @Inject(forwardRef(() => SystemService)) private systemService: SystemService,
     private eventEmitter: EventService,
-    private empireService: EmpireService,
-    private systemService: SystemService,
     private userService: UserService,
   ) {
     super(jobModel);
@@ -151,7 +151,7 @@ export class JobService extends MongooseRepository<Job> {
           if (!job.technology) {
             return null;
           }
-          const updateEmpireDto = new UpdateEmpireDto([job.technology as TechnologyTag]);
+          const updateEmpireDto: UpdateEmpireDto = {technologies: [job.technology as TechnologyTag]};
           return await this.empireService.updateEmpire(empire, updateEmpireDto, job);
 
         case JobType.BUILDING:
@@ -221,7 +221,7 @@ export class JobService extends MongooseRepository<Job> {
     return costRecord;
   }
 
-  private async emitJobFailedEvent(job: JobDocument, errorMessage: string) {
+  public async emitJobFailedEvent(job: JobDocument, errorMessage: string) {
     const event = `games.${job.game}.empire.${job.empire}.jobs.${job._id}.failed`;
     const data = {message: errorMessage};
     this.eventEmitter.emit(event, data);

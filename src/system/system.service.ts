@@ -17,6 +17,7 @@ import {ResourceName} from "../game-logic/resources";
 import {SystemGeneratorService} from "./systemgenerator.service";
 import {MemberService} from '../member/member.service';
 import {JobDocument} from "../job/job.schema";
+import {JobService} from "../job/job.service";
 
 function getCosts(category: 'districts' | 'buildings', district: DistrictName | BuildingName, districtVariables: any): Record<ResourceName, number> {
   const districtCostKeys = Object.keys(districtVariables).filter(key =>
@@ -35,8 +36,9 @@ export class SystemService extends MongooseRepository<System> {
     @InjectModel(System.name) model: Model<System>,
     private eventEmitter: EventService,
     private memberService: MemberService,
-    private empireService: EmpireService,
     private systemGenerator: SystemGeneratorService,
+    private jobService: JobService,
+    private empireService: EmpireService,
   ) {
     super(model);
   }
@@ -100,7 +102,7 @@ export class SystemService extends MongooseRepository<System> {
       // Check if districts don't exceed districtSlots
       if (districtTypeSlots !== undefined && districtTypeSlots - builtDistrictsOfType < amount) {
         if (job) {
-          await this.emitJobFailedEvent(job, `Insufficient district slots for ${districtName}`);
+          await this.jobService.emitJobFailedEvent(job, `Insufficient district slots for ${districtName}`);
           return;
         }
         throw new BadRequestException(`Insufficient district slots for ${districtName}`);
@@ -109,7 +111,7 @@ export class SystemService extends MongooseRepository<System> {
       // Check if district slots don't exceed system capacity
       if (system.buildings.length + builtDistrictsCount + amountOfDistrictsToBeBuilt > system.capacity) {
         if (job) {
-          await this.emitJobFailedEvent(job, `System ${system._id} has not enough capacity to build the districts`);
+          await this.jobService.emitJobFailedEvent(job, `System ${system._id} has not enough capacity to build the districts`);
           return;
         }
         throw new BadRequestException(`System ${system._id} has not enough capacity to build the districts`);
@@ -223,7 +225,7 @@ export class SystemService extends MongooseRepository<System> {
     const capacityLeft = system.capacity - Object.values(system.districts).sum() - system.buildings.length;
     if (capacityLeft <= 0) {
       if (job) {
-        await this.emitJobFailedEvent(job, `Not enough capacity to build buildings. Capacity left: ${capacityLeft} Amount of new buildings: ${Object.values(addBuildings).sum()}`);
+        await this.jobService.emitJobFailedEvent(job, `Not enough capacity to build buildings. Capacity left: ${capacityLeft} Amount of new buildings: ${Object.values(addBuildings).sum()}`);
         return;
       }
       throw new BadRequestException(`Not enough capacity to build buildings. Capacity left: ${capacityLeft} Amount of new buildings: ${Object.values(addBuildings).sum()}`);

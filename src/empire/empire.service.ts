@@ -17,6 +17,7 @@ import {UserDocument} from '../user/user.schema';
 import {AggregateItem, AggregateResult} from '../game-logic/aggregates';
 import {Member} from '../member/member.schema';
 import {JobDocument} from "../job/job.schema";
+import {JobService} from "../job/job.service";
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -38,6 +39,7 @@ export class EmpireService extends MongooseRepository<Empire> {
     private eventEmitter: EventService,
     private memberService: MemberService,
     private userService: UserService,
+    private jobService: JobService,
   ) {
     super(model);
   }
@@ -82,7 +84,7 @@ export class EmpireService extends MongooseRepository<Empire> {
       if (empire.technologies.includes(technologyId)) {
         if (job) {
           console.log("1");
-          await this.emitJobFailedEvent(job, `Technology ${technologyId} has already been unlocked.`);
+          await this.jobService.emitJobFailedEvent(job, `Technology ${technologyId} has already been unlocked.`);
           return;
         }
         throw new BadRequestException(`Technology ${technologyId} has already been unlocked.`);
@@ -97,7 +99,7 @@ export class EmpireService extends MongooseRepository<Empire> {
         const missingTechnologies = findMissingTechnologies(technologyId);
         if (job) {
           console.log("2");
-          await this.emitJobFailedEvent(job, `Required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
+          await this.jobService.emitJobFailedEvent(job, `Required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
           return;
         }
         throw new BadRequestException(`Required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
