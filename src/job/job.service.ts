@@ -1,4 +1,4 @@
-import {BadRequestException, ConflictException, forwardRef, Inject, Injectable} from "@nestjs/common";
+import {BadRequestException, ConflictException, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {Job, JobDocument} from "./job.schema";
 import {Model} from "mongoose";
@@ -25,8 +25,8 @@ import {TechnologyTag} from "../game-logic/types";
 export class JobService extends MongooseRepository<Job> {
   constructor(
     @InjectModel(Job.name) private jobModel: Model<Job>,
-    @Inject(forwardRef(() => EmpireService)) private empireService: EmpireService,
-    @Inject(forwardRef(() => SystemService)) private systemService: SystemService,
+    private empireService: EmpireService,
+    private systemService: SystemService,
     private eventEmitter: EventService,
     private userService: UserService,
   ) {

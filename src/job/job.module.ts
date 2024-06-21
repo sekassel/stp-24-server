@@ -1,4 +1,4 @@
-import {forwardRef, Module} from '@nestjs/common';
+import {Module} from '@nestjs/common';
 import {MongooseModule} from '@nestjs/mongoose';
 import {Job, JobSchema} from './job.schema';
 import {JobController} from "./job.controller";
@@ -12,8 +12,8 @@ import {UserModule} from "../user/user.module";
   imports: [
     MongooseModule.forFeature([{name: Job.name, schema: JobSchema}]),
     UserModule,
-    forwardRef(() => EmpireModule),
-    forwardRef(() => SystemModule),
+    EmpireModule,
+    SystemModule,
   ],
   controllers: [JobController],
   providers: [JobService, JobHandler],
