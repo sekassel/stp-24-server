@@ -205,7 +205,7 @@ export class JobService extends MongooseRepository<Job> {
     return costRecord;
   }
 
-  public async emitJobFailedEvent(job: JobDocument, errorMessage: string) {
+  private async emitJobFailedEvent(job: JobDocument, errorMessage: string) {
     const event = `games.${job.game}.empire.${job.empire}.jobs.${job._id}.failed`;
     const data = {message: errorMessage};
     this.eventEmitter.emit(event, data);

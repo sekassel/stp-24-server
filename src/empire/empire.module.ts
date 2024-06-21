@@ -7,7 +7,6 @@ import {Empire, EmpireSchema} from './empire.schema';
 import {EmpireService} from './empire.service';
 import {MemberModule} from '../member/member.module';
 import {UserModule} from "../user/user.module";
-import {JobModule} from "../job/job.module";
 
 @Module({
   imports: [
@@ -18,7 +17,6 @@ import {JobModule} from "../job/job.module";
     GameModule,
     MemberModule,
     UserModule,
-    JobModule,
   ],
   controllers: [EmpireController],
   providers: [EmpireService, EmpireHandler],
