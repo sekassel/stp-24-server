@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from "@nestjs/common";
+import {BadRequestException, ConflictException, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {Job, JobDocument} from "./job.schema";
 import {Model} from "mongoose";
@@ -97,6 +97,9 @@ export class JobService extends MongooseRepository<Job> {
         return this.systemService.getDistrictCosts(district, empire);
 
       case JobType.UPGRADE:
+        if (system.owner !== empire._id && system.upgrade !== 'unexplored') {
+          throw new BadRequestException('You can only upgrade systems you own.');
+        }
         const type = getNextSystemType(system.type as SystemUpgradeName);
         if (!type) {
           throw new BadRequestException('System type cannot be upgraded further.');
@@ -132,35 +135,36 @@ export class JobService extends MongooseRepository<Job> {
 
     let updateSystemDto = new UpdateSystemDto();
 
-    switch (job.type as JobType) {
-      case JobType.BUILDING:
-        const existingBuildings = system.buildings || [];
-        const buildings = [...existingBuildings, job.building as BuildingName];
-        updateSystemDto = new UpdateSystemDto({
-          buildings: buildings,
-        });
-        console.log('updateSystemDto', updateSystemDto);
-        return await this.systemService.updateSystem(system, updateSystemDto, empire);
+    try {
+      switch (job.type as JobType) {
+        case JobType.BUILDING:
+          const existingBuildings = system.buildings || [];
+          const buildings = [...existingBuildings, job.building as BuildingName];
+          updateSystemDto = new UpdateSystemDto({buildings});
+          break;
 
-      case JobType.DISTRICT:
-        const districtUpdate = {[job.district as DistrictName]: 1};
-        return await this.systemService.updateDistricts(system, districtUpdate, empire);
+        case JobType.DISTRICT:
+          const districtUpdate = {[job.district as DistrictName]: 1};
+          updateSystemDto = new UpdateSystemDto({districts: districtUpdate});
+          break;
 
-      case JobType.UPGRADE:
-        const type = getNextSystemType(system.type as SystemUpgradeName);
-        if (!type) {
-          throw new BadRequestException('System type cannot be upgraded further.');
-        }
-        return await this.systemService.upgradeSystem(system, type, empire);
+        case JobType.UPGRADE:
+          const type = getNextSystemType(system.type as SystemUpgradeName);
+          updateSystemDto = new UpdateSystemDto({upgrade: type});
+          break;
 
-      case JobType.TECHNOLOGY:
-        if (!job.technology) {
-          return null;
-        }
-        return this.empireService.unlockTechnology(empire, [job.technology]);
-
-      default:
-        throw new BadRequestException(`Invalid job type: ${job.type}`);
+        case JobType.TECHNOLOGY:
+          if (!job.technology) {
+            return null;
+          }
+          await this.empireService.unlockTechnology(empire, [job.technology], job);
+          return empire;
+      }
+      return await this.systemService.updateSystem(system, updateSystemDto, empire, job);
+    } catch (error) {
+      if (error instanceof ConflictException || error instanceof BadRequestException) {
+        await this.emitJobFailedEvent(job, error.message);
+      }
     }
   }
 
@@ -199,6 +203,12 @@ export class JobService extends MongooseRepository<Job> {
       }
     }
     return costRecord;
+  }
+
+  public async emitJobFailedEvent(job: JobDocument, errorMessage: string) {
+    const event = `games.${job.game}.empire.${job.empire}.jobs.${job._id}.failed`;
+    const data = {message: errorMessage};
+    this.eventEmitter.emit(event, data);
   }
 
   private emit(event: string, job: Job) {
