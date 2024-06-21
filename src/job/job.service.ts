@@ -16,6 +16,9 @@ import {SYSTEM_UPGRADES, SystemUpgradeName} from "../game-logic/system-upgrade";
 import {UserService} from "../user/user.service";
 import {TECHNOLOGIES} from "../game-logic/technologies";
 import {UpdateSystemDto} from "../system/system.dto";
+import {UpdateEmpireDto} from "../empire/empire.dto";
+import {SystemDocument} from "../system/system.schema";
+import {TechnologyTag} from "../game-logic/types";
 
 @Injectable()
 @EventRepository()
@@ -124,21 +127,35 @@ export class JobService extends MongooseRepository<Job> {
   }
 
   public async completeJob(job: JobDocument) {
-    if (!job.system || !job.empire) {
+    if (!job.empire) {
       return null;
     }
-    const system = await this.systemService.findOne(job.system);
+
     const empire = await this.empireService.findOne(job.empire);
-    if (!system || !empire) {
+    if (!empire) {
       return null;
+    }
+
+    let system: SystemDocument | null = null;
+    if (job.type !== JobType.TECHNOLOGY && job.system) {
+      system = await this.systemService.findOne(job.system);
+      if (!system) {
+        return null;
+      }
     }
 
     let updateSystemDto = new UpdateSystemDto();
-
     try {
       switch (job.type as JobType) {
+        case JobType.TECHNOLOGY:
+          if (!job.technology) {
+            return null;
+          }
+          const updateEmpireDto = new UpdateEmpireDto([job.technology as TechnologyTag]);
+          return await this.empireService.updateEmpire(empire, updateEmpireDto, job);
+
         case JobType.BUILDING:
-          const existingBuildings = system.buildings || [];
+          const existingBuildings = system?.buildings || [];
           const buildings = [...existingBuildings, job.building as BuildingName];
           updateSystemDto = new UpdateSystemDto({buildings});
           break;
@@ -149,23 +166,22 @@ export class JobService extends MongooseRepository<Job> {
           break;
 
         case JobType.UPGRADE:
+          if (!system) {
+            return null;
+          }
           const type = getNextSystemType(system.type as SystemUpgradeName);
           updateSystemDto = new UpdateSystemDto({upgrade: type});
           break;
-
-        case JobType.TECHNOLOGY:
-          if (!job.technology) {
-            return null;
-          }
-          await this.empireService.unlockTechnology(empire, [job.technology], job);
-          return empire;
       }
-      return await this.systemService.updateSystem(system, updateSystemDto, empire, job);
+      if (system) {
+        return await this.systemService.updateSystem(system, updateSystemDto, empire, job);
+      }
     } catch (error) {
       if (error instanceof ConflictException || error instanceof BadRequestException) {
         await this.emitJobFailedEvent(job, error.message);
       }
     }
+    return null;
   }
 
   async refundResources(empire: EmpireDocument, cost: Map<string, number>): Promise<EmpireDocument | null> {

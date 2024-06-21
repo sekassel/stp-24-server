@@ -57,6 +57,6 @@ export class EmpireController {
     if (!currentUser._id.equals(empire.user)) {
       throw new ForbiddenException('Cannot modify another user\'s empire.');
     }
-    return this.empireService.updateEmpire(empire, dto);
+    return this.empireService.updateEmpire(empire, dto, null);
   }
 }

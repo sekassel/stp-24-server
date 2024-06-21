@@ -68,6 +68,8 @@ export class SystemController {
       throw new BadRequestException('No empire found.');
     }
 
+
+
     return this.systemService.updateSystem(oldSystem, dto, userEmpire, null);
   }
 }

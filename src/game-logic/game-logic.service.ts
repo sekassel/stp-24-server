@@ -120,7 +120,7 @@ export class GameLogicService {
     for (const job of jobs) {
       job.progress += 1;
       if (job.progress >= job.total) {
-        this.jobService.completeJob(job);
+        await this.jobService.completeJob(job);
         await this.jobService.delete(job._id);
       } else {
         job.markModified('progress');

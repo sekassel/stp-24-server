@@ -60,11 +60,12 @@ export class EmpireService extends MongooseRepository<Empire> {
     return rest;
   }
 
-  async updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto): Promise<EmpireDocument> {
+  async updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto, job: JobDocument | null): Promise<EmpireDocument> {
     const {technologies, resources, ...rest} = dto;
     empire.set(rest);
     if (technologies) {
-      await this.unlockTechnology(empire, technologies, null);
+      console.log("unlock");
+      await this.unlockTechnology(empire, technologies, job);
     }
     if (resources) {
       this.resourceTrading(empire, resources);
@@ -80,6 +81,7 @@ export class EmpireService extends MongooseRepository<Empire> {
 
       if (empire.technologies.includes(technologyId)) {
         if (job) {
+          console.log("1");
           await this.emitJobFailedEvent(job, `Technology ${technologyId} has already been unlocked.`);
           return;
         }
@@ -94,6 +96,7 @@ export class EmpireService extends MongooseRepository<Empire> {
       if (!hasAllRequiredTechnologies) {
         const missingTechnologies = findMissingTechnologies(technologyId);
         if (job) {
+          console.log("2");
           await this.emitJobFailedEvent(job, `Required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
           return;
         }
