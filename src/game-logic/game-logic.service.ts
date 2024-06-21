@@ -137,7 +137,7 @@ export class GameLogicService {
           if (primaryTag && !progressingTechnologyTags[primaryTag]) {
             progressingTechnologyTags[primaryTag] = true;
             const empire = empires.find(e => e._id.equals(job.empire));
-            await this.progressJob(job, empire);
+            empire && await this.progressJob(job, empire);
           }
         }
       } else {
@@ -156,7 +156,7 @@ export class GameLogicService {
       for (const job of sortedJobs) {
         if (job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE) {
           const empire = empires.find(e => e._id.equals(job.empire));
-          await this.progressJob(job, empire, system);
+          empire && await this.progressJob(job, empire, system);
         }
       }
     }

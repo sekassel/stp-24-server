@@ -18,7 +18,9 @@ import {TECHNOLOGIES} from "../game-logic/technologies";
 import {UpdateSystemDto} from "../system/system.dto";
 import {UpdateEmpireDto} from "../empire/empire.dto";
 import {SystemDocument} from "../system/system.schema";
-import {TechnologyTag} from "../game-logic/types";
+import {TechnologyTag, Variable} from '../game-logic/types';
+import {UserDocument} from '../user/user.schema';
+import {calculateVariables, getVariables, VARIABLES} from '../game-logic/variables';
 
 @Injectable()
 @EventRepository()
@@ -28,26 +30,16 @@ export class JobService extends MongooseRepository<Job> {
     private empireService: EmpireService,
     private systemService: SystemService,
     private eventEmitter: EventService,
-    private userService: UserService,
   ) {
     super(jobModel);
   }
 
-  async createJob(empire: EmpireDocument, createJobDto: CreateJobDto): Promise<Job | null> {
+  async createJob(dto: CreateJobDto, user: UserDocument, empire: EmpireDocument, system?: SystemDocument): Promise<Job | null> {
     // Calculate resource requirements for the job
-    const cost = await this.checkResources(empire, createJobDto);
+    const cost = this.getCost(dto, user, empire, system);
 
     // Deduct resources from the empire
-    const missingResources = Object.entries(cost)
-      .filter(([resource, amount]) => empire.resources[resource as ResourceName] < amount)
-      .map(([resource, _]) => resource);
-    if (missingResources.length) {
-      throw new BadRequestException(`Not enough resources: ${missingResources.join(', ')}`);
-    }
-    for (const [resource, amount] of Object.entries(cost)) {
-      empire.resources[resource as ResourceName] -= amount;
-    }
-    empire.markModified('resources');
+    this.deductResources(empire, cost);
 
     // TODO: Calculate total (depending on action), replace 5 with variable
     const total = 5;
@@ -58,74 +50,84 @@ export class JobService extends MongooseRepository<Job> {
       progress: 0,
       total,
       cost: cost as Record<ResourceName, number>,
-      type: createJobDto.type,
+      type: dto.type,
     };
 
-    if (createJobDto.type === JobType.TECHNOLOGY) {
-      jobData.technology = createJobDto.technology;
+    if (dto.type === JobType.TECHNOLOGY) {
+      jobData.technology = dto.technology;
     } else {
-      jobData.system = createJobDto.system;
-      if (createJobDto.type === JobType.BUILDING) {
-        jobData.building = createJobDto.building;
-      } else if (createJobDto.type === JobType.DISTRICT) {
-        jobData.district = createJobDto.district;
+      jobData.system = dto.system;
+      if (dto.type === JobType.BUILDING) {
+        jobData.building = dto.building;
+      } else if (dto.type === JobType.DISTRICT) {
+        jobData.district = dto.district;
       }
     }
-    await this.empireService.saveAll([empire]);
-    return await this.jobModel.create(jobData);
+    return this.jobModel.create(jobData);
   }
 
-  private async checkResources(empire: EmpireDocument, createJobDto: CreateJobDto): Promise<Partial<Record<ResourceName, number>>> {
-    if (!createJobDto.system) {
-      throw new BadRequestException('System ID is required for this job type.');
+  private deductResources(empire: EmpireDocument, cost: Partial<Record<ResourceName, number>>): void {
+    const missingResources = Object.entries(cost)
+      .filter(([resource, amount]) => empire.resources[resource as ResourceName] < amount)
+      .map(([resource, _]) => resource);
+    if (missingResources.length) {
+      throw new BadRequestException(`Not enough resources: ${missingResources.join(', ')}`);
     }
-
-    const system = await this.systemService.findOne(createJobDto.system);
-    if (!system) {
-      throw new BadRequestException('System not found.');
+    for (const [resource, amount] of Object.entries(cost)) {
+      empire.resources[resource as ResourceName] -= amount;
     }
+    empire.markModified('resources');
+  }
 
-    switch (createJobDto.type as JobType) {
+  private getCost(dto: CreateJobDto, user: UserDocument, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
+
+    switch (dto.type as JobType) {
       case JobType.BUILDING:
-        const building = createJobDto.building as BuildingName;
-        if (!createJobDto.building) {
+        if (!system) notFound(dto.system);
+        const building = dto.building;
+        if (!building) {
           throw new BadRequestException('Building name is required for this job type.');
         }
-        const buildingCosts = this.systemService.getBuildingCosts(system, [building], empire);
-        return this.aggregateCosts(buildingCosts, building);
+        return this.getCosts('buildings', building, empire, system);
 
       case JobType.DISTRICT:
-        const district = createJobDto.district as DistrictName;
+        const district = dto.district;
         if (!district) {
           throw new BadRequestException('District name is required for this job type.');
         }
-        return this.systemService.getDistrictCosts(district, empire);
+        return this.getCosts('districts', district, empire, system);
 
       case JobType.UPGRADE:
+        if (!system) notFound(dto.system);
         if (system.owner !== empire._id && system.upgrade !== 'unexplored') {
           throw new BadRequestException('You can only upgrade systems you own.');
         }
-        const type = getNextSystemType(system.type as SystemUpgradeName);
+        const type = getNextSystemType(system.upgrade);
         if (!type) {
           throw new BadRequestException('System type cannot be upgraded further.');
         }
-        return Object.entries(SYSTEM_UPGRADES[type].cost)
-          .reduce((acc, [key, value]) => {
-            acc[key as ResourceName] = value;
-            return acc;
-          }, {} as Record<ResourceName, number>);
+        return this.getCosts('systems', type, empire, system);
 
       case JobType.TECHNOLOGY:
-        if (!createJobDto.technology) {
+        if (!dto.technology) {
           throw new BadRequestException('Technology ID is required for this job type.');
         }
-        const technology = TECHNOLOGIES[createJobDto.technology];
-        if (!technology) {
-          throw new BadRequestException('Technology ID is required for this job type.');
-        }
-        const user = await this.userService.find(empire.user) ?? notFound(empire.user);
+        const technology = TECHNOLOGIES[dto.technology] ?? notFound(dto.technology);
         return {research: this.empireService.getTechnologyCost(user, empire, technology)};
     }
+  }
+
+  private getCosts(prefix: keyof typeof VARIABLES, name: string, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
+    const result: Partial<Record<ResourceName, number>> = {};
+    const variables = getVariables(prefix);
+    calculateVariables(variables, empire, system);
+    for (const resource of RESOURCE_NAMES) { // support custom variables
+      const variable = `${prefix}.${name}.cost.${resource}`;
+      if (variable in variables) {
+        result[resource] = variables[variable as Variable];
+      }
+    }
+    return result;
   }
 
   public async completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
@@ -173,41 +175,15 @@ export class JobService extends MongooseRepository<Job> {
     return null;
   }
 
-  async refundResources(empire: EmpireDocument, cost: Map<string, number>): Promise<EmpireDocument | null> {
-    const jobCostRecord: Record<ResourceName, number> = this.convertCostMapToRecord(cost);
-    for (const [resource, amount] of Object.entries(jobCostRecord)) {
-      const resourceName = resource as ResourceName;
-      if (empire.resources[resourceName] !== undefined) {
-        empire.resources[resourceName] += amount;
+  refundResources(empire: EmpireDocument, cost: Partial<Record<ResourceName, number>>) {
+    for (const [resource, amount] of Object.entries(cost) as [ResourceName, number][] ) {
+      if (empire.resources[resource] !== undefined) {
+        empire.resources[resource] += amount;
       } else {
-        empire.resources[resourceName] = amount;
+        empire.resources[resource] = amount;
       }
     }
     empire.markModified('resources');
-    await this.empireService.saveAll([empire]);
-    return empire;
-  }
-
-  private aggregateCosts(costs: Record<string, [ResourceName, number][]>, building: BuildingName): Record<ResourceName, number> {
-    const aggregated: Record<ResourceName, number> = {} as Record<ResourceName, number>;
-    const filteredCosts = costs[building];
-    for (const [resource, amount] of filteredCosts) {
-      if (!aggregated[resource]) {
-        aggregated[resource] = 0;
-      }
-      aggregated[resource] += amount;
-    }
-    return aggregated;
-  }
-
-  private convertCostMapToRecord(costMap: Map<string, number>): Record<ResourceName, number> {
-    const costRecord: Record<ResourceName, number> = {} as Record<ResourceName, number>;
-    for (const [key, value] of costMap.entries()) {
-      if (RESOURCE_NAMES.includes(key as ResourceName)) {
-        costRecord[key as ResourceName] = value;
-      }
-    }
-    return costRecord;
   }
 
   private emitJobFailedEvent(job: JobDocument, errorMessage: string, empire: EmpireDocument) {
