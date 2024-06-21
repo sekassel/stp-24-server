@@ -16,12 +16,14 @@ import {DistrictName} from '../game-logic/districts';
 import {JobDocument} from './job.schema';
 import {SystemService} from '../system/system.service';
 import {EmpireLogicService} from '../empire/empire-logic.service';
+import {SystemLogicService} from '../system/system-logic.service';
 
 @Injectable()
 export class JobLogicService {
   constructor(
-    // TODO there should be no injections, this should be pure logic
     private readonly empireLogicService: EmpireLogicService,
+    private readonly systemLogicService: SystemLogicService,
+    // TODO there should be no injections, this should be pure logic
     private readonly systemService: SystemService,
   ) {
   }
@@ -123,7 +125,7 @@ export class JobLogicService {
         break;
 
       case JobType.UPGRADE:
-        return this.systemService.upgradeSystem(system ?? notFound(job.system), empire);
+        return this.systemLogicService.upgradeSystem(system ?? notFound(job.system), empire);
     }
     if (system) {
       return await this.systemService.updateSystem(system, updateSystemDto, empire, job);

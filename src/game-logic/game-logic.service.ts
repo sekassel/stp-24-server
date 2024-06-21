@@ -17,6 +17,7 @@ import {SYSTEM_UPGRADES} from './system-upgrade';
 import {JobService} from '../job/job.service';
 import {JobDocument} from '../job/job.schema';
 import {JobType} from '../job/job-type.enum';
+import {SystemLogicService} from '../system/system-logic.service';
 
 @Injectable()
 export class GameLogicService {
@@ -24,6 +25,7 @@ export class GameLogicService {
     private memberService: MemberService,
     private empireService: EmpireService,
     private systemService: SystemService,
+    private systemLogicService: SystemLogicService,
     private jobService: JobService,
   ) {
   }
@@ -54,7 +56,7 @@ export class GameLogicService {
       if (member?.empire?.homeSystem) {
         homeSystem.type = member.empire.homeSystem;
       }
-      this.systemService.generateDistricts(homeSystem, empire);
+      this.systemLogicService.generateDistricts(homeSystem, empire);
 
       // every home system starts with 15 districts
       this.generateDistricts(homeSystem);
