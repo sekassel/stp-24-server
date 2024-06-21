@@ -126,23 +126,9 @@ export class JobService extends MongooseRepository<Job> {
     }
   }
 
-  public async completeJob(job: JobDocument) {
+  public async completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
     if (!job.empire) {
       return null;
-    }
-
-    // TODO no need to re-fetch these, they are available in the GameLogicService
-    const empire = await this.empireService.findOne(job.empire);
-    if (!empire) {
-      return null;
-    }
-
-    let system: SystemDocument | null = null;
-    if (job.type !== JobType.TECHNOLOGY && job.system) {
-      system = await this.systemService.findOne(job.system);
-      if (!system) {
-        return null;
-      }
     }
 
     let updateSystemDto = new UpdateSystemDto();
