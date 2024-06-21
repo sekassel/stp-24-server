@@ -1,23 +1,21 @@
-import {BadRequestException, ConflictException, Injectable} from "@nestjs/common";
-import {InjectModel} from "@nestjs/mongoose";
-import {Job, JobDocument} from "./job.schema";
-import {Model} from "mongoose";
-import {EventRepository, EventService, MongooseRepository, notFound} from "@mean-stream/nestx";
-import {CreateJobDto} from "./job.dto";
-import {EmpireService} from "../empire/empire.service";
-import {EmpireDocument} from "../empire/empire.schema";
-import {RESOURCE_NAMES, ResourceName} from "../game-logic/resources";
-import {SystemService} from "../system/system.service";
-import {JobType} from "./job-type.enum";
-import {BuildingName} from "../game-logic/buildings";
-import {DistrictName} from "../game-logic/districts";
-import {getNextSystemType} from "../system/system-type.enum";
-import {SYSTEM_UPGRADES, SystemUpgradeName} from "../game-logic/system-upgrade";
-import {UserService} from "../user/user.service";
-import {TECHNOLOGIES} from "../game-logic/technologies";
-import {UpdateSystemDto} from "../system/system.dto";
-import {UpdateEmpireDto} from "../empire/empire.dto";
-import {SystemDocument} from "../system/system.schema";
+import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {Job, JobDocument} from './job.schema';
+import {Model} from 'mongoose';
+import {EventRepository, EventService, MongooseRepository, notFound} from '@mean-stream/nestx';
+import {CreateJobDto} from './job.dto';
+import {EmpireService} from '../empire/empire.service';
+import {EmpireDocument} from '../empire/empire.schema';
+import {RESOURCE_NAMES, ResourceName} from '../game-logic/resources';
+import {SystemService} from '../system/system.service';
+import {JobType} from './job-type.enum';
+import {BuildingName} from '../game-logic/buildings';
+import {DistrictName} from '../game-logic/districts';
+import {SYSTEM_UPGRADES, SystemUpgradeName} from '../game-logic/system-upgrade';
+import {TECHNOLOGIES} from '../game-logic/technologies';
+import {UpdateSystemDto} from '../system/system.dto';
+import {UpdateEmpireDto} from '../empire/empire.dto';
+import {SystemDocument} from '../system/system.schema';
 import {TechnologyTag, Variable} from '../game-logic/types';
 import {UserDocument} from '../user/user.schema';
 import {calculateVariables, getVariables, VARIABLES} from '../game-logic/variables';
@@ -102,7 +100,7 @@ export class JobService extends MongooseRepository<Job> {
         if (system.owner !== empire._id && system.upgrade !== 'unexplored') {
           throw new BadRequestException('You can only upgrade systems you own.');
         }
-        const type = getNextSystemType(system.upgrade);
+        const type = SYSTEM_UPGRADES[system.upgrade]?.next;
         if (!type) {
           throw new BadRequestException('System type cannot be upgraded further.');
         }
@@ -160,7 +158,7 @@ export class JobService extends MongooseRepository<Job> {
           if (!system) {
             return null;
           }
-          const type = getNextSystemType(system.type as SystemUpgradeName);
+          const type = SYSTEM_UPGRADES[system.upgrade]?.next;
           updateSystemDto = new UpdateSystemDto({upgrade: type});
           break;
       }
