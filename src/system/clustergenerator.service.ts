@@ -117,6 +117,23 @@ export class ClusterGeneratorService {
     return false;
   }
 
+  nearestSystems(cluster1:System[], cluster2: System[]): System[]{
+    let nearestSystems: System[] = [];
+    let nearestSystemDistance = Infinity;
+
+    for(const system1 of cluster1){
+      for(const system2 of cluster2){
+        const distance = Math.hypot(system1.x - system2.x, system1.y - system2.y);
+        if(distance < nearestSystemDistance){
+          nearestSystems = [system1, system2];
+          nearestSystemDistance = distance;
+        }
+      }
+    }
+
+    return nearestSystems;
+  }
+
   connectSystems(system1: System, system2: System): void {
     const distance = Math.hypot(system1.x - system2.x, system1.y - system2.y);
     system1.links[system2._id.toString()] = distance;
