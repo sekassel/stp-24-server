@@ -31,9 +31,4 @@ export class UpdateSystemDto extends PartialType(PickType(System, [
       'This value will be the resulting list, so existing buildings must be specified as well.',
   })
   buildings?: BuildingName[];
-
-  constructor(dto?: Partial<UpdateSystemDto>) {
-    super();
-    Object.assign(this, dto);
-  }
 }

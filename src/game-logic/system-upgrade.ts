@@ -3,6 +3,7 @@ import {SystemUpgrade} from './types';
 export const SYSTEM_UPGRADES = {
   unexplored: {
     id: 'unexplored',
+    next: 'explored',
     pop_growth: 0,
     cost: {},
     upkeep: {},
@@ -10,6 +11,7 @@ export const SYSTEM_UPGRADES = {
   },
   explored: {
     id: 'explored',
+    next: 'colonized',
     pop_growth: 0,
     cost: {},
     upkeep: {},
@@ -17,6 +19,7 @@ export const SYSTEM_UPGRADES = {
   },
   colonized: {
     id: 'colonized',
+    next: 'upgraded',
     pop_growth: 0.05, // pop_growth_colonized tech tree
     cost: {
       minerals: 100, // cheap_claims tech tree
@@ -31,6 +34,7 @@ export const SYSTEM_UPGRADES = {
   },
   upgraded: {
     id: 'upgraded',
+    next: 'developed',
     pop_growth: 0.02, // pop_growth_upgraded tech tree
     cost: {
       minerals: 100, // cheap_claims tech tree
@@ -46,6 +50,7 @@ export const SYSTEM_UPGRADES = {
   },
   developed: {
     id: 'developed',
+    next: undefined,
     pop_growth: 0.01,
     cost: {
       alloys: 200, // cheap_claims tech tree

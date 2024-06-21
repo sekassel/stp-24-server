@@ -70,14 +70,14 @@ export class Job extends GlobalSchema {
   @IsIn(TECHNOLOGY_IDS)
   technology?: string;
 
-  @Prop({type: Map, of: Number, default: {}})
+  @Prop({type: Object, default: {}})
   @ApiPropertyOptional({
     description: 'Initial cost of resources for the job',
     ...RESOURCES_SCHEMA_PROPERTIES,
   })
   @IsOptional()
   @IsObject()
-  cost?: Record<ResourceName, number>;
+  cost?: Partial<Record<ResourceName, number>>;
 }
 
 export const JobSchema = SchemaFactory.createForClass(Job);

@@ -16,7 +16,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {Types} from 'mongoose';
-import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
+import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Validated} from '../util/validated.decorator';
 import {Throttled} from '../util/throttled.decorator';
 import {Auth, AuthUser} from '../auth/auth.decorator';
@@ -27,6 +27,8 @@ import {JobService} from './job.service';
 import {EmpireService} from "../empire/empire.service";
 import {JobType} from "./job-type.enum";
 import {EmpireDocument} from "../empire/empire.schema";
+import {SystemService} from '../system/system.service';
+import {UserService} from '../user/user.service';
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')
@@ -36,6 +38,8 @@ export class JobController {
   constructor(
     private readonly jobService: JobService,
     private readonly empireService: EmpireService,
+    private readonly userService: UserService,
+    private readonly systemService: SystemService,
   ) {
   }
 
@@ -94,10 +98,16 @@ export class JobController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('empire', ObjectIdPipe) empire: Types.ObjectId,
     @AuthUser() user: User,
-    @Body() createJobDto: CreateJobDto,
+    @Body() dto: CreateJobDto,
   ): Promise<Job | null> {
-    const userEmpire = await this.checkUserAccess(game, user, empire);
-    return this.jobService.createJob(userEmpire, createJobDto);
+    const [userDoc, empireDoc, system] = await Promise.all([
+      this.userService.find(user._id),
+      this.checkUserAccess(game, user, empire),
+      dto.system ? this.systemService.find(dto.system) : Promise.resolve(undefined),
+    ]);
+    const result = await this.jobService.createJob(dto, userDoc ?? notFound(user._id), empireDoc, system ?? undefined);
+    await this.empireService.saveAll([empireDoc]);
+    return result;
   }
 
   @Delete(':id')
@@ -117,7 +127,8 @@ export class JobController {
     if (!job || !job.cost) {
       throw new NotFoundException('Job not found.');
     }
-    await this.jobService.refundResources(userEmpire, job.cost as unknown as Map<string, number>);
+    this.jobService.refundResources(userEmpire, job.cost);
+    await this.empireService.saveAll([userEmpire]);
     return this.jobService.delete(id);
   }
 
