@@ -4,7 +4,7 @@ import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
 import {DISTRICT_NAMES, DistrictName} from '../game-logic/districts';
 import {RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
 import {ResourceName} from '../game-logic/resources';
-import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
+import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema, MONGO_ID_FORMAT} from '../util/schema';
 import {IsEnum, IsIn, IsNumber, IsObject, IsOptional, ValidateIf} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {AsObjectId, Ref} from '@mean-stream/nestx';
@@ -32,7 +32,10 @@ export class Job extends GlobalSchema {
   empire: Types.ObjectId;
 
   @Prop({type: Types.ObjectId, ref: 'System', required: false})
-  @ApiPropertyOptional({description: 'System ID for the job. Required for type=building, type=district, type=upgrade.'})
+  @ApiPropertyOptional({
+    description: 'System ID for the job. Required for type=building, type=district, type=upgrade.',
+    ...MONGO_ID_FORMAT,
+  })
   @ValidateIf((job, value) => value || job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE)
   @AsObjectId()
   system?: Types.ObjectId;
