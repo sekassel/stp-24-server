@@ -58,7 +58,7 @@ export class JobService extends MongooseRepository<Job> {
 
   public async completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
     try {
-      await this.jobLogicService.completeJob(job, empire, system);
+      this.jobLogicService.completeJob(job, empire, system);
     } catch (error) {
       if (error instanceof ConflictException || error instanceof BadRequestException) {
         this.emitJobFailedEvent(job, error.message, empire);

@@ -6,6 +6,7 @@ import {calculateVariable, calculateVariables} from '../game-logic/variables';
 import {SYSTEM_TYPES} from '../game-logic/system-types';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {District, Variable} from '../game-logic/types';
+import {BuildingName} from '../game-logic/buildings';
 
 @Injectable()
 export class SystemLogicService {
@@ -74,4 +75,25 @@ export class SystemLogicService {
     system.markModified('districtSlots');
   }
 
+  buildBuilding(system: SystemDocument, building: BuildingName) {
+    if (this.usedCapacity(system) + 1> system.capacity) {
+      throw new BadRequestException('System is at capacity.');
+    }
+    system.buildings.push(building);
+  }
+
+  buildDistrict(system: SystemDocument, district: DistrictName) {
+    if ((system.districts[district] ?? 0) >= (system.districtSlots[district] ?? 0)) {
+      throw new BadRequestException('District is at capacity.');
+    }
+    if (this.usedCapacity(system) + 1 > system.capacity) {
+      throw new BadRequestException('System is at capacity.');
+    }
+    system.districts[district] = (system.districts[district] ?? 0) + 1;
+    system.markModified('districts');
+  }
+
+  private usedCapacity(system: SystemDocument) {
+    return system.buildings.length + Object.values(system.districts).sum();
+  }
 }

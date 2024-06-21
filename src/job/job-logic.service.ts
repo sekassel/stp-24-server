@@ -104,31 +104,30 @@ export class JobLogicService {
     empire.markModified('resources');
   }
 
-  async completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
-    let updateSystemDto: UpdateSystemDto = {};
+  completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
     switch (job.type as JobType) {
       case JobType.TECHNOLOGY:
         if (!job.technology) {
-          return null;
+          throw new BadRequestException('Technology ID is required for this job type.');
         }
         return this.empireLogicService.unlockTechnology(job.technology, empire);
 
       case JobType.BUILDING:
-        const existingBuildings = system?.buildings || [];
-        const buildings = [...existingBuildings, job.building as BuildingName];
-        updateSystemDto = {buildings};
+        if (!job.building) {
+          throw new BadRequestException('Building name is required for this job type.');
+        }
+        this.systemLogicService.buildBuilding(system ?? notFound(job.system), job.building);
         break;
 
       case JobType.DISTRICT:
-        const districtUpdate = {[job.district as DistrictName]: 1};
-        updateSystemDto = {districts: districtUpdate};
-        break;
+        if (!job.district) {
+          throw new BadRequestException('District name is required for this job type.');
+        }
+        this.systemLogicService.buildDistrict(system ?? notFound(job.system), job.district);
+        return;
 
       case JobType.UPGRADE:
         return this.systemLogicService.upgradeSystem(system ?? notFound(job.system), empire);
-    }
-    if (system) {
-      return await this.systemService.updateSystem(system, updateSystemDto, empire, job);
     }
   }
 }
