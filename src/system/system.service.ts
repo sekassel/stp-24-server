@@ -99,19 +99,11 @@ export class SystemService extends MongooseRepository<System> {
 
       // Check if districts don't exceed districtSlots
       if (districtTypeSlots !== undefined && districtTypeSlots - builtDistrictsOfType < amount) {
-        if (job) {
-          await this.emitJobFailedEvent(job, `Insufficient district slots for ${districtName}`);
-          return;
-        }
         throw new BadRequestException(`Insufficient district slots for ${districtName}`);
       }
 
       // Check if district slots don't exceed system capacity
       if (system.buildings.length + builtDistrictsCount + amountOfDistrictsToBeBuilt > system.capacity) {
-        if (job) {
-          await this.emitJobFailedEvent(job, `System ${system._id} has not enough capacity to build the districts`);
-          return;
-        }
         throw new BadRequestException(`System ${system._id} has not enough capacity to build the districts`);
       }
 
@@ -222,10 +214,6 @@ export class SystemService extends MongooseRepository<System> {
     //Check if there is enough capacity to build the new buildings
     const capacityLeft = system.capacity - Object.values(system.districts).sum() - system.buildings.length;
     if (capacityLeft <= 0) {
-      if (job) {
-        await this.emitJobFailedEvent(job, `Not enough capacity to build buildings. Capacity left: ${capacityLeft} Amount of new buildings: ${Object.values(addBuildings).sum()}`);
-        return;
-      }
       throw new BadRequestException(`Not enough capacity to build buildings. Capacity left: ${capacityLeft} Amount of new buildings: ${Object.values(addBuildings).sum()}`);
     }
 
@@ -312,12 +300,6 @@ export class SystemService extends MongooseRepository<System> {
 
   async generateMap(game: Game): Promise<SystemDocument[]> {
     return this.createMany(this.systemGenerator.generateMap(game));
-  }
-
-  private async emitJobFailedEvent(job: JobDocument, errorMessage: string) {
-    const event = `games.${job.game}.empire.${job.empire}.jobs.${job._id}.failed`;
-    const data = {message: errorMessage};
-    this.eventEmitter.emit(event, data);
   }
 
   private async emit(event: string, system: System) {

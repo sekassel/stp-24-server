@@ -104,7 +104,7 @@ export class GameLogicService {
     const jobs = await this.jobService.findAll({game: game._id});
 
     this._updateGame(empires, systems);
-    await this.updateJobs(jobs, systems);
+    await this.updateJobs(jobs, empires, systems);
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
     await this.jobService.saveAll(jobs);
@@ -117,7 +117,7 @@ export class GameLogicService {
     }
   }
 
-  async updateJobs(jobs: JobDocument[], systems: SystemDocument[]) {
+  async updateJobs(jobs: JobDocument[], empires: EmpireDocument[], systems: SystemDocument[]) {
     const systemJobsMap: Record<string, JobDocument[]> = {};
     const progressingTechnologyTags: Record<string, boolean> = {};
 
@@ -136,7 +136,8 @@ export class GameLogicService {
           const primaryTag = this.getPrimaryTag(technology);
           if (primaryTag && !progressingTechnologyTags[primaryTag]) {
             progressingTechnologyTags[primaryTag] = true;
-            await this.progressTechnologyJob(job);
+            const empire = empires.find(e => e._id.equals(job.empire));
+            await this.progressJob(job, empire);
           }
         }
       } else {
@@ -147,40 +148,27 @@ export class GameLogicService {
       }
     }
 
-    for (const jobsInSystem of Object.values(systemJobsMap)) {
+    for (const [systemId, jobsInSystem] of Object.entries(systemJobsMap)) {
+      const system = systems.find(s => s._id.equals(systemId));
       // Maybe do a priority sorting in v4?
       const sortedJobs = jobsInSystem.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
       for (const job of sortedJobs) {
         if (job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE) {
-          await this.progressJob(job);
+          const empire = empires.find(e => e._id.equals(job.empire));
+          await this.progressJob(job, empire, system);
         }
       }
     }
   }
 
-  private async progressJob(job: JobDocument) {
+  private async progressJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
     job.progress += 1;
     if (job.progress >= job.total) {
-      await this.jobService.completeJob(job);
+      await this.jobService.completeJob(job, empire, system);
     } else {
       job.markModified('progress');
     }
-  }
-
-  private async progressTechnologyJob(job: JobDocument) {
-    if (!job.technology) {
-      return;
-    }
-    const technology = TECHNOLOGIES[job.technology];
-    if (!technology) {
-      return;
-    }
-    const primaryTag = this.getPrimaryTag(technology);
-    if (!primaryTag) {
-      return;
-    }
-    await this.progressJob(job);
   }
 
   private getPrimaryTag(technology: Technology): TechnologyCategory {
