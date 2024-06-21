@@ -4,7 +4,7 @@ import {SystemService} from '../system/system.service';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
 import {calculateVariables, getInitialVariables} from './variables';
-import {Technology, Variable} from './types';
+import {Technology, TechnologyCategory, Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {AggregateItem, AggregateResult} from './aggregates';
 import {TECHNOLOGIES} from './technologies';
@@ -14,6 +14,9 @@ import {Game} from '../game/game.schema';
 import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from './constants';
 import {MemberService} from '../member/member.service';
 import {SYSTEM_UPGRADES} from './system-upgrade';
+import {JobService} from '../job/job.service';
+import {JobDocument} from '../job/job.schema';
+import {JobType} from '../job/job-type.enum';
 
 @Injectable()
 export class GameLogicService {
@@ -21,6 +24,7 @@ export class GameLogicService {
     private memberService: MemberService,
     private empireService: EmpireService,
     private systemService: SystemService,
+    private jobService: JobService,
   ) {
   }
 
@@ -97,9 +101,13 @@ export class GameLogicService {
   async updateGame(game: Game) {
     const empires = await this.empireService.findAll({game: game._id});
     const systems = await this.systemService.findAll({game: game._id});
+    const jobs = await this.jobService.findAll({game: game._id});
+
     this._updateGame(empires, systems);
+    await this.updateJobs(jobs, systems);
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
+    await this.jobService.saveAll(jobs);
   }
 
   private _updateGame(empires: EmpireDocument[], systems: SystemDocument[]) {
@@ -107,6 +115,76 @@ export class GameLogicService {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
       this.updateEmpire(empire, empireSystems);
     }
+  }
+
+  async updateJobs(jobs: JobDocument[], systems: SystemDocument[]) {
+    const systemJobsMap: Record<string, JobDocument[]> = {};
+    const progressingTechnologyTags: Record<string, boolean> = {};
+
+    for (const job of jobs) {
+      if (job.progress === job.total) {
+        await this.jobService.delete(job._id);
+        continue;
+      }
+
+      if (job.type === JobType.TECHNOLOGY) {
+        if (!job.technology) {
+          continue;
+        }
+        const technology = TECHNOLOGIES[job.technology];
+        if (technology) {
+          const primaryTag = this.getPrimaryTag(technology);
+          if (primaryTag && !progressingTechnologyTags[primaryTag]) {
+            progressingTechnologyTags[primaryTag] = true;
+            await this.progressTechnologyJob(job);
+          }
+        }
+      } else {
+        if (!job.system) {
+          continue;
+        }
+        (systemJobsMap[job.system.toString()] ??= []).push(job);
+      }
+    }
+
+    for (const jobsInSystem of Object.values(systemJobsMap)) {
+      // Maybe do a priority sorting in v4?
+      const sortedJobs = jobsInSystem.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+
+      for (const job of sortedJobs) {
+        if (job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE) {
+          await this.progressJob(job);
+        }
+      }
+    }
+  }
+
+  private async progressJob(job: JobDocument) {
+    job.progress += 1;
+    if (job.progress >= job.total) {
+      await this.jobService.completeJob(job);
+    } else {
+      job.markModified('progress');
+    }
+  }
+
+  private async progressTechnologyJob(job: JobDocument) {
+    if (!job.technology) {
+      return;
+    }
+    const technology = TECHNOLOGIES[job.technology];
+    if (!technology) {
+      return;
+    }
+    const primaryTag = this.getPrimaryTag(technology);
+    if (!primaryTag) {
+      return;
+    }
+    await this.progressJob(job);
+  }
+
+  private getPrimaryTag(technology: Technology): TechnologyCategory {
+    return technology.tags[0];
   }
 
   private updateEmpire(empire: EmpireDocument, systems: SystemDocument[], aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
@@ -338,7 +416,10 @@ export class GameLogicService {
   }
 
   aggregateResources(empire: Empire, systems: System[], resources: ResourceName[]): AggregateResult[] {
-    const aggregates: Partial<Record<ResourceName, AggregateResult>> = Object.fromEntries(resources.map(r => [r, {total: 0, items: []}]));
+    const aggregates: Partial<Record<ResourceName, AggregateResult>> = Object.fromEntries(resources.map(r => [r, {
+      total: 0,
+      items: []
+    }]));
     this.updateEmpire(empire as EmpireDocument, systems as SystemDocument[], aggregates); // NB: this mutates empire and systems, but does not save them.
     return resources.map(r => aggregates[r]!);
   }

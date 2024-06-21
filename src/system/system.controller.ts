@@ -1,4 +1,4 @@
-import {Body, Controller, ForbiddenException, Get, Param, Patch, Query} from '@nestjs/common';
+import {BadRequestException, Body, Controller, Get, Param, Patch, Query} from '@nestjs/common';
 import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
@@ -62,13 +62,14 @@ export class SystemController {
   ): Promise<System | null> {
     const oldSystem = await this.systemService.find(id) ?? notFound(id);
     const userEmpire = await this.empireService.findOne({user: currentUser._id, game});
-    const owner = oldSystem.owner ?? dto.owner;
 
-    // TODO v3: Allow "explore" upgrade without being owner (handled by upgrade Job)
-    if (!userEmpire?._id.equals(owner)) {
-      throw new ForbiddenException('You are not the owner of this system.');
+    // v3: Allow "explore" upgrade without being owner (handled by upgrade Job)
+    if (!userEmpire) {
+      throw new BadRequestException('No empire found.');
     }
 
-    return this.systemService.updateSystem(oldSystem, dto, userEmpire);
+
+
+    return this.systemService.updateSystem(oldSystem, dto, userEmpire, null);
   }
 }

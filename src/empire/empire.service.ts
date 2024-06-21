@@ -16,6 +16,7 @@ import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
 import {UserDocument} from '../user/user.schema';
 import {AggregateItem, AggregateResult} from '../game-logic/aggregates';
 import {Member} from '../member/member.schema';
+import {JobDocument} from "../job/job.schema";
 
 function findMissingTechnologies(technologyId: string): string[] {
   const missingTechs: string[] = [];
@@ -59,11 +60,11 @@ export class EmpireService extends MongooseRepository<Empire> {
     return rest;
   }
 
-  async updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto): Promise<EmpireDocument> {
+  async updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto, job: JobDocument | null): Promise<EmpireDocument> {
     const {technologies, resources, ...rest} = dto;
     empire.set(rest);
     if (technologies) {
-      await this.unlockTechnology(empire, technologies);
+      await this.unlockTechnology(empire, technologies, job);
     }
     if (resources) {
       this.resourceTrading(empire, resources);
@@ -72,18 +73,16 @@ export class EmpireService extends MongooseRepository<Empire> {
     return empire;
   }
 
-  private async unlockTechnology(empire: EmpireDocument, technologies: string[]) {
+  async unlockTechnology(empire: EmpireDocument, technologies: string[], job: JobDocument | null) {
     const user = await this.userService.find(empire.user) ?? notFound(empire.user);
-    const variables = {
-      ...getVariables('technologies'),
-      ...getVariables('empire'),
-    };
-    calculateVariables(variables, empire);
-
     for (const technologyId of technologies) {
       const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
 
       if (empire.technologies.includes(technologyId)) {
+        if (job) {
+          await this.emitJobFailedEvent(job, `Technology ${technologyId} has already been unlocked.`);
+          return;
+        }
         throw new BadRequestException(`Technology ${technologyId} has already been unlocked.`);
       }
 
@@ -94,33 +93,46 @@ export class EmpireService extends MongooseRepository<Empire> {
 
       if (!hasAllRequiredTechnologies) {
         const missingTechnologies = findMissingTechnologies(technologyId);
+        if (job) {
+          await this.emitJobFailedEvent(job, `Required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
+          return;
+        }
         throw new BadRequestException(`Required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
       }
 
-      // Calculate the technology cost based on the formula
-      const technologyCost = this.getTechnologyCost(user, technology, variables);
+      if (!job) {
+        // Calculate the technology cost based on the formula
+        const technologyCost = this.getTechnologyCost(user, empire, technology);
 
-      if (empire.resources.research < technologyCost) {
-        throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
+        if (empire.resources.research < technologyCost) {
+          throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
+        }
+
+        // Deduct research points and unlock technology
+        empire.resources.research -= technologyCost;
+        empire.markModified('resources');
       }
 
-      // Deduct research points and unlock technology
-      empire.resources.research -= technologyCost;
-      empire.markModified('resources');
       if (!empire.technologies.includes(technologyId)) {
         empire.technologies.push(technologyId);
         // Increment the user's technology count by 1
         if (user.technologies) {
           user.technologies[technologyId] = (user.technologies?.[technologyId] ?? 0) + 1;
-          user.markModified('technologies');
+        } else {
+          user.technologies = {[technologyId]: 1};
         }
+        user.markModified('technologies');
       }
     }
-
     await this.userService.saveAll([user]);
   }
 
-  getTechnologyCost(user: UserDocument, technology: Technology, variables: Partial<Record<Variable, number>>) {
+  public getTechnologyCost(user: UserDocument, empire: EmpireDocument, technology: Technology) {
+    const variables = {
+      ...getVariables('technologies'),
+      ...getVariables('empire'),
+    };
+    calculateVariables(variables, empire);
     const technologyCount = user.technologies?.[technology.id] || 0;
 
     const difficultyMultiplier = variables['empire.technologies.difficulty'] || 1;
@@ -252,6 +264,12 @@ export class EmpireService extends MongooseRepository<Empire> {
         });
       })
     );
+  }
+
+  private async emitJobFailedEvent(job: JobDocument, errorMessage: string) {
+    const event = `games.${job.game}.empire.${job.empire}.jobs.${job._id}.failed`;
+    const data = {message: errorMessage};
+    this.eventEmitter.emit(event, data);
   }
 
   private async emit(event: string, empire: Empire) {
