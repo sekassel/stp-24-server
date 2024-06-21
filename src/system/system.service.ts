@@ -42,11 +42,8 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   async updateSystem(system: SystemDocument, dto: UpdateSystemDto, empire: EmpireDocument, job: JobDocument | null): Promise<SystemDocument | null> {
-    const {upgrade, districts, buildings, ...rest} = dto;
+    const {districts, buildings, ...rest} = dto;
     system.set(rest);
-    if (upgrade) {
-      await this.upgradeSystem(system, upgrade, empire);
-    }
     if (districts) {
       await this.updateDistricts(system, districts, empire, job);
     }
@@ -56,30 +53,6 @@ export class SystemService extends MongooseRepository<System> {
     await this.empireService.saveAll([empire]);
     await this.saveAll([system]) // emits update events
     return system;
-  }
-
-  async upgradeSystem(system: SystemDocument, upgrade: SystemUpgradeName, empire: EmpireDocument) {
-    const upgrades = Object.keys(SYSTEM_UPGRADES);
-    if (upgrades.indexOf(upgrade) !== upgrades.indexOf(system.upgrade) + 1) {
-      throw new BadRequestException(`Invalid upgrade ${upgrade} for system ${system._id}`);
-    }
-    system.upgrade = upgrade;
-    system.capacity *= SYSTEM_UPGRADES[upgrade].capacity_multiplier;
-
-    switch (upgrade) {
-      case 'explored':
-        this.generateDistricts(system, empire);
-        break;
-      case 'colonized':
-        system.owner = empire._id;
-        system.population = calculateVariable('empire.pop.colonists', empire, system);
-        this.applyCosts(empire, upgrade);
-        break;
-      case 'upgraded':
-      case 'developed':
-        this.applyCosts(empire, upgrade);
-        break;
-    }
   }
 
   async updateDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>, empire: EmpireDocument, job: JobDocument | null) {
@@ -242,6 +215,26 @@ export class SystemService extends MongooseRepository<System> {
         }
         empire.markModified('resources');
       }
+    }
+  }
+
+  upgradeSystem(system: SystemDocument, empire: EmpireDocument) {
+    const upgrade = SYSTEM_UPGRADES[system.upgrade]?.next;
+    if (!upgrade) {
+      throw new BadRequestException('System cannot be upgraded further.');
+    }
+
+    system.upgrade = upgrade;
+    system.capacity *= SYSTEM_UPGRADES[upgrade].capacity_multiplier;
+
+    switch (upgrade) {
+      case 'explored':
+        this.generateDistricts(system, empire);
+        break;
+      case 'colonized':
+        system.owner = empire._id;
+        system.population = calculateVariable('empire.pop.colonists', empire, system);
+        break;
     }
   }
 

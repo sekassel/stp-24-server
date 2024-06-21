@@ -123,12 +123,7 @@ export class JobLogicService {
         break;
 
       case JobType.UPGRADE:
-        if (!system) {
-          return null;
-        }
-        const upgrade = SYSTEM_UPGRADES[system.upgrade]?.next;
-        updateSystemDto = {upgrade};
-        break;
+        return this.systemService.upgradeSystem(system ?? notFound(job.system), empire);
     }
     if (system) {
       return await this.systemService.updateSystem(system, updateSystemDto, empire, job);

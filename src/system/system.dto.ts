@@ -5,7 +5,6 @@ import {BuildingName} from '../game-logic/buildings';
 
 export class UpdateSystemDto extends PartialType(PickType(System, [
   'name',
-  'upgrade',
   'owner',
   'districts',
   'buildings',
