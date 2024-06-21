@@ -7,28 +7,14 @@ import {EmpireTemplate, ReadEmpireDto, UpdateEmpireDto} from './empire.dto';
 import {MemberService} from '../member/member.service';
 import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MIN_EMPIRES} from '../game-logic/constants';
 import {generateTraits} from '../game-logic/traits';
-import {TECH_CATEGORIES, TECHNOLOGIES} from '../game-logic/technologies';
+import {TECH_CATEGORIES} from '../game-logic/technologies';
 import {UserService} from '../user/user.service';
 import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
 import {Technology, Variable} from '../game-logic/types';
 import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
-import {UserDocument} from '../user/user.schema';
 import {AggregateItem, AggregateResult} from '../game-logic/aggregates';
 import {Member} from '../member/member.schema';
-import {JobDocument} from "../job/job.schema";
-
-function findMissingTechnologies(technologyId: string): string[] {
-  const missingTechs: string[] = [];
-  const technology = TECHNOLOGIES[technologyId];
-  if (technology.requires) {
-    for (const requiredTechnology of technology.requires) {
-      missingTechs.push(requiredTechnology);
-      missingTechs.push(...findMissingTechnologies(requiredTechnology));
-    }
-  }
-  return missingTechs;
-}
 
 @Injectable()
 @EventRepository()
@@ -60,91 +46,12 @@ export class EmpireService extends MongooseRepository<Empire> {
     return rest;
   }
 
-  async updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto, job: JobDocument | null): Promise<EmpireDocument> {
-    const {technologies, resources, ...rest} = dto;
+  updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto) {
+    const {resources, ...rest} = dto;
     empire.set(rest);
-    if (technologies) {
-      await this.unlockTechnology(empire, technologies, job);
-    }
     if (resources) {
       this.resourceTrading(empire, resources);
     }
-    await this.saveAll([empire]); // emits update event
-    return empire;
-  }
-
-  async unlockTechnology(empire: EmpireDocument, technologies: string[], job: JobDocument | null) {
-    const user = await this.userService.find(empire.user) ?? notFound(empire.user);
-    for (const technologyId of technologies) {
-      const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
-
-      if (empire.technologies.includes(technologyId)) {
-        throw new BadRequestException(`Technology ${technologyId} has already been unlocked.`);
-      }
-
-      // Check if all required technologies are unlocked
-      const hasAllRequiredTechnologies = !technology.requires || technology.requires.every(
-        (requiredTechnology: string) => empire.technologies.includes(requiredTechnology)
-      );
-
-      if (!hasAllRequiredTechnologies) {
-        const missingTechnologies = findMissingTechnologies(technologyId);
-        throw new BadRequestException(`Required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
-      }
-
-      if (!job) {
-        // Calculate the technology cost based on the formula
-        const technologyCost = this.getTechnologyCost(user, empire, technology);
-
-        if (empire.resources.research < technologyCost) {
-          throw new BadRequestException(`Not enough research points to unlock ${technologyId}.`);
-        }
-
-        // Deduct research points and unlock technology
-        empire.resources.research -= technologyCost;
-        empire.markModified('resources');
-      }
-
-      if (!empire.technologies.includes(technologyId)) {
-        empire.technologies.push(technologyId);
-        // Increment the user's technology count by 1
-        if (user.technologies) {
-          user.technologies[technologyId] = (user.technologies?.[technologyId] ?? 0) + 1;
-        } else {
-          user.technologies = {[technologyId]: 1};
-        }
-        user.markModified('technologies');
-      }
-    }
-    await this.userService.saveAll([user]);
-  }
-
-  public getTechnologyCost(user: UserDocument, empire: EmpireDocument, technology: Technology) {
-    const variables = {
-      ...getVariables('technologies'),
-      ...getVariables('empire'),
-    };
-    calculateVariables(variables, empire);
-    const technologyCount = user.technologies?.[technology.id] || 0;
-
-    const difficultyMultiplier = variables['empire.technologies.difficulty'] || 1;
-    let technologyCost = technology.cost * difficultyMultiplier;
-
-    // step 1: if the user has already unlocked this tech, decrease the cost exponentially
-    if (technologyCount) {
-      const baseCostMultiplier = variables['empire.technologies.cost_multiplier'] || 1;
-      const unlockCostMultiplier = baseCostMultiplier ** Math.min(technologyCount, 10);
-      technologyCost *= unlockCostMultiplier;
-    }
-
-    // step 2: apply tag multipliers
-    for (const tag of technology.tags) {
-      const tagCostMultiplier = variables[`technologies.${tag}.cost_multiplier`] || 1;
-      technologyCost *= tagCostMultiplier;
-    }
-
-    // step 3: round the cost
-    return Math.round(technologyCost);
   }
 
   async aggregateTechCost(empire: Empire, technology: Technology): Promise<AggregateResult> {

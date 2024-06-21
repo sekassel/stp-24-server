@@ -2,47 +2,43 @@ import {BadRequestException, ConflictException, Injectable} from '@nestjs/common
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
 import {Model} from 'mongoose';
-import {EventRepository, EventService, MongooseRepository, notFound} from '@mean-stream/nestx';
+import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {CreateJobDto} from './job.dto';
 import {EmpireService} from '../empire/empire.service';
 import {EmpireDocument} from '../empire/empire.schema';
-import {RESOURCE_NAMES, ResourceName} from '../game-logic/resources';
-import {SystemService} from '../system/system.service';
+import {ResourceName} from '../game-logic/resources';
 import {JobType} from './job-type.enum';
-import {BuildingName} from '../game-logic/buildings';
-import {DistrictName} from '../game-logic/districts';
-import {SYSTEM_UPGRADES, SystemUpgradeName} from '../game-logic/system-upgrade';
-import {TECHNOLOGIES} from '../game-logic/technologies';
-import {UpdateSystemDto} from '../system/system.dto';
-import {UpdateEmpireDto} from '../empire/empire.dto';
 import {SystemDocument} from '../system/system.schema';
-import {TechnologyTag, Variable} from '../game-logic/types';
 import {UserDocument} from '../user/user.schema';
-import {calculateVariables, getVariables, VARIABLES} from '../game-logic/variables';
+import {JobLogicService} from './job-logic.service';
+import {EmpireLogicService} from '../empire/empire-logic.service';
+import {GlobalSchema} from '../util/schema';
+import {TECHNOLOGIES} from '../game-logic/technologies';
 
 @Injectable()
 @EventRepository()
 export class JobService extends MongooseRepository<Job> {
   constructor(
-    @InjectModel(Job.name) private jobModel: Model<Job>,
+    @InjectModel(Job.name) model: Model<Job>,
     private empireService: EmpireService,
-    private systemService: SystemService,
     private eventEmitter: EventService,
+    private empireLogicService: EmpireLogicService,
+    private jobLogicService: JobLogicService,
   ) {
-    super(jobModel);
+    super(model);
   }
 
   async createJob(dto: CreateJobDto, user: UserDocument, empire: EmpireDocument, system?: SystemDocument): Promise<Job | null> {
     // Calculate resource requirements for the job
-    const cost = this.getCost(dto, user, empire, system);
+    const cost = this.jobLogicService.getCost(dto, user, empire, system);
 
     // Deduct resources from the empire
-    this.deductResources(empire, cost);
+    this.empireLogicService.deductResources(empire, cost);
 
     // TODO: Calculate total (depending on action), replace 5 with variable
     const total = 5;
 
-    const jobData: Partial<Job> = {
+    const jobData: Omit<Job, keyof GlobalSchema> = {
       empire: empire._id,
       game: empire.game,
       progress: 0,
@@ -61,127 +57,69 @@ export class JobService extends MongooseRepository<Job> {
         jobData.district = dto.district;
       }
     }
-    return this.jobModel.create(jobData);
+    return this.create(jobData);
   }
 
-  private deductResources(empire: EmpireDocument, cost: Partial<Record<ResourceName, number>>): void {
-    const missingResources = Object.entries(cost)
-      .filter(([resource, amount]) => empire.resources[resource as ResourceName] < amount)
-      .map(([resource, _]) => resource);
-    if (missingResources.length) {
-      throw new BadRequestException(`Not enough resources: ${missingResources.join(', ')}`);
-    }
-    for (const [resource, amount] of Object.entries(cost)) {
-      empire.resources[resource as ResourceName] -= amount;
-    }
-    empire.markModified('resources');
-  }
+  updateJobs(empire: EmpireDocument, jobs: JobDocument[], systems: SystemDocument[]) {
+    const systemJobsMap: Record<string, JobDocument[]> = {};
+    const progressingTechnologyTags: Record<string, boolean> = {};
 
-  private getCost(dto: CreateJobDto, user: UserDocument, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
+    for (const job of jobs) {
+      if (job.progress === job.total) {
+        job.$isDeleted(true);
+        continue;
+      }
 
-    switch (dto.type as JobType) {
-      case JobType.BUILDING:
-        if (!system) notFound(dto.system);
-        const building = dto.building;
-        if (!building) {
-          throw new BadRequestException('Building name is required for this job type.');
+      if (job.type === JobType.TECHNOLOGY) {
+        if (!job.technology) {
+          continue;
         }
-        return this.getCosts('buildings', building, empire, system);
-
-      case JobType.DISTRICT:
-        const district = dto.district;
-        if (!district) {
-          throw new BadRequestException('District name is required for this job type.');
+        const technology = TECHNOLOGIES[job.technology];
+        if (technology) {
+          const primaryTag = technology.tags[0];
+          if (!progressingTechnologyTags[primaryTag]) {
+            progressingTechnologyTags[primaryTag] = true;
+            this.progressJob(job, empire);
+          }
         }
-        return this.getCosts('districts', district, empire, system);
-
-      case JobType.UPGRADE:
-        if (!system) notFound(dto.system);
-        if (system.owner !== empire._id && system.upgrade !== 'unexplored') {
-          throw new BadRequestException('You can only upgrade systems you own.');
+      } else {
+        if (!job.system) {
+          continue;
         }
-        const type = SYSTEM_UPGRADES[system.upgrade]?.next;
-        if (!type) {
-          throw new BadRequestException('System type cannot be upgraded further.');
-        }
-        return this.getCosts('systems', type, empire, system);
-
-      case JobType.TECHNOLOGY:
-        if (!dto.technology) {
-          throw new BadRequestException('Technology ID is required for this job type.');
-        }
-        const technology = TECHNOLOGIES[dto.technology] ?? notFound(dto.technology);
-        return {research: this.empireService.getTechnologyCost(user, empire, technology)};
-    }
-  }
-
-  private getCosts(prefix: keyof typeof VARIABLES, name: string, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
-    const result: Partial<Record<ResourceName, number>> = {};
-    const variables = getVariables(prefix);
-    calculateVariables(variables, empire, system);
-    for (const resource of RESOURCE_NAMES) { // support custom variables
-      const variable = `${prefix}.${name}.cost.${resource}`;
-      if (variable in variables) {
-        result[resource] = variables[variable as Variable];
+        (systemJobsMap[job.system.toString()] ??= []).push(job);
       }
     }
-    return result;
+
+    for (const [systemId, jobsInSystem] of Object.entries(systemJobsMap)) {
+      const system = systems.find(s => s._id.equals(systemId));
+      // TODO v4: Maybe do a priority sorting?
+      const sortedJobs = jobsInSystem.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+
+      for (const job of sortedJobs) {
+        if (job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE) {
+          this.progressJob(job, empire, system);
+        }
+      }
+    }
   }
 
-  public async completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
-    if (!job.empire) {
-      return null;
+  private progressJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
+    job.progress += 1;
+    if (job.progress >= job.total) {
+      this.completeJob(job, empire, system);
+    } else {
+      job.markModified('progress');
     }
+  }
 
-    let updateSystemDto: UpdateSystemDto = {};
+  private completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
     try {
-      switch (job.type as JobType) {
-        case JobType.TECHNOLOGY:
-          if (!job.technology) {
-            return null;
-          }
-          const updateEmpireDto: UpdateEmpireDto = {technologies: [job.technology as TechnologyTag]};
-          return await this.empireService.updateEmpire(empire, updateEmpireDto, job);
-
-        case JobType.BUILDING:
-          const existingBuildings = system?.buildings || [];
-          const buildings = [...existingBuildings, job.building as BuildingName];
-          updateSystemDto = {buildings};
-          break;
-
-        case JobType.DISTRICT:
-          const districtUpdate = {[job.district as DistrictName]: 1};
-          updateSystemDto = {districts: districtUpdate};
-          break;
-
-        case JobType.UPGRADE:
-          if (!system) {
-            return null;
-          }
-          const upgrade = SYSTEM_UPGRADES[system.upgrade]?.next;
-          updateSystemDto = {upgrade};
-          break;
-      }
-      if (system) {
-        return await this.systemService.updateSystem(system, updateSystemDto, empire, job);
-      }
+      this.jobLogicService.completeJob(job, empire, system);
     } catch (error) {
       if (error instanceof ConflictException || error instanceof BadRequestException) {
         this.emitJobFailedEvent(job, error.message, empire);
       }
     }
-    return null;
-  }
-
-  refundResources(empire: EmpireDocument, cost: Partial<Record<ResourceName, number>>) {
-    for (const [resource, amount] of Object.entries(cost) as [ResourceName, number][] ) {
-      if (empire.resources[resource] !== undefined) {
-        empire.resources[resource] += amount;
-      } else {
-        empire.resources[resource] = amount;
-      }
-    }
-    empire.markModified('resources');
   }
 
   private emitJobFailedEvent(job: JobDocument, errorMessage: string, empire: EmpireDocument) {

@@ -4,7 +4,7 @@ import {SystemService} from '../system/system.service';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
 import {calculateVariables, getInitialVariables} from './variables';
-import {Technology, TechnologyCategory, Variable} from './types';
+import {Technology, Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {AggregateItem, AggregateResult} from './aggregates';
 import {TECHNOLOGIES} from './technologies';
@@ -16,11 +16,13 @@ import {MemberService} from '../member/member.service';
 import {SYSTEM_UPGRADES} from './system-upgrade';
 import {JobService} from '../job/job.service';
 import {JobDocument} from '../job/job.schema';
-import {JobType} from '../job/job-type.enum';
+import {SystemLogicService} from '../system/system-logic.service';
 
 @Injectable()
 export class GameLogicService {
   constructor(
+    private systemLogicService: SystemLogicService,
+    // TODO remove these services and try to have only pure logic in this service
     private memberService: MemberService,
     private empireService: EmpireService,
     private systemService: SystemService,
@@ -54,7 +56,7 @@ export class GameLogicService {
       if (member?.empire?.homeSystem) {
         homeSystem.type = member.empire.homeSystem;
       }
-      this.systemService.generateDistricts(homeSystem, empire);
+      this.systemLogicService.generateDistricts(homeSystem, empire);
 
       // every home system starts with 15 districts
       this.generateDistricts(homeSystem);
@@ -102,77 +104,19 @@ export class GameLogicService {
     const empires = await this.empireService.findAll({game: game._id});
     const systems = await this.systemService.findAll({game: game._id});
     const jobs = await this.jobService.findAll({game: game._id});
-
-    this._updateGame(empires, systems);
-    await this.updateJobs(jobs, empires, systems);
+    this._updateGame(empires, systems, jobs);
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
     await this.jobService.saveAll(jobs);
   }
 
-  private _updateGame(empires: EmpireDocument[], systems: SystemDocument[]) {
+  private _updateGame(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
+      const empireJobs = jobs.filter(job => job.empire.equals(empire._id));
+      this.jobService.updateJobs(empire, empireJobs, empireSystems);
       this.updateEmpire(empire, empireSystems);
     }
-  }
-
-  async updateJobs(jobs: JobDocument[], empires: EmpireDocument[], systems: SystemDocument[]) {
-    const systemJobsMap: Record<string, JobDocument[]> = {};
-    const progressingTechnologyTags: Record<string, boolean> = {};
-
-    for (const job of jobs) {
-      if (job.progress === job.total) {
-        await this.jobService.delete(job._id);
-        continue;
-      }
-
-      if (job.type === JobType.TECHNOLOGY) {
-        if (!job.technology) {
-          continue;
-        }
-        const technology = TECHNOLOGIES[job.technology];
-        if (technology) {
-          const primaryTag = this.getPrimaryTag(technology);
-          if (primaryTag && !progressingTechnologyTags[primaryTag]) {
-            progressingTechnologyTags[primaryTag] = true;
-            const empire = empires.find(e => e._id.equals(job.empire));
-            empire && await this.progressJob(job, empire);
-          }
-        }
-      } else {
-        if (!job.system) {
-          continue;
-        }
-        (systemJobsMap[job.system.toString()] ??= []).push(job);
-      }
-    }
-
-    for (const [systemId, jobsInSystem] of Object.entries(systemJobsMap)) {
-      const system = systems.find(s => s._id.equals(systemId));
-      // Maybe do a priority sorting in v4?
-      const sortedJobs = jobsInSystem.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-
-      for (const job of sortedJobs) {
-        if (job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE) {
-          const empire = empires.find(e => e._id.equals(job.empire));
-          empire && await this.progressJob(job, empire, system);
-        }
-      }
-    }
-  }
-
-  private async progressJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
-    job.progress += 1;
-    if (job.progress >= job.total) {
-      await this.jobService.completeJob(job, empire, system);
-    } else {
-      job.markModified('progress');
-    }
-  }
-
-  private getPrimaryTag(technology: Technology): TechnologyCategory {
-    return technology.tags[0];
   }
 
   private updateEmpire(empire: EmpireDocument, systems: SystemDocument[], aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
