@@ -104,7 +104,7 @@ export class GameLogicService {
     const jobs = await this.jobService.findAll({game: game._id});
 
     this._updateGame(empires, systems);
-    await this.updateJobs(jobs);
+    await this.updateJobs(jobs, systems);
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
     await this.jobService.saveAll(jobs);
@@ -117,21 +117,15 @@ export class GameLogicService {
     }
   }
 
-  private async updateJobs2(jobs: JobDocument[]) {
-    for (const job of jobs) {
-      job.progress += 1;
-      if (job.progress >= job.total) {
-        await this.jobService.completeJob(job);
-        await this.jobService.delete(job._id);
-      } else {
-        job.markModified('progress');
-      }
-    }
-  }
-
   async updateJobs(jobs: JobDocument[], systems: SystemDocument[]) {
     const systemJobsMap: Record<string, JobDocument[]> = {};
+    const progressingTechnologyTags: Record<string, boolean> = {};
+
     for (const job of jobs) {
+      if (job.progress + 1 > job.total) {
+        await this.jobService.delete(job._id);
+        continue;
+      }
       if (job.type !== JobType.TECHNOLOGY && !job.system) {
         continue;
       }
@@ -145,7 +139,17 @@ export class GameLogicService {
         }
         systemJobsMap[job.system.toString()].push(job);
       } else {
-        await this.progressTechnologyJob(job);
+        if (!job.technology) {
+          continue;
+        }
+        const technology = TECHNOLOGIES[job.technology];
+        if (technology) {
+          const primaryTag = this.getPrimaryTag(technology);
+          if (primaryTag && !progressingTechnologyTags[primaryTag]) {
+            progressingTechnologyTags[primaryTag] = true;
+            await this.progressTechnologyJob(job);
+          }
+        }
       }
     }
 
@@ -170,7 +174,6 @@ export class GameLogicService {
     job.progress += 1;
     if (job.progress >= job.total) {
       await this.jobService.completeJob(job);
-      await this.jobService.delete(job._id);
     } else {
       job.markModified('progress');
     }
