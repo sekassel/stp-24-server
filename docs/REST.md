@@ -46,3 +46,4 @@ All delete operations, whether manual, cleanup or cascading, trigger the same ev
 | Game          | All Empires                         |
 | Game          | All Members                         |
 | Game          | All Systems                         |
+| Game          | All Jobs                            |
