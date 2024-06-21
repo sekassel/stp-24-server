@@ -3,14 +3,53 @@ import {EmpireDocument} from './empire.schema';
 import {TECHNOLOGIES} from '../game-logic/technologies';
 import {notFound} from '@mean-stream/nestx';
 import {UserDocument} from '../user/user.schema';
-import {Technology} from '../game-logic/types';
-import {calculateVariables, getVariables} from '../game-logic/variables';
+import {Technology, Variable} from '../game-logic/types';
+import {calculateVariables, getVariables, VARIABLES} from '../game-logic/variables';
+import {RESOURCE_NAMES, ResourceName} from '../game-logic/resources';
+import {SystemDocument} from '../system/system.schema';
 
 @Injectable()
 export class EmpireLogicService {
   constructor(
     // Keep injections to a minimum, we want this to be pure logic
   ) {
+  }
+
+  getCosts(prefix: keyof typeof VARIABLES, name: string, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
+    const result: Partial<Record<ResourceName, number>> = {};
+    const variables = getVariables(prefix);
+    calculateVariables(variables, empire, system);
+    for (const resource of RESOURCE_NAMES) { // support custom variables
+      const variable = `${prefix}.${name}.cost.${resource}`;
+      if (variable in variables) {
+        result[resource] = variables[variable as Variable];
+      }
+    }
+    return result;
+  }
+
+  refundResources(empire: EmpireDocument, cost: Partial<Record<ResourceName, number>>) {
+    for (const [resource, amount] of Object.entries(cost) as [ResourceName, number][] ) {
+      if (empire.resources[resource] !== undefined) {
+        empire.resources[resource] += amount;
+      } else {
+        empire.resources[resource] = amount;
+      }
+    }
+    empire.markModified('resources');
+  }
+
+  deductResources(empire: EmpireDocument, cost: Partial<Record<ResourceName, number>>): void {
+    const missingResources = Object.entries(cost)
+      .filter(([resource, amount]) => empire.resources[resource as ResourceName] < amount)
+      .map(([resource, _]) => resource);
+    if (missingResources.length) {
+      throw new BadRequestException(`Not enough resources: ${missingResources.join(', ')}`);
+    }
+    for (const [resource, amount] of Object.entries(cost)) {
+      empire.resources[resource as ResourceName] -= amount;
+    }
+    empire.markModified('resources');
   }
 
   getTechnologyCost(user: UserDocument, empire: EmpireDocument, technology: Technology) {

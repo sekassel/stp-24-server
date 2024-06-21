@@ -11,6 +11,7 @@ import {JobType} from './job-type.enum';
 import {SystemDocument} from '../system/system.schema';
 import {UserDocument} from '../user/user.schema';
 import {JobLogicService} from './job-logic.service';
+import {EmpireLogicService} from '../empire/empire-logic.service';
 
 @Injectable()
 @EventRepository()
@@ -19,6 +20,7 @@ export class JobService extends MongooseRepository<Job> {
     @InjectModel(Job.name) private jobModel: Model<Job>,
     private empireService: EmpireService,
     private eventEmitter: EventService,
+    private empireLogicService: EmpireLogicService,
     private jobLogicService: JobLogicService,
   ) {
     super(jobModel);
@@ -29,7 +31,7 @@ export class JobService extends MongooseRepository<Job> {
     const cost = this.jobLogicService.getCost(dto, user, empire, system);
 
     // Deduct resources from the empire
-    this.jobLogicService.deductResources(empire, cost);
+    this.empireLogicService.deductResources(empire, cost);
 
     // TODO: Calculate total (depending on action), replace 5 with variable
     const total = 5;

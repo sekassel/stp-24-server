@@ -1,6 +1,6 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {EmpireDocument} from '../empire/empire.schema';
-import {RESOURCE_NAMES, ResourceName} from '../game-logic/resources';
+import {ResourceName} from '../game-logic/resources';
 import {CreateJobDto} from './job.dto';
 import {UserDocument} from '../user/user.schema';
 import {SystemDocument} from '../system/system.schema';
@@ -8,8 +8,6 @@ import {JobType} from './job-type.enum';
 import {notFound} from '@mean-stream/nestx';
 import {SYSTEM_UPGRADES} from '../game-logic/system-upgrade';
 import {TECHNOLOGIES} from '../game-logic/technologies';
-import {calculateVariables, getVariables, VARIABLES} from '../game-logic/variables';
-import {Variable} from '../game-logic/types';
 import {JobDocument} from './job.schema';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {SystemLogicService} from '../system/system-logic.service';
@@ -22,20 +20,6 @@ export class JobLogicService {
   ) {
   }
 
-  // TODO move to GameLogicService
-  deductResources(empire: EmpireDocument, cost: Partial<Record<ResourceName, number>>): void {
-    const missingResources = Object.entries(cost)
-      .filter(([resource, amount]) => empire.resources[resource as ResourceName] < amount)
-      .map(([resource, _]) => resource);
-    if (missingResources.length) {
-      throw new BadRequestException(`Not enough resources: ${missingResources.join(', ')}`);
-    }
-    for (const [resource, amount] of Object.entries(cost)) {
-      empire.resources[resource as ResourceName] -= amount;
-    }
-    empire.markModified('resources');
-  }
-
   getCost(dto: CreateJobDto, user: UserDocument, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
 
     switch (dto.type as JobType) {
@@ -45,14 +29,14 @@ export class JobLogicService {
         if (!building) {
           throw new BadRequestException('Building name is required for this job type.');
         }
-        return this.getCosts('buildings', building, empire, system);
+        return this.empireLogicService.getCosts('buildings', building, empire, system);
 
       case JobType.DISTRICT:
         const district = dto.district;
         if (!district) {
           throw new BadRequestException('District name is required for this job type.');
         }
-        return this.getCosts('districts', district, empire, system);
+        return this.empireLogicService.getCosts('districts', district, empire, system);
 
       case JobType.UPGRADE:
         if (!system) notFound(dto.system);
@@ -63,7 +47,7 @@ export class JobLogicService {
         if (!type) {
           throw new BadRequestException('System type cannot be upgraded further.');
         }
-        return this.getCosts('systems', type, empire, system);
+        return this.empireLogicService.getCosts('systems', type, empire, system);
 
       case JobType.TECHNOLOGY:
         if (!dto.technology) {
@@ -74,28 +58,8 @@ export class JobLogicService {
     }
   }
 
-  private getCosts(prefix: keyof typeof VARIABLES, name: string, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
-    const result: Partial<Record<ResourceName, number>> = {};
-    const variables = getVariables(prefix);
-    calculateVariables(variables, empire, system);
-    for (const resource of RESOURCE_NAMES) { // support custom variables
-      const variable = `${prefix}.${name}.cost.${resource}`;
-      if (variable in variables) {
-        result[resource] = variables[variable as Variable];
-      }
-    }
-    return result;
-  }
-
-  refundResources(empire: EmpireDocument, cost: Partial<Record<ResourceName, number>>) {
-    for (const [resource, amount] of Object.entries(cost) as [ResourceName, number][] ) {
-      if (empire.resources[resource] !== undefined) {
-        empire.resources[resource] += amount;
-      } else {
-        empire.resources[resource] = amount;
-      }
-    }
-    empire.markModified('resources');
+  refundResources(empire: EmpireDocument, job: JobDocument) {
+    job.cost && this.empireLogicService.refundResources(empire, job.cost);
   }
 
   completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {

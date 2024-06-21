@@ -7,22 +7,12 @@ import {Game} from '../game/game.schema';
 import {UpdateSystemDto} from './system.dto';
 import {DistrictName} from '../game-logic/districts';
 import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
-import {calculateVariables, getVariables} from '../game-logic/variables';
 import {EmpireService} from '../empire/empire.service';
 import {EmpireDocument} from '../empire/empire.schema';
 import {ResourceName} from '../game-logic/resources';
 import {SystemGeneratorService} from './systemgenerator.service';
 import {MemberService} from '../member/member.service';
-
-function getCosts(category: 'districts' | 'buildings', district: DistrictName | BuildingName, districtVariables: any): Record<ResourceName, number> {
-  const districtCostKeys = Object.keys(districtVariables).filter(key =>
-    key.startsWith(`${category}.${district}.cost.`)
-  );
-
-  return Object.fromEntries(districtCostKeys.map(key =>
-    [key.split('.').pop() as ResourceName, districtVariables[key]])
-  ) as Record<ResourceName, number>;
-}
+import {EmpireLogicService} from '../empire/empire-logic.service';
 
 @Injectable()
 @EventRepository()
@@ -33,6 +23,7 @@ export class SystemService extends MongooseRepository<System> {
     private memberService: MemberService,
     private systemGenerator: SystemGeneratorService,
     private empireService: EmpireService,
+    private empireLogicService: EmpireLogicService,
   ) {
     super(model);
   }
@@ -64,7 +55,7 @@ export class SystemService extends MongooseRepository<System> {
         throw new ConflictException(`Not enough districts of ${district} to destroy`);
       }
 
-      const districtCost: Record<ResourceName, number> = this.getDistrictCosts(district, empire);
+      const districtCost = this.empireLogicService.getCosts('districts', district, empire, system);
       for (const [resource, cost] of Object.entries(districtCost)) {
         // Refund half of the cost
         empire.resources[resource as ResourceName] += cost * -amount / 2;
@@ -94,27 +85,9 @@ export class SystemService extends MongooseRepository<System> {
       }
     }
 
-    const costs: Record<BuildingName, [ResourceName, number][]> = this.getBuildingCosts(system, buildings, empire);
-
-    this.removeBuildings(system, removeBuildings, costs, empire);
+    this.removeBuildings(system, removeBuildings, empire);
 
     system.buildings = buildings;
-  }
-
-  public getBuildingCosts(system: SystemDocument, buildings: BuildingName[], empire: EmpireDocument): Record<BuildingName, [ResourceName, number][]> {
-    const buildingVariables = getVariables('buildings');
-    calculateVariables(buildingVariables, empire);
-    const costs: Record<BuildingName, [ResourceName, number][]> = {} as Record<BuildingName, [ResourceName, number][]>;
-    for (const building of new Set([...buildings, ...system.buildings])) {
-      costs[building as BuildingName] = Object.entries(getCosts('buildings', building, buildingVariables)) as [ResourceName, number][];
-    }
-    return costs;
-  }
-
-  public getDistrictCosts(districtName: DistrictName, empire: EmpireDocument): Record<ResourceName, number> {
-    const districtVariables = getVariables('districts');
-    calculateVariables(districtVariables, empire);
-    return getCosts('districts', districtName, districtVariables);
   }
 
   private buildingsOccurrences(buildings: BuildingName[]): Record<BuildingName, number> {
@@ -128,17 +101,17 @@ export class SystemService extends MongooseRepository<System> {
     return occurrences;
   }
 
-  private removeBuildings(system: SystemDocument, removeBuildings: Partial<Record<BuildingName, number>>, costs: Record<BuildingName, [ResourceName, number][]>, empire: EmpireDocument) {
+  private removeBuildings(system: SystemDocument, removeBuildings: Partial<Record<BuildingName, number>>, empire: EmpireDocument) {
     //Remove buildings and refund half of the cost
     for (const [building, amount] of Object.entries(removeBuildings)) {
       const bName = building as BuildingName;
-      const cost: [ResourceName, number][] = costs[bName];
+      const costs = this.empireLogicService.getCosts('buildings', bName, empire, system);
 
       for (let i = 0; i < amount; i++) {
         system.buildings.splice(system.buildings.indexOf(bName), 1);
 
-        for (const [resource, resourceCost] of cost) {
-          empire.resources[resource as ResourceName] += resourceCost / 2;
+        for (const [resource, resourceCost] of Object.entries(costs) as [ResourceName, number][]) {
+          empire.resources[resource] += resourceCost / 2;
         }
 
         empire.markModified('resources');

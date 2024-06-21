@@ -131,7 +131,7 @@ export class JobController {
     if (!job || !job.cost) {
       throw new NotFoundException('Job not found.');
     }
-    this.jobLogicService.refundResources(userEmpire, job.cost);
+    this.jobLogicService.refundResources(userEmpire, job);
     await this.empireService.saveAll([userEmpire]);
     return this.jobService.delete(id);
   }
