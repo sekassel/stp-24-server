@@ -52,8 +52,6 @@ export class SystemService extends MongooseRepository<System> {
   }
 
   destroyDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>, empire: EmpireDocument) {
-    const builtDistrictsCount = Object.values(system.districts).sum();
-
     for (const [district, amount] of Object.entries(districts) as [DistrictName, number][]) {
       if (amount === 0) {
         continue;
@@ -61,7 +59,8 @@ export class SystemService extends MongooseRepository<System> {
       if (amount > 0) {
         throw new BadRequestException('Cannot add districts with this endpoint. Use a Job instead.');
       }
-      if (builtDistrictsCount < -amount) {
+      const oldAmount = system.districts[district] ?? 0;
+      if (oldAmount < -amount) {
         throw new ConflictException(`Not enough districts of ${district} to destroy`);
       }
 
@@ -73,7 +72,7 @@ export class SystemService extends MongooseRepository<System> {
       }
 
       // Destroy the district (amount is negative)
-      system.districts[district] = (system.districts[district] ?? 0) + amount;
+      system.districts[district] = oldAmount + amount;
       system.markModified('districts');
     }
   }
