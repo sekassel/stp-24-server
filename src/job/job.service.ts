@@ -134,8 +134,10 @@ export class JobService extends MongooseRepository<Job> {
 
     switch (job.type as JobType) {
       case JobType.BUILDING:
+        const existingBuildings = system.buildings || [];
+        const buildings = [...existingBuildings, job.building as BuildingName];
         updateSystemDto = new UpdateSystemDto({
-          buildings: [...(updateSystemDto.buildings || []), job.building as BuildingName],
+          buildings: buildings,
         });
         console.log('updateSystemDto', updateSystemDto);
         return await this.systemService.updateSystem(system, updateSystemDto, empire);
