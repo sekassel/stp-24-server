@@ -5,7 +5,6 @@ import {EventRepository, EventService, MongooseRepository} from '@mean-stream/ne
 import {System, SystemDocument} from './system.schema';
 import {Game} from '../game/game.schema';
 import {UpdateSystemDto} from './system.dto';
-import {EmpireService} from '../empire/empire.service';
 import {EmpireDocument} from '../empire/empire.schema';
 import {SystemGeneratorService} from './systemgenerator.service';
 import {MemberService} from '../member/member.service';
@@ -19,13 +18,12 @@ export class SystemService extends MongooseRepository<System> {
     private eventEmitter: EventService,
     private memberService: MemberService,
     private systemGenerator: SystemGeneratorService,
-    private empireService: EmpireService,
     private systemLogicService: SystemLogicService,
   ) {
     super(model);
   }
 
-  async updateSystem(system: SystemDocument, dto: UpdateSystemDto, empire: EmpireDocument): Promise<SystemDocument | null> {
+  updateSystem(system: SystemDocument, dto: UpdateSystemDto, empire: EmpireDocument) {
     const {districts, buildings, ...rest} = dto;
     system.set(rest);
     if (districts) {
@@ -34,9 +32,6 @@ export class SystemService extends MongooseRepository<System> {
     if (buildings) {
       this.systemLogicService.updateBuildings(system, buildings, empire);
     }
-    await this.empireService.saveAll([empire]);
-    await this.saveAll([system]) // emits update events
-    return system;
   }
 
   async generateMap(game: Game): Promise<SystemDocument[]> {

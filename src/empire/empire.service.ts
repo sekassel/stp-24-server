@@ -15,7 +15,6 @@ import {calculateVariable, calculateVariables, flatten, getVariables} from '../g
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
 import {AggregateItem, AggregateResult} from '../game-logic/aggregates';
 import {Member} from '../member/member.schema';
-import {JobDocument} from '../job/job.schema';
 
 @Injectable()
 @EventRepository()
@@ -47,14 +46,12 @@ export class EmpireService extends MongooseRepository<Empire> {
     return rest;
   }
 
-  async updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto, job: JobDocument | null): Promise<EmpireDocument> {
+  updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto) {
     const {resources, ...rest} = dto;
     empire.set(rest);
     if (resources) {
       this.resourceTrading(empire, resources);
     }
-    await this.saveAll([empire]); // emits update event
-    return empire;
   }
 
   async aggregateTechCost(empire: Empire, technology: Technology): Promise<AggregateResult> {

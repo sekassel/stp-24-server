@@ -60,11 +60,14 @@ export class SystemController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() dto: UpdateSystemDto,
   ): Promise<System | null> {
-    const oldSystem = await this.systemService.find(id) ?? notFound(id);
+    const system = await this.systemService.find(id) ?? notFound(id);
     const userEmpire = await this.empireService.findOne({user: currentUser._id, game}) ?? notFound('User empire not found.');
-    if (!oldSystem.owner || !oldSystem.owner.equals(userEmpire._id)) {
+    if (!system.owner || !system.owner.equals(userEmpire._id)) {
       throw new ForbiddenException('You are not the owner of this system.');
     }
-    return this.systemService.updateSystem(oldSystem, dto, userEmpire);
+    await this.systemService.updateSystem(system, dto, userEmpire);
+    await this.systemService.saveAll([system]) // emits update events
+    await this.empireService.saveAll([userEmpire]);
+    return system;
   }
 }
