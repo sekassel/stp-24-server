@@ -59,7 +59,7 @@ export class JobService extends MongooseRepository<Job> {
     return this.create(jobData);
   }
 
-  public async completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
+  public completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
     try {
       this.jobLogicService.completeJob(job, empire, system);
     } catch (error) {
