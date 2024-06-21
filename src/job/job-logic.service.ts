@@ -9,10 +9,9 @@ import {notFound} from '@mean-stream/nestx';
 import {SYSTEM_UPGRADES} from '../game-logic/system-upgrade';
 import {TECHNOLOGIES} from '../game-logic/technologies';
 import {calculateVariables, getVariables, VARIABLES} from '../game-logic/variables';
-import {TechnologyTag, Variable} from '../game-logic/types';
+import {Variable} from '../game-logic/types';
 import {EmpireService} from '../empire/empire.service';
 import {UpdateSystemDto} from '../system/system.dto';
-import {UpdateEmpireDto} from '../empire/empire.dto';
 import {BuildingName} from '../game-logic/buildings';
 import {DistrictName} from '../game-logic/districts';
 import {JobDocument} from './job.schema';
@@ -110,8 +109,7 @@ export class JobLogicService {
         if (!job.technology) {
           return null;
         }
-        const updateEmpireDto: UpdateEmpireDto = {technologies: [job.technology as TechnologyTag]};
-        return await this.empireService.updateEmpire(empire, updateEmpireDto, job);
+        return this.unlockTechnology(job.technology, empire);
 
       case JobType.BUILDING:
         const existingBuildings = system?.buildings || [];
@@ -135,5 +133,30 @@ export class JobLogicService {
     if (system) {
       return await this.systemService.updateSystem(system, updateSystemDto, empire, job);
     }
+  }
+
+  private unlockTechnology(technologyId: string, empire: EmpireDocument) {
+    const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
+
+    if (empire.technologies.includes(technologyId)) {
+      throw new BadRequestException(`Technology ${technologyId} has already been unlocked.`);
+    }
+
+    // Check if all required technologies are unlocked
+    const missingRequiredTechnologies = technology.requires?.filter(tech => !empire.technologies.includes(tech));
+    if (missingRequiredTechnologies?.length) {
+      throw new BadRequestException(`Required technologies for ${technologyId}: ${missingRequiredTechnologies.join(', ')}.`);
+    }
+
+    empire.technologies.push(technologyId);
+
+    /* TODO: Increment the user's technology count by 1
+    if (user.technologies) {
+      user.technologies[technologyId] = (user.technologies?.[technologyId] ?? 0) + 1;
+      user.markModified('technologies');
+    } else {
+      user.technologies = {[technologyId]: 1};
+    }
+     */
   }
 }
