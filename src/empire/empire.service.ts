@@ -79,10 +79,6 @@ export class EmpireService extends MongooseRepository<Empire> {
       const technology = TECHNOLOGIES[technologyId] ?? notFound(`Technology ${technologyId} not found.`);
 
       if (empire.technologies.includes(technologyId)) {
-        if (job) {
-          await this.emitJobFailedEvent(job, `Technology ${technologyId} has already been unlocked.`);
-          return;
-        }
         throw new BadRequestException(`Technology ${technologyId} has already been unlocked.`);
       }
 
@@ -93,10 +89,6 @@ export class EmpireService extends MongooseRepository<Empire> {
 
       if (!hasAllRequiredTechnologies) {
         const missingTechnologies = findMissingTechnologies(technologyId);
-        if (job) {
-          await this.emitJobFailedEvent(job, `Required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
-          return;
-        }
         throw new BadRequestException(`Required technologies for ${technologyId}: ${missingTechnologies.join(', ')}.`);
       }
 
@@ -264,12 +256,6 @@ export class EmpireService extends MongooseRepository<Empire> {
         });
       })
     );
-  }
-
-  private async emitJobFailedEvent(job: JobDocument, errorMessage: string) {
-    const event = `games.${job.game}.empire.${job.empire}.jobs.${job._id}.failed`;
-    const data = {message: errorMessage};
-    this.eventEmitter.emit(event, data);
   }
 
   private async emit(event: string, empire: Empire) {
