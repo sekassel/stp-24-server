@@ -74,8 +74,8 @@ export class GameController {
   @NotFound()
   @ApiOperation({description: 'Change a game as owner.'})
   @ApiOkResponse({type: Game})
-  @ApiConflictResponse({description: 'Game is already running.'})
-  @ApiForbiddenResponse({description: 'Attempt to change a game that the current user does not own.'})
+  @ApiConflictResponse({description: 'Cannot change a running game (only `speed` is allowed).'})
+  @ApiForbiddenResponse({description: 'Only the owner can change the game.'})
   @ApiQuery({
     name: 'tick',
     description: 'Advance the game by one period and run all empire and system calculations.',
@@ -92,8 +92,8 @@ export class GameController {
     if (!user._id.equals(existing.owner)) {
       throw new ForbiddenException('Only the owner can change the game.');
     }
-    if (existing.started && !(Object.keys(dto).length === 1 && dto.speed !== undefined)) {
-      throw new ConflictException('Cannot change a running game.');
+    if (existing.started && !(Object.keys(dto).every(key => key === 'speed'))) {
+      throw new ConflictException('Cannot change a running game (only `speed` is allowed).');
     }
     const update: UpdateQuery<Game> = dto;
     if (tick) {
