@@ -4,7 +4,7 @@ import {SystemService} from '../system/system.service';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
 import {calculateVariables, getInitialVariables} from './variables';
-import {Technology, Variable} from './types';
+import {Technology, TECHNOLOGY_TAGS, TechnologyTag, Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {AggregateItem, AggregateResult} from './aggregates';
 import {TECHNOLOGIES} from './technologies';
@@ -16,6 +16,7 @@ import {MemberService} from '../member/member.service';
 import {SYSTEM_UPGRADES} from "./system-upgrade";
 import {JobService} from "../job/job.service";
 import {JobDocument} from "../job/job.schema";
+import {JobType} from "../job/job-type.enum";
 
 @Injectable()
 export class GameLogicService {
@@ -116,7 +117,7 @@ export class GameLogicService {
     }
   }
 
-  private async updateJobs(jobs: JobDocument[]) {
+  private async updateJobs2(jobs: JobDocument[]) {
     for (const job of jobs) {
       job.progress += 1;
       if (job.progress >= job.total) {
@@ -126,6 +127,77 @@ export class GameLogicService {
         job.markModified('progress');
       }
     }
+  }
+
+  async updateJobs(jobs: JobDocument[], systems: SystemDocument[]) {
+    const systemJobsMap: Record<string, JobDocument[]> = {};
+    for (const job of jobs) {
+      if (job.type !== JobType.TECHNOLOGY && !job.system) {
+        continue;
+      }
+
+      if (job.type !== JobType.TECHNOLOGY) {
+        if (!job.system) {
+          continue;
+        }
+        if (!systemJobsMap[job.system.toString()]) {
+          systemJobsMap[job.system.toString()] = [];
+        }
+        systemJobsMap[job.system.toString()].push(job);
+      } else {
+        await this.progressTechnologyJob(job);
+      }
+    }
+
+    for (const system of systems) {
+      const systemId = system._id.toString();
+      if (systemJobsMap[systemId]) {
+        const jobsInSystem = systemJobsMap[systemId];
+
+        // Maybe do a priority sorting in v4?
+        const sortedJobs = jobsInSystem.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+
+        for (const job of sortedJobs) {
+          if (job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE) {
+            await this.progressJob(job);
+          }
+        }
+      }
+    }
+  }
+
+  private async progressJob(job: JobDocument) {
+    job.progress += 1;
+    if (job.progress >= job.total) {
+      await this.jobService.completeJob(job);
+      await this.jobService.delete(job._id);
+    } else {
+      job.markModified('progress');
+    }
+  }
+
+  private async progressTechnologyJob(job: JobDocument) {
+    if (!job.technology) {
+      return;
+    }
+    const technology = TECHNOLOGIES[job.technology];
+    if (!technology) {
+      return;
+    }
+    const primaryTag = this.getPrimaryTag(technology);
+    if (!primaryTag) {
+      return;
+    }
+    await this.progressJob(job);
+  }
+
+  private getPrimaryTag(technology: Technology): TechnologyTag | undefined {
+    for (const tag of technology.tags) {
+      if (TECHNOLOGY_TAGS.includes(tag)) {
+        return tag as TechnologyTag;
+      }
+    }
+    return undefined;
   }
 
   private updateEmpire(empire: EmpireDocument, systems: SystemDocument[], aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
