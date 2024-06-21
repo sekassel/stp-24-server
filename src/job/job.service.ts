@@ -12,18 +12,19 @@ import {SystemDocument} from '../system/system.schema';
 import {UserDocument} from '../user/user.schema';
 import {JobLogicService} from './job-logic.service';
 import {EmpireLogicService} from '../empire/empire-logic.service';
+import {GlobalSchema} from '../util/schema';
 
 @Injectable()
 @EventRepository()
 export class JobService extends MongooseRepository<Job> {
   constructor(
-    @InjectModel(Job.name) private jobModel: Model<Job>,
+    @InjectModel(Job.name) model: Model<Job>,
     private empireService: EmpireService,
     private eventEmitter: EventService,
     private empireLogicService: EmpireLogicService,
     private jobLogicService: JobLogicService,
   ) {
-    super(jobModel);
+    super(model);
   }
 
   async createJob(dto: CreateJobDto, user: UserDocument, empire: EmpireDocument, system?: SystemDocument): Promise<Job | null> {
@@ -36,7 +37,7 @@ export class JobService extends MongooseRepository<Job> {
     // TODO: Calculate total (depending on action), replace 5 with variable
     const total = 5;
 
-    const jobData: Partial<Job> = {
+    const jobData: Omit<Job, keyof GlobalSchema> = {
       empire: empire._id,
       game: empire.game,
       progress: 0,
@@ -55,7 +56,7 @@ export class JobService extends MongooseRepository<Job> {
         jobData.district = dto.district;
       }
     }
-    return this.jobModel.create(jobData);
+    return this.create(jobData);
   }
 
   public async completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
