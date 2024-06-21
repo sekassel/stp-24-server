@@ -38,12 +38,14 @@ export class JobService extends MongooseRepository<Job> {
     const cost = await this.checkResources(empire, createJobDto);
 
     // Deduct resources from the empire
+    const missingResources = Object.entries(cost)
+      .filter(([resource, amount]) => empire.resources[resource as ResourceName] < amount)
+      .map(([resource, _]) => resource);
+    if (missingResources.length) {
+      throw new BadRequestException(`Not enough resources: ${missingResources.join(', ')}`);
+    }
     for (const [resource, amount] of Object.entries(cost)) {
-      const resourceName = resource as ResourceName;
-      if (empire.resources[resourceName] < amount) {
-        throw new BadRequestException(`Not enough resources: ${resource}`);
-      }
-      empire.resources[resourceName] -= amount;
+      empire.resources[resource as ResourceName] -= amount;
     }
     empire.markModified('resources');
 
