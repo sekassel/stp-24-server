@@ -10,11 +10,7 @@ import {SYSTEM_UPGRADES} from '../game-logic/system-upgrade';
 import {TECHNOLOGIES} from '../game-logic/technologies';
 import {calculateVariables, getVariables, VARIABLES} from '../game-logic/variables';
 import {Variable} from '../game-logic/types';
-import {UpdateSystemDto} from '../system/system.dto';
-import {BuildingName} from '../game-logic/buildings';
-import {DistrictName} from '../game-logic/districts';
 import {JobDocument} from './job.schema';
-import {SystemService} from '../system/system.service';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {SystemLogicService} from '../system/system-logic.service';
 
@@ -23,8 +19,6 @@ export class JobLogicService {
   constructor(
     private readonly empireLogicService: EmpireLogicService,
     private readonly systemLogicService: SystemLogicService,
-    // TODO there should be no injections, this should be pure logic
-    private readonly systemService: SystemService,
   ) {
   }
 
