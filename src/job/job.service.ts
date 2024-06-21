@@ -133,7 +133,7 @@ export class JobService extends MongooseRepository<Job> {
       return null;
     }
 
-    let updateSystemDto = new UpdateSystemDto();
+    let updateSystemDto: UpdateSystemDto = {};
     try {
       switch (job.type as JobType) {
         case JobType.TECHNOLOGY:
@@ -146,20 +146,20 @@ export class JobService extends MongooseRepository<Job> {
         case JobType.BUILDING:
           const existingBuildings = system?.buildings || [];
           const buildings = [...existingBuildings, job.building as BuildingName];
-          updateSystemDto = new UpdateSystemDto({buildings});
+          updateSystemDto = {buildings};
           break;
 
         case JobType.DISTRICT:
           const districtUpdate = {[job.district as DistrictName]: 1};
-          updateSystemDto = new UpdateSystemDto({districts: districtUpdate});
+          updateSystemDto = {districts: districtUpdate};
           break;
 
         case JobType.UPGRADE:
           if (!system) {
             return null;
           }
-          const type = SYSTEM_UPGRADES[system.upgrade]?.next;
-          updateSystemDto = new UpdateSystemDto({upgrade: type});
+          const upgrade = SYSTEM_UPGRADES[system.upgrade]?.next;
+          updateSystemDto = {upgrade};
           break;
       }
       if (system) {
