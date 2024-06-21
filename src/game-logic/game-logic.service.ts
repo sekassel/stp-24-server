@@ -4,7 +4,7 @@ import {SystemService} from '../system/system.service';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
 import {calculateVariables, getInitialVariables} from './variables';
-import {Technology, TECHNOLOGY_TAGS, TechnologyTag, Variable} from './types';
+import {Technology, TechnologyCategory, Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {AggregateItem, AggregateResult} from './aggregates';
 import {TECHNOLOGIES} from './technologies';
@@ -13,10 +13,10 @@ import {notFound} from '@mean-stream/nestx';
 import {Game} from '../game/game.schema';
 import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from './constants';
 import {MemberService} from '../member/member.service';
-import {SYSTEM_UPGRADES} from "./system-upgrade";
-import {JobService} from "../job/job.service";
-import {JobDocument} from "../job/job.schema";
-import {JobType} from "../job/job-type.enum";
+import {SYSTEM_UPGRADES} from './system-upgrade';
+import {JobService} from '../job/job.service';
+import {JobDocument} from '../job/job.schema';
+import {JobType} from '../job/job-type.enum';
 
 @Injectable()
 export class GameLogicService {
@@ -122,23 +122,12 @@ export class GameLogicService {
     const progressingTechnologyTags: Record<string, boolean> = {};
 
     for (const job of jobs) {
-      if (job.progress + 1 > job.total) {
+      if (job.progress === job.total) {
         await this.jobService.delete(job._id);
         continue;
       }
-      if (job.type !== JobType.TECHNOLOGY && !job.system) {
-        continue;
-      }
 
-      if (job.type !== JobType.TECHNOLOGY) {
-        if (!job.system) {
-          continue;
-        }
-        if (!systemJobsMap[job.system.toString()]) {
-          systemJobsMap[job.system.toString()] = [];
-        }
-        systemJobsMap[job.system.toString()].push(job);
-      } else {
+      if (job.type === JobType.TECHNOLOGY) {
         if (!job.technology) {
           continue;
         }
@@ -150,21 +139,21 @@ export class GameLogicService {
             await this.progressTechnologyJob(job);
           }
         }
+      } else {
+        if (!job.system) {
+          continue;
+        }
+        (systemJobsMap[job.system.toString()] ??= []).push(job);
       }
     }
 
-    for (const system of systems) {
-      const systemId = system._id.toString();
-      if (systemJobsMap[systemId]) {
-        const jobsInSystem = systemJobsMap[systemId];
+    for (const jobsInSystem of Object.values(systemJobsMap)) {
+      // Maybe do a priority sorting in v4?
+      const sortedJobs = jobsInSystem.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
-        // Maybe do a priority sorting in v4?
-        const sortedJobs = jobsInSystem.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-
-        for (const job of sortedJobs) {
-          if (job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE) {
-            await this.progressJob(job);
-          }
+      for (const job of sortedJobs) {
+        if (job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE) {
+          await this.progressJob(job);
         }
       }
     }
@@ -194,13 +183,8 @@ export class GameLogicService {
     await this.progressJob(job);
   }
 
-  private getPrimaryTag(technology: Technology): TechnologyTag | undefined {
-    for (const tag of technology.tags) {
-      if (TECHNOLOGY_TAGS.includes(tag)) {
-        return tag as TechnologyTag;
-      }
-    }
-    return undefined;
+  private getPrimaryTag(technology: Technology): TechnologyCategory {
+    return technology.tags[0];
   }
 
   private updateEmpire(empire: EmpireDocument, systems: SystemDocument[], aggregates?: Partial<Record<ResourceName, AggregateResult>>) {

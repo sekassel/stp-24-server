@@ -12,6 +12,6 @@ export class JobHandler {
 
   @OnEvent('games.*.deleted')
   async onGameDeleted(game: Game): Promise<void> {
-    await this.jobService.deleteMany(game._id);
+    await this.jobService.deleteMany({game: game._id});
   }
 }

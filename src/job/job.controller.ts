@@ -97,7 +97,7 @@ export class JobController {
     @Body() createJobDto: CreateJobDto,
   ): Promise<Job | null> {
     const userEmpire = await this.checkUserAccess(game, user, empire);
-    return await this.jobService.createJob(userEmpire, createJobDto);
+    return this.jobService.createJob(userEmpire, createJobDto);
   }
 
   @Delete(':id')
