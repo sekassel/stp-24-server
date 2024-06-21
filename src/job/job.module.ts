@@ -7,6 +7,7 @@ import {EmpireModule} from "../empire/empire.module";
 import {JobHandler} from "./job.handler";
 import {SystemModule} from "../system/system.module";
 import {UserModule} from "../user/user.module";
+import {JobLogicService} from './job-logic.service';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import {UserModule} from "../user/user.module";
     SystemModule,
   ],
   controllers: [JobController],
-  providers: [JobService, JobHandler],
+  providers: [JobService, JobHandler, JobLogicService],
   exports: [JobService],
 })
 export class JobModule {

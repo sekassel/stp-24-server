@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
-  Delete, ForbiddenException,
-  Get, NotFoundException,
+  Delete,
+  ForbiddenException,
+  Get,
+  NotFoundException,
   Param,
   Post,
   Query,
@@ -24,11 +26,12 @@ import {Job} from './job.schema';
 import {User} from '../user/user.schema';
 import {CreateJobDto} from './job.dto';
 import {JobService} from './job.service';
-import {EmpireService} from "../empire/empire.service";
-import {JobType} from "./job-type.enum";
-import {EmpireDocument} from "../empire/empire.schema";
+import {EmpireService} from '../empire/empire.service';
+import {JobType} from './job-type.enum';
+import {EmpireDocument} from '../empire/empire.schema';
 import {SystemService} from '../system/system.service';
 import {UserService} from '../user/user.service';
+import {JobLogicService} from './job-logic.service';
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')
@@ -37,6 +40,7 @@ import {UserService} from '../user/user.service';
 export class JobController {
   constructor(
     private readonly jobService: JobService,
+    private readonly jobLogicService: JobLogicService,
     private readonly empireService: EmpireService,
     private readonly userService: UserService,
     private readonly systemService: SystemService,
@@ -127,7 +131,7 @@ export class JobController {
     if (!job || !job.cost) {
       throw new NotFoundException('Job not found.');
     }
-    this.jobService.refundResources(userEmpire, job.cost);
+    this.jobLogicService.refundResources(userEmpire, job.cost);
     await this.empireService.saveAll([userEmpire]);
     return this.jobService.delete(id);
   }
