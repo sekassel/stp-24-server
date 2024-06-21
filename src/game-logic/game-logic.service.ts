@@ -4,7 +4,7 @@ import {SystemService} from '../system/system.service';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
 import {calculateVariables, getInitialVariables} from './variables';
-import {Technology, TechnologyCategory, Variable} from './types';
+import {Technology, Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {AggregateItem, AggregateResult} from './aggregates';
 import {TECHNOLOGIES} from './technologies';
@@ -16,7 +16,6 @@ import {MemberService} from '../member/member.service';
 import {SYSTEM_UPGRADES} from './system-upgrade';
 import {JobService} from '../job/job.service';
 import {JobDocument} from '../job/job.schema';
-import {JobType} from '../job/job-type.enum';
 import {SystemLogicService} from '../system/system-logic.service';
 
 @Injectable()
@@ -115,60 +114,8 @@ export class GameLogicService {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
       const empireJobs = jobs.filter(job => job.empire.equals(empire._id));
-      this.updateJobs(empire, empireJobs, empireSystems);
+      this.jobService.updateJobs(empire, empireJobs, empireSystems);
       this.updateEmpire(empire, empireSystems);
-    }
-  }
-
-  private updateJobs(empire: EmpireDocument, jobs: JobDocument[], systems: SystemDocument[]) {
-    const systemJobsMap: Record<string, JobDocument[]> = {};
-    const progressingTechnologyTags: Record<string, boolean> = {};
-
-    for (const job of jobs) {
-      if (job.progress === job.total) {
-        job.$isDeleted(true);
-        continue;
-      }
-
-      if (job.type === JobType.TECHNOLOGY) {
-        if (!job.technology) {
-          continue;
-        }
-        const technology = TECHNOLOGIES[job.technology];
-        if (technology) {
-          const primaryTag = technology.tags[0];
-          if (!progressingTechnologyTags[primaryTag]) {
-            progressingTechnologyTags[primaryTag] = true;
-            this.progressJob(job, empire);
-          }
-        }
-      } else {
-        if (!job.system) {
-          continue;
-        }
-        (systemJobsMap[job.system.toString()] ??= []).push(job);
-      }
-    }
-
-    for (const [systemId, jobsInSystem] of Object.entries(systemJobsMap)) {
-      const system = systems.find(s => s._id.equals(systemId));
-      // Maybe do a priority sorting in v4?
-      const sortedJobs = jobsInSystem.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-
-      for (const job of sortedJobs) {
-        if (job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE) {
-          this.progressJob(job, empire, system);
-        }
-      }
-    }
-  }
-
-  private progressJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
-    job.progress += 1;
-    if (job.progress >= job.total) {
-      this.jobService.completeJob(job, empire, system);
-    } else {
-      job.markModified('progress');
     }
   }
 
