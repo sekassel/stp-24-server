@@ -10,6 +10,7 @@ import {notFound} from '@mean-stream/nestx';
 import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {GameLogicService} from './game-logic.service';
+import {EmpireLogicService} from '../empire/empire-logic.service';
 
 @Injectable()
 export class AggregateService {
@@ -17,6 +18,7 @@ export class AggregateService {
     private readonly empireService: EmpireService,
     private readonly systemService: SystemService,
     private readonly gameLogicService: GameLogicService,
+    private readonly empireLogicService: EmpireLogicService,
   ) {
   }
 
@@ -53,7 +55,9 @@ export class AggregateService {
   }
 
   aggregateTechCost(empire: Empire, technology: Technology): AggregateResult {
-    return this.empireService.aggregateTechCost(empire, technology);
+    const aggregate: AggregateResult = {items: [], total: 0};
+    this.empireLogicService.getTechnologyCost(empire as EmpireDocument, technology, aggregate);
+    return aggregate;
   }
 
   aggregateEconomy(empire: Empire, systems: System[]): AggregateResult {

@@ -1,12 +1,14 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
-import {EmpireDocument} from './empire.schema';
-import {TECHNOLOGIES} from '../game-logic/technologies';
+import {Empire, EmpireDocument} from './empire.schema';
+import {TECH_CATEGORIES, TECHNOLOGIES} from '../game-logic/technologies';
 import {notFound} from '@mean-stream/nestx';
 import {UserDocument} from '../user/user.schema';
 import {Technology, Variable} from '../game-logic/types';
 import {calculateVariables, getVariables, VARIABLES} from '../game-logic/variables';
 import {RESOURCE_NAMES, ResourceName} from '../game-logic/resources';
 import {SystemDocument} from '../system/system.schema';
+import {AggregateResult} from '../game-logic/aggregates';
+import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
 
 @Injectable()
 export class EmpireLogicService {
@@ -52,24 +54,36 @@ export class EmpireLogicService {
     empire.markModified('resources');
   }
 
-  getTechnologyCost(empire: EmpireDocument, technology: Technology) {
-    const variables = {
-      ...getVariables('technologies'),
-      ...getVariables('empire'),
+  getTechnologyCost(empire: Empire, technology: Technology, aggregate?: AggregateResult) {
+    const variables: Partial<Record<Variable, number>> = {
+      'empire.technologies.difficulty': EMPIRE_VARIABLES.technologies.difficulty,
     };
+    for (const tag of technology.tags) {
+      variables[`technologies.${tag}.cost_multiplier`] = TECH_CATEGORIES[tag].cost_multiplier;
+    }
     calculateVariables(variables, empire);
 
     const difficultyMultiplier = variables['empire.technologies.difficulty'] || 1;
     let technologyCost = technology.cost * difficultyMultiplier;
+    aggregate?.items.push({
+      variable: 'empire.technologies.difficulty',
+      count: technology.cost,
+      subtotal: technologyCost,
+    });
 
-    // step 1: apply tag multipliers
     for (const tag of technology.tags) {
       const tagCostMultiplier = variables[`technologies.${tag}.cost_multiplier`] || 1;
-      technologyCost *= tagCostMultiplier;
+      const newTotal = technologyCost * tagCostMultiplier;
+      aggregate?.items.push({
+        variable: `technologies.${tag}.cost_multiplier`,
+        count: 1,
+        subtotal: newTotal - technologyCost,
+      });
+      technologyCost = newTotal;
     }
 
-    // step 2: round the cost
-    return Math.round(technologyCost);
+    aggregate && (aggregate.total = technologyCost);
+    return technologyCost;
   }
 
   unlockTechnology(technologyId: string, empire: EmpireDocument) {

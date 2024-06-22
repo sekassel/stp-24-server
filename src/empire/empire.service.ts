@@ -1,19 +1,15 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Document, Model} from 'mongoose';
-import {EventRepository, EventService, MongooseRepository, notFound} from '@mean-stream/nestx';
+import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {Empire, EmpireDocument} from './empire.schema';
 import {EmpireTemplate, ReadEmpireDto, UpdateEmpireDto} from './empire.dto';
 import {MemberService} from '../member/member.service';
 import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MIN_EMPIRES} from '../game-logic/constants';
 import {generateTraits} from '../game-logic/traits';
-import {TECH_CATEGORIES} from '../game-logic/technologies';
-import {UserService} from '../user/user.service';
 import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
-import {Technology, Variable} from '../game-logic/types';
+import {Variable} from '../game-logic/types';
 import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
-import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
-import {AggregateItem, AggregateResult} from '../game-logic/aggregates';
 import {Member} from '../member/member.schema';
 
 @Injectable()
@@ -23,7 +19,6 @@ export class EmpireService extends MongooseRepository<Empire> {
     @InjectModel(Empire.name) model: Model<Empire>,
     private eventEmitter: EventService,
     private memberService: MemberService,
-    private userService: UserService,
   ) {
     super(model);
   }
@@ -52,39 +47,6 @@ export class EmpireService extends MongooseRepository<Empire> {
     if (resources) {
       this.resourceTrading(empire, resources);
     }
-  }
-
-  aggregateTechCost(empire: Empire, technology: Technology): AggregateResult {
-    const variables: Partial<Record<Variable, number>> = {
-      'empire.technologies.difficulty': EMPIRE_VARIABLES.technologies.difficulty,
-    };
-    for (const tag of technology.tags) {
-      variables[`technologies.${tag}.cost_multiplier`] = TECH_CATEGORIES[tag].cost_multiplier;
-    }
-    calculateVariables(variables, empire);
-
-    let total = technology.cost;
-
-    const items: AggregateItem[] = [];
-    total *= variables['empire.technologies.difficulty'] || 1;
-    items.push({
-      variable: 'empire.technologies.difficulty',
-      count: technology.cost,
-      subtotal: total,
-    });
-
-    for (const tag of technology.tags) {
-      const tagCostMultiplier = variables[`technologies.${tag}.cost_multiplier`] || 1;
-      const newTotal = total * tagCostMultiplier;
-      items.push({
-        variable: `technologies.${tag}.cost_multiplier`,
-        count: 1,
-        subtotal: newTotal - total,
-      });
-      total = newTotal;
-    }
-
-    return {items, total};
   }
 
   private resourceTrading(empire: EmpireDocument, resources: Record<ResourceName, number>) {
@@ -146,7 +108,7 @@ export class EmpireService extends MongooseRepository<Empire> {
           resources,
           homeSystem: undefined,
         });
-      })
+      }),
     );
   }
 
@@ -154,7 +116,7 @@ export class EmpireService extends MongooseRepository<Empire> {
     this.eventEmitter.emit(`games.${empire.game}.empires.${empire._id}.${event}`, empire, [empire.user.toString()]);
     const otherMembers = await this.memberService.findAll({
       game: empire.game,
-      user: {$ne: empire.user}
+      user: {$ne: empire.user},
     }, {projection: {user: 1}});
     const maskedEmpire = this.mask(empire);
     this.eventEmitter.emit(`games.${empire.game}.empires.${empire._id}.${event}`, maskedEmpire, otherMembers.map(m => m.user.toString()));
