@@ -11,6 +11,10 @@ import {TECHNOLOGIES} from '../game-logic/technologies';
 import {JobDocument} from './job.schema';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {SystemLogicService} from '../system/system-logic.service';
+import {calculateVariables, flatten, getVariables} from '../game-logic/variables';
+import {BUILDINGS} from '../game-logic/buildings';
+import {Variable} from '../game-logic/types';
+import {DISTRICTS} from '../game-logic/districts';
 
 @Injectable()
 export class JobLogicService {
@@ -20,41 +24,68 @@ export class JobLogicService {
   ) {
   }
 
-  getCost(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
-
+  getCostAndDuration(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName | 'time', number>> {
     switch (dto.type as JobType) {
-      case JobType.BUILDING:
+      case JobType.BUILDING: {
         if (!system) notFound(dto.system);
         const building = dto.building;
         if (!building) {
           throw new BadRequestException('Building name is required for this job type.');
         }
-        return this.empireLogicService.getCosts('buildings', building, empire, system);
-
-      case JobType.DISTRICT:
+        const variables: Partial<Record<Variable, number>> = {
+          ...flatten(BUILDINGS[building].cost, `buildings.${building}.cost.`),
+          [`buildings.${building}.build_time`]: BUILDINGS[building].build_time,
+        };
+        calculateVariables(variables, empire, system);
+        return {
+          ...this.empireLogicService.getCosts(`buildings.${building}.cost`, variables),
+          time: variables[`buildings.${building}.build_time`],
+        };
+      }
+      case JobType.DISTRICT: {
         const district = dto.district;
         if (!district) {
           throw new BadRequestException('District name is required for this job type.');
         }
-        return this.empireLogicService.getCosts('districts', district, empire, system);
-
-      case JobType.UPGRADE:
+        const variables: Partial<Record<Variable, number>> = {
+          ...flatten(DISTRICTS[district].cost, `districts.${district}.cost.`),
+          [`districts.${district}.build_time`]: DISTRICTS[district].build_time,
+        };
+        calculateVariables(variables, empire, system);
+        return {
+          ...this.empireLogicService.getCosts(`districts.${district}.cost`, variables),
+          time: variables[`districts.${district}.build_time`],
+        };
+      }
+      case JobType.UPGRADE: {
         if (!system) notFound(dto.system);
         if (system.owner !== empire._id && system.upgrade !== 'unexplored' && system.upgrade !== 'explored') {
           throw new BadRequestException('You can only upgrade systems you own.');
         }
-        const type = SYSTEM_UPGRADES[system.upgrade]?.next;
-        if (!type) {
-          throw new BadRequestException('System type cannot be upgraded further.');
+        const nextUpgrade = SYSTEM_UPGRADES[system.upgrade]?.next;
+        if (!nextUpgrade) {
+          throw new BadRequestException('System cannot be upgraded further.');
         }
-        return this.empireLogicService.getCosts('systems', type, empire, system);
+        const variables: Partial<Record<Variable, number>> = {
+          ...flatten(SYSTEM_UPGRADES[nextUpgrade].cost, `systems.${nextUpgrade}.cost.`),
+          [`systems.${nextUpgrade}.upgrade_time`]: SYSTEM_UPGRADES[nextUpgrade].upgrade_time,
+        };
+        calculateVariables(variables, empire, system);
+        return {
+          ...this.empireLogicService.getCosts(`systems.${nextUpgrade}.cost`, variables),
+          time: variables[`systems.${nextUpgrade}.upgrade_time`],
+        };
+      }
 
       case JobType.TECHNOLOGY:
         if (!dto.technology) {
           throw new BadRequestException('Technology ID is required for this job type.');
         }
         const technology = TECHNOLOGIES[dto.technology] ?? notFound(dto.technology);
-        return {research: this.empireLogicService.getTechnologyCost(empire, technology)};
+        return {
+          research: this.empireLogicService.getTechnologyCost(empire, technology),
+          time: 6, // TODO research time
+        };
     }
   }
 

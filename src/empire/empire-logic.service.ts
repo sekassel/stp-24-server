@@ -71,12 +71,10 @@ export class EmpireLogicService {
     return resources;
   }
 
-  getCosts(prefix: keyof typeof VARIABLES, name: string, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
+  getCosts(prefix: string, variables: Partial<Record<Variable, number>>): Partial<Record<ResourceName, number>> {
     const result: Partial<Record<ResourceName, number>> = {};
-    const variables = getVariables(prefix);
-    calculateVariables(variables, empire, system);
     for (const resource of RESOURCE_NAMES) { // support custom variables
-      const variable = `${prefix}.${name}.cost.${resource}`;
+      const variable = `${prefix}.${resource}`;
       if (variable in variables) {
         result[resource] = variables[variable as Variable];
       }
