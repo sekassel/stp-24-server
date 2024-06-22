@@ -107,6 +107,36 @@ export const BUILDINGS = {
       fuel: 10, // fuel_production tech tree
     },
   },
+  shipyard: {
+    id: 'shipyard',
+    cost: {
+      minerals: 50, // cheap_buildings tech tree
+      alloys: 75, // cheap_buildings tech tree
+    },
+    upkeep: {
+      minerals: 10, // efficient_buildings tech tree
+      energy: 5, // efficient_buildings tech tree
+      fuel: 5, // efficient_buildings tech tree
+      alloys: 10, // efficient_buildings tech tree
+    },
+    production: {
+    },
+  },
+  fortress: {
+    id: 'fortress',
+    cost: {
+      minerals: 75, // cheap_buildings tech tree
+      alloys: 75, // cheap_buildings tech tree
+    },
+    upkeep: {
+      minerals: 5, // efficient_buildings tech tree
+      energy: 8, // efficient_buildings tech tree
+      fuel: 8, // efficient_buildings tech tree
+      alloys: 5, // efficient_buildings tech tree
+    },
+    production: {
+    },
+  },
 } as const satisfies Record<string, Building>;
 export type BuildingName = keyof typeof BUILDINGS;
 export const BUILDING_NAMES = Object.keys(BUILDINGS) as BuildingName[];
