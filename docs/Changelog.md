@@ -146,22 +146,27 @@
 * Adding buildings and districts, upgrading systems, and researching technologies are no longer possible via direct updates to the Empire or System. A Job must be started instead.
 
 ## New Features
-+ Custom effects with `base` values can now create new variables, in the following contexts:
++ Custom effects with `base` values can now create new variables that are respected in the following contexts:
   * Building and district cost, upkeep and production.
   * System upgrade cost and upkeep.
-  * System type district chances.
+  * System type district spawn chances.
   * Pop consumption.
   * Unemployed pop costs.
 + Added Jobs for the following actions:
   * Adding buildings and districts.
   * Upgrading systems.
   * Researching technologies.
++ Added 2 new buildings: `shipyard` and `fortress`[.](https://i.kym-cdn.com/photos/images/facebook/001/264/842/220.png)
++ Added 3 new technologies
+  * `more_colonists_1` to `more_colonists_3` that increase the number of pops that spawn on newly colonized systems.
+  * `cheap_buildings_3` improves the new `shipyard` and `fortress` buildings.
 
 ## Improvements
 * Game speed can be any positive number number.
   It must be interpreted by the client to trigger manual ticks.
 * The `PATCH /games/:game` request that starts a game now waits until the game is properly initialized before responding.
 * Exploring a system (via a Job) no longer makes the empire the owner of the system.
+* Adjusted the `cheap_buildings` tech tree.
 
 ## Bugfixes
 * Fixed some situations where systems may not be connected to the rest of the map.
