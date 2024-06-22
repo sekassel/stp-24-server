@@ -137,3 +137,31 @@
 ## Documentation
 
 * Improved the `403 Forbidden` error documentation for updating a running game.
+
+# v3.0.0 (2024-06-XX)
+
+## BREAKING CHANGES
+* Game ticks are no longer scheduled and must be trigger via `PATCH /games/:game?tick=true`.
+* Changed the `empire.pop.credits.unemployed` variable to `empire.pop.unemployed_upkeep.credits`.
+* Adding buildings and districts, upgrading systems, and researching technologies are no longer possible via direct updates to the Empire or System. A Job must be started instead.
+
+## New Features
++ Custom effects with `base` values can now create new variables, in the following contexts:
+  * Building and district cost, upkeep and production.
+  * System upgrade cost and upkeep.
+  * System type district chances.
+  * Pop consumption.
+  * Unemployed pop costs.
++ Added Jobs for the following actions:
+  * Adding buildings and districts.
+  * Upgrading systems.
+  * Researching technologies.
+
+## Improvements
+* Game speed can be any positive number number.
+  It must be interpreted by the client to trigger manual ticks.
+* The `PATCH /games/:game` request that starts a game now waits until the game is properly initialized before responding.
+* Exploring a system (via a Job) no longer makes the empire the owner of the system.
+
+## Bugfixes
+* Fixed some situations where systems may not be connected to the rest of the map.

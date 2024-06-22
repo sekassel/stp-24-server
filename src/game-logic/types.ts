@@ -5,6 +5,7 @@ import {SYSTEM_TYPES, SystemTypeName} from './system-types';
 import {SchemaObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import {IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested} from 'class-validator';
 import {Type} from 'class-transformer';
+import {SystemUpgradeName} from './system-upgrade';
 
 export type DeepNumberKeys<T> = T extends Record<string, any> ? {
   [K in keyof T]-?: T[K] extends object ? `${K & string}.${DeepNumberKeys<T[K]>}` : T[K] extends number ? K & string : never;
@@ -94,6 +95,7 @@ export const TECHNOLOGY_TAGS = [
   // special
   'rare',
 ] as const;
+export type TechnologyCategory = typeof TECHNOLOGY_TAGS[0 | 1 | 2];
 export type TechnologyTag = typeof TECHNOLOGY_TAGS[number];
 
 export class Technology extends EffectSource {
@@ -101,7 +103,7 @@ export class Technology extends EffectSource {
     description: 'The category, sub-category and other tags classifying this technology.',
     enum: TECHNOLOGY_TAGS,
   })
-  tags: readonly TechnologyTag[];
+  tags: readonly [TechnologyCategory, ...TechnologyTag[]];
 
   @ApiProperty({
     description: 'The cost in research points.',
@@ -186,6 +188,9 @@ export class SystemType {
 export class SystemUpgrade {
   @ApiProperty()
   id: string;
+
+  @ApiProperty()
+  next?: string;
 
   @ApiProperty({
     description: 'The population growth rate of the system.',

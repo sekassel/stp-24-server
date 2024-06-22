@@ -37,7 +37,6 @@ export class EmpireTemplate extends PickType(Empire, [
 
 export class UpdateEmpireDto extends PartialType(PickType(Empire, [
   'resources',
-  'technologies',
   'effects',
   '_private',
   '_public',
@@ -47,9 +46,4 @@ export class UpdateEmpireDto extends PartialType(PickType(Empire, [
     description: 'Update resources for market trades. The credits are automatically updated as well.',
   })
   resources?: Record<string, number>;
-
-  @ApiProperty({
-    description: 'Unlock technologies. Only new technologies should be specified, not already unlocked ones.',
-  })
-  technologies?: string[];
 }

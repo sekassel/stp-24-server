@@ -4,6 +4,7 @@ import {SystemModule} from '../system/system.module';
 import {EmpireModule} from '../empire/empire.module';
 import {GameLogicController} from './game-logic.controller';
 import {MemberModule} from '../member/member.module';
+import {JobModule} from "../job/job.module";
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import {MemberModule} from '../member/member.module';
     MemberModule,
     SystemModule,
     EmpireModule,
+    JobModule,
   ],
   providers: [GameLogicService],
   exports: [GameLogicService],

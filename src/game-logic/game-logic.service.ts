@@ -14,13 +14,19 @@ import {Game} from '../game/game.schema';
 import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from './constants';
 import {MemberService} from '../member/member.service';
 import {SYSTEM_UPGRADES} from './system-upgrade';
+import {JobService} from '../job/job.service';
+import {JobDocument} from '../job/job.schema';
+import {SystemLogicService} from '../system/system-logic.service';
 
 @Injectable()
 export class GameLogicService {
   constructor(
+    private systemLogicService: SystemLogicService,
+    // TODO remove these services and try to have only pure logic in this service
     private memberService: MemberService,
     private empireService: EmpireService,
     private systemService: SystemService,
+    private jobService: JobService,
   ) {
   }
 
@@ -50,7 +56,7 @@ export class GameLogicService {
       if (member?.empire?.homeSystem) {
         homeSystem.type = member.empire.homeSystem;
       }
-      this.systemService.generateDistricts(homeSystem, empire);
+      this.systemLogicService.generateDistricts(homeSystem, empire);
 
       // every home system starts with 15 districts
       this.generateDistricts(homeSystem);
@@ -97,14 +103,18 @@ export class GameLogicService {
   async updateGame(game: Game) {
     const empires = await this.empireService.findAll({game: game._id});
     const systems = await this.systemService.findAll({game: game._id});
-    this._updateGame(empires, systems);
+    const jobs = await this.jobService.findAll({game: game._id});
+    this._updateGame(empires, systems, jobs);
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
+    await this.jobService.saveAll(jobs);
   }
 
-  private _updateGame(empires: EmpireDocument[], systems: SystemDocument[]) {
+  private _updateGame(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
+      const empireJobs = jobs.filter(job => job.empire.equals(empire._id));
+      this.jobService.updateJobs(empire, empireJobs, empireSystems);
       this.updateEmpire(empire, empireSystems);
     }
   }
@@ -338,7 +348,10 @@ export class GameLogicService {
   }
 
   aggregateResources(empire: Empire, systems: System[], resources: ResourceName[]): AggregateResult[] {
-    const aggregates: Partial<Record<ResourceName, AggregateResult>> = Object.fromEntries(resources.map(r => [r, {total: 0, items: []}]));
+    const aggregates: Partial<Record<ResourceName, AggregateResult>> = Object.fromEntries(resources.map(r => [r, {
+      total: 0,
+      items: []
+    }]));
     this.updateEmpire(empire as EmpireDocument, systems as SystemDocument[], aggregates); // NB: this mutates empire and systems, but does not save them.
     return resources.map(r => aggregates[r]!);
   }

@@ -9,6 +9,7 @@ import {EmpireModule} from '../empire/empire.module';
 import {SystemGeneratorService} from "./systemgenerator.service";
 import {ClusterGeneratorService} from "./clustergenerator.service";
 import {MemberModule} from '../member/member.module';
+import {SystemLogicService} from './system-logic.service';
 
 @Module({
   imports: [
@@ -21,8 +22,8 @@ import {MemberModule} from '../member/member.module';
     EmpireModule,
   ],
   controllers: [SystemController],
-  providers: [SystemService, SystemGeneratorService, ClusterGeneratorService, SystemHandler],
-  exports: [SystemService],
+  providers: [SystemService, SystemGeneratorService, ClusterGeneratorService, SystemHandler, SystemLogicService],
+  exports: [SystemService, SystemLogicService],
 })
 export class SystemModule {
 }

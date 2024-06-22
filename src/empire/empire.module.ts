@@ -7,6 +7,7 @@ import {Empire, EmpireSchema} from './empire.schema';
 import {EmpireService} from './empire.service';
 import {MemberModule} from '../member/member.module';
 import {UserModule} from "../user/user.module";
+import {EmpireLogicService} from './empire-logic.service';
 
 @Module({
   imports: [
@@ -19,8 +20,8 @@ import {UserModule} from "../user/user.module";
     UserModule,
   ],
   controllers: [EmpireController],
-  providers: [EmpireService, EmpireHandler],
-  exports: [EmpireService],
+  providers: [EmpireService, EmpireHandler, EmpireLogicService],
+  exports: [EmpireService, EmpireLogicService],
 })
 export class EmpireModule {
 }

@@ -1311,6 +1311,7 @@ export const TECHNOLOGY_IDS = Object.keys(TECHNOLOGIES);
  * }
  *
  * @param base_id the base ID, e.g. "energy_production"
+ * @param tags the tags for the technology, e.g. ['physics', 'energy']
  * @param variable the variable to modify, e.g. "power_plant.production.energy"
  * @param variable_desc the description of the variable, e.g. "$resources.energy$ from $buildings.power_plant$ per $period$"
  * @param requirement the requirement for the first step, default undefined
@@ -1319,13 +1320,16 @@ export const TECHNOLOGY_IDS = Object.keys(TECHNOLOGIES);
  * @param count the number of steps, default 3
  * @param startCost the cost of the first step, default 1
  */
-function generate_sequence(base_id: string, tags: TechnologyTag[], variable: Variable, {
-                             multiplierIncrement = +0.05,
-                             exponentialBase = 2,
-                             count = 3,
-                             startCost = 1
-                           } = {},
-                           requirement?: readonly string[],
+function generate_sequence(
+  base_id: string,
+  tags: Technology['tags'],
+  variable: Variable, {
+    multiplierIncrement = +0.05,
+    exponentialBase = 2,
+    count = 3,
+    startCost = 1,
+  } = {},
+  requirement?: readonly string[],
 ) {
   for (let index = 1; index <= count; index++) {
     const exponential = exponentialBase ** (index - 1);
