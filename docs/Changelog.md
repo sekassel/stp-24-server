@@ -160,6 +160,15 @@
 + Added 3 new technologies
   * `more_colonists_1` to `more_colonists_3` that increase the number of pops that spawn on newly colonized systems.
   * `cheap_buildings_3` improves the new `shipyard` and `fortress` buildings.
++ Added the `technology.time` aggregate.
++ Added the `build_time` attribute to buildings and districts.
++ Added the `upgrade_time` attribute to system upgrades.
++ Added new variables:
+  + `empire.technologies.research_time`
+  + `technologies.<tag>.time_multiplier`
+  + `buildings.<building>.build_time`
+  + `districts.<district>.build_time`
+  + `systems.<upgrade>.upgrade_time`
 
 ## Improvements
 * Game speed can be any positive number number.
@@ -167,6 +176,7 @@
 * The `PATCH /games/:game` request that starts a game now waits until the game is properly initialized before responding.
 * Exploring a system (via a Job) no longer makes the empire the owner of the system.
 * Adjusted the `cheap_buildings` tech tree.
+* Technology research costs are no longer rounded.
 
 ## Bugfixes
 * Fixed some situations where systems may not be connected to the rest of the map.
