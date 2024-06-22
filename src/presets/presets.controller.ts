@@ -78,25 +78,47 @@ export class PresetsController {
       rankdir: 'LR',
     });
 
+    const colors = {
+      engineering: 'orange',
+      physics: 'dodgerblue',
+      society: 'green3',
+    };
+
+    g.subgraph('cluster_legend', {label: 'Legend', style: 'filled', color: 'lightgray'}, sg => {
+      sg.node('_engineering', {
+        label: 'Engineering Tech|Cost|Tags',
+        shape: 'record',
+        style: 'filled',
+        fillcolor: colors['engineering'],
+      });
+      sg.node('_physics', {
+        label: 'Physics Tech|Cost|Tags',
+        shape: 'record',
+        style: 'filled',
+        fillcolor: colors['physics'],
+      });
+      sg.node('_society', {
+        label: 'Society Tech|Cost|Tags',
+        shape: 'record',
+        style: 'filled',
+        fillcolor: colors['society'],
+      });
+      sg.edge(['_engineering', '_physics'], {label: 'Is Required By'});
+      sg.edge(['_physics', '_society'], {label: 'Precedes', style: 'dashed'});
+    });
+
     for (const tech of Object.values(TECHNOLOGIES)) {
-      const node = g.node(tech.id, {
+      g.node(tech.id, {
         label: `${tech.id}|Cost: ${tech.cost}|Tags: ${tech.tags.join(', ')}`,
         shape: 'record',
         style: 'filled',
+        fillcolor: colors[tech.tags[0]],
       });
-      switch (tech.tags[0]) {
-        case 'engineering':
-          node.attributes.set('fillcolor', 'orange');
-          break;
-        case 'physics':
-          node.attributes.set('fillcolor', 'dodgerblue');
-          break;
-        case 'society':
-          node.attributes.set('fillcolor', 'green3');
-          break;
-      }
       for (const req of tech.requires ?? []) {
         g.edge([req, tech.id]);
+      }
+      for (const pre of tech.precedes ?? []) {
+        g.edge([tech.id, pre], {style: 'dashed'});
       }
     }
 
