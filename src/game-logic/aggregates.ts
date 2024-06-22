@@ -1,19 +1,19 @@
 import {System} from '../system/system.schema';
 import {Empire} from '../empire/empire.schema';
-import {GameLogicService} from './game-logic.service';
-import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
+import {ApiProperty} from '@nestjs/swagger';
 import {Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {BadRequestException} from '@nestjs/common';
 import {TECHNOLOGIES} from './technologies';
 import {notFound} from '@mean-stream/nestx';
+import {AggregateService} from './aggregate.service';
 
 export class AggregateFn {
   description: string;
   params?: Record<string, string>;
   optionalParams?: Record<string, string>;
 
-  compute: (service: GameLogicService, empire: Empire, systems: System[], params: Record<string, string>) => AggregateResult | Promise<AggregateResult>;
+  compute: (service: AggregateService, empire: Empire, systems: System[], params: Record<string, string>) => AggregateResult | Promise<AggregateResult>;
 }
 
 export class AggregateItem {

@@ -6,12 +6,12 @@ import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
 import {Types} from 'mongoose';
 import {EmpireService} from '../empire/empire.service';
-import {GameLogicService} from './game-logic.service';
 import {SystemService} from '../system/system.service';
 import {Validated} from '../util/validated.decorator';
 import {Throttled} from '../util/throttled.decorator';
 import {ExplainedVariable, Variable} from './types';
 import {explainVariable, getEmpireEffectSources} from './variables';
+import {AggregateService} from './aggregate.service';
 
 @Controller('games/:game/empires/:empire')
 @ApiTags('Game Logic')
@@ -22,7 +22,7 @@ export class GameLogicController {
   constructor(
     private readonly empireService: EmpireService,
     private readonly systemService: SystemService,
-    private readonly gameLogicService: GameLogicService,
+    private readonly aggregateService: AggregateService,
   ) {
   }
 
@@ -108,7 +108,7 @@ ${Object.entries(aggregate.optionalParams ?? {}).map(([param, desc]) => `- \`${p
         throw new BadRequestException(`Missing required parameters: ${missingParams.join(', ')}`);
       }
     }
-    return aggregateFn.compute(this.gameLogicService, empire, systems, query);
+    return aggregateFn.compute(this.aggregateService, empire, systems, query);
   }
 }
 
