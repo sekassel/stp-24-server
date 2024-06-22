@@ -28,22 +28,19 @@ export class JobService extends MongooseRepository<Job> {
     super(model);
   }
 
-  async createJob(dto: CreateJobDto, user: UserDocument, empire: EmpireDocument, system?: SystemDocument): Promise<Job | null> {
+  async createJob(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument): Promise<Job | null> {
     // Calculate resource requirements for the job
-    const cost = this.jobLogicService.getCost(dto, user, empire, system);
+    const {time, ...cost} = this.jobLogicService.getCostAndDuration(dto, empire, system);
 
     // Deduct resources from the empire
     this.empireLogicService.deductResources(empire, cost);
-
-    // TODO: Calculate total (depending on action), replace 5 with variable
-    const total = 5;
 
     const jobData: Omit<Job, keyof GlobalSchema> = {
       empire: empire._id,
       game: empire.game,
       progress: 0,
-      total,
-      cost: cost as Record<ResourceName, number>,
+      total: time!,
+      cost,
       type: dto.type,
     };
 

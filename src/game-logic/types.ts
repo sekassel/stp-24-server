@@ -193,6 +193,11 @@ export class SystemUpgrade {
   next?: string;
 
   @ApiProperty({
+    description: 'The duration of the upgrade job, in periods.',
+  })
+  upgrade_time: number;
+
+  @ApiProperty({
     description: 'The population growth rate of the system.',
   })
   pop_growth: number;
@@ -220,6 +225,11 @@ export class Building {
   id: string;
 
   @ApiProperty({
+    description: 'The duration of the construction job, in periods.'
+  })
+  build_time: number;
+
+  @ApiProperty({
     description: 'The cost to construct the building, specified in various resources.',
     ...RESOURCES_SCHEMA_PROPERTIES,
   })
@@ -241,6 +251,11 @@ export class Building {
 export class District {
   @ApiProperty()
   id: string;
+
+  @ApiProperty({
+    description: 'The duration of the construction job, in periods.'
+  })
+  build_time: number;
 
   @ApiProperty({
     description: 'The chance of discovering this district when exploring a given type of system.',

@@ -24,7 +24,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       createdAt: date,
       updatedAt: date,
       passwordHash: '',
-      technologies: {},
     };
   }
 

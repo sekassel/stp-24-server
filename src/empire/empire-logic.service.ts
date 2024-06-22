@@ -1,12 +1,13 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
-import {EmpireDocument} from './empire.schema';
-import {TECHNOLOGIES} from '../game-logic/technologies';
+import {Empire, EmpireDocument} from './empire.schema';
+import {TECH_CATEGORIES, TECHNOLOGIES} from '../game-logic/technologies';
 import {notFound} from '@mean-stream/nestx';
-import {UserDocument} from '../user/user.schema';
-import {Technology, Variable} from '../game-logic/types';
-import {calculateVariables, getVariables, VARIABLES} from '../game-logic/variables';
+import {Technology, TechnologyTag, Variable} from '../game-logic/types';
+import {calculateVariable, calculateVariables, getVariables} from '../game-logic/variables';
 import {RESOURCE_NAMES, ResourceName} from '../game-logic/resources';
-import {SystemDocument} from '../system/system.schema';
+import {AggregateResult} from '../game-logic/aggregates';
+import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
+import {EmpireTemplate} from './empire.dto';
 
 @Injectable()
 export class EmpireLogicService {
@@ -15,12 +16,63 @@ export class EmpireLogicService {
   ) {
   }
 
-  getCosts(prefix: keyof typeof VARIABLES, name: string, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
+  tradeResources(empire: EmpireDocument, resources: Record<ResourceName, number>) {
+    const resourceVariables = getVariables('resources');
+    calculateVariables(resourceVariables, empire);
+    const marketFee = calculateVariable('empire.market.fee', empire);
+    for (const [resource, change] of Object.entries(resources)) {
+      const resourceAmount = Math.abs(change);
+
+      if (resourceAmount === 0) {
+        continue;
+      }
+      const creditValue = resourceVariables[`resources.${resource}.credit_value` as Variable];
+
+      if (creditValue === 0) {
+        throw new BadRequestException(`The resource ${resource} cannot be bought or sold.`);
+      }
+      const totalMarketFee = creditValue * marketFee;
+      const creditValueWithFee = creditValue + (change < 0 ? -totalMarketFee : totalMarketFee);
+      const resourceCost = creditValueWithFee * resourceAmount;
+
+      if (change < 0) {
+        // Sell the resource
+        if (empire.resources[resource as ResourceName] < resourceAmount) {
+          throw new BadRequestException(`The empire does not have enough ${resource} to sell.`);
+        }
+        // Update empire: get credits, subtract resource
+        empire.resources.credits += resourceCost;
+        empire.resources[resource as ResourceName] -= resourceAmount;
+      } else if (change > 0) {
+        // Buy the resource
+        if (resourceCost > empire.resources.credits) {
+          throw new BadRequestException(`Not enough credits to buy ${change} ${resource}.`);
+        }
+        // Update empire, subtract credits, add resource
+        empire.resources.credits -= resourceCost;
+        empire.resources[resource as ResourceName] += resourceAmount;
+      }
+    }
+    empire.markModified('resources');
+  }
+
+  getInitialResources(empire: EmpireTemplate): Record<ResourceName, number> {
+    const resourceVariables: Record<Variable, number> = getVariables('resources');
+    calculateVariables(resourceVariables, {
+      traits: empire.traits,
+      technologies: [],
+    });
+    const resources: any = {};
+    for (const resource of RESOURCE_NAMES) {
+      resources[resource] = resourceVariables[`resources.${resource}.starting`];
+    }
+    return resources;
+  }
+
+  getCosts(prefix: string, variables: Partial<Record<Variable, number>>): Partial<Record<ResourceName, number>> {
     const result: Partial<Record<ResourceName, number>> = {};
-    const variables = getVariables(prefix);
-    calculateVariables(variables, empire, system);
     for (const resource of RESOURCE_NAMES) { // support custom variables
-      const variable = `${prefix}.${name}.cost.${resource}`;
+      const variable = `${prefix}.${resource}`;
       if (variable in variables) {
         result[resource] = variables[variable as Variable];
       }
@@ -52,32 +104,51 @@ export class EmpireLogicService {
     empire.markModified('resources');
   }
 
-  getTechnologyCost(user: UserDocument, empire: EmpireDocument, technology: Technology) {
-    const variables = {
-      ...getVariables('technologies'),
-      ...getVariables('empire'),
+  getTechnologyTime(empire: Empire, technology: Technology, aggregate?: AggregateResult) {
+    return this.getTechnologyAggregate(empire, technology, 'research_time', 'time_multiplier', aggregate);
+  }
+
+  getTechnologyCost(empire: Empire, technology: Technology, aggregate?: AggregateResult) {
+    return this.getTechnologyAggregate(empire, technology, 'difficulty', 'cost_multiplier', aggregate);
+  }
+
+  private getTechnologyAggregate(
+    empire: Empire, technology: Technology,
+    baseVar: keyof (typeof EMPIRE_VARIABLES)['technologies'],
+    tagVar: keyof (typeof TECH_CATEGORIES)[TechnologyTag],
+    aggregate?: AggregateResult,
+  ) {
+    const baseVariable: Variable = `empire.technologies.${baseVar}`;
+    const variables: Partial<Record<Variable, number>> = {
+      [baseVariable]: EMPIRE_VARIABLES.technologies[baseVar],
     };
-    calculateVariables(variables, empire);
-    const technologyCount = user.technologies?.[technology.id] || 0;
-
-    const difficultyMultiplier = variables['empire.technologies.difficulty'] || 1;
-    let technologyCost = technology.cost * difficultyMultiplier;
-
-    // step 1: if the user has already unlocked this tech, decrease the cost exponentially
-    if (technologyCount) {
-      const baseCostMultiplier = variables['empire.technologies.cost_multiplier'] || 1;
-      const unlockCostMultiplier = baseCostMultiplier ** Math.min(technologyCount, 10);
-      technologyCost *= unlockCostMultiplier;
-    }
-
-    // step 2: apply tag multipliers
     for (const tag of technology.tags) {
-      const tagCostMultiplier = variables[`technologies.${tag}.cost_multiplier`] || 1;
-      technologyCost *= tagCostMultiplier;
+      variables[`technologies.${tag}.${tagVar}`] = TECH_CATEGORIES[tag][tagVar];
+    }
+    calculateVariables(variables, empire);
+
+    const difficultyMultiplier = variables[baseVariable] || 1;
+    let technologyCost = technology.cost * difficultyMultiplier;
+    aggregate?.items.push({
+      variable: baseVariable,
+      count: technology.cost,
+      subtotal: technologyCost,
+    });
+
+    for (const tag of technology.tags) {
+      const tagVariable: Variable = `technologies.${tag}.${tagVar}`;
+      const tagCostMultiplier = variables[tagVariable] || 1;
+      const newTotal = technologyCost * tagCostMultiplier;
+      aggregate?.items.push({
+        variable: tagVariable,
+        count: 1,
+        subtotal: newTotal - technologyCost,
+      });
+      technologyCost = newTotal;
     }
 
-    // step 3: round the cost
-    return Math.round(technologyCost);
+    aggregate && (aggregate.total = technologyCost);
+    return technologyCost;
   }
 
   unlockTechnology(technologyId: string, empire: EmpireDocument) {
@@ -94,15 +165,6 @@ export class EmpireLogicService {
     }
 
     empire.technologies.push(technologyId);
-
-    /* TODO: Increment the user's technology count by 1
-    if (user.technologies) {
-      user.technologies[technologyId] = (user.technologies?.[technologyId] ?? 0) + 1;
-      user.markModified('technologies');
-    } else {
-      user.technologies = {[technologyId]: 1};
-    }
-     */
   }
 
 }

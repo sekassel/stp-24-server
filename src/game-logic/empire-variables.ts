@@ -4,7 +4,7 @@ export const EMPIRE_VARIABLES = {
   },
   pop: {
     /** How many pops a colonized system starts with */
-    colonists: 1, // TODO(Maiswaffeln): colonization tech tree
+    colonists: 1,
     /** Periodic costs for pops */
     consumption: {
       food: 1, // nutrition tech tree
@@ -15,7 +15,7 @@ export const EMPIRE_VARIABLES = {
     },
   },
   technologies: {
+    research_time: 8,
     difficulty: 100, // global variable to control tech tree difficulty
-    cost_multiplier: 0.95, // cost reduction for previously unlocked techs
   },
 } as const;

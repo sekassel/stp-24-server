@@ -3,7 +3,6 @@ import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {IsByteLength, IsDataURI, IsNotEmpty, IsObject, IsOptional, IsString, MaxLength} from 'class-validator';
 import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
-import {TECHNOLOGIES} from "../game-logic/technologies";
 
 export const MAX_AVATAR_LENGTH = 16 * 1024;
 
@@ -48,12 +47,7 @@ export class User extends GlobalSchema {
 
   @Prop({type: String, transform: () => undefined})
   refreshKey?: string | null;
-
-  @Prop({type: Object})
-  technologies?: Partial<Record<TechId, number>> | null;
 }
-
-export type TechId = keyof typeof TECHNOLOGIES;
 
 export type UserDocument = User & Document<Types.ObjectId>;
 

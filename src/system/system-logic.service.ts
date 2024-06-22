@@ -2,7 +2,7 @@ import {BadRequestException, ConflictException, Injectable} from '@nestjs/common
 import {SystemDocument} from './system.schema';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {SYSTEM_UPGRADES} from '../game-logic/system-upgrade';
-import {calculateVariable, calculateVariables} from '../game-logic/variables';
+import {calculateVariable, calculateVariables, getVariables} from '../game-logic/variables';
 import {SYSTEM_TYPES} from '../game-logic/system-types';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {District, Variable} from '../game-logic/types';
@@ -101,6 +101,9 @@ export class SystemLogicService {
   }
 
   destroyDistricts(system: SystemDocument, districts: Partial<Record<DistrictName, number>>, empire: EmpireDocument) {
+    const variables = getVariables('districts');
+    calculateVariables(variables, empire, system);
+
     for (const [district, amount] of Object.entries(districts) as [DistrictName, number][]) {
       if (amount === 0) {
         continue;
@@ -113,7 +116,7 @@ export class SystemLogicService {
         throw new ConflictException(`Not enough districts of ${district} to destroy`);
       }
 
-      const districtCost = this.empireLogicService.getCosts('districts', district, empire, system);
+      const districtCost = this.empireLogicService.getCosts(`districts.${district}.cost`, variables);
       for (const [resource, cost] of Object.entries(districtCost)) {
         // Refund half of the cost
         empire.resources[resource as ResourceName] += cost * -amount / 2;
@@ -160,10 +163,13 @@ export class SystemLogicService {
   }
 
   private removeBuildings(system: SystemDocument, removeBuildings: Partial<Record<BuildingName, number>>, empire: EmpireDocument) {
+    const variables = getVariables('buildings');
+    calculateVariables(variables, empire, system);
+
     //Remove buildings and refund half of the cost
     for (const [building, amount] of Object.entries(removeBuildings)) {
       const bName = building as BuildingName;
-      const costs = this.empireLogicService.getCosts('buildings', bName, empire, system);
+      const costs = this.empireLogicService.getCosts(`buildings.${bName}.cost`, variables);
 
       for (let i = 0; i < amount; i++) {
         system.buildings.splice(system.buildings.indexOf(bName), 1);

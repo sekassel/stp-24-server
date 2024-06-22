@@ -2,8 +2,10 @@ import {Technology, TECHNOLOGY_TAGS, TechnologyTag, Variable} from './types';
 
 export const TECH_CATEGORIES = Object.fromEntries(TECHNOLOGY_TAGS.map(tag => [tag, {
   cost_multiplier: 1,
+  time_multiplier: 1,
 }])) as Record<TechnologyTag, {
   cost_multiplier: number;
+  time_multiplier: number;
 }>;
 
 export const TECHNOLOGIES: Record<string, Technology> = {

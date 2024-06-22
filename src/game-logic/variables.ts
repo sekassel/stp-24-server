@@ -7,7 +7,7 @@ import {EMPIRE_VARIABLES} from './empire-variables';
 import {RESOURCES} from './resources';
 import {DISTRICTS} from './districts';
 import {SYSTEM_UPGRADES} from './system-upgrade';
-import {SystemDocument} from '../system/system.schema';
+import {System} from '../system/system.schema';
 import {notFound} from '@mean-stream/nestx';
 
 export const VARIABLES = {
@@ -52,7 +52,7 @@ export function getInitialValue(variable: Variable): number {
 
 export type EmpireEffectSources = Pick<Empire, 'traits' | 'technologies' | 'effects'>;
 
-export function getEmpireEffectSources(empire: EmpireEffectSources, system?: SystemDocument): EffectSource[] {
+export function getEmpireEffectSources(empire: EmpireEffectSources, system?: System): EffectSource[] {
   return [
     ...empire.traits.map(t => TRAITS[t]),
     ...getEffectiveTechnologies(empire.technologies.map(t => TECHNOLOGIES[t]).filter(t => t)),
@@ -61,13 +61,13 @@ export function getEmpireEffectSources(empire: EmpireEffectSources, system?: Sys
   ];
 }
 
-export function calculateVariable(variable: Variable, empire: EmpireEffectSources, system?: SystemDocument): number {
+export function calculateVariable(variable: Variable, empire: EmpireEffectSources, system?: System): number {
   const variables = {[variable]: getInitialValue(variable)};
   calculateVariables(variables, empire, system);
   return variables[variable];
 }
 
-export function calculateVariables(variables: Partial<Record<Variable, number>>, empire: EmpireEffectSources, system?: SystemDocument) {
+export function calculateVariables(variables: Partial<Record<Variable, number>>, empire: EmpireEffectSources, system?: System) {
   const sources = getEmpireEffectSources(empire, system);
   applyEffects(variables, sources.flatMap(source => source.effects));
 }
