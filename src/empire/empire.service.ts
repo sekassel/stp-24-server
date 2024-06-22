@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Document, Model} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
@@ -7,10 +7,8 @@ import {EmpireTemplate, ReadEmpireDto, UpdateEmpireDto} from './empire.dto';
 import {MemberService} from '../member/member.service';
 import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MIN_EMPIRES} from '../game-logic/constants';
 import {generateTraits} from '../game-logic/traits';
-import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
-import {Variable} from '../game-logic/types';
-import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
 import {Member} from '../member/member.schema';
+import {EmpireLogicService} from './empire-logic.service';
 
 @Injectable()
 @EventRepository()
@@ -19,6 +17,7 @@ export class EmpireService extends MongooseRepository<Empire> {
     @InjectModel(Empire.name) model: Model<Empire>,
     private eventEmitter: EventService,
     private memberService: MemberService,
+    private empireLogicService: EmpireLogicService,
   ) {
     super(model);
   }
@@ -45,71 +44,21 @@ export class EmpireService extends MongooseRepository<Empire> {
     const {resources, ...rest} = dto;
     empire.set(rest);
     if (resources) {
-      this.resourceTrading(empire, resources);
+      this.empireLogicService.tradeResources(empire, resources);
     }
-  }
-
-  private resourceTrading(empire: EmpireDocument, resources: Record<ResourceName, number>) {
-    const resourceVariables = getVariables('resources');
-    calculateVariables(resourceVariables, empire);
-    const marketFee = calculateVariable('empire.market.fee', empire);
-    for (const [resource, change] of Object.entries(resources)) {
-      const resourceAmount = Math.abs(change);
-
-      if (resourceAmount === 0) {
-        continue;
-      }
-      const creditValue = resourceVariables[`resources.${resource}.credit_value` as Variable];
-
-      if (creditValue === 0) {
-        throw new BadRequestException(`The resource ${resource} cannot be bought or sold.`);
-      }
-      const totalMarketFee = creditValue * marketFee;
-      const creditValueWithFee = creditValue + (change < 0 ? -totalMarketFee : totalMarketFee);
-      const resourceCost = creditValueWithFee * resourceAmount;
-
-      if (change < 0) {
-        // Sell the resource
-        if (empire.resources[resource as ResourceName] < resourceAmount) {
-          throw new BadRequestException(`The empire does not have enough ${resource} to sell.`);
-        }
-        // Update empire: get credits, subtract resource
-        empire.resources.credits += resourceCost;
-        empire.resources[resource as ResourceName] -= resourceAmount;
-      } else if (change > 0) {
-        // Buy the resource
-        if (resourceCost > empire.resources.credits) {
-          throw new BadRequestException(`Not enough credits to buy ${change} ${resource}.`);
-        }
-        // Update empire, subtract credits, add resource
-        empire.resources.credits -= resourceCost;
-        empire.resources[resource as ResourceName] += resourceAmount;
-      }
-    }
-    empire.markModified('resources');
   }
 
   async initEmpires(members: Member[]): Promise<EmpireDocument[]> {
     return this.createMany(members.filter(m => m.empire).map(member => {
-        const resourceVariables: Record<Variable & `resources.${string}`, number> = flatten(RESOURCES, 'resources.');
-        calculateVariables(resourceVariables, {
-          traits: member.empire!.traits,
-          technologies: [],
-        });
-        const resources: any = {};
-        for (const resource of RESOURCE_NAMES) {
-          resources[resource] = resourceVariables[`resources.${resource}.starting`];
-        }
-        return ({
-          ...member.empire!,
-          game: member.game,
-          user: member.user,
-          technologies: [],
-          resources,
-          homeSystem: undefined,
-        });
-      }),
-    );
+      return ({
+        ...member.empire!,
+        game: member.game,
+        user: member.user,
+        technologies: [],
+        resources: this.empireLogicService.getInitialResources(member.empire!),
+        homeSystem: undefined, // set in a later stage of game initialization
+      });
+    }));
   }
 
   private async emit(event: string, empire: Empire) {
