@@ -86,6 +86,50 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    */
 
   /**
+   * pop technologies
+   */
+
+  /** colonists: increased pops (colonists) at system start */
+  more_colonists_1: {
+    id: 'more_colonists_1',
+    tags: ['society', 'biology'],
+    cost: 2,
+    precedes: ['more_colonists_2'],
+    requires: ['demographic'],
+    effects: [
+      {
+        variable: 'empire.pop.colonists',
+        base: 2,
+      },
+    ],
+  },
+  more_colonists_2: {
+    id: 'more_colonists_2',
+    tags: ['society', 'biology'],
+    cost: 4,
+    precedes: ['more_colonists_3'],
+    requires: ['more_colonists_1'],
+    effects: [
+      {
+        variable: 'empire.pop.colonists',
+        base: 3,
+      },
+    ],
+  },
+  more_colonists_3: {
+    id: 'more_colonists_3',
+    tags: ['society', 'biology'],
+    cost: 8,
+    requires: ['more_colonists_2'],
+    effects: [
+      {
+        variable: 'empire.pop.colonists',
+        base: 4,
+      },
+    ],
+  },
+
+  /**
    * System technologies
    */
 
