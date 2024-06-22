@@ -4,7 +4,7 @@ export const EMPIRE_VARIABLES = {
   },
   pop: {
     /** How many pops a colonized system starts with */
-    colonists: 1, // TODO(Maiswaffeln): colonization tech tree
+    colonists: 1,
     /** Periodic costs for pops */
     consumption: {
       food: 1, // nutrition tech tree
