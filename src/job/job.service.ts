@@ -28,9 +28,9 @@ export class JobService extends MongooseRepository<Job> {
     super(model);
   }
 
-  async createJob(dto: CreateJobDto, user: UserDocument, empire: EmpireDocument, system?: SystemDocument): Promise<Job | null> {
+  async createJob(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument): Promise<Job | null> {
     // Calculate resource requirements for the job
-    const cost = this.jobLogicService.getCost(dto, user, empire, system);
+    const cost = this.jobLogicService.getCost(dto, empire, system);
 
     // Deduct resources from the empire
     this.empireLogicService.deductResources(empire, cost);

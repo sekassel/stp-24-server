@@ -104,12 +104,11 @@ export class JobController {
     @AuthUser() user: User,
     @Body() dto: CreateJobDto,
   ): Promise<Job | null> {
-    const [userDoc, empireDoc, system] = await Promise.all([
-      this.userService.find(user._id),
+    const [empireDoc, system] = await Promise.all([
       this.checkUserAccess(game, user, empire),
       dto.system ? this.systemService.find(dto.system) : Promise.resolve(undefined),
     ]);
-    const result = await this.jobService.createJob(dto, userDoc ?? notFound(user._id), empireDoc, system ?? undefined);
+    const result = await this.jobService.createJob(dto, empireDoc, system ?? undefined);
     await this.empireService.saveAll([empireDoc]);
     return result;
   }

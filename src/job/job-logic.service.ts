@@ -20,7 +20,7 @@ export class JobLogicService {
   ) {
   }
 
-  getCost(dto: CreateJobDto, user: UserDocument, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
+  getCost(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName, number>> {
 
     switch (dto.type as JobType) {
       case JobType.BUILDING:
@@ -54,7 +54,7 @@ export class JobLogicService {
           throw new BadRequestException('Technology ID is required for this job type.');
         }
         const technology = TECHNOLOGIES[dto.technology] ?? notFound(dto.technology);
-        return {research: this.empireLogicService.getTechnologyCost(user, empire, technology)};
+        return {research: this.empireLogicService.getTechnologyCost(empire, technology)};
     }
   }
 

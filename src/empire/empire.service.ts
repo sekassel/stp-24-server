@@ -54,10 +54,9 @@ export class EmpireService extends MongooseRepository<Empire> {
     }
   }
 
-  async aggregateTechCost(empire: Empire, technology: Technology): Promise<AggregateResult> {
+  aggregateTechCost(empire: Empire, technology: Technology): AggregateResult {
     const variables: Partial<Record<Variable, number>> = {
       'empire.technologies.difficulty': EMPIRE_VARIABLES.technologies.difficulty,
-      'empire.technologies.cost_multiplier': EMPIRE_VARIABLES.technologies.cost_multiplier,
     };
     for (const tag of technology.tags) {
       variables[`technologies.${tag}.cost_multiplier`] = TECH_CATEGORIES[tag].cost_multiplier;
@@ -73,20 +72,6 @@ export class EmpireService extends MongooseRepository<Empire> {
       count: technology.cost,
       subtotal: total,
     });
-
-    const user = await this.userService.find(empire.user) ?? notFound(empire.user);
-    const technologyCount = user.technologies?.[technology.id] || 0;
-    if (technologyCount) {
-      const baseCostMultiplier = variables['empire.technologies.cost_multiplier'] || 1;
-      const unlockCostMultiplier = baseCostMultiplier ** Math.min(technologyCount, 10);
-      const newTotal = total * unlockCostMultiplier;
-      items.push({
-        variable: 'empire.technologies.cost_multiplier',
-        count: technologyCount,
-        subtotal: newTotal - total,
-      });
-      total = newTotal;
-    }
 
     for (const tag of technology.tags) {
       const tagCostMultiplier = variables[`technologies.${tag}.cost_multiplier`] || 1;

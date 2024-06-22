@@ -16,6 +16,5 @@ export const EMPIRE_VARIABLES = {
   },
   technologies: {
     difficulty: 100, // global variable to control tech tree difficulty
-    cost_multiplier: 0.95, // cost reduction for previously unlocked techs
   },
 } as const;

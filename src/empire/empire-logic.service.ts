@@ -52,31 +52,23 @@ export class EmpireLogicService {
     empire.markModified('resources');
   }
 
-  getTechnologyCost(user: UserDocument, empire: EmpireDocument, technology: Technology) {
+  getTechnologyCost(empire: EmpireDocument, technology: Technology) {
     const variables = {
       ...getVariables('technologies'),
       ...getVariables('empire'),
     };
     calculateVariables(variables, empire);
-    const technologyCount = user.technologies?.[technology.id] || 0;
 
     const difficultyMultiplier = variables['empire.technologies.difficulty'] || 1;
     let technologyCost = technology.cost * difficultyMultiplier;
 
-    // step 1: if the user has already unlocked this tech, decrease the cost exponentially
-    if (technologyCount) {
-      const baseCostMultiplier = variables['empire.technologies.cost_multiplier'] || 1;
-      const unlockCostMultiplier = baseCostMultiplier ** Math.min(technologyCount, 10);
-      technologyCost *= unlockCostMultiplier;
-    }
-
-    // step 2: apply tag multipliers
+    // step 1: apply tag multipliers
     for (const tag of technology.tags) {
       const tagCostMultiplier = variables[`technologies.${tag}.cost_multiplier`] || 1;
       technologyCost *= tagCostMultiplier;
     }
 
-    // step 3: round the cost
+    // step 2: round the cost
     return Math.round(technologyCost);
   }
 
@@ -94,15 +86,6 @@ export class EmpireLogicService {
     }
 
     empire.technologies.push(technologyId);
-
-    /* TODO: Increment the user's technology count by 1
-    if (user.technologies) {
-      user.technologies[technologyId] = (user.technologies?.[technologyId] ?? 0) + 1;
-      user.markModified('technologies');
-    } else {
-      user.technologies = {[technologyId]: 1};
-    }
-     */
   }
 
 }
