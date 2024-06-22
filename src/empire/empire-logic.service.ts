@@ -2,11 +2,9 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import {Empire, EmpireDocument} from './empire.schema';
 import {TECH_CATEGORIES, TECHNOLOGIES} from '../game-logic/technologies';
 import {notFound} from '@mean-stream/nestx';
-import {UserDocument} from '../user/user.schema';
-import {Technology, Variable} from '../game-logic/types';
-import {calculateVariable, calculateVariables, flatten, getVariables, VARIABLES} from '../game-logic/variables';
-import {RESOURCE_NAMES, ResourceName, RESOURCES} from '../game-logic/resources';
-import {SystemDocument} from '../system/system.schema';
+import {Technology, TechnologyTag, Variable} from '../game-logic/types';
+import {calculateVariable, calculateVariables, getVariables} from '../game-logic/variables';
+import {RESOURCE_NAMES, ResourceName} from '../game-logic/resources';
 import {AggregateResult} from '../game-logic/aggregates';
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
 import {EmpireTemplate} from './empire.dto';
@@ -106,28 +104,43 @@ export class EmpireLogicService {
     empire.markModified('resources');
   }
 
+  getTechnologyTime(empire: Empire, technology: Technology, aggregate?: AggregateResult) {
+    return this.getTechnologyAggregate(empire, technology, 'research_time', 'time_multiplier', aggregate);
+  }
+
   getTechnologyCost(empire: Empire, technology: Technology, aggregate?: AggregateResult) {
+    return this.getTechnologyAggregate(empire, technology, 'difficulty', 'cost_multiplier', aggregate);
+  }
+
+  private getTechnologyAggregate(
+    empire: Empire, technology: Technology,
+    baseVar: keyof (typeof EMPIRE_VARIABLES)['technologies'],
+    tagVar: keyof (typeof TECH_CATEGORIES)[TechnologyTag],
+    aggregate?: AggregateResult,
+  ) {
+    const baseVariable: Variable = `empire.technologies.${baseVar}`;
     const variables: Partial<Record<Variable, number>> = {
-      'empire.technologies.difficulty': EMPIRE_VARIABLES.technologies.difficulty,
+      [baseVariable]: EMPIRE_VARIABLES.technologies[baseVar],
     };
     for (const tag of technology.tags) {
-      variables[`technologies.${tag}.cost_multiplier`] = TECH_CATEGORIES[tag].cost_multiplier;
+      variables[`technologies.${tag}.${tagVar}`] = TECH_CATEGORIES[tag][tagVar];
     }
     calculateVariables(variables, empire);
 
-    const difficultyMultiplier = variables['empire.technologies.difficulty'] || 1;
+    const difficultyMultiplier = variables[baseVariable] || 1;
     let technologyCost = technology.cost * difficultyMultiplier;
     aggregate?.items.push({
-      variable: 'empire.technologies.difficulty',
+      variable: baseVariable,
       count: technology.cost,
       subtotal: technologyCost,
     });
 
     for (const tag of technology.tags) {
-      const tagCostMultiplier = variables[`technologies.${tag}.cost_multiplier`] || 1;
+      const tagVariable: Variable = `technologies.${tag}.${tagVar}`;
+      const tagCostMultiplier = variables[tagVariable] || 1;
       const newTotal = technologyCost * tagCostMultiplier;
       aggregate?.items.push({
-        variable: `technologies.${tag}.cost_multiplier`,
+        variable: tagVariable,
         count: 1,
         subtotal: newTotal - technologyCost,
       });

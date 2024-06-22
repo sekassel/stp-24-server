@@ -15,6 +15,7 @@ export const EMPIRE_VARIABLES = {
     },
   },
   technologies: {
+    research_time: 8,
     difficulty: 100, // global variable to control tech tree difficulty
   },
 } as const;

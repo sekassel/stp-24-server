@@ -98,6 +98,16 @@ export const AGGREGATES: Record<string, AggregateFn> = {
       const tech = TECHNOLOGIES[technology] ?? notFound(technology);
       return service.aggregateTechCost(empire, tech);
     },
+  },
+  'technology.time': {
+    description: 'Calculates the total duration of a technology',
+    params: {
+      technology: 'The ID of the technology to calculate',
+    },
+    compute: (service, empire, systems, {technology}) => {
+      const tech = TECHNOLOGIES[technology] ?? notFound(technology);
+      return service.aggregateTechTime(empire, tech);
+    },
   }
 };
 export type AggregateId = keyof typeof AGGREGATES;

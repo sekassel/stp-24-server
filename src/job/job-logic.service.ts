@@ -2,7 +2,6 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import {EmpireDocument} from '../empire/empire.schema';
 import {ResourceName} from '../game-logic/resources';
 import {CreateJobDto} from './job.dto';
-import {UserDocument} from '../user/user.schema';
 import {SystemDocument} from '../system/system.schema';
 import {JobType} from './job-type.enum';
 import {notFound} from '@mean-stream/nestx';
@@ -11,7 +10,7 @@ import {TECHNOLOGIES} from '../game-logic/technologies';
 import {JobDocument} from './job.schema';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {SystemLogicService} from '../system/system-logic.service';
-import {calculateVariables, flatten, getVariables} from '../game-logic/variables';
+import {calculateVariables, flatten} from '../game-logic/variables';
 import {BUILDINGS} from '../game-logic/buildings';
 import {Variable} from '../game-logic/types';
 import {DISTRICTS} from '../game-logic/districts';
@@ -84,7 +83,7 @@ export class JobLogicService {
         const technology = TECHNOLOGIES[dto.technology] ?? notFound(dto.technology);
         return {
           research: this.empireLogicService.getTechnologyCost(empire, technology),
-          time: 6, // TODO research time
+          time: this.empireLogicService.getTechnologyTime(empire, technology),
         };
     }
   }
