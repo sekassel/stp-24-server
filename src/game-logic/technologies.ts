@@ -275,6 +275,30 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
+  cheap_buildings_3: { // reduced advanced building costs
+    id: 'cheap_buildings_3',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['cheap_buildings_2'],
+    effects: [
+      {
+        variable: 'buildings.shipyard.cost.alloys',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.shipyard.cost.minerals',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.fortress.cost.alloys',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.fortress.cost.minerals',
+        multiplier: 0.85,
+      },
+    ],
+  },
 
   /** buildings: reduce energy upkeep */
   efficient_buildings_1: { // reduced basic building energy upkeep
@@ -294,6 +318,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'buildings.factory.upkeep.energy',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.farm.upkeep.fuel',
         multiplier: 0.85,
       },
     ],
@@ -320,6 +348,18 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'buildings.exchange.upkeep.energy',
         multiplier: 0.85,
       },
+      {
+        variable: 'buildings.mine.upkeep.fuel',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.shipyard.upkeep.fuel',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.fortress.upkeep.fuel',
+        multiplier: 0.85,
+      },
     ],
   },
   efficient_buildings_3: {
@@ -333,19 +373,34 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.85,
       },
       {
-        variable: 'buildings.mine.upkeep.fuel',
-        multiplier: 0.85,
-      },
-      {
-        variable: 'buildings.farm.upkeep.fuel',
-        multiplier: 0.85,
-      },
-      {
         variable: 'buildings.research_lab.upkeep.consumer_goods',
         multiplier: 0.85,
       },
       {
         variable: 'buildings.factory.upkeep.minerals',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.shipyard.upkeep.alloys',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.shipyard.upkeep.energy',
+        multiplier: 0.85,
+      },{
+        variable: 'buildings.shipyard.upkeep.minerals',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.fortress.upkeep.alloys',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.fortress.upkeep.energy',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.fortress.upkeep.minerals',
         multiplier: 0.85,
       },
     ],

@@ -110,14 +110,14 @@ export const BUILDINGS = {
   shipyard: {
     id: 'shipyard',
     cost: {
-      minerals: 50,
-      alloys: 75,
+      minerals: 50, // cheap_buildings tech tree
+      alloys: 75, // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 5,
-      energy: 5,
-      fuel: 5,
-      alloys: 5,
+      minerals: 5, // efficient_buildings tech tree
+      energy: 5, // efficient_buildings tech tree
+      fuel: 5, // efficient_buildings tech tree
+      alloys: 5, // efficient_buildings tech tree
     },
     production: {
     },
@@ -125,14 +125,14 @@ export const BUILDINGS = {
   fortress: {
     id: 'fortress',
     cost: {
-      minerals: 75,
-      alloys: 75,
+      minerals: 75, // cheap_buildings tech tree
+      alloys: 75, // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 5,
-      energy: 5,
-      fuel: 5,
-      alloys: 5,
+      minerals: 5, // efficient_buildings tech tree
+      energy: 5, // efficient_buildings tech tree
+      fuel: 5, // efficient_buildings tech tree
+      alloys: 5, // efficient_buildings tech tree
     },
     production: {
     },
