@@ -114,10 +114,10 @@ export const BUILDINGS = {
       alloys: 75, // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 5, // efficient_buildings tech tree
+      minerals: 10, // efficient_buildings tech tree
       energy: 5, // efficient_buildings tech tree
       fuel: 5, // efficient_buildings tech tree
-      alloys: 5, // efficient_buildings tech tree
+      alloys: 10, // efficient_buildings tech tree
     },
     production: {
     },
@@ -130,8 +130,8 @@ export const BUILDINGS = {
     },
     upkeep: {
       minerals: 5, // efficient_buildings tech tree
-      energy: 5, // efficient_buildings tech tree
-      fuel: 5, // efficient_buildings tech tree
+      energy: 8, // efficient_buildings tech tree
+      fuel: 8, // efficient_buildings tech tree
       alloys: 5, // efficient_buildings tech tree
     },
     production: {
