@@ -126,6 +126,6 @@ export class JobService extends MongooseRepository<Job> {
       // no one to emit to
       return;
     }
-    this.eventEmitter.emit(`games.${job.game}.empires.${job.empire}.jobs.${event}`, job, [empire.user.toString()]);
+    this.eventEmitter.emit(`games.${job.game}.empires.${job.empire}.jobs.${job._id}.${event}`, job, [empire.user.toString()]);
   }
 }
