@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  NotFoundException,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, Query} from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -19,7 +8,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {Types} from 'mongoose';
-import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
+import {notFound, NotFound, ObjectIdPipe, OptionalObjectIdPipe} from '@mean-stream/nestx';
 import {Validated} from '../util/validated.decorator';
 import {Throttled} from '../util/throttled.decorator';
 import {Auth, AuthUser} from '../auth/auth.decorator';
@@ -71,7 +60,7 @@ export class JobController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('empire', ObjectIdPipe) empire: Types.ObjectId,
     @AuthUser() user: User,
-    @Query('system', ObjectIdPipe) system?: Types.ObjectId,
+    @Query('owner', OptionalObjectIdPipe) system?: Types.ObjectId | undefined,
     @Query('type') type?: string,
   ): Promise<Job[]> {
     await this.checkUserAccess(game, user, empire);
