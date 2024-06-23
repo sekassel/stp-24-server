@@ -38,6 +38,7 @@ export class JobService extends MongooseRepository<Job> {
     const jobData: Omit<Job, keyof GlobalSchema> = {
       empire: empire._id,
       game: empire.game,
+      priority: dto.priority,
       progress: 0,
       total: time!,
       cost,
@@ -89,10 +90,8 @@ export class JobService extends MongooseRepository<Job> {
 
     for (const [systemId, jobsInSystem] of Object.entries(systemJobsMap)) {
       const system = systems.find(s => s._id.equals(systemId));
-      // TODO v4: Maybe do a priority sorting?
-      const sortedJobs = jobsInSystem.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
-      for (const job of sortedJobs) {
+      for (const job of jobsInSystem) {
         if (job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE) {
           this.progressJob(job, empire, system);
         }

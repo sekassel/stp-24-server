@@ -100,7 +100,7 @@ export class GameLogicService {
   async updateGame(game: Game) {
     const empires = await this.empireService.findAll({game: game._id});
     const systems = await this.systemService.findAll({game: game._id});
-    const jobs = await this.jobService.findAll({game: game._id});
+    const jobs = await this.jobService.findAll({game: game._id}, {sort: {priority: 1, createdAt: 1}});
     this._updateGame(empires, systems, jobs);
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);

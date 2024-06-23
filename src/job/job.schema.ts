@@ -41,6 +41,17 @@ export class Job extends GlobalSchema {
   @AsObjectId()
   system?: Types.ObjectId;
 
+  @Prop({default: 0, index: 1})
+  @ApiPropertyOptional({
+    default: 0,
+    description: 'Priority of the job. ' +
+      'Jobs with lower values will be executed first. ' +
+      'If two jobs have the same priority, the one with the earlier start time will be executed first.',
+  })
+  @IsOptional()
+  @IsNumber()
+  priority?: number;
+
   @Prop({required: true, type: String, enum: JobType})
   @ApiProperty({enum: JobType, description: 'Type of the job'})
   @IsEnum(JobType)
