@@ -10,6 +10,7 @@ import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {AsObjectId, Ref} from '@mean-stream/nestx';
 import {JobType} from './job-type.enum';
 import {TECHNOLOGY_IDS} from '../game-logic/technologies';
+import {ErrorResponse} from '../util/error-response';
 
 export type JobDocument = Job & Document<Types.ObjectId>;
 
@@ -81,6 +82,13 @@ export class Job extends GlobalSchema {
   @IsOptional()
   @IsObject()
   cost?: Partial<Record<ResourceName, number>>;
+
+  @Prop()
+  @ApiPropertyOptional({
+    description: 'The result of the job. If successful, the code will be 200. ' +
+      'Note that the job is deleted one period after completion.',
+  })
+  result?: ErrorResponse;
 }
 
 export const JobSchema = SchemaFactory.createForClass(Job);

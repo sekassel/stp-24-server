@@ -1,4 +1,4 @@
-import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
+import {BadRequestException, ConflictException, HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
 import {Model} from 'mongoose';
@@ -112,17 +112,18 @@ export class JobService extends MongooseRepository<Job> {
   private completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
     try {
       this.jobLogicService.completeJob(job, empire, system);
+      job.result = {statusCode: 200, error: '', message: 'Job completed successfully'};
     } catch (error) {
-      if (error instanceof ConflictException || error instanceof BadRequestException) {
-        this.emitJobFailedEvent(job, error.message, empire);
+      if (error instanceof HttpException) {
+        job.result = {
+          statusCode: error.getStatus(),
+          error: HttpStatus[error.getStatus()],
+          message: error.message,
+        };
+      } else {
+        throw error;
       }
     }
-  }
-
-  private emitJobFailedEvent(job: JobDocument, errorMessage: string, empire: EmpireDocument) {
-    const event = `games.${job.game}.empire.${job.empire}.jobs.${job._id}.failed`;
-    const data = {message: errorMessage};
-    this.eventEmitter.emit(event, data, [empire.user.toString()]);
   }
 
   private async emit(event: string, job: Job) {
