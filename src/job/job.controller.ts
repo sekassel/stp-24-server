@@ -19,7 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {Types} from 'mongoose';
-import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
+import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Validated} from '../util/validated.decorator';
 import {Throttled} from '../util/throttled.decorator';
 import {Auth, AuthUser} from '../auth/auth.decorator';
@@ -134,7 +134,7 @@ export class JobController {
 
   @Delete(':id')
   @Auth()
-  @ApiOperation({description: 'Delete a job from your empire.'})
+  @ApiOperation({description: 'Delete a job from your empire. Refunds the resources if the job is not completed.'})
   @ApiOkResponse({type: Job})
   @NotFound('Job not found.')
   @ApiForbiddenResponse({description: 'You can only delete jobs from your own empire.'})
@@ -145,12 +145,11 @@ export class JobController {
     @AuthUser() user: User,
   ): Promise<Job | null> {
     const userEmpire = await this.checkUserAccess(game, user, empire);
-    const job = await this.jobService.findOne(id);
-    if (!job || !job.cost) {
-      throw new NotFoundException('Job not found.');
+    const job = await this.jobService.findOne(id) ?? notFound('Job not found.');
+    if (job.cost && job.progress < job.total) {
+      this.jobLogicService.refundResources(userEmpire, job);
+      await this.empireService.saveAll([userEmpire]);
     }
-    this.jobLogicService.refundResources(userEmpire, job);
-    await this.empireService.saveAll([userEmpire]);
     return this.jobService.delete(id);
   }
 
