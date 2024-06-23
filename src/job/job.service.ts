@@ -63,11 +63,6 @@ export class JobService extends MongooseRepository<Job> {
     const progressingTechnologyTags: Record<string, boolean> = {};
 
     for (const job of jobs) {
-      if (job.progress === job.total) {
-        job.$isDeleted(true);
-        continue;
-      }
-
       if (job.type === JobType.TECHNOLOGY) {
         if (!job.technology) {
           continue;
