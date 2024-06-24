@@ -1,7 +1,6 @@
 import {applyDecorators, ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger, UseFilters} from '@nestjs/common';
 import {ApiConflictResponse} from '@nestjs/swagger';
 import {mongo} from 'mongoose';
-import {BaseExceptionFilter} from '@nestjs/core';
 import {MESSAGES} from '@nestjs/core/constants';
 
 // TODO move everything to @mean-stream/nestx

@@ -1,7 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { environment } from '../environment';
-import { UserService } from './user.service';
+import {Injectable, Logger} from '@nestjs/common';
+import {Cron, CronExpression} from '@nestjs/schedule';
+import {environment} from '../environment';
+import {UserService} from './user.service';
 
 @Injectable()
 export class UserScheduler {

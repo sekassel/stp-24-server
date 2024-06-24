@@ -1,8 +1,8 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema, MONGO_ID_FORMAT} from '../util/schema';
-import {Doc, IsObjectId, OptionalRef, Ref} from '@mean-stream/nestx';
-import {ApiProperty, ApiPropertyOptional, getSchemaPath} from '@nestjs/swagger';
+import {Doc, OptionalRef, Ref} from '@mean-stream/nestx';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   IsArray,
@@ -10,17 +10,18 @@ import {
   IsIn,
   IsInt,
   IsNotEmpty,
-  IsObject, IsOptional,
+  IsObject,
+  IsOptional,
   IsString,
   Max,
-  Min, ValidateNested,
+  Min,
+  ValidateNested,
 } from 'class-validator';
 import {MAX_EMPIRES, MAX_TRAITS} from '../game-logic/constants';
-import {ResourceName, RESOURCES} from '../game-logic/resources';
+import {ResourceName} from '../game-logic/resources';
 import {TRAITS} from '../game-logic/traits';
-import {TECHNOLOGIES, TECHNOLOGY_IDS} from '../game-logic/technologies';
-import {Effect, EffectSource, RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
-import {SYSTEM_TYPES, SystemTypeName} from '../game-logic/system-types';
+import {TECHNOLOGY_IDS} from '../game-logic/technologies';
+import {EffectSource, RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
 import {Type} from 'class-transformer';
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)

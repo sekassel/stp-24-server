@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
-import { User } from '../user/user.schema';
-import { AchievementService } from './achievement.service';
+import {Injectable} from '@nestjs/common';
+import {OnEvent} from '@nestjs/event-emitter';
+import {User} from '../user/user.schema';
+import {AchievementService} from './achievement.service';
 
 @Injectable()
 export class AchievementHandler {

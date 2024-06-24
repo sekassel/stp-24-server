@@ -1,7 +1,7 @@
-import {Game} from "../game/game.schema";
-import {System} from "./system.schema";
-import {CIRCLE_GENERATOR, GRID_SCALING, MAP_CYCLE_PERCENTAGE} from "../game-logic/gridtypes";
-import {ClusterGeneratorService} from "./clustergenerator.service";
+import {Game} from '../game/game.schema';
+import {System} from './system.schema';
+import {CIRCLE_GENERATOR, GRID_SCALING, MAP_CYCLE_PERCENTAGE} from '../game-logic/gridtypes';
+import {ClusterGeneratorService} from './clustergenerator.service';
 
 export class SystemGeneratorService {
   constructor(

@@ -1,6 +1,6 @@
-import { applyDecorators, createParamDecorator, ExecutionContext, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {applyDecorators, createParamDecorator, ExecutionContext, UseGuards} from '@nestjs/common';
+import {AuthGuard} from '@nestjs/passport';
+import {ApiBearerAuth, ApiUnauthorizedResponse} from '@nestjs/swagger';
 
 export const DEFAULT_DESCRIPTION = 'Missing or invalid Bearer token.';
 

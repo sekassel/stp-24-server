@@ -6,7 +6,7 @@ import {EmpireHandler} from './empire.handler';
 import {Empire, EmpireSchema} from './empire.schema';
 import {EmpireService} from './empire.service';
 import {MemberModule} from '../member/member.module';
-import {UserModule} from "../user/user.module";
+import {UserModule} from '../user/user.module';
 import {EmpireLogicService} from './empire-logic.service';
 
 @Module({

@@ -6,23 +6,23 @@ import {ThrottlerModule} from '@nestjs/throttler';
 import {AuthModule} from './auth/auth.module';
 import {environment} from './environment';
 import {UserModule} from './user/user.module';
-import {SentryInterceptor, SentryModule, SentryModuleOptions} from "@ntegral/nestjs-sentry";
-import {APP_INTERCEPTOR, HttpAdapterHost} from "@nestjs/core";
-import {AchievementModule} from "./achievement/achievement.module";
-import {AchievementSummaryModule} from "./achievement-summary/achievement-summary.module";
-import {Integrations} from "@sentry/node";
+import {SentryInterceptor, SentryModule, SentryModuleOptions} from '@ntegral/nestjs-sentry';
+import {APP_INTERCEPTOR, HttpAdapterHost} from '@nestjs/core';
+import {AchievementModule} from './achievement/achievement.module';
+import {AchievementSummaryModule} from './achievement-summary/achievement-summary.module';
+import {Integrations} from '@sentry/node';
 import {EventModule} from '@mean-stream/nestx';
 import {Transport} from '@nestjs/microservices';
 import {GameModule} from './game/game.module';
 import {MemberModule} from './member/member.module';
 import {EmpireModule} from './empire/empire.module';
 import {PresetsModule} from './presets/presets.module';
-import {SystemModule} from "./system/system.module";
+import {SystemModule} from './system/system.module';
 import {GameLogicModule} from './game-logic/game-logic.module';
 import {IncomingMessage} from 'http';
 import {AuthService} from './auth/auth.service';
-import {FriendModule} from "./friend/friend.module";
-import {JobModule} from "./job/job.module";
+import {FriendModule} from './friend/friend.module';
+import {JobModule} from './job/job.module';
 
 @Module({
   imports: [

@@ -1,9 +1,9 @@
-import {Game} from "../game/game.schema";
-import {System} from "./system.schema";
-import {Grid, GRIDS, MAX_SYSTEM_DISPLACEMENT, Vertex} from "../game-logic/gridtypes";
-import {SYSTEM_TYPES, SystemTypeName} from "../game-logic/system-types";
-import {Types} from "mongoose";
-import {SYSTEM_UPGRADE_NAMES} from "../game-logic/system-upgrade";
+import {Game} from '../game/game.schema';
+import {System} from './system.schema';
+import {Grid, GRIDS, MAX_SYSTEM_DISPLACEMENT, Vertex} from '../game-logic/gridtypes';
+import {SYSTEM_TYPES, SystemTypeName} from '../game-logic/system-types';
+import {Types} from 'mongoose';
+import {SYSTEM_UPGRADE_NAMES} from '../game-logic/system-upgrade';
 
 export class ClusterGeneratorService {
   /**

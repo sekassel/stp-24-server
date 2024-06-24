@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import {Module} from '@nestjs/common';
+import {MongooseModule} from '@nestjs/mongoose';
 
-import { UserModule } from '../user/user.module';
-import { AchievementController } from './achievement.controller';
-import { AchievementHandler } from './achievement.handler';
+import {UserModule} from '../user/user.module';
+import {AchievementController} from './achievement.controller';
+import {AchievementHandler} from './achievement.handler';
 import {Achievement, AchievementSchema} from './achievement.schema';
-import { AchievementService } from './achievement.service';
+import {AchievementService} from './achievement.service';
 
 @Module({
   imports: [

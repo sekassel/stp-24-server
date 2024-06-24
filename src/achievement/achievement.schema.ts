@@ -4,8 +4,8 @@ import {Transform} from 'class-transformer';
 import {IsByteLength, IsDate, IsNumber, IsOptional, IsString} from 'class-validator';
 import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_WITHOUT_ID_OPTIONS, GlobalSchemaWithoutID} from '../util/schema';
-import {Ref} from "@mean-stream/nestx";
-import {User} from "../user/user.schema";
+import {Ref} from '@mean-stream/nestx';
+import {User} from '../user/user.schema';
 
 const MAX_ID_LENGTH = 32;
 

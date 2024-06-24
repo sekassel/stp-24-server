@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
-import { PresetsController } from './presets.controller';
+import {Module} from '@nestjs/common';
+import {PresetsController} from './presets.controller';
 
 @Module({
   controllers: [PresetsController]

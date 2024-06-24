@@ -1,5 +1,5 @@
 import {PickType} from '@nestjs/swagger';
-import {Job} from "./job.schema";
+import {Job} from './job.schema';
 import {PartialType} from '../util/partial-type';
 
 export class CreateJobDto extends PickType(Job, [

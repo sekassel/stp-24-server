@@ -1,9 +1,9 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
-import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from "../util/schema";
-import {Ref} from "@mean-stream/nestx";
-import {ApiProperty} from "@nestjs/swagger";
-import {IsIn, IsOptional} from "class-validator";
+import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
+import {Ref} from '@mean-stream/nestx';
+import {ApiProperty} from '@nestjs/swagger';
+import {IsIn, IsOptional} from 'class-validator';
 
 export type FriendDocument = Friend & Document<Types.ObjectId>;
 

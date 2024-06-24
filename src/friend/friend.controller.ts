@@ -27,7 +27,7 @@ import {Friend} from './friend.schema';
 import {FriendStatus, UpdateFriendDto} from './friend.dto';
 import {User} from '../user/user.schema';
 import {UniqueConflict} from '../util/unique-conflict.decorator';
-import {FriendService} from "./friend.service";
+import {FriendService} from './friend.service';
 
 @Controller('users/:from/friends')
 @ApiTags('Friends')

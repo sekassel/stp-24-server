@@ -1,6 +1,6 @@
-import { HttpStatus } from '@nestjs/common';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
-import { ApiProperty } from '@nestjs/swagger';
+import {HttpStatus} from '@nestjs/common';
+import {HttpErrorByCode} from '@nestjs/common/utils/http-error-by-code.util';
+import {ApiProperty} from '@nestjs/swagger';
 
 export class ValidationErrorResponse {
   @ApiProperty({ example: HttpStatus.BAD_REQUEST })

@@ -2,7 +2,7 @@ import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {Doc, OptionalRef, Ref} from '@mean-stream/nestx';
-import {DistrictName, DISTRICTS} from "../game-logic/districts";
+import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {
   IsArray,
@@ -18,7 +18,7 @@ import {
 } from 'class-validator';
 import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
 import {SYSTEM_UPGRADE_NAMES, SystemUpgradeName} from '../game-logic/system-upgrade';
-import {SystemTypeName} from "../game-logic/system-types";
+import {SystemTypeName} from '../game-logic/system-types';
 import {EffectSource} from '../game-logic/types';
 import {Type} from 'class-transformer';
 

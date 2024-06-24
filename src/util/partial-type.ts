@@ -1,15 +1,15 @@
-import { Type } from '@nestjs/common';
+import {Type} from '@nestjs/common';
 import {
   inheritPropertyInitializers,
   inheritTransformationMetadata,
   inheritValidationMetadata,
 } from '@nestjs/mapped-types';
-import { ApiProperty } from '@nestjs/swagger';
-import { DECORATORS } from '@nestjs/swagger/dist/constants';
-import { METADATA_FACTORY_NAME } from '@nestjs/swagger/dist/plugin/plugin-constants';
-import { ModelPropertiesAccessor } from '@nestjs/swagger/dist/services/model-properties-accessor';
-import { clonePluginMetadataFactory } from '@nestjs/swagger/dist/type-helpers/mapped-types.utils';
-import { ValidateIf } from 'class-validator';
+import {ApiProperty} from '@nestjs/swagger';
+import {DECORATORS} from '@nestjs/swagger/dist/constants';
+import {METADATA_FACTORY_NAME} from '@nestjs/swagger/dist/plugin/plugin-constants';
+import {ModelPropertiesAccessor} from '@nestjs/swagger/dist/services/model-properties-accessor';
+import {clonePluginMetadataFactory} from '@nestjs/swagger/dist/type-helpers/mapped-types.utils';
+import {ValidateIf} from 'class-validator';
 
 const modelPropertiesAccessor = new ModelPropertiesAccessor();
 

@@ -1,4 +1,4 @@
-import {ApiProperty, ApiPropertyOptional, OmitType, PickType} from '@nestjs/swagger';
+import {ApiPropertyOptional, OmitType, PickType} from '@nestjs/swagger';
 import {Empire} from './empire.schema';
 import {Prop} from '@nestjs/mongoose';
 import {SYSTEM_TYPES, SystemTypeName} from '../game-logic/system-types';

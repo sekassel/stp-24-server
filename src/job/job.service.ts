@@ -1,4 +1,4 @@
-import {BadRequestException, ConflictException, HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
 import {Model} from 'mongoose';
@@ -6,10 +6,8 @@ import {EventRepository, EventService, MongooseRepository} from '@mean-stream/ne
 import {CreateJobDto} from './job.dto';
 import {EmpireService} from '../empire/empire.service';
 import {EmpireDocument} from '../empire/empire.schema';
-import {ResourceName} from '../game-logic/resources';
 import {JobType} from './job-type.enum';
 import {SystemDocument} from '../system/system.schema';
-import {UserDocument} from '../user/user.schema';
 import {JobLogicService} from './job-logic.service';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {GlobalSchema} from '../util/schema';

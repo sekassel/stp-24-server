@@ -1,7 +1,7 @@
-import {Injectable} from "@nestjs/common";
-import {OnEvent} from "@nestjs/event-emitter";
-import {JobService} from "./job.service";
-import {Game} from "../game/game.schema";
+import {Injectable} from '@nestjs/common';
+import {OnEvent} from '@nestjs/event-emitter';
+import {JobService} from './job.service';
+import {Game} from '../game/game.schema';
 
 @Injectable()
 export class JobHandler {

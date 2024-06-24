@@ -1,4 +1,4 @@
-import {BadRequestException, Body, Controller, ForbiddenException, Get, Param, Patch, Query} from '@nestjs/common';
+import {Body, Controller, ForbiddenException, Get, Param, Patch, Query} from '@nestjs/common';
 import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';

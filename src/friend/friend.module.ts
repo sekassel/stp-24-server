@@ -1,9 +1,9 @@
 import {Module} from '@nestjs/common';
 import {MongooseModule} from '@nestjs/mongoose';
-import {Friend, FriendSchema} from "./friend.schema";
-import {FriendService} from "./friend.service";
-import {FriendHandler} from "./friend.handler";
-import {FriendController} from "./friend.controller";
+import {Friend, FriendSchema} from './friend.schema';
+import {FriendService} from './friend.service';
+import {FriendHandler} from './friend.handler';
+import {FriendController} from './friend.controller';
 
 @Module({
   imports: [
