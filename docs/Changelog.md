@@ -138,7 +138,7 @@
 
 * Improved the `403 Forbidden` error documentation for updating a running game.
 
-# v3.0.0 (2024-06-XX)
+# v3.0.0 (2024-06-24)
 
 ## BREAKING CHANGES
 * Game ticks are no longer scheduled and must be trigger via `PATCH /games/:game?tick=true`.
