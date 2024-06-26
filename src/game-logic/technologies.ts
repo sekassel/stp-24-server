@@ -287,6 +287,41 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  /** systems: reduced upgrade time */
+  fast_system_upgrade_1: {
+    id: 'fast_system_upgrade_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['fast_district_construction_1'],
+    precedes: ['fast_system_upgrade_2'],
+    effects: [
+      {
+        variable: 'systems.explored.upgrade_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'systems.colonized.upgrade_time',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  fast_system_upgrade_2: {
+    id: 'fast_system_upgrade_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['fast_system_upgrade_1'],
+    effects: [
+      {
+        variable: 'systems.upgraded.upgrade_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'systems.developed.upgrade_time',
+        multiplier: 0.85,
+      },
+    ],
+  },
+
   /**
    * Technologies for buildings
    * */
