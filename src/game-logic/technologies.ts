@@ -1216,6 +1216,8 @@ generate_sequence('unemployed_pop_cost', ['society', 'state'],
     multiplierIncrement: -0.05,
     exponentialBase: 3,
   }, ['demographic']); // -5% -> -15% -> -45%
+generate_sequence('faster_research', ['physics', 'computing'], 'empire.technologies.research_time',
+  {multiplierIncrement: -0.1}, ['computing']);
 
 // basic resources
 generate_sequence('energy_production', ['physics', 'energy'],
