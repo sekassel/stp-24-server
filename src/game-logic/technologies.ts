@@ -477,12 +477,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** buildings: decrease build time */
-  fast_building_1: {
-    id: 'fast_building_1',
+  fast_building_construction_1: {
+    id: 'fast_building_construction_1',
     tags: ['engineering', 'construction'],
     cost: 2,
     requires: ['construction'],
-    precedes: ['fast_building_2'],
+    precedes: ['fast_building_construction_2'],
     effects: [
       {
         variable: 'buildings.farm.build_time',
@@ -498,12 +498,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_building_2: {
-    id: 'fast_building_2',
+  fast_building_construction_2: {
+    id: 'fast_building_construction_2',
     tags: ['engineering', 'construction'],
     cost: 4,
-    requires: ['fast_building_1'],
-    precedes: ['fast_building_3'],
+    requires: ['fast_building_construction_1'],
+    precedes: ['fast_building_construction_3'],
     effects: [
       {
         variable: 'buildings.refinery.build_time',
@@ -519,11 +519,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_building_3: {
-    id: 'fast_building_3',
+  fast_building_construction_3: {
+    id: 'fast_building_construction_3',
     tags: ['engineering', 'construction'],
     cost: 8,
-    requires: ['fast_building_2'],
+    requires: ['fast_building_construction_2'],
     effects: [
       {
         variable: 'buildings.exchange.build_time',
