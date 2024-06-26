@@ -4,7 +4,7 @@ export const DISTRICTS = {
   city: {
     id: 'city',
     chance: {},
-    build_time: 9,
+    build_time: 9, // fast_district_construction tech tree
     cost: {
       minerals: 100, // city_structure tech tree
     },
@@ -26,7 +26,7 @@ export const DISTRICTS = {
       ancient_military: 3, // timeless_warfare tech tree
       default: 2,
     },
-    build_time: 6,
+    build_time: 6, // fast_district_construction tech tree
     cost: {
       minerals: 75, // quantum_cost_reduction tech tree
     },
@@ -46,7 +46,7 @@ export const DISTRICTS = {
       ancient_military: 3, // timeless_warfare tech tree
       default: 2,
     },
-    build_time: 6,
+    build_time: 6, // fast_district_construction tech tree
     cost: {
       minerals: 50, // nano_excavator_optimization tech tree
       energy: 25, // nano_excavator_optimization tech tree
@@ -65,7 +65,7 @@ export const DISTRICTS = {
       agriculture: 5,
       default: 2,
     },
-    build_time: 6,
+    build_time: 6, // fast_district_construction tech tree
     cost: {
       energy: 75, // permaculture_ecosystem_engineering tech tree
     },
@@ -81,7 +81,7 @@ export const DISTRICTS = {
   industry: {
     id: 'industry',
     chance: {},
-    build_time: 9,
+    build_time: 9, // fast_district_construction tech tree
     cost: {
       minerals: 100, // industry_structure tech tree
     },
@@ -103,7 +103,7 @@ export const DISTRICTS = {
       ancient_industry: 2, // primordial_industrial_secrets tech tree
       default: 0,
     },
-    build_time: 3,
+    build_time: 3, // fast_district_construction tech tree
     cost: {
       minerals: 100, // effective_lab_building tech tree
     },
@@ -123,7 +123,7 @@ export const DISTRICTS = {
       ancient_technology: 2, // wisdom_reclamation tech tree
       default: 0,
     },
-    build_time: 9,
+    build_time: 9, // fast_district_construction tech tree
     cost: {
       minerals: 100, // ancient_crafting_techniques tech tree
     },
@@ -143,7 +143,7 @@ export const DISTRICTS = {
       ancient_military: 2,
       default: 0,
     },
-    build_time: 9,
+    build_time: 9, // fast_district_construction tech tree
     cost: {
       minerals: 100,
     },
@@ -163,7 +163,7 @@ export const DISTRICTS = {
       ancient_technology: 2, // wisdom_reclamation tech tree
       default: 0,
     },
-    build_time: 9,
+    build_time: 9, // fast_district_construction tech tree
     cost: {
       minerals: 100, // traditional_refining_wisdom tech tree
     },

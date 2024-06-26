@@ -968,6 +968,70 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  /** all districts: reduce build time */
+  fast_district_construction_1: {
+    id: 'fast_district_construction_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['cheap_buildings_1'],
+    precedes: ['fast_district_construction_2'],
+    effects: [
+      {
+        variable: 'districts.research_site.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'districts.mining.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'districts.agriculture.build_time',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  fast_district_construction_2: {
+    id: 'fast_district_construction_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['fast_district_construction_1'],
+    precedes: ['fast_district_construction_3'],
+    effects: [
+      {
+        variable: 'districts.energy.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'districts.city.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'districts.industry.build_time',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  fast_district_construction_3: {
+    id: 'fast_district_construction_3',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['fast_district_construction_2'],
+    effects: [
+      {
+        variable: 'districts.ancient_foundry.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'districts.ancient_factory.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'districts.ancient_refinery.build_time',
+        multiplier: 0.85,
+      },
+    ],
+  },
+
   /** mining district: reduce initial mineral and energy cost */
   mining_foundation_1: {
     id: 'mining_foundation_1',
