@@ -476,6 +476,74 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  /** buildings: decrease build time */
+  fast_building_1: {
+    id: 'fast_building_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['construction'],
+    precedes: ['fast_building_2'],
+    effects: [
+      {
+        variable: 'buildings.farm.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.mine.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.factory.build_time',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  fast_building_2: {
+    id: 'fast_building_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['fast_building_1'],
+    precedes: ['fast_building_3'],
+    effects: [
+      {
+        variable: 'buildings.refinery.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.foundry.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.power_plant.build_time',
+        multiplier: 0.85,
+      },
+    ],
+  },
+  fast_building_3: {
+    id: 'fast_building_3',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['fast_building_2'],
+    effects: [
+      {
+        variable: 'buildings.exchange.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.research_lab.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.shipyard.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.fortress.build_time',
+        multiplier: 0.85,
+      },
+    ],
+  },
+
   /** buildings: increase production */
   improved_production_1: { // generally increased basic building production
     id: 'improved_production_1',
