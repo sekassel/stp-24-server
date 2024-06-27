@@ -1,14 +1,15 @@
 import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
-import {SystemDocument} from './system.schema';
+import {System, SystemDocument} from './system.schema';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {SYSTEM_UPGRADES} from '../game-logic/system-upgrade';
 import {calculateVariable, calculateVariables, getVariables} from '../game-logic/variables';
 import {SYSTEM_TYPES} from '../game-logic/system-types';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {District, Variable} from '../game-logic/types';
-import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
+import {BUILDING_NAMES, BuildingName, BUILDINGS} from '../game-logic/buildings';
 import {ResourceName} from '../game-logic/resources';
 import {EmpireLogicService} from '../empire/empire-logic.service';
+import {AggregateResult} from '../game-logic/aggregates';
 
 @Injectable()
 export class SystemLogicService {
@@ -181,5 +182,37 @@ export class SystemLogicService {
         empire.markModified('resources');
       }
     }
+  }
+
+  maxHealth(system: System, empire: Empire, variables?: Record<Variable, number>, aggregate?: AggregateResult): number {
+    const healthVariable: Variable = `systems.${system.upgrade}.health`;
+    let relevantVariables: Partial<Record<Variable, number>>;
+    if (variables) {
+      relevantVariables = variables;
+    } else {
+      relevantVariables = {
+        [healthVariable]: SYSTEM_UPGRADES[system.upgrade].health,
+        'buildings.fortress.health': BUILDINGS.fortress.health,
+      };
+      calculateVariables(relevantVariables, empire, system);
+    }
+    const baseHealth = relevantVariables[healthVariable]!;
+    const fortressCount = system.buildings.filter(b => b === 'fortress').length;
+    const fortressBonus = fortressCount * relevantVariables['buildings.fortress.health']!;
+    const total = baseHealth + fortressBonus;
+    if (aggregate) {
+      aggregate.total += total;
+      aggregate.items.push({
+        variable: healthVariable,
+        count: 1,
+        subtotal: baseHealth,
+      });
+      fortressBonus && aggregate.items.push({
+        variable: 'buildings.fortress.health',
+        count: fortressCount,
+        subtotal: fortressBonus,
+      });
+    }
+    return total;
   }
 }

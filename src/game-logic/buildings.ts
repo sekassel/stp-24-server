@@ -134,6 +134,7 @@ export const BUILDINGS = {
   fortress: {
     id: 'fortress',
     build_time: 12,
+    health: 100,
     cost: {
       minerals: 75, // cheap_buildings tech tree
       alloys: 75, // cheap_buildings tech tree
