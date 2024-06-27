@@ -68,9 +68,9 @@ export class AggregateService {
     return aggregate;
   }
 
-  aggregateSystemHealth(empire: Empire, system: System): AggregateResult {
+  aggregateSystemHealthOrDefense(empire: Empire, system: System, which: 'health' | 'defense'): AggregateResult {
     const aggregate: AggregateResult = {items: [], total: 0};
-    this.systemLogicService.maxHealth(system as SystemDocument, empire as EmpireDocument, undefined, aggregate);
+    this.systemLogicService.maxHealthOrDefense(system as SystemDocument, empire as EmpireDocument, which, undefined, aggregate);
     return aggregate;
   }
 

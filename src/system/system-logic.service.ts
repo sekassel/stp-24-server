@@ -184,31 +184,32 @@ export class SystemLogicService {
     }
   }
 
-  maxHealth(system: System, empire: Empire, variables?: Record<Variable, number>, aggregate?: AggregateResult): number {
-    const healthVariable: Variable = `systems.${system.upgrade}.health`;
+  maxHealthOrDefense(system: System, empire: Empire, which: 'health' | 'defense', variables?: Record<Variable, number>, aggregate?: AggregateResult): number {
+    const upgradeVariable: Variable = `systems.${system.upgrade}.${which}`;
+    const fortressVariable: Variable = `buildings.fortress.${which}`;
     let relevantVariables: Partial<Record<Variable, number>>;
     if (variables) {
       relevantVariables = variables;
     } else {
       relevantVariables = {
-        [healthVariable]: SYSTEM_UPGRADES[system.upgrade].health,
-        'buildings.fortress.health': BUILDINGS.fortress.health,
+        [upgradeVariable]: SYSTEM_UPGRADES[system.upgrade][which],
+        [fortressVariable]: BUILDINGS.fortress[which],
       };
       calculateVariables(relevantVariables, empire, system);
     }
-    const baseHealth = relevantVariables[healthVariable]!;
+    const baseValue = relevantVariables[upgradeVariable]!;
     const fortressCount = system.buildings.filter(b => b === 'fortress').length;
-    const fortressBonus = fortressCount * relevantVariables['buildings.fortress.health']!;
-    const total = baseHealth + fortressBonus;
+    const fortressBonus = fortressCount * relevantVariables[fortressVariable]!;
+    const total = baseValue + fortressBonus;
     if (aggregate) {
       aggregate.total += total;
       aggregate.items.push({
-        variable: healthVariable,
+        variable: upgradeVariable,
         count: 1,
-        subtotal: baseHealth,
+        subtotal: baseValue,
       });
       fortressBonus && aggregate.items.push({
-        variable: 'buildings.fortress.health',
+        variable: fortressVariable,
         count: fortressCount,
         subtotal: fortressBonus,
       });

@@ -202,6 +202,11 @@ export class SystemUpgrade {
   health: number;
 
   @ApiProperty({
+    description: 'The base defense of the system.',
+  })
+  defense: number;
+
+  @ApiProperty({
     description: 'The population growth rate of the system.',
   })
   pop_growth: number;
@@ -237,6 +242,11 @@ export class Building {
     description: '(Fortress) Bonus to system health.'
   })
   health?: number;
+
+  @ApiPropertyOptional({
+    description: '(Fortress) Bonus to system defense.'
+  })
+  defense?: number;
 
   @ApiProperty({
     description: 'The cost to construct the building, specified in various resources.',
