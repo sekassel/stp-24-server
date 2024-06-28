@@ -113,7 +113,7 @@ export class GameLogicService {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
       const empireJobs = jobs.filter(job => job.empire.equals(empire._id));
-      this.jobService.updateJobs(empire, empireJobs, empireSystems);
+      this.jobService.updateJobs(empire, empireJobs, systems);
       this.updateEmpire(empire, empireSystems);
     }
   }
