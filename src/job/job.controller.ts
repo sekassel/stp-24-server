@@ -134,7 +134,7 @@ export class JobController {
     @AuthUser() user: User,
   ): Promise<Job | null> {
     const userEmpire = await this.checkUserAccess(game, user, empire);
-    const job = await this.jobService.findOne(id) ?? notFound('Job not found.');
+    const job = await this.jobService.find(id) ?? notFound('Job not found.');
     if (job.cost && job.progress < job.total) {
       this.jobLogicService.refundResources(userEmpire, job);
       await this.empireService.saveAll([userEmpire]);
