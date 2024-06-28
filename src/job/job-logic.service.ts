@@ -58,7 +58,7 @@ export class JobLogicService {
       }
       case JobType.UPGRADE: {
         if (!system) notFound(dto.system);
-        if (system.owner !== empire._id && system.upgrade !== 'unexplored' && system.upgrade !== 'explored') {
+        if (!empire._id.equals(system.owner) && system.upgrade !== 'unexplored' && system.upgrade !== 'explored') {
           throw new BadRequestException('You can only upgrade systems you own.');
         }
         const nextUpgrade = SYSTEM_UPGRADES[system.upgrade]?.next;
