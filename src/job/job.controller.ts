@@ -60,7 +60,7 @@ export class JobController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('empire', ObjectIdPipe) empire: Types.ObjectId,
     @AuthUser() user: User,
-    @Query('owner', OptionalObjectIdPipe) system?: Types.ObjectId | undefined,
+    @Query('system', OptionalObjectIdPipe) system?: Types.ObjectId | undefined,
     @Query('type') type?: string,
   ): Promise<Job[]> {
     await this.checkUserAccess(game, user, empire);
