@@ -12,6 +12,7 @@ import {JobLogicService} from './job-logic.service';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {GlobalSchema} from '../util/schema';
 import {TECHNOLOGIES} from '../game-logic/technologies';
+import {ErrorResponse} from '../util/error-response';
 
 @Injectable()
 @EventRepository()
@@ -114,10 +115,11 @@ export class JobService extends MongooseRepository<Job> {
       job.result = {statusCode: 200, error: '', message: 'Job completed successfully'};
     } catch (error) {
       if (error instanceof HttpException) {
-        job.result = {
+        const response = error.getResponse();
+        job.result = typeof response === 'object' ? response as ErrorResponse : {
           statusCode: error.getStatus(),
-          error: HttpStatus[error.getStatus()],
-          message: error.message,
+          error: error.message,
+          message: response,
         };
       } else {
         throw error;
