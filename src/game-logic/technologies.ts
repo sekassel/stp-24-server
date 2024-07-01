@@ -477,12 +477,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** buildings: decrease build time */
-  fast_building_construction_1: {
-    id: 'fast_building_construction_1',
+  faster_building_construction_1: {
+    id: 'faster_building_construction_1',
     tags: ['engineering', 'construction'],
     cost: 2,
     requires: ['construction'],
-    precedes: ['fast_building_construction_2'],
+    precedes: ['faster_building_construction_2'],
     effects: [
       {
         variable: 'buildings.farm.build_time',
@@ -498,12 +498,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_building_construction_2: {
-    id: 'fast_building_construction_2',
+  faster_building_construction_2: {
+    id: 'faster_building_construction_2',
     tags: ['engineering', 'construction'],
     cost: 4,
-    requires: ['fast_building_construction_1'],
-    precedes: ['fast_building_construction_3'],
+    requires: ['faster_building_construction_1'],
+    precedes: ['faster_building_construction_3'],
     effects: [
       {
         variable: 'buildings.refinery.build_time',
@@ -519,11 +519,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_building_construction_3: {
-    id: 'fast_building_construction_3',
+  faster_building_construction_3: {
+    id: 'faster_building_construction_3',
     tags: ['engineering', 'construction'],
     cost: 8,
-    requires: ['fast_building_construction_2'],
+    requires: ['faster_building_construction_2'],
     effects: [
       {
         variable: 'buildings.exchange.build_time',
@@ -969,12 +969,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** all districts: reduce build time */
-  fast_district_construction_1: {
-    id: 'fast_district_construction_1',
+  faster_district_construction_1: {
+    id: 'faster_district_construction_1',
     tags: ['engineering', 'construction'],
     cost: 2,
     requires: ['construction'],
-    precedes: ['fast_district_construction_2'],
+    precedes: ['faster_district_construction_2'],
     effects: [
       {
         variable: 'districts.mining.build_time',
@@ -990,12 +990,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_district_construction_2: {
-    id: 'fast_district_construction_2',
+  faster_district_construction_2: {
+    id: 'faster_district_construction_2',
     tags: ['engineering', 'construction'],
     cost: 4,
-    requires: ['fast_district_construction_1'],
-    precedes: ['fast_district_construction_3'],
+    requires: ['faster_district_construction_1'],
+    precedes: ['faster_district_construction_3'],
     effects: [
       {
         variable: 'districts.city.build_time',
@@ -1007,11 +1007,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_district_construction_3: {
-    id: 'fast_district_construction_3',
+  faster_district_construction_3: {
+    id: 'faster_district_construction_3',
     tags: ['engineering', 'construction'],
     cost: 8,
-    requires: ['fast_district_construction_2'],
+    requires: ['faster_district_construction_2'],
     effects: [
       {
         variable: 'districts.ancient_foundry.build_time',
