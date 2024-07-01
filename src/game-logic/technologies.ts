@@ -482,7 +482,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['engineering', 'construction'],
     cost: 2,
     requires: ['construction'],
-    precedes: ['faster_building_construction_2'],
     effects: [
       {
         variable: 'buildings.farm.build_time',
@@ -503,7 +502,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['engineering', 'construction'],
     cost: 4,
     requires: ['faster_building_construction_1'],
-    precedes: ['faster_building_construction_3'],
     effects: [
       {
         variable: 'buildings.refinery.build_time',
@@ -974,7 +972,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['engineering', 'construction'],
     cost: 2,
     requires: ['construction'],
-    precedes: ['faster_district_construction_2'],
     effects: [
       {
         variable: 'districts.mining.build_time',
@@ -995,7 +992,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['engineering', 'construction'],
     cost: 4,
     requires: ['faster_district_construction_1'],
-    precedes: ['faster_district_construction_3'],
     effects: [
       {
         variable: 'districts.city.build_time',
