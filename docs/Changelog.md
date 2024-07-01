@@ -188,3 +188,14 @@
 
 ## Removals
 - Removed the technology cost reduction when the user has already unlocked the technology in a previous game.
+
+# v3.0.1 (2024-07-01)
+
+## Bugfixes
+
+* The Jobs endpoint now properly filters with the `system` query parameter.
+* Deleting a job no longer results in a `404 Not Found` error.
+* Colonizing a system no longer fails with a `404 Not Found` error.
+* Upgrading or developing a system no longer fails with a `400 Bad Request` error.
+* Jobs on the same system can no longer progress in parallel.
+* The Job status now reflects the contents of other `ErrorResponse`s.

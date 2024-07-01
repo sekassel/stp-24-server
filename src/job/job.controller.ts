@@ -60,7 +60,7 @@ export class JobController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('empire', ObjectIdPipe) empire: Types.ObjectId,
     @AuthUser() user: User,
-    @Query('owner', OptionalObjectIdPipe) system?: Types.ObjectId | undefined,
+    @Query('system', OptionalObjectIdPipe) system?: Types.ObjectId | undefined,
     @Query('type') type?: string,
   ): Promise<Job[]> {
     await this.checkUserAccess(game, user, empire);
@@ -134,7 +134,7 @@ export class JobController {
     @AuthUser() user: User,
   ): Promise<Job | null> {
     const userEmpire = await this.checkUserAccess(game, user, empire);
-    const job = await this.jobService.findOne(id) ?? notFound('Job not found.');
+    const job = await this.jobService.find(id) ?? notFound('Job not found.');
     if (job.cost && job.progress < job.total) {
       this.jobLogicService.refundResources(userEmpire, job);
       await this.empireService.saveAll([userEmpire]);
