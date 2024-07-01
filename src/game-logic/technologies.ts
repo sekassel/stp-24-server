@@ -486,15 +486,15 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'buildings.farm.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'buildings.mine.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'buildings.power_plant.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
     ],
   },
@@ -507,15 +507,15 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'buildings.refinery.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'buildings.foundry.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'buildings.factory.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
     ],
   },
@@ -527,19 +527,19 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'buildings.exchange.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'buildings.research_lab.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'buildings.shipyard.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'buildings.fortress.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
     ],
   },
