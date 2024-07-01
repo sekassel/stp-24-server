@@ -9,6 +9,7 @@ import {Empire} from './empire.schema';
 import {EmpireService} from './empire.service';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
+import {MemberService} from '../member/member.service';
 
 @Controller('games/:game/empires')
 @ApiTags('Game Empires')
@@ -17,6 +18,7 @@ import {Types} from 'mongoose';
 @Throttled()
 export class EmpireController {
   constructor(
+    private readonly memberService: MemberService,
     private readonly empireService: EmpireService,
   ) {
   }
@@ -39,7 +41,9 @@ export class EmpireController {
     @Param('empire', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<Empire | ReadEmpireDto | null> {
     const empire = await this.empireService.find(id) ?? notFound(id);
-    return currentUser._id.equals(empire.user) ? empire : this.empireService.mask(empire);
+    return currentUser._id.equals(empire.user) || await this.memberService.isSpectator(empire.game, currentUser._id)
+      ? empire
+      : this.empireService.mask(empire);
   }
 
   @Patch(':empire')
