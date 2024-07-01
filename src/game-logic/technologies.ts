@@ -1372,12 +1372,12 @@ generate_sequence('faster_research', ['physics', 'computing'], 'empire.technolog
   {multiplierIncrement: -0.1}, ['computing']);
 
 /** systems: reduced upgrade time */
-generate_sequence('faster_explored_system_upgrade', ['engineering', 'construction'],
+generate_sequence('faster_explored_system_upgrade', ['physics', 'computing'],
   'systems.explored.upgrade_time',
   {
     multiplierIncrement: -0.1,
     exponentialBase: 2,
-  }, ['construction']);
+  }, ['computing']);
 generate_sequence('faster_colonized_system_upgrade', ['engineering', 'construction'],
   'systems.colonized.upgrade_time',
   {
