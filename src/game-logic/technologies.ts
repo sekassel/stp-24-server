@@ -978,15 +978,15 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'districts.mining.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'districts.agriculture.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'districts.energy.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
     ],
   },
@@ -999,11 +999,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'districts.city.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'districts.industry.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
     ],
   },
@@ -1015,19 +1015,19 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'districts.ancient_foundry.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'districts.ancient_factory.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'districts.ancient_refinery.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
       {
         variable: 'districts.research_site.build_time',
-        multiplier: 0.85,
+        multiplier: 0.75,
       },
     ],
   },
