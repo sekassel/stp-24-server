@@ -20,7 +20,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'technologies.society.cost_multiplier',
-        multiplier: 0.9,
+        multiplier: 0.95,
       },
       {
         variable: 'technologies.society.time_multiplier',
@@ -40,7 +40,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'technologies.society.time_multiplier',
-        multiplier: 0.95,
+        multiplier: 0.9,
       },
     ],
   },
@@ -55,7 +55,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'technologies.physics.time_multiplier',
-        multiplier: 0.95,
+        multiplier: 0.9,
       },
     ],
   },
@@ -66,7 +66,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'technologies.engineering.cost_multiplier',
-        multiplier: 0.9,
+        multiplier: 0.95,
       },
       {
         variable: 'technologies.engineering.time_multiplier',
@@ -86,7 +86,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'technologies.construction.time_multiplier',
-        multiplier: 0.95,
+        multiplier: 0.9,
       },
     ],
   },
