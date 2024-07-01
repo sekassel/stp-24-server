@@ -1389,13 +1389,13 @@ generate_sequence('faster_upgraded_system_upgrade', ['engineering', 'constructio
   {
     multiplierIncrement: -0.1,
     exponentialBase: 2,
-  }, ['construction']);
+  }, ['construction', 'faster_colonized_system_upgrade_3']);
 generate_sequence('faster_developed_system_upgrade', ['engineering', 'construction'],
   'systems.developed.upgrade_time',
   {
     multiplierIncrement: -0.1,
     exponentialBase: 2,
-  }, ['construction']);
+  }, ['construction', 'faster_upgraded_system_upgrade_3']);
 
 // basic resources
 generate_sequence('energy_production', ['physics', 'energy'],
