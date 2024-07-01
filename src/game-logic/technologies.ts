@@ -287,41 +287,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /** systems: reduced upgrade time */
-  fast_system_upgrade_1: {
-    id: 'fast_system_upgrade_1',
-    tags: ['engineering', 'construction'],
-    cost: 2,
-    requires: ['fast_district_construction_1'],
-    precedes: ['fast_system_upgrade_2'],
-    effects: [
-      {
-        variable: 'systems.explored.upgrade_time',
-        multiplier: 0.85,
-      },
-      {
-        variable: 'systems.colonized.upgrade_time',
-        multiplier: 0.85,
-      },
-    ],
-  },
-  fast_system_upgrade_2: {
-    id: 'fast_system_upgrade_2',
-    tags: ['engineering', 'construction'],
-    cost: 4,
-    requires: ['fast_system_upgrade_1'],
-    effects: [
-      {
-        variable: 'systems.upgraded.upgrade_time',
-        multiplier: 0.85,
-      },
-      {
-        variable: 'systems.developed.upgrade_time',
-        multiplier: 0.85,
-      },
-    ],
-  },
-
   /**
    * Technologies for buildings
    * */
@@ -1409,6 +1374,32 @@ generate_sequence('unemployed_pop_cost', ['society', 'state'],
   }, ['demographic']); // -5% -> -15% -> -45%
 generate_sequence('faster_research', ['physics', 'computing'], 'empire.technologies.research_time',
   {multiplierIncrement: -0.1}, ['computing']);
+
+/** systems: reduced upgrade time */
+generate_sequence('faster_explored_system_upgrade', ['engineering', 'construction'],
+  'systems.explored.upgrade_time',
+  {
+    multiplierIncrement: -0.1,
+    exponentialBase: 2,
+  }, ['construction']);
+generate_sequence('faster_colonized_system_upgrade', ['engineering', 'construction'],
+  'systems.colonized.upgrade_time',
+  {
+    multiplierIncrement: -0.1,
+    exponentialBase: 2,
+  }, ['construction']);
+generate_sequence('faster_upgraded_system_upgrade', ['engineering', 'construction'],
+  'systems.upgraded.upgrade_time',
+  {
+    multiplierIncrement: -0.1,
+    exponentialBase: 2,
+  }, ['construction']);
+generate_sequence('faster_developed_system_upgrade', ['engineering', 'construction'],
+  'systems.developed.upgrade_time',
+  {
+    multiplierIncrement: -0.1,
+    exponentialBase: 2,
+  }, ['construction']);
 
 // basic resources
 generate_sequence('energy_production', ['physics', 'energy'],
