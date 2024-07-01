@@ -973,7 +973,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'fast_district_construction_1',
     tags: ['engineering', 'construction'],
     cost: 2,
-    requires: ['fast_building_construction_1'],
+    requires: ['construction'],
     precedes: ['fast_district_construction_2'],
     effects: [
       {
