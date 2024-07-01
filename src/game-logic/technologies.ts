@@ -493,10 +493,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.85,
       },
       {
-        variable: 'buildings.factory.build_time',
-        multiplier: 0.85,
-      },
-      {
         variable: 'buildings.power_plant.build_time',
         multiplier: 0.85,
       },
@@ -515,6 +511,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'buildings.foundry.build_time',
+        multiplier: 0.85,
+      },
+      {
+        variable: 'buildings.factory.build_time',
         multiplier: 0.85,
       },
     ],
