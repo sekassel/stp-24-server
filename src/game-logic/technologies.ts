@@ -984,6 +984,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'districts.agriculture.build_time',
         multiplier: 0.85,
       },
+      {
+        variable: 'districts.energy.build_time',
+        multiplier: 0.85,
+      },
     ],
   },
   fast_district_construction_2: {
@@ -993,10 +997,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['fast_district_construction_1'],
     precedes: ['fast_district_construction_3'],
     effects: [
-      {
-        variable: 'districts.energy.build_time',
-        multiplier: 0.85,
-      },
       {
         variable: 'districts.city.build_time',
         multiplier: 0.85,
