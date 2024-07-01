@@ -12,6 +12,8 @@ import {Throttled} from '../util/throttled.decorator';
 import {ExplainedVariable, Variable} from './types';
 import {explainVariable, getEmpireEffectSources} from './variables';
 import {AggregateService} from './aggregate.service';
+import {EmpireDocument} from '../empire/empire.schema';
+import {MemberService} from '../member/member.service';
 
 @Controller('games/:game/empires/:empire')
 @ApiTags('Game Logic')
@@ -20,6 +22,7 @@ import {AggregateService} from './aggregate.service';
 @Throttled()
 export class GameLogicController {
   constructor(
+    private readonly memberService: MemberService,
     private readonly empireService: EmpireService,
     private readonly systemService: SystemService,
     private readonly aggregateService: AggregateService,
@@ -37,9 +40,7 @@ export class GameLogicController {
     @Query('variables', ParseArrayPipe) variables: Variable[],
   ): Promise<ExplainedVariable[]> {
     const empire = await this.empireService.find(id) ?? notFound(id);
-    if (!currentUser._id.equals(empire.user)) {
-      throw new ForbiddenException('Cannot view another user\'s empire variable.');
-    }
+    await this.checkUserAccess(currentUser, empire);
     const effectSources = getEmpireEffectSources(empire);
     return variables.map(v => explainVariable(v, effectSources));
   }
@@ -56,9 +57,7 @@ export class GameLogicController {
     @Param('variable') variable: Variable,
   ): Promise<ExplainedVariable> {
     const empire = await this.empireService.find(id) ?? notFound(id);
-    if (!currentUser._id.equals(empire.user)) {
-      throw new ForbiddenException('Cannot view another user\'s empire variable.');
-    }
+    await this.checkUserAccess(currentUser, empire);
     const effectSources = getEmpireEffectSources(empire);
     return explainVariable(variable, effectSources);
   }
@@ -97,9 +96,7 @@ ${Object.entries(aggregate.optionalParams ?? {}).map(([param, desc]) => `- \`${p
     @Query() query: Record<string, string>,
   ): Promise<AggregateResult> {
     const empire = await this.empireService.find(id) ?? notFound(id);
-    if (!currentUser._id.equals(empire.user)) {
-      throw new ForbiddenException('Cannot view another user\'s empire variable.');
-    }
+    await this.checkUserAccess(currentUser, empire);
     const systems = await this.systemService.findAll({owner: id});
     const aggregateFn = AGGREGATES[aggregate as AggregateId] ?? notFound(aggregate);
     if (aggregateFn.params) {
@@ -109,6 +106,17 @@ ${Object.entries(aggregate.optionalParams ?? {}).map(([param, desc]) => `- \`${p
       }
     }
     return aggregateFn.compute(this.aggregateService, empire, systems, query);
+  }
+
+  private async checkUserAccess(currentUser: User, empire: EmpireDocument) {
+    if (currentUser._id.equals(empire.user)) {
+      return true;
+    }
+    if (await this.memberService.isSpectator(empire.game, currentUser._id)) {
+      // user is a spectator
+      return true;
+    }
+    throw new ForbiddenException('Cannot view another user\'s empire variable.');
   }
 }
 
