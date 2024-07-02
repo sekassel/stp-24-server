@@ -55,7 +55,7 @@ export class WarController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Query('empire', OptionalObjectIdPipe) empire?: Types.ObjectId | undefined,
   ): Promise<War[]> {
-    return this.warService.findAll({game, empire});
+    return this.warService.findAll(empire ? {game, $or: [{attacker: empire}, {defender: empire}]} : {game});
   }
 
   @Get(':id')
