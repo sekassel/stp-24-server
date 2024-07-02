@@ -13,4 +13,8 @@ export class WarService extends MongooseRepository<War> {
   ) {
     super(model);
   }
+
+  emit(event: string, war: War) {
+    this.eventEmitter.emit(`games.${war.game}.wars.${war._id}.${event}`, war);
+  }
 }
