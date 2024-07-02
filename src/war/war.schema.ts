@@ -11,28 +11,28 @@ export type WarDocument = War & Document<Types.ObjectId>;
 export class War extends GlobalSchema {
   @Ref('Game')
   @ApiProperty({
-    description: 'ID of the game in which the war is taking place',
+    description: 'ID of the game in which the war is taking place.',
     ...MONGO_ID_FORMAT,
   })
   game: Types.ObjectId;
 
   @Ref('Empire')
   @ApiProperty({
-    description: 'ID of the attacking empire',
+    description: 'ID of the attacking empire.',
     ...MONGO_ID_FORMAT,
   })
   attacker: Types.ObjectId;
 
   @Ref('Empire')
   @ApiProperty({
-    description: 'ID of the defending empire',
+    description: 'ID of the defending empire.',
     ...MONGO_ID_FORMAT,
   })
   defender: Types.ObjectId;
 
   @Prop({type: String, required: false})
   @ApiPropertyOptional({
-    description: 'Custom name of the war',
+    description: 'Custom name of the war.',
   })
   @IsOptional()
   @IsString()
@@ -40,7 +40,7 @@ export class War extends GlobalSchema {
 
   @Prop({type: Object, default: {}})
   @ApiPropertyOptional({
-    description: 'Custom data, visible to everyone',
+    description: 'Custom data, visible to everyone.',
   })
   @IsOptional()
   @IsObject()
