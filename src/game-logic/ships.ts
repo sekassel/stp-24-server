@@ -22,4 +22,4 @@ export const SHIP_TYPES = {
     },
   },
 } as const satisfies Record<string, ShipType>;
-export type SystemTypeName = keyof typeof SHIP_TYPES;
+export type ShipTypeName = keyof typeof SHIP_TYPES;
