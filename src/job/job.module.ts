@@ -8,6 +8,7 @@ import {JobHandler} from './job.handler';
 import {SystemModule} from '../system/system.module';
 import {UserModule} from '../user/user.module';
 import {JobLogicService} from './job-logic.service';
+import {MemberModule} from '../member/member.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import {JobLogicService} from './job-logic.service';
     UserModule,
     EmpireModule,
     SystemModule,
+    MemberModule,
   ],
   controllers: [JobController],
   providers: [JobService, JobHandler, JobLogicService],
