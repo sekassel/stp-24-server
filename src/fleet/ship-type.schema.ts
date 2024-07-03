@@ -4,6 +4,7 @@ import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {IsNumber, IsObject, IsString} from 'class-validator';
 import {ApiProperty} from '@nestjs/swagger';
 import {ResourceName} from '../game-logic/resources';
+import {ShipTypeName} from "../game-logic/ships";
 
 export type ShipTypeDocument = ShipType & Document;
 

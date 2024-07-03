@@ -1,9 +1,10 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
-import {IsNumber, IsObject, IsOptional, IsEnum} from 'class-validator';
+import {IsNumber, IsObject, IsOptional, IsIn} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {AsObjectId, Ref} from '@mean-stream/nestx';
+import {SHIP_TYPES} from "../game-logic/ships";
 
 export type ShipDocument = Ship & Document<Types.ObjectId>;
 
@@ -23,10 +24,10 @@ export class Ship extends GlobalSchema {
   @AsObjectId()
   fleet: Types.ObjectId;
 
-  @Prop({required: true, enum: ShipTypeName})
+  @Prop({required: true})
   @ApiProperty({description: 'Type of the ship.'})
-  @IsEnum(ShipTypeName)
-  type: ShipTypeName;
+  @IsIn(Object.values(SHIP_TYPES))
+  type: string;
 
   @Prop({required: true})
   @ApiProperty({description: 'Current health of the ship.'})

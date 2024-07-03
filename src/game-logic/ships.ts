@@ -1,5 +1,8 @@
+import {ShipType} from "../fleet/ship-type.schema";
+
 export const SHIP_TYPES = {
   fighter: {
+    id: 'fighter',
     build_time: 3,
     health: 100,
     speed: 5,
