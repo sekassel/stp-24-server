@@ -1,5 +1,5 @@
 import {
-  Body,
+  Body, ConflictException,
   Controller,
   Delete,
   ForbiddenException,
@@ -11,6 +11,7 @@ import {
   Query
 } from "@nestjs/common";
 import {
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
@@ -75,6 +76,7 @@ export class WarController {
   @ApiOperation({description: 'Create a new war.'})
   @ApiCreatedResponse({type: War})
   @ApiForbiddenResponse({description: 'You are not the attacker in this war.'})
+  @ApiConflictResponse({description: 'A war is already ongoing between these empires.'})
   @NotFound()
   async createWar(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
@@ -94,7 +96,7 @@ export class WarController {
       ],
     });
     if (existingWar) {
-      throw new ForbiddenException('A war is already ongoing between these empires.');
+      throw new ConflictException('A war is already ongoing between these empires.');
     }
 
     return this.warService.create({...createWarDto, game});
