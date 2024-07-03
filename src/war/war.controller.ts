@@ -85,6 +85,18 @@ export class WarController {
     if (!userEmpire._id.equals(createWarDto.attacker)) {
       throw new ForbiddenException('You are not the attacker in this war.');
     }
+
+    const existingWar = await this.warService.findOne({
+      game,
+      $or: [
+        {attacker: createWarDto.attacker, defender: createWarDto.defender},
+        {attacker: createWarDto.defender, defender: createWarDto.attacker},
+      ],
+    });
+    if (existingWar) {
+      throw new ForbiddenException('A war is already ongoing between these empires.');
+    }
+
     return this.warService.create({...createWarDto, game});
   }
 
