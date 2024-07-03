@@ -67,7 +67,7 @@ export class WarController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<War | null> {
-    return this.warService.findOne(id);
+    return this.warService.find(id);
   }
 
   @Post()
@@ -100,10 +100,7 @@ export class WarController {
     @Body() updateWarDto: UpdateWarDto,
     @AuthUser() user: User,
   ): Promise<War | null> {
-    const {war, userEmpire} = await this.checkWarAccess(game, user, id);
-    if (!war.attacker.equals(userEmpire._id)) {
-      throw new ForbiddenException('You are not the attacker in this war.');
-    }
+    await this.checkWarAccess(game, user, id);
     return this.warService.update(id, updateWarDto);
   }
 
@@ -118,10 +115,7 @@ export class WarController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<War | null> {
-    const {war, userEmpire} = await this.checkWarAccess(game, user, id);
-    if (!war.attacker.equals(userEmpire._id)) {
-      throw new ForbiddenException('You are not the attacker in this war.');
-    }
+    await this.checkWarAccess(game, user, id);
     return this.warService.delete(id);
   }
 
@@ -133,12 +127,14 @@ export class WarController {
     return userEmpire;
   }
 
-  private async checkWarAccess(game: Types.ObjectId, user: User, warId: Types.ObjectId): Promise<{war: War, userEmpire: EmpireDocument}> {
+  private async checkWarAccess(game: Types.ObjectId, user: User, warId: Types.ObjectId) {
     const userEmpire = await this.findUserEmpire(game, user);
     const war = await this.warService.findOne(warId);
     if (!war || !war.game.equals(game)) {
       throw new NotFoundException('War not found.');
     }
-    return {war, userEmpire};
+    if (!war.attacker.equals(userEmpire._id)) {
+      throw new ForbiddenException('You are not the attacker in this war.');
+    }
   }
 }

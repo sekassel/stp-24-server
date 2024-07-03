@@ -6,10 +6,11 @@ export class CreateWarDto extends PickType(War, [
   'defender',
   'name',
   '_public',
-] as const) {
-}
+] as const) {}
 
 export class UpdateWarDto extends PartialType(
-  PickType(War, ['name', '_public'] as const),
-) {
-}
+  PickType(War, [
+    'name',
+    '_public'
+  ] as const),
+) {}

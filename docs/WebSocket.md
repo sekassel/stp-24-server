@@ -73,7 +73,7 @@ Some events are only visible to certain users for privacy reasons.
 | `games.<gameId>.systems.<systemId>.{created,updated,deleted}`             | [`System`](#model-System)                                                        | Game Members        |
 | `games.<gameId>.empires.<empireId>.{created,updated,deleted}`             | [`Empire`](#model-Empire) or [`ReadEmpireDto`](#model-ReadEmpireDto)<sup>3</sup> | Game Members        |
 | `games.<gameId>.empires.<empireId>.jobs.<jobId>.{created,updated,deleted}` | [`Job`](#model-Empire)                                                           | The Empire          |
-| `games.<gameId>.wars.<warId>.{created,updated,deleted}`       | [`War`](#model-War)                                                              | The War             |
+| `games.<gameId>.wars.<warId>.{created,updated,deleted}`       | [`War`](#model-War)                                                              | Game Members        |
 
 <sup>1</sup>: The shorthand notation `foo.{bar,baz}` means "either `foo.bar` or `foo.baz`" **in this table**. You **cannot** use this notation to subscribe to or unsubscribe from events!
 
