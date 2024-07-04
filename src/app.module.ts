@@ -25,6 +25,7 @@ import {FriendModule} from './friend/friend.module';
 import {JobModule} from './job/job.module';
 import {WarModule} from "./war/war.module";
 import {FleetModule} from "./fleet/fleet.module";
+import {ShipModule} from "./ship/ship.module";
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import {FleetModule} from "./fleet/fleet.module";
     JobModule,
     WarModule,
     FleetModule,
+    ShipModule,
     AchievementSummaryModule,
     AchievementModule,
     PresetsModule,
