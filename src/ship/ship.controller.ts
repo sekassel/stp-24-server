@@ -19,7 +19,7 @@ export class ShipController {
   ) {
   }
 
-  @Get(':fleet/ships')
+  @Get()
   @Auth()
   @ApiOperation({description: 'Get all ships in the fleet.'})
   @ApiOkResponse({type: [ReadShipDto]})
