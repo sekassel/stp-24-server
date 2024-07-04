@@ -1,6 +1,6 @@
 import {OmitType, PickType} from "@nestjs/swagger";
 import {Fleet} from "./fleet.schema";
-import {Ship} from "../game-logic/types";
+import {Ship} from "./ship.schema";
 
 export class CreateFleetDto extends OmitType(Fleet, [
   '_id',

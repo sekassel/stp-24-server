@@ -1,16 +1,15 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
-import {IsObject, IsOptional, IsString, ValidateNested} from 'class-validator';
+import {IsNumber, IsObject, IsOptional, IsIn} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {AsObjectId, Ref} from '@mean-stream/nestx';
-import {EffectSource} from "../game-logic/types";
-import {ShipTypeName} from "../game-logic/ships";
+import {SHIP_TYPES} from "../game-logic/ships";
 
-export type FleetDocument = Fleet & Document<Types.ObjectId>;
+export type ShipDocument = Ship & Document<Types.ObjectId>;
 
 @Schema(GLOBAL_SCHEMA_OPTIONS)
-export class Fleet extends GlobalSchema {
+export class Ship extends GlobalSchema {
   @Ref('Game')
   game: Types.ObjectId;
 
@@ -20,20 +19,25 @@ export class Fleet extends GlobalSchema {
   @IsOptional()
   empire?: Types.ObjectId;
 
-  @Prop({required: true})
-  @ApiProperty({description: 'Custom name of the fleet.'})
-  @IsString()
-  name: string;
-
-  @Prop({required: true})
-  @ApiProperty({description: 'ID of the system the fleet is currently stationed at.'})
+  @Ref('Fleet')
+  @ApiProperty({description: 'ID of the parent fleet.'})
   @AsObjectId()
-  location: Types.ObjectId;
+  fleet: Types.ObjectId;
 
-  @Prop({type: Map, of: Number})
-  @ApiProperty({description: 'Number of ships within this fleet if fully built.'})
-  @IsObject()
-  size: Record<ShipTypeName, number>;
+  @Prop({required: true})
+  @ApiProperty({description: 'Type of the ship.'})
+  @IsIn(Object.values(SHIP_TYPES))
+  type: string;
+
+  @Prop({required: true})
+  @ApiProperty({description: 'Current health of the ship.'})
+  @IsNumber()
+  health: number;
+
+  @Prop({required: true})
+  @ApiProperty({description: 'Total experience of the ship.'})
+  @IsNumber()
+  experience: number;
 
   @Prop({type: Object, default: {}})
   @ApiPropertyOptional({description: 'Custom data, visible only to the owner empire.'})
@@ -46,12 +50,6 @@ export class Fleet extends GlobalSchema {
   @IsObject()
   @IsOptional()
   _public?: Record<string, any>;
-
-  @Prop({type: [Object], default: []})
-  @ApiPropertyOptional({description: 'Custom effects.'})
-  @ValidateNested({each: true})
-  @IsOptional()
-  effects?: EffectSource[];
 }
 
-export const FleetSchema = SchemaFactory.createForClass(Fleet);
+export const ShipSchema = SchemaFactory.createForClass(Ship);

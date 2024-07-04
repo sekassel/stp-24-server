@@ -24,6 +24,7 @@ import {AuthService} from './auth/auth.service';
 import {FriendModule} from './friend/friend.module';
 import {JobModule} from './job/job.module';
 import {WarModule} from "./war/war.module";
+import {FleetModule} from "./fleet/fleet.module";
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import {WarModule} from "./war/war.module";
     EmpireModule,
     JobModule,
     WarModule,
+    FleetModule,
     AchievementSummaryModule,
     AchievementModule,
     PresetsModule,
