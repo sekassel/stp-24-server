@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Document, Model} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
@@ -9,6 +9,7 @@ import {COLOR_PALETTE, EMPIRE_PREFIX_PALETTE, EMPIRE_SUFFIX_PALETTE, MIN_EMPIRES
 import {generateTraits} from '../game-logic/traits';
 import {Member} from '../member/member.schema';
 import {EmpireLogicService} from './empire-logic.service';
+import {ResourceName} from '../game-logic/resources';
 
 @Injectable()
 @EventRepository()
@@ -40,11 +41,20 @@ export class EmpireService extends MongooseRepository<Empire> {
     return rest;
   }
 
-  updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto) {
+  updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto, free: boolean) {
     const {resources, ...rest} = dto;
     empire.set(rest);
     if (resources) {
-      this.empireLogicService.tradeResources(empire, resources);
+      if (free) {
+        for (const resource of Object.keys(resources) as ResourceName[]) {
+          if (resource === 'population') {
+            throw new BadRequestException('Cannot directly change empire population.');
+          }
+          empire.resources[resource] += resources[resource];
+        }
+      } else {
+        this.empireLogicService.tradeResources(empire, resources);
+      }
     }
   }
 

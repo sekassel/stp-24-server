@@ -5,6 +5,7 @@ import {SYSTEM_TYPES, SystemTypeName} from '../game-logic/system-types';
 import {IsIn, IsOptional} from 'class-validator';
 import {PartialType} from '../util/partial-type';
 import {RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
+import {ResourceName} from '../game-logic/resources';
 
 export class ReadEmpireDto extends OmitType(Empire, [
   'resources',
@@ -43,7 +44,9 @@ export class UpdateEmpireDto extends PartialType(PickType(Empire, [
 ] as const)) {
   @ApiPropertyOptional({
     ...RESOURCES_SCHEMA_PROPERTIES,
-    description: 'Update resources for market trades. The credits are automatically updated as well.',
+    description: 'Update (delta) resources for market trades. ' +
+      'The credits are automatically updated as well (unless the `free` query parameter is true). ' +
+      'Use negative values to sell resources, positive values to buy resources.',
   })
-  resources?: Record<string, number>;
+  resources?: Record<ResourceName, number>;
 }
