@@ -359,7 +359,7 @@ export class Ship {
   @Prop({required: true})
   @ApiProperty({description: 'Type of the ship.'})
   @IsIn(Object.values(SHIP_TYPES))
-  type: string;
+  type: ShipTypeName;
 
   @Prop({required: true})
   @ApiProperty({description: 'Current health of the ship.'})
