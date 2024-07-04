@@ -1,5 +1,3 @@
-import {ShipType} from "../fleet/ship-type.schema";
-
 export const SHIP_TYPES = {
   fighter: {
     id: 'fighter',
@@ -24,5 +22,5 @@ export const SHIP_TYPES = {
       energy: 10,
     },
   },
-} as const satisfies Record<string, ShipType>;
+} as const;
 export type ShipTypeName = keyof typeof SHIP_TYPES;

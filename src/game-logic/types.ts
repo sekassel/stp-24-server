@@ -3,8 +3,22 @@ import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {VARIABLES} from './variables';
 import {SYSTEM_TYPES, SystemTypeName} from './system-types';
 import {SchemaObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
-import {IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested} from 'class-validator';
+import {
+  IsArray,
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested
+} from 'class-validator';
 import {Type} from 'class-transformer';
+import {Prop} from "@nestjs/mongoose";
+import {SHIP_TYPES, ShipTypeName} from "./ships";
+import {AsObjectId, Ref} from "@mean-stream/nestx";
+import {Types} from "mongoose";
 
 export type DeepNumberKeys<T> = T extends Record<string, any> ? {
   [K in keyof T]-?: T[K] extends object ? `${K & string}.${DeepNumberKeys<T[K]>}` : T[K] extends number ? K & string : never;
@@ -283,4 +297,89 @@ export class District {
     ...RESOURCES_SCHEMA_PROPERTIES,
   })
   production: Partial<Record<ResourceName, number>>;
+}
+
+export class ShipType {
+  @Prop({required: true})
+  @ApiProperty()
+  @IsString()
+  id: string;
+
+  @Prop({required: true})
+  @ApiProperty({description: 'Duration in periods for building this ship.'})
+  @IsNumber()
+  build_time: number;
+
+  @Prop({required: true})
+  @ApiProperty({description: 'Base maximum health of the ship.'})
+  @IsNumber()
+  health: number;
+
+  @Prop({required: true})
+  @ApiProperty({description: 'Speed of the ship through systems and links.'})
+  @IsNumber()
+  speed: number;
+
+  @Prop({type: Map, of: Number})
+  @ApiProperty({description: 'Attack damage against each other type of ships.'})
+  @IsObject()
+  attack: Record<ShipTypeName, number>;
+
+  @Prop({type: Map, of: Number})
+  @ApiProperty({description: 'Defense against each other type of ship.'})
+  @IsObject()
+  defense: Record<ShipTypeName, number>;
+
+  @Prop({type: Object, default: {}})
+  @ApiProperty({description: 'Costs to build this type of ship.'})
+  @IsObject()
+  cost: Partial<Record<ResourceName, number>>;
+
+  @Prop({type: Object, default: {}})
+  @ApiProperty({description: 'Periodic cost to maintain this type of ship.'})
+  @IsObject()
+  upkeep: Partial<Record<ResourceName, number>>;
+}
+
+export class Ship {
+  @Ref('Game')
+  game: Types.ObjectId;
+
+  @Ref('Empire')
+  @ApiPropertyOptional({description: 'Owner Empire ID, or undefined if not owned by anyone (wild fleets).'})
+  @AsObjectId()
+  @IsOptional()
+  empire?: Types.ObjectId;
+
+  @Ref('Fleet')
+  @ApiProperty({description: 'ID of the parent fleet.'})
+  @AsObjectId()
+  fleet: Types.ObjectId;
+
+  @Prop({required: true})
+  @ApiProperty({description: 'Type of the ship.'})
+  @IsIn(Object.values(SHIP_TYPES))
+  type: string;
+
+  @Prop({required: true})
+  @ApiProperty({description: 'Current health of the ship.'})
+  @IsNumber()
+  health: number;
+
+  @Prop({required: true})
+  @ApiProperty({description: 'Total experience of the ship.'})
+  @IsNumber()
+  experience: number;
+
+  @Prop({type: Object, default: {}})
+  @ApiPropertyOptional({description: 'Custom data, visible only to the owner empire.'})
+  @IsObject()
+  @IsOptional()
+  _private?: Record<string, any>;
+
+  @Prop({type: Object, default: {}})
+  @ApiPropertyOptional({description: 'Custom data, visible to everyone.'})
+  @IsObject()
+  @IsOptional()
+  _public?: Record<string, any>;
 }

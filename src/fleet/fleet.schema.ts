@@ -4,8 +4,8 @@ import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {IsObject, IsOptional, IsString, ValidateNested} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {AsObjectId, Ref} from '@mean-stream/nestx';
-import {EffectSource} from "../game-logic/types";
-import {ShipType} from "./ship-type.schema";
+import {EffectSource, ShipType} from "../game-logic/types";
+import {ShipTypeName} from "../game-logic/ships";
 
 export type FleetDocument = Fleet & Document<Types.ObjectId>;
 
@@ -33,7 +33,7 @@ export class Fleet extends GlobalSchema {
   @Prop({type: Map, of: Number})
   @ApiProperty({description: 'Number of ships within this fleet if fully built.'})
   @IsObject()
-  size: Record<ShipType, number>;
+  size: Record<ShipTypeName, number>;
 
   @Prop({type: Object, default: {}})
   @ApiPropertyOptional({description: 'Custom data, visible only to the owner empire.'})
