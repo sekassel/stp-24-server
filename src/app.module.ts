@@ -23,6 +23,7 @@ import {IncomingMessage} from 'http';
 import {AuthService} from './auth/auth.service';
 import {FriendModule} from './friend/friend.module';
 import {JobModule} from './job/job.module';
+import {WarModule} from "./war/war.module";
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import {JobModule} from './job/job.module';
     SystemModule,
     EmpireModule,
     JobModule,
+    WarModule,
     AchievementSummaryModule,
     AchievementModule,
     PresetsModule,
