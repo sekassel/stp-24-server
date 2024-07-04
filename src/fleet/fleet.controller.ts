@@ -57,7 +57,7 @@ export class FleetController {
     @AuthUser() user: User,
   ): Promise<Fleet | null> {
     const empire = await this.checkUserAccess(game, user);
-    const system = await this.systemService.findOne(createFleetDto.location);
+    const system = await this.systemService.find(createFleetDto.location);
     if (!system) {
       throw new NotFoundException('System not found.');
     }
@@ -85,11 +85,7 @@ export class FleetController {
     @Query('empire', OptionalObjectIdPipe) empire?: Types.ObjectId | undefined,
   ): Promise<ReadFleetDto[]> {
     const fleets = await this.fleetService.findAll(empire ? {game, empire} : {game});
-    return fleets.map(fleet => {
-      // Exclude _private and effects
-      const {_id, game, empire, name, location, size, _public} = fleet;
-      return {_id, game, empire, name, location, size, _public} as ReadFleetDto;
-    });
+    return fleets.map(fleet => this.toReadFleetDto(fleet));
   }
 
   @Get(':id')
@@ -100,11 +96,11 @@ export class FleetController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<ReadFleetDto> {
-    const fleet = await this.fleetService.find(game, id);
+    const fleet = await this.fleetService.find(id, {game});
     if (!fleet) {
-      throw new NotFoundException();
+      throw new NotFoundException('Fleet not found.');
     }
-    return new ReadFleetDto(fleet);
+    return this.toReadFleetDto(fleet);
   }
 
   @Patch(':id')
@@ -119,8 +115,11 @@ export class FleetController {
     @AuthUser() user: User,
   ): Promise<ReadFleetDto> {
     await this.checkFleetAccess(game, id, user);
-    const updatedFleet = await this.fleetService.update(game, id, updateFleetDto);
-    return new ReadFleetDto(updatedFleet);
+    const fleet = await this.fleetService.update(id, updateFleetDto, {game});
+    if (!fleet) {
+      throw new NotFoundException('Fleet not found.');
+    }
+    return this.toReadFleetDto(fleet);
   }
 
   @Delete(':id')
@@ -134,12 +133,12 @@ export class FleetController {
     @AuthUser() user: User,
   ): Promise<ReadFleetDto> {
     const fleet = await this.checkFleetAccess(game, id, user);
-    await this.fleetService.delete(game, id);
-    return new ReadFleetDto(fleet);
+    await this.fleetService.delete(id, {game});
+    return this.toReadFleetDto(fleet);
   }
 
   private async checkFleetAccess(game: Types.ObjectId, id: Types.ObjectId, user: User): Promise<Fleet> {
-    const fleet = await this.fleetService.find(game, id);
+    const fleet = await this.fleetService.find(id, {game});
     if (!fleet) {
       throw new NotFoundException('Fleet not found.');
     }
@@ -156,5 +155,10 @@ export class FleetController {
       throw new ForbiddenException('You don\'t have an empire in this game.');
     }
     return userEmpire;
+  }
+
+  private toReadFleetDto(fleet: Fleet): ReadFleetDto {
+    const {_id, game, empire, name, location, size, _public} = fleet;
+    return {_id, game, empire, name, location, size, _public} as ReadFleetDto;
   }
 }
