@@ -16,7 +16,7 @@ export class WarHandler {
     await this.warService.deleteMany({game: game._id});
   }
 
-  @OnEvent('empires.*.deleted')
+  @OnEvent('games.*.empires.*.deleted')
   async onEmpireDeleted(empire: Empire): Promise<void> {
     await this.warService.deleteMany({$or: [{attacker: empire._id}, {defender: empire._id}]});
   }
