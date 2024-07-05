@@ -3,8 +3,10 @@ import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {VARIABLES} from './variables';
 import {SYSTEM_TYPES, SystemTypeName} from './system-types';
 import {SchemaObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
-import {IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested} from 'class-validator';
+import {IsArray, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested} from 'class-validator';
 import {Type} from 'class-transformer';
+import {Prop} from "@nestjs/mongoose";
+import {ShipTypeName} from "./ships";
 
 export type DeepNumberKeys<T> = T extends Record<string, any> ? {
   [K in keyof T]-?: T[K] extends object ? `${K & string}.${DeepNumberKeys<T[K]>}` : T[K] extends number ? K & string : never;
@@ -283,4 +285,46 @@ export class District {
     ...RESOURCES_SCHEMA_PROPERTIES,
   })
   production: Partial<Record<ResourceName, number>>;
+}
+
+export class ShipType {
+  @Prop({required: true})
+  @ApiProperty()
+  @IsString()
+  id: string;
+
+  @Prop({required: true})
+  @ApiProperty({description: 'Duration in periods for building this ship.'})
+  @IsNumber()
+  build_time: number;
+
+  @Prop({required: true})
+  @ApiProperty({description: 'Base maximum health of the ship.'})
+  @IsNumber()
+  health: number;
+
+  @Prop({required: true})
+  @ApiProperty({description: 'Speed of the ship through systems and links.'})
+  @IsNumber()
+  speed: number;
+
+  @Prop({type: Map, of: Number})
+  @ApiProperty({description: 'Attack damage against each other type of ships.'})
+  @IsObject()
+  attack: Record<ShipTypeName, number>;
+
+  @Prop({type: Map, of: Number})
+  @ApiProperty({description: 'Defense against each other type of ship.'})
+  @IsObject()
+  defense: Record<ShipTypeName, number>;
+
+  @Prop({type: Object, default: {}})
+  @ApiProperty({description: 'Costs to build this type of ship.'})
+  @IsObject()
+  cost: Partial<Record<ResourceName, number>>;
+
+  @Prop({type: Object, default: {}})
+  @ApiProperty({description: 'Periodic cost to maintain this type of ship.'})
+  @IsObject()
+  upkeep: Partial<Record<ResourceName, number>>;
 }

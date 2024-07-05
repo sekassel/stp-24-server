@@ -20,8 +20,8 @@ import {EmpireService} from '../empire/empire.service';
 import {JobType} from './job-type.enum';
 import {EmpireDocument} from '../empire/empire.schema';
 import {SystemService} from '../system/system.service';
-import {UserService} from '../user/user.service';
 import {JobLogicService} from './job-logic.service';
+import {MemberService} from '../member/member.service';
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')
@@ -32,7 +32,7 @@ export class JobController {
     private readonly jobService: JobService,
     private readonly jobLogicService: JobLogicService,
     private readonly empireService: EmpireService,
-    private readonly userService: UserService,
+    private readonly memberService: MemberService,
     private readonly systemService: SystemService,
   ) {
   }
@@ -60,10 +60,10 @@ export class JobController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('empire', ObjectIdPipe) empire: Types.ObjectId,
     @AuthUser() user: User,
-    @Query('owner', OptionalObjectIdPipe) system?: Types.ObjectId | undefined,
+    @Query('system', OptionalObjectIdPipe) system?: Types.ObjectId | undefined,
     @Query('type') type?: string,
   ): Promise<Job[]> {
-    await this.checkUserAccess(game, user, empire);
+    await this.checkUserRead(user, empire);
     return this.jobService.findAll({game, empire, system, type}, {sort: {priority: 1, createdAt: 1}});
   }
 
@@ -79,7 +79,7 @@ export class JobController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<Job | null> {
-    await this.checkUserAccess(game, user, empire);
+    await this.checkUserRead(user, empire);
     return this.jobService.find(id);
   }
 
@@ -96,7 +96,7 @@ export class JobController {
     @Body() dto: CreateJobDto,
   ): Promise<Job | null> {
     const [empireDoc, system] = await Promise.all([
-      this.checkUserAccess(game, user, empire),
+      this.checkUserWrite(user, empire),
       dto.system ? this.systemService.find(dto.system) : Promise.resolve(undefined),
     ]);
     const result = await this.jobService.createJob(dto, empireDoc, system ?? undefined);
@@ -117,7 +117,7 @@ export class JobController {
     @Body() dto: UpdateJobDto,
     @AuthUser() user: User,
   ): Promise<Job | null> {
-    await this.checkUserAccess(game, user, empire);
+    await this.checkUserWrite(user, empire);
     return this.jobService.update(id, dto);
   }
 
@@ -133,8 +133,8 @@ export class JobController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<Job | null> {
-    const userEmpire = await this.checkUserAccess(game, user, empire);
-    const job = await this.jobService.findOne(id) ?? notFound('Job not found.');
+    const userEmpire = await this.checkUserWrite(user, empire);
+    const job = await this.jobService.find(id) ?? notFound('Job not found.');
     if (job.cost && job.progress < job.total) {
       this.jobLogicService.refundResources(userEmpire, job);
       await this.empireService.saveAll([userEmpire]);
@@ -142,16 +142,22 @@ export class JobController {
     return this.jobService.delete(id);
   }
 
-  private async checkUserAccess(game: Types.ObjectId, user: User, empire: Types.ObjectId): Promise<EmpireDocument> {
-    const userEmpire = await this.empireService.findOne({game, user: user._id});
-    if (!userEmpire) {
-      throw new ForbiddenException('You do not own an empire in this game.');
+  private async checkUserWrite(user: User, empire: Types.ObjectId): Promise<EmpireDocument> {
+    const requestedEmpire = await this.empireService.find(empire) ?? notFound(empire);
+    if (requestedEmpire.user.equals(user._id)) {
+      return requestedEmpire;
     }
+    throw new ForbiddenException('You can only modify jobs for your own empire.');
+  }
 
-    const requestedEmpire = await this.empireService.findOne({_id: empire, game});
-    if (!requestedEmpire || !requestedEmpire._id.equals(userEmpire._id)) {
-      throw new ForbiddenException('You can only access jobs for your own empire.');
+  private async checkUserRead(user: User, empire: Types.ObjectId): Promise<void> {
+    const requestedEmpire = await this.empireService.findOne(empire) ?? notFound(empire);
+    if (requestedEmpire.user.equals(user._id)) {
+      return;
     }
-    return userEmpire;
+    if (await this.memberService.isSpectator(requestedEmpire.game, user._id)) {
+      return;
+    }
+    throw new ForbiddenException('You can only modify jobs for your own empire.');
   }
 }
