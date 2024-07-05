@@ -17,7 +17,7 @@ import {User} from "../user/user.schema";
 import {Auth, AuthUser} from "../auth/auth.decorator";
 import {NotFound, ObjectIdPipe} from "@mean-stream/nestx";
 import {Types} from "mongoose";
-import {Ship} from "./ship.schema";
+import {Ship, ShipDocument} from "./ship.schema";
 import {EmpireDocument} from "../empire/empire.schema";
 import {FleetDocument} from "../fleet/fleet.schema";
 import {EmpireService} from "../empire/empire.service";
@@ -62,10 +62,7 @@ export class ShipController {
     @AuthUser() user: User,
   ): Promise<ReadShipDto> {
     const fleet = await this.getFleet(game, fleetId);
-    const ship = await this.shipService.find(id, {fleet: fleet._id});
-    if (!ship) {
-      throw new NotFoundException('Ship not found.');
-    }
+    const ship = await this.getShip(id, fleet);
     const empire = await this.empireService.findOne({game, user: user._id});
     return this.toReadShipDto(ship, this.checkUserAccess(fleet, empire));
   }
@@ -83,15 +80,8 @@ export class ShipController {
     @Body() updateShipDto: UpdateShipDto,
     @AuthUser() user: User,
   ): Promise<ReadShipDto> {
-    const ship = await this.shipService.find(id, {fleet: fleetId});
-    if (!ship) {
-      throw new NotFoundException('Ship not found.');
-    }
-
-    const userEmpire = await this.empireService.findOne({game, user: user._id});
-    if (!userEmpire || !ship.empire?.equals(userEmpire._id)) {
-      throw new ForbiddenException('You do not own this ship.');
-    }
+    const ship = await this.getShip(id, await this.getFleet(game, fleetId));
+    await this.getUserEmpireAccess(game, user, ship);
 
     // Change fleet if in same system
     if (updateShipDto.fleet && !updateShipDto.fleet.equals(ship.fleet)) {
@@ -125,15 +115,7 @@ export class ShipController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<ReadShipDto> {
-    const ship = await this.shipService.find(id, {fleet: fleetId});
-    if (!ship) {
-      throw new NotFoundException('Ship not found.');
-    }
-
-    const userEmpire = await this.empireService.findOne({game, user: user._id});
-    if (!userEmpire || !ship.empire?.equals(userEmpire._id)) {
-      throw new ForbiddenException('You do not own this ship.');
-    }
+    await this.getUserEmpireAccess(game, user, await this.getShip(id, await this.getFleet(game, fleetId)));
 
     const deletedShip = await this.shipService.delete(id);
     if (!deletedShip) {
@@ -150,11 +132,27 @@ export class ShipController {
     return fleet;
   }
 
+  private async getUserEmpireAccess(game: Types.ObjectId, user: User, ship: ShipDocument): Promise<EmpireDocument> {
+    const userEmpire = await this.empireService.findOne({game, user: user._id});
+    if (!userEmpire || !ship.empire?.equals(userEmpire._id)) {
+      throw new ForbiddenException('You do not own this ship.');
+    }
+    return userEmpire;
+  }
+
+  private async getShip(id: Types.ObjectId, fleet: FleetDocument): Promise<ShipDocument> {
+    const ship = await this.shipService.find(id, {fleet: fleet._id});
+    if (!ship) {
+      throw new NotFoundException('Ship not found.');
+    }
+    return ship;
+  }
+
   private checkUserAccess(fleet: FleetDocument, empire: EmpireDocument | null): boolean {
     if (!empire || !fleet.empire) {
       return false;
     }
-    return fleet.empire == empire._id;
+    return fleet.empire.equals(empire._id);
   }
 
   private toReadShipDto(ship: Ship, includePrivate: boolean): ReadShipDto {
