@@ -33,7 +33,6 @@ export class ShipController {
     private readonly empireService: EmpireService,
     private readonly fleetService: FleetService,
   ) {
-    //await this.shipService.create(testShip);
   }
 
   @Get()
@@ -152,7 +151,7 @@ export class ShipController {
     if (!empire || !fleet.empire) {
       return false;
     }
-    return fleet.empire.equals(empire._id);
+    return fleet.empire == empire._id;
   }
 
   private toReadShipDto(ship: Ship, includePrivate: boolean): ReadShipDto {

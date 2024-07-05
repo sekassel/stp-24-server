@@ -144,7 +144,7 @@ export class FleetController {
       throw new NotFoundException('Fleet not found.');
     }
     const empire = await this.checkUserAccess(game, user);
-    if (!fleet.empire?.equals(empire._id)) {
+    if (!fleet.empire || fleet.empire != empire._id) {
       throw new ForbiddenException('You don\'t own this fleet.');
     }
     return fleet;
