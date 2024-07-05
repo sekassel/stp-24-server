@@ -1355,12 +1355,22 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * Ship technologies
    * */
 
+  ship_construction: {
+    id: 'ship_construction',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['construction', 'computing'],
+    effects: [
+      // TODO
+    ],
+  },
+
   /** Small */
   small_ship_construction: {
     id: 'small_ship_construction',
     tags: ['engineering', 'construction'],
-    cost: 2,
-    requires: ['construction', 'computing'],
+    cost: 1,
+    requires: ['ship_construction'],
     precedes: ['fast_small_ship_construction_1'],
     effects: [
       {
@@ -1380,7 +1390,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   fast_small_ship_construction_1: {
     id: 'fast_small_ship_construction_1',
     tags: ['engineering', 'construction'],
-    cost: 1,
+    cost: 2,
     requires: ['small_ship_construction'],
     precedes: ['fast_small_ship_construction_2'],
     effects: [
@@ -1401,7 +1411,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   fast_small_ship_construction_2: {
     id: 'fast_small_ship_construction_2',
     tags: ['engineering', 'construction'],
-    cost: 2,
+    cost: 4,
     requires: ['fast_small_ship_construction_1'],
     precedes: ['fast_small_ship_construction_3'],
     effects: [
@@ -1422,7 +1432,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   fast_small_ship_construction_3: {
     id: 'fast_small_ship_construction_3',
     tags: ['engineering', 'construction'],
-    cost: 4,
+    cost: 8,
     requires: ['fast_small_ship_construction_2'],
     effects: [
       {
@@ -1436,6 +1446,160 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       {
         variable: 'ships.frigate.build_time',
         base: 3,
+      },
+    ],
+  },
+
+  /** Medium */
+  medium_ship_construction: {
+    id: 'medium_ship_construction',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['ship_construction'],
+    precedes: ['fast_medium_ship_construction_1'],
+    effects: [
+      {
+        variable: 'ships.destroyer.build_time',
+        base: 7,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 9,
+      },
+    ],
+  },
+  fast_medium_ship_construction_1: {
+    id: 'fast_medium_ship_construction_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['medium_ship_construction'],
+    precedes: ['fast_medium_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.build_time',
+        base: 6,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 8,
+      },
+    ],
+  },
+  fast_medium_ship_construction_2: {
+    id: 'fast_medium_ship_construction_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['fast_medium_ship_construction_1'],
+    precedes: ['fast_medium_ship_construction_3'],
+    effects: [
+      {
+        variable: 'ships.destroyer.build_time',
+        base: 5,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 7,
+      },
+    ],
+  },
+  fast_medium_ship_construction_3: {
+    id: 'fast_medium_ship_construction_3',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['fast_medium_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.build_time',
+        base: 4,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 6,
+      },
+    ],
+  },
+
+  /** Large */
+  large_ship_construction: {
+    id: 'large_ship_construction',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_construction'],
+    precedes: ['fast_large_ship_construction_1'],
+    effects: [
+      {
+        variable: 'ships.battleship.build_time',
+        base: 12,
+      },
+      {
+        variable: 'ships.carrier.build_time',
+        base: 15,
+      },
+      {
+        variable: 'ships.dreadnought.build_time',
+        base: 18,
+      },
+    ],
+  },
+  fast_large_ship_construction_1: {
+    id: 'fast_large_ship_construction_1',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['large_ship_construction'],
+    precedes: ['fast_large_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.battleship.build_time',
+        base: 11,
+      },
+      {
+        variable: 'ships.carrier.build_time',
+        base: 14,
+      },
+      {
+        variable: 'ships.dreadnought.build_time',
+        base: 17,
+      },
+    ],
+  },
+  fast_large_ship_construction_2: {
+    id: 'fast_large_ship_construction_2',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['fast_large_ship_construction_1'],
+    precedes: ['fast_large_ship_construction_3'],
+    effects: [
+      {
+        variable: 'ships.battleship.build_time',
+        base: 10,
+      },
+      {
+        variable: 'ships.carrier.build_time',
+        base: 13,
+      },
+      {
+        variable: 'ships.dreadnought.build_time',
+        base: 16,
+      },
+    ],
+  },
+  fast_large_ship_construction_3: {
+    id: 'fast_large_ship_construction_3',
+    tags: ['engineering', 'construction'],
+    cost: 16,
+    requires: ['fast_large_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.battleship.build_time',
+        base: 9,
+      },
+      {
+        variable: 'ships.carrier.build_time',
+        base: 12,
+      },
+      {
+        variable: 'ships.dreadnought.build_time',
+        base: 15,
       },
     ],
   },
