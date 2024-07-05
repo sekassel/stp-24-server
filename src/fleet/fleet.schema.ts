@@ -30,10 +30,10 @@ export class Fleet extends GlobalSchema {
   @AsObjectId()
   location: Types.ObjectId;
 
-  @Prop({type: Map, of: Number})
+  @Prop({type: Object})
   @ApiProperty({description: 'Number of ships within this fleet if fully built.'})
   @IsObject()
-  size: Record<ShipTypeName, number>;
+  size: Partial<Record<ShipTypeName, number>>;
 
   @Prop({type: Object, default: {}})
   @ApiPropertyOptional({description: 'Custom data, visible only to the owner empire.'})

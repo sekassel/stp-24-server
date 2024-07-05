@@ -44,7 +44,7 @@ export class ShipController {
     @Param('fleet', ObjectIdPipe) fleetId: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<ReadShipDto[]> {
-    const fleet = await this.getFleet(game, fleetId);
+    const fleet = await this.getFleet(fleetId);
     const ships = await this.shipService.findAll({fleet: fleet._id});
     const empire = await this.empireService.findOne({game, user: user._id});
     return ships.map(ship => this.toReadShipDto(ship, this.checkUserAccess(fleet, empire)));
@@ -60,8 +60,8 @@ export class ShipController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<ReadShipDto> {
-    const fleet = await this.getFleet(game, fleetId);
-    const ship = await this.getShip(id, fleet);
+    const fleet = await this.getFleet(fleetId);
+    const ship = await this.getShip(id, fleet._id);
     const empire = await this.empireService.findOne({game, user: user._id});
     return this.toReadShipDto(ship, this.checkUserAccess(fleet, empire));
   }
@@ -79,7 +79,8 @@ export class ShipController {
     @Body() updateShipDto: UpdateShipDto,
     @AuthUser() user: User,
   ): Promise<ReadShipDto> {
-    const ship = await this.getShip(id, await this.getFleet(game, fleetId));
+    const fleet = await this.getFleet(fleetId);
+    const ship = await this.getShip(id, fleet._id);
     await this.getUserEmpireAccess(game, user, ship);
 
     // Change fleet if in same system
@@ -114,7 +115,8 @@ export class ShipController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<ReadShipDto> {
-    await this.getUserEmpireAccess(game, user, await this.getShip(id, await this.getFleet(game, fleetId)));
+    const fleet = await this.getFleet(fleetId);
+    await this.getUserEmpireAccess(game, user, await this.getShip(id, fleet._id));
 
     const deletedShip = await this.shipService.delete(id);
     if (!deletedShip) {
@@ -123,8 +125,8 @@ export class ShipController {
     return this.toReadShipDto(deletedShip, true);
   }
 
-  private async getFleet(game: Types.ObjectId, fleetId: Types.ObjectId): Promise<FleetDocument> {
-    const fleet = await this.fleetService.find(fleetId, {game});
+  private async getFleet(fleetId: Types.ObjectId): Promise<FleetDocument> {
+    const fleet = await this.fleetService.find(fleetId);
     if (!fleet) {
       throw new NotFoundException('Fleet not found.');
     }
@@ -139,8 +141,8 @@ export class ShipController {
     return userEmpire;
   }
 
-  private async getShip(id: Types.ObjectId, fleet: FleetDocument): Promise<ShipDocument> {
-    const ship = await this.shipService.find(id, {fleet: fleet._id});
+  private async getShip(id: Types.ObjectId, fleetId: Types.ObjectId): Promise<ShipDocument> {
+    const ship = await this.shipService.find(id, {fleet: fleetId});
     if (!ship) {
       throw new NotFoundException('Ship not found.');
     }
@@ -154,16 +156,11 @@ export class ShipController {
     return fleet.empire == empire._id;
   }
 
-  private toReadShipDto(ship: Ship, includePrivate: boolean): ReadShipDto {
-    const {
-      _id, game, empire, fleet, type,
-      experience, _public, createdAt, updatedAt
-    } = ship;
-    const readShipDto: ReadShipDto = {_id, game, empire, fleet, type, experience, _public, createdAt, updatedAt};
+  private toReadShipDto(ship: Ship, includePrivate: boolean): ReadShipDto | Ship {
     if (includePrivate) {
-      (readShipDto as any)._private = ship._private;
-      (readShipDto as any).health = ship.health;
+      return ship;
     }
-    return readShipDto;
+    const {_private, health, ...rest} = ship;
+    return rest as ReadShipDto;
   }
 }
