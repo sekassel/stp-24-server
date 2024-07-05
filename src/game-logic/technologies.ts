@@ -1356,12 +1356,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * */
 
   /** Small */
-  small_ship_production: {
-    id: 'small_ship_production',
-    tags: ['engineering', 'production'],
+  small_ship_construction: {
+    id: 'small_ship_construction',
+    tags: ['engineering', 'construction'],
     cost: 2,
-    requires: ['production', 'computing'],
-    precedes: ['fast_small_ship_production_1'],
+    requires: ['construction', 'computing'],
+    precedes: ['fast_small_ship_construction_1'],
     effects: [
       {
         variable: 'ships.corvette.build_time',
@@ -1377,12 +1377,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_small_ship_production_1: {
-    id: 'fast_small_ship_production_1',
-    tags: ['engineering', 'production'],
+  fast_small_ship_construction_1: {
+    id: 'fast_small_ship_construction_1',
+    tags: ['engineering', 'construction'],
     cost: 1,
-    requires: ['small_ship_production'],
-    precedes: ['fast_small_ship_production_2'],
+    requires: ['small_ship_construction'],
+    precedes: ['fast_small_ship_construction_2'],
     effects: [
       {
         variable: 'ships.corvette.build_time',
@@ -1398,12 +1398,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_small_ship_production_2: {
-    id: 'fast_small_ship_production_2',
-    tags: ['engineering', 'production'],
+  fast_small_ship_construction_2: {
+    id: 'fast_small_ship_construction_2',
+    tags: ['engineering', 'construction'],
     cost: 2,
-    requires: ['fast_small_ship_production_1'],
-    precedes: ['fast_small_ship_production_3'],
+    requires: ['fast_small_ship_construction_1'],
+    precedes: ['fast_small_ship_construction_3'],
     effects: [
       {
         variable: 'ships.corvette.build_time',
@@ -1419,11 +1419,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_small_ship_production_3: {
-    id: 'fast_small_ship_production_3',
-    tags: ['engineering', 'production'],
+  fast_small_ship_construction_3: {
+    id: 'fast_small_ship_construction_3',
+    tags: ['engineering', 'construction'],
     cost: 4,
-    requires: ['fast_small_ship_production_2'],
+    requires: ['fast_small_ship_construction_2'],
     effects: [
       {
         variable: 'ships.corvette.build_time',

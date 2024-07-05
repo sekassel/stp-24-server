@@ -145,7 +145,7 @@ export const SHIP_TYPES = {
   // All ships from here have to be unlocked by tech tree -> build_time = 0
   corvette: {
     id: 'corvette',
-    build_time: 0,
+    build_time: 0, // fast_small_ship_production tech tree
     health: 200,
     speed: 10,
     attack: {
@@ -185,7 +185,7 @@ export const SHIP_TYPES = {
 
   bomber: {
     id: 'bomber',
-    build_time: 0,
+    build_time: 0, // fast_small_ship_production tech tree
     health: 200,
     speed: 10,
     attack: {
@@ -225,7 +225,7 @@ export const SHIP_TYPES = {
 
   frigate: {
     id: 'frigate',
-    build_time: 0,
+    build_time: 0, // fast_small_ship_production tech tree
     health: 200,
     speed: 8,
     attack: {
