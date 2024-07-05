@@ -125,7 +125,21 @@ export class ShipController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<ReadShipDto> {
+    const ship = await this.shipService.find(id, {fleet: fleetId});
+    if (!ship) {
+      throw new NotFoundException('Ship not found.');
+    }
 
+    const userEmpire = await this.empireService.findOne({game, user: user._id});
+    if (!userEmpire || !ship.empire?.equals(userEmpire._id)) {
+      throw new ForbiddenException('You do not own this ship.');
+    }
+
+    const deletedShip = await this.shipService.delete(id);
+    if (!deletedShip) {
+      throw new NotFoundException('Ship not found.');
+    }
+    return this.toReadShipDto(deletedShip, true);
   }
 
   private async getFleet(game: Types.ObjectId, fleetId: Types.ObjectId): Promise<FleetDocument> {
