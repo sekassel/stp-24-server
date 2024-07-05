@@ -1351,6 +1351,95 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  /**
+   * Ship technologies
+   * */
+
+  /** Small */
+  small_ship_production: {
+    id: 'small_ship_production',
+    tags: ['engineering', 'production'],
+    cost: 2,
+    requires: ['production', 'computing'],
+    precedes: ['fast_small_ship_production_1'],
+    effects: [
+      {
+        variable: 'ships.corvette.build_time',
+        base: 5,
+      },
+      {
+        variable: 'ships.bomber.build_time',
+        base: 5,
+      },
+      {
+        variable: 'ships.frigate.build_time',
+        base: 6,
+      },
+    ],
+  },
+  fast_small_ship_production_1: {
+    id: 'fast_small_ship_production_1',
+    tags: ['engineering', 'production'],
+    cost: 1,
+    requires: ['small_ship_production'],
+    precedes: ['fast_small_ship_production_2'],
+    effects: [
+      {
+        variable: 'ships.corvette.build_time',
+        base: 4,
+      },
+      {
+        variable: 'ships.bomber.build_time',
+        base: 4,
+      },
+      {
+        variable: 'ships.frigate.build_time',
+        base: 5,
+      },
+    ],
+  },
+  fast_small_ship_production_2: {
+    id: 'fast_small_ship_production_2',
+    tags: ['engineering', 'production'],
+    cost: 2,
+    requires: ['fast_small_ship_production_1'],
+    precedes: ['fast_small_ship_production_3'],
+    effects: [
+      {
+        variable: 'ships.corvette.build_time',
+        base: 3,
+      },
+      {
+        variable: 'ships.bomber.build_time',
+        base: 3,
+      },
+      {
+        variable: 'ships.frigate.build_time',
+        base: 4,
+      },
+    ],
+  },
+  fast_small_ship_production_3: {
+    id: 'fast_small_ship_production_3',
+    tags: ['engineering', 'production'],
+    cost: 4,
+    requires: ['fast_small_ship_production_2'],
+    effects: [
+      {
+        variable: 'ships.corvette.build_time',
+        base: 2,
+      },
+      {
+        variable: 'ships.bomber.build_time',
+        base: 2,
+      },
+      {
+        variable: 'ships.frigate.build_time',
+        base: 3,
+      },
+    ],
+  },
+
 };
 
 
