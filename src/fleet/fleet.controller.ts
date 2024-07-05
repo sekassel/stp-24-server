@@ -85,7 +85,7 @@ export class FleetController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @AuthUser() user: User,
     @Query('empire', OptionalObjectIdPipe) empire?: Types.ObjectId | undefined,
-  ): Promise<(ReadFleetDto | Fleet)[]> {
+  ): Promise<ReadFleetDto[]> {
     const fleets = await this.fleetService.findAll(empire ? {game, empire} : {game});
     return await Promise.all(fleets.map(async fleet => {
       if (!fleet.empire) {
@@ -104,7 +104,7 @@ export class FleetController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
-  ): Promise<ReadFleetDto | Fleet> {
+  ): Promise<ReadFleetDto> {
     const fleet = await this.fleetService.find(id, {game});
     if (!fleet) {
       throw new NotFoundException('Fleet not found.');
@@ -169,9 +169,9 @@ export class FleetController {
     return fleetEmpire == empire._id;
   }
 
-  private toReadFleetDto(fleet: Fleet, includePrivate: boolean): ReadFleetDto | Fleet {
+  private toReadFleetDto(fleet: Fleet, includePrivate: boolean): ReadFleetDto {
     if (includePrivate) {
-      return fleet;
+      return fleet as ReadFleetDto;
     }
     const {_private, effects, ...rest} = fleet;
     return rest as ReadFleetDto;
