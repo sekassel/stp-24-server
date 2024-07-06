@@ -4,7 +4,7 @@ import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {IsIn, IsNumber, IsObject, IsOptional} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {AsObjectId, OptionalRef, Ref} from '@mean-stream/nestx';
-import {SHIP_TYPES} from "../game-logic/ships";
+import {SHIP_TYPES, ShipTypeName} from "../game-logic/ships";
 
 export type ShipDocument = Ship & Document<Types.ObjectId>;
 
@@ -22,10 +22,10 @@ export class Ship extends GlobalSchema {
   @ApiProperty({description: 'ID of the parent fleet.'})
   fleet: Types.ObjectId;
 
-  @Prop({required: true})
+  @Prop({type: String, required: true})
   @ApiProperty({description: 'Type of the ship.'})
   @IsIn(Object.values(SHIP_TYPES))
-  type: string;
+  type: ShipTypeName;
 
   @Prop({required: true})
   @ApiProperty({description: 'Current health of the ship.'})
