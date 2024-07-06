@@ -1,7 +1,8 @@
 import {
   Body,
   ConflictException,
-  Controller, Delete,
+  Controller,
+  Delete,
   ForbiddenException,
   Get,
   NotFoundException,
@@ -43,11 +44,11 @@ export class ShipController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('fleet', ObjectIdPipe) fleetId: Types.ObjectId,
     @AuthUser() user: User,
-  ): Promise<ReadShipDto[]> {
+  ): Promise<ReadShipDto[] | Ship[]> {
     const fleet = await this.getFleet(fleetId);
     const ships = await this.shipService.findAll({fleet: fleet._id});
     const empire = await this.empireService.findOne({game, user: user._id});
-    return ships.map(ship => this.toReadShipDto(ship, this.checkUserAccess(fleet, empire)));
+    return ships.map(ship => this.checkUserAccess(fleet, empire) ? ship : this.toReadShipDto(ship.toObject()));
   }
 
   @Get(':id')
@@ -59,11 +60,11 @@ export class ShipController {
     @Param('fleet', ObjectIdPipe) fleetId: Types.ObjectId,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
-  ): Promise<ReadShipDto> {
+  ): Promise<ReadShipDto | Ship> {
     const fleet = await this.getFleet(fleetId);
     const ship = await this.getShip(id, fleet._id);
     const empire = await this.empireService.findOne({game, user: user._id});
-    return this.toReadShipDto(ship, this.checkUserAccess(fleet, empire));
+    return this.checkUserAccess(fleet, empire) ? ship : this.toReadShipDto(ship.toObject());
   }
 
   @Patch(':id')
@@ -71,14 +72,14 @@ export class ShipController {
   @ApiOkResponse({type: ReadShipDto})
   @NotFound('Ship not found.')
   @ApiForbiddenResponse({description: 'You do not own this ship.'})
-  @ApiConflictResponse()
+  @ApiConflictResponse({description: 'Both fleets need to be in the same location to transfer ships.'})
   async updateFleetShip(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('fleet', ObjectIdPipe) fleetId: Types.ObjectId,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() updateShipDto: UpdateShipDto,
     @AuthUser() user: User,
-  ): Promise<ReadShipDto> {
+  ): Promise<Ship | null> {
     const fleet = await this.getFleet(fleetId);
     const ship = await this.getShip(id, fleet._id);
     await this.getUserEmpireAccess(game, user, ship);
@@ -96,12 +97,7 @@ export class ShipController {
         throw new ConflictException('Both fleets need to be in the same location to transfer ships.');
       }
     }
-
-    const updatedShip = await this.shipService.update(id, updateShipDto);
-    if (!updatedShip) {
-      throw new NotFoundException('Ship not found.');
-    }
-    return this.toReadShipDto(updatedShip, true);
+    return this.shipService.update(id, updateShipDto);
   }
 
   @Delete(':id')
@@ -114,15 +110,10 @@ export class ShipController {
     @Param('fleet', ObjectIdPipe) fleetId: Types.ObjectId,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
-  ): Promise<ReadShipDto> {
+  ): Promise<Ship | null> {
     const fleet = await this.getFleet(fleetId);
     await this.getUserEmpireAccess(game, user, await this.getShip(id, fleet._id));
-
-    const deletedShip = await this.shipService.delete(id);
-    if (!deletedShip) {
-      throw new NotFoundException('Ship not found.');
-    }
-    return this.toReadShipDto(deletedShip, true);
+    return this.shipService.delete(id);
   }
 
   private async getFleet(fleetId: Types.ObjectId): Promise<FleetDocument> {
@@ -156,10 +147,7 @@ export class ShipController {
     return fleet.empire == empire._id;
   }
 
-  private toReadShipDto(ship: Ship, includePrivate: boolean): ReadShipDto | Ship {
-    if (includePrivate) {
-      return ship;
-    }
+  private toReadShipDto(ship: Ship): ReadShipDto | Ship {
     const {_private, health, ...rest} = ship;
     return rest as ReadShipDto;
   }

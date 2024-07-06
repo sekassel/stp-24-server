@@ -5,7 +5,6 @@ import {SYSTEM_TYPES, SystemTypeName} from './system-types';
 import {SchemaObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import {IsArray, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested} from 'class-validator';
 import {Type} from 'class-transformer';
-import {Prop} from "@nestjs/mongoose";
 import {ShipTypeName} from "./ships";
 
 export type DeepNumberKeys<T> = T extends Record<string, any> ? {
@@ -288,42 +287,34 @@ export class District {
 }
 
 export class ShipType {
-  @Prop({required: true})
   @ApiProperty()
   @IsString()
   id: string;
 
-  @Prop({required: true})
   @ApiProperty({description: 'Duration in periods for building this ship.'})
   @IsNumber()
   build_time: number;
 
-  @Prop({required: true})
   @ApiProperty({description: 'Base maximum health of the ship.'})
   @IsNumber()
   health: number;
 
-  @Prop({required: true})
   @ApiProperty({description: 'Speed of the ship through systems and links.'})
   @IsNumber()
   speed: number;
 
-  @Prop({type: Object})
   @ApiProperty({description: 'Attack damage against each other type of ships.'})
   @IsObject()
   attack: Record<ShipTypeName, number>;
 
-  @Prop({type: Object})
   @ApiProperty({description: 'Defense against each other type of ship.'})
   @IsObject()
   defense: Partial<Record<ShipTypeName, number>> & {default: number};
 
-  @Prop({type: Object, default: {}})
   @ApiProperty({description: 'Costs to build this type of ship.'})
   @IsObject()
   cost: Partial<Record<ResourceName, number>>;
 
-  @Prop({type: Object, default: {}})
   @ApiProperty({description: 'Periodic cost to maintain this type of ship.'})
   @IsObject()
   upkeep: Partial<Record<ResourceName, number>>;

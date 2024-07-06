@@ -3,7 +3,7 @@ import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {IsIn, IsNumber, IsObject, IsOptional} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
-import {AsObjectId, OptionalRef, Ref} from '@mean-stream/nestx';
+import {OptionalRef, Ref} from '@mean-stream/nestx';
 import {SHIP_TYPES, ShipTypeName} from "../game-logic/ships";
 
 export type ShipDocument = Ship & Document<Types.ObjectId>;
@@ -15,7 +15,6 @@ export class Ship extends GlobalSchema {
 
   @OptionalRef('Empire')
   @ApiPropertyOptional({description: 'Owner Empire ID, or undefined if not owned by anyone (wild fleets).'})
-  @AsObjectId()
   empire?: Types.ObjectId;
 
   @Ref('Fleet')
