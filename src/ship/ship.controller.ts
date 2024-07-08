@@ -48,7 +48,7 @@ export class ShipController {
     const fleet = await this.getFleet(fleetId);
     const ships = await this.shipService.findAll({fleet: fleet._id});
     const empire = await this.empireService.findOne({game, user: user._id});
-    return ships.map(ship => this.checkUserAccess(fleet, empire) ? ship : this.toReadShipDto(ship.toObject()));
+    return this.checkUserAccess(fleet, empire) ? ships : ships.map(ship => this.toReadShipDto(ship.toObject()));
   }
 
   @Get(':id')

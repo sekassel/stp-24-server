@@ -126,7 +126,7 @@ export class FleetController {
     @AuthUser() user: User,
   ): Promise<ReadFleetDto | null> {
     await this.checkFleetAccess(game, id, user);
-    return this.fleetService.update(id, updateFleetDto, {game});
+    return this.fleetService.update(id, updateFleetDto);
   }
 
   @Delete(':id')
@@ -140,7 +140,7 @@ export class FleetController {
     @AuthUser() user: User,
   ): Promise<ReadFleetDto | null> {
     await this.checkFleetAccess(game, id, user);
-    return this.fleetService.delete(id, {game});
+    return this.fleetService.delete(id);
   }
 
   private async checkFleetAccess(game: Types.ObjectId, id: Types.ObjectId, user: User): Promise<Fleet> {
