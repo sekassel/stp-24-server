@@ -1,23 +1,23 @@
 import {Injectable} from "@nestjs/common";
-import {WarService} from "./war.service";
 import {OnEvent} from "@nestjs/event-emitter";
 import {Game} from "../game/game.schema";
+import {FleetService} from "./fleet.service";
 import {Empire} from "../empire/empire.schema";
 
 @Injectable()
-export class WarHandler {
+export class FleetHandler {
   constructor(
-    private warService: WarService,
+    private fleetService: FleetService,
   ) {
   }
 
   @OnEvent('games.*.deleted')
   async onGameDeleted(game: Game): Promise<void> {
-    await this.warService.deleteMany({game: game._id});
+    await this.fleetService.deleteMany({game: game._id});
   }
 
   @OnEvent('games.*.empires.*.deleted')
   async onEmpireDeleted(empire: Empire): Promise<void> {
-    await this.warService.deleteMany({$or: [{attacker: empire._id}, {defender: empire._id}]});
+    await this.fleetService.deleteMany({empire: empire._id});
   }
 }

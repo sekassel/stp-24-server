@@ -42,35 +42,6 @@ export class WarController {
   ) {
   }
 
-  @Get()
-  @Auth()
-  @ApiOperation({description: 'Get all wars in the game, optionally filtered by attacker or defender.'})
-  @ApiOkResponse({type: [War]})
-  @ApiQuery({
-    name: 'empire',
-    description: 'Filter by attacker or defender',
-    required: false,
-    type: String,
-  })
-  async getWars(
-    @Param('game', ObjectIdPipe) game: Types.ObjectId,
-    @Query('empire', OptionalObjectIdPipe) empire?: Types.ObjectId | undefined,
-  ): Promise<War[]> {
-    return this.warService.findAll(empire ? {game, $or: [{attacker: empire}, {defender: empire}]} : {game});
-  }
-
-  @Get(':id')
-  @Auth()
-  @ApiOperation({description: 'Get a single war by ID.'})
-  @ApiOkResponse({type: War})
-  @NotFound()
-  async getWar(
-    @Param('game', ObjectIdPipe) game: Types.ObjectId,
-    @Param('id', ObjectIdPipe) id: Types.ObjectId,
-  ): Promise<War | null> {
-    return this.warService.find(id);
-  }
-
   @Post()
   @Auth()
   @ApiOperation({description: 'Create a new war.'})
@@ -100,6 +71,35 @@ export class WarController {
     }
 
     return this.warService.create({...createWarDto, game});
+  }
+
+  @Get()
+  @Auth()
+  @ApiOperation({description: 'Get all wars in the game, optionally filtered by attacker or defender.'})
+  @ApiOkResponse({type: [War]})
+  @ApiQuery({
+    name: 'empire',
+    description: 'Filter by attacker or defender',
+    required: false,
+    type: String,
+  })
+  async getWars(
+    @Param('game', ObjectIdPipe) game: Types.ObjectId,
+    @Query('empire', OptionalObjectIdPipe) empire?: Types.ObjectId | undefined,
+  ): Promise<War[]> {
+    return this.warService.findAll(empire ? {game, $or: [{attacker: empire}, {defender: empire}]} : {game});
+  }
+
+  @Get(':id')
+  @Auth()
+  @ApiOperation({description: 'Get a single war by ID.'})
+  @ApiOkResponse({type: War})
+  @NotFound()
+  async getWar(
+    @Param('game', ObjectIdPipe) game: Types.ObjectId,
+    @Param('id', ObjectIdPipe) id: Types.ObjectId,
+  ): Promise<War | null> {
+    return this.warService.find(id);
   }
 
   @Patch(':id')

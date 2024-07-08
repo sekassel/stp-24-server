@@ -16,7 +16,7 @@ export class GameHandler {
    */
   @OnEvent('games.*.created')
   async onGameCreated(game: Game): Promise<void> {
-    await this.gameService.updateMany({owner: game.owner}, {speed: 0});
+    await this.gameService.updateMany({owner: game.owner}, {speed: 0}, {timestamps: false});
   }
 
   @OnEvent('users.*.deleted')
