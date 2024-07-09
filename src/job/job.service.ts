@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
 import {Model} from 'mongoose';
@@ -28,6 +28,9 @@ export class JobService extends MongooseRepository<Job> {
   }
 
   async createJob(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument): Promise<Job | null> {
+    // Check fleet access
+    await this.jobLogicService.checkFleetAccess(dto, empire, system);
+
     // Calculate resource requirements for the job
     const {time, ...cost} = this.jobLogicService.getCostAndDuration(dto, empire, system);
 

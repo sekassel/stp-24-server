@@ -5,7 +5,6 @@ import {SYSTEM_TYPES, SystemTypeName} from './system-types';
 import {SchemaObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import {IsArray, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested} from 'class-validator';
 import {Type} from 'class-transformer';
-import {ShipTypeName} from "./ships";
 
 export type DeepNumberKeys<T> = T extends Record<string, any> ? {
   [K in keyof T]-?: T[K] extends object ? `${K & string}.${DeepNumberKeys<T[K]>}` : T[K] extends number ? K & string : never;
@@ -309,7 +308,7 @@ export class ShipType {
 
   @ApiProperty({description: 'Defense against each other type of ship.'})
   @IsObject()
-  defense: Partial<Record<string, number>>;
+  defense: Record<string, number>;
 
   @ApiProperty({description: 'Costs to build this type of ship.'})
   @IsObject()

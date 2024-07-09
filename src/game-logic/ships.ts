@@ -35,9 +35,7 @@ export const SHIP_TYPES = {
       battleship: 20,
     },
     defense: {
-      destroyer: 20,
-      cruiser: 30,
-      battleship: 50,
+      default: 20,
     },
     cost: {
       minerals: 200,
@@ -58,9 +56,7 @@ export const SHIP_TYPES = {
       battleship: 20,
     },
     defense: {
-      destroyer: 20,
-      cruiser: 30,
-      battleship: 50,
+      default: 20,
     },
     cost: {
       minerals: 200,

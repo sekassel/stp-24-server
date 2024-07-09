@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  NotFoundException,
-  Param,
-  Patch,
-  Post,
-  Query
-} from '@nestjs/common';
+import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, Query} from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -33,11 +22,6 @@ import {EmpireDocument} from '../empire/empire.schema';
 import {SystemService} from '../system/system.service';
 import {JobLogicService} from './job-logic.service';
 import {MemberService} from '../member/member.service';
-import {SystemDocument} from "../system/system.schema";
-import {FleetService} from "../fleet/fleet.service";
-import {FleetDocument} from "../fleet/fleet.schema";
-import {ShipService} from "../ship/ship.service";
-import {ShipTypeName} from '../game-logic/ships';
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')
@@ -50,8 +34,6 @@ export class JobController {
     private readonly empireService: EmpireService,
     private readonly memberService: MemberService,
     private readonly systemService: SystemService,
-    private readonly fleetService: FleetService,
-    private readonly shipService: ShipService,
   ) {
   }
 
@@ -119,13 +101,6 @@ export class JobController {
       this.checkUserWrite(user, empire),
       dto.system ? this.systemService.find(dto.system) : Promise.resolve(undefined),
     ]);
-    if (system && dto.type === JobType.UPGRADE && (system.upgrade === "unexplored" || system.upgrade === "explored")) {
-      const empireId: Types.ObjectId = empireDoc._id;
-      if (!system) {
-        throw new NotFoundException('System not found.');
-      }
-      await this.checkFleet(empireId, system);
-    }
     const result = await this.jobService.createJob(dto, empireDoc, system ?? undefined);
     await this.empireService.saveAll([empireDoc]);
     return result;
@@ -186,33 +161,5 @@ export class JobController {
       return;
     }
     throw new ForbiddenException('You can only modify jobs for your own empire.');
-  }
-
-  private async checkFleet(empireId: Types.ObjectId, system: SystemDocument) {
-    const fleets = await this.fleetService.findAll({empire: empireId, location: system._id});
-    if (!fleets || fleets.length === 0) {
-      this.throwForbiddenException(system.upgrade);
-    }
-    await this.checkShip(fleets, system.upgrade === 'unexplored' ? 'science' : 'colony');
-  }
-
-  private async checkShip(fleets: FleetDocument[], shipType: ShipTypeName) {
-    for (const fleet of fleets) {
-      const ships = await this.shipService.findAll({fleet: fleet._id});
-      if (!ships || ships.length === 0) {
-        this.throwForbiddenException(shipType);
-      }
-      if (ships.some(ship => ship.type === shipType)) {
-        return;
-      }
-    }
-    this.throwForbiddenException(shipType);
-  }
-
-  private throwForbiddenException(upgradeOrShipType: string) {
-    const message = upgradeOrShipType === 'unexplored' ? 'You must have a fleet with ship \'science\' in the system to upgrade it.'
-      : upgradeOrShipType === 'explored' ? 'You must have a fleet with ship \'colony\' in the system to upgrade it.'
-        : `You must have a fleet with ship '${upgradeOrShipType}' in the system to upgrade it.`;
-    throw new ForbiddenException(message);
   }
 }
