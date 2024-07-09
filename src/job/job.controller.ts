@@ -37,6 +37,7 @@ import {SystemDocument} from "../system/system.schema";
 import {FleetService} from "../fleet/fleet.service";
 import {FleetDocument} from "../fleet/fleet.schema";
 import {ShipService} from "../ship/ship.service";
+import {ShipTypeName} from '../game-logic/ships';
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')
@@ -188,23 +189,26 @@ export class JobController {
   }
 
   private async checkFleet(empireId: Types.ObjectId, system: SystemDocument) {
-    const fleets = await this.fleetService.findAll(empireId, system._id);
+    const fleets = await this.fleetService.findAll({empire: empireId, location: system._id});
     if (system.upgrade === "unexplored") {
-      if (!fleets) {
+      if (!fleets || fleets.length === 0) {
         throw new ForbiddenException('You must have a fleet with ship \'science\' in the system to upgrade it.');
       }
       await this.checkShip(fleets, "science");
     } else if (system.upgrade === "explored") {
-      if (!fleets) {
+      if (!fleets || fleets.length === 0) {
         throw new ForbiddenException('You must have a fleet with ship \'colony\' in the system to upgrade it.');
       }
       await this.checkShip(fleets, "colony");
     }
   }
 
-  private async checkShip(fleets: FleetDocument[], shipType: string) {
+  private async checkShip(fleets: FleetDocument[], shipType: ShipTypeName) {
     for (const fleet of fleets) {
-      const ships = await this.shipService.findAll(fleet._id);
+      const ships = await this.shipService.findAll({fleet: fleet._id});
+      if (!ships || ships.length === 0) {
+        throw new ForbiddenException(`You must have a fleet with ship '${shipType}' in the system to upgrade it.`);
+      }
       for (const ship of ships) {
         if (ship.type === shipType) {
           return;

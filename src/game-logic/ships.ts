@@ -1,3 +1,5 @@
+import {ShipType} from './types';
+
 export const SHIP_TYPES = {
   fighter: {
     id: 'fighter',
@@ -68,5 +70,5 @@ export const SHIP_TYPES = {
       energy: 10,
     },
   },
-} as const;
+} as const satisfies Record<string, ShipType>;
 export type ShipTypeName = keyof typeof SHIP_TYPES;

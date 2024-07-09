@@ -305,11 +305,11 @@ export class ShipType {
 
   @ApiProperty({description: 'Attack damage against each other type of ships.'})
   @IsObject()
-  attack: Record<ShipTypeName, number>;
+  attack: Record<string, number>;
 
   @ApiProperty({description: 'Defense against each other type of ship.'})
   @IsObject()
-  defense: Partial<Record<ShipTypeName, number>> & {default: number};
+  defense: Partial<Record<string, number>>;
 
   @ApiProperty({description: 'Costs to build this type of ship.'})
   @IsObject()
