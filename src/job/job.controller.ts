@@ -119,7 +119,7 @@ export class JobController {
       this.checkUserWrite(user, empire),
       dto.system ? this.systemService.find(dto.system) : Promise.resolve(undefined),
     ]);
-    if (dto.type === JobType.UPGRADE) {
+    if (system && dto.type === JobType.UPGRADE && (system.upgrade === "unexplored" || system.upgrade === "explored")) {
       const empireId: Types.ObjectId = empireDoc._id;
       if (!system) {
         throw new NotFoundException('System not found.');
@@ -190,31 +190,29 @@ export class JobController {
 
   private async checkFleet(empireId: Types.ObjectId, system: SystemDocument) {
     const fleets = await this.fleetService.findAll({empire: empireId, location: system._id});
-    if (system.upgrade === "unexplored") {
-      if (!fleets || fleets.length === 0) {
-        throw new ForbiddenException('You must have a fleet with ship \'science\' in the system to upgrade it.');
-      }
-      await this.checkShip(fleets, "science");
-    } else if (system.upgrade === "explored") {
-      if (!fleets || fleets.length === 0) {
-        throw new ForbiddenException('You must have a fleet with ship \'colony\' in the system to upgrade it.');
-      }
-      await this.checkShip(fleets, "colony");
+    if (!fleets || fleets.length === 0) {
+      this.throwForbiddenException(system.upgrade);
     }
+    await this.checkShip(fleets, system.upgrade === 'unexplored' ? 'science' : 'colony');
   }
 
   private async checkShip(fleets: FleetDocument[], shipType: ShipTypeName) {
     for (const fleet of fleets) {
       const ships = await this.shipService.findAll({fleet: fleet._id});
       if (!ships || ships.length === 0) {
-        throw new ForbiddenException(`You must have a fleet with ship '${shipType}' in the system to upgrade it.`);
+        this.throwForbiddenException(shipType);
       }
-      for (const ship of ships) {
-        if (ship.type === shipType) {
-          return;
-        }
+      if (ships.some(ship => ship.type === shipType)) {
+        return;
       }
     }
-    throw new ForbiddenException(`You must have a fleet with ship '${shipType}' in the system to upgrade it.`);
+    this.throwForbiddenException(shipType);
+  }
+
+  private throwForbiddenException(upgradeOrShipType: string) {
+    const message = upgradeOrShipType === 'unexplored' ? 'You must have a fleet with ship \'science\' in the system to upgrade it.'
+      : upgradeOrShipType === 'explored' ? 'You must have a fleet with ship \'colony\' in the system to upgrade it.'
+        : `You must have a fleet with ship '${upgradeOrShipType}' in the system to upgrade it.`;
+    throw new ForbiddenException(message);
   }
 }
