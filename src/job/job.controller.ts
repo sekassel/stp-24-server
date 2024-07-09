@@ -1,4 +1,15 @@
-import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, Query} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Query
+} from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -24,8 +35,7 @@ import {JobLogicService} from './job-logic.service';
 import {MemberService} from '../member/member.service';
 import {SystemDocument} from "../system/system.schema";
 import {FleetService} from "../fleet/fleet.service";
-import {Fleet, FleetDocument} from "../fleet/fleet.schema";
-import {SHIP_TYPES} from "../game-logic/ships";
+import {FleetDocument} from "../fleet/fleet.schema";
 import {ShipService} from "../ship/ship.service";
 
 @Controller('games/:game/empires/:empire/jobs')
@@ -109,7 +119,11 @@ export class JobController {
       dto.system ? this.systemService.find(dto.system) : Promise.resolve(undefined),
     ]);
     if (dto.type === JobType.UPGRADE) {
-      this.checkFleet(empireDoc, system);
+      const empireId: Types.ObjectId = empireDoc._id;
+      if (!system) {
+        throw new NotFoundException('System not found.');
+      }
+      await this.checkFleet(empireId, system);
     }
     const result = await this.jobService.createJob(dto, empireDoc, system ?? undefined);
     await this.empireService.saveAll([empireDoc]);
@@ -174,28 +188,29 @@ export class JobController {
   }
 
   private async checkFleet(empireId: Types.ObjectId, system: SystemDocument) {
-    // Add more requirements for system upgrades here
     const fleets = await this.fleetService.findAll(empireId, system._id);
     if (system.upgrade === "unexplored") {
       if (!fleets) {
         throw new ForbiddenException('You must have a fleet with ship \'science\' in the system to upgrade it.');
       }
-      await this.checkShip(fleets, SHIP_TYPES.science);
+      await this.checkShip(fleets, "science");
     } else if (system.upgrade === "explored") {
       if (!fleets) {
         throw new ForbiddenException('You must have a fleet with ship \'colony\' in the system to upgrade it.');
       }
-      await this.checkShip(fleets, SHIP_TYPES.colony);
+      await this.checkShip(fleets, "colony");
     }
   }
 
-  private async checkShip(fleets: FleetDocument[], shipType: typeof SHIP_TYPES) {
+  private async checkShip(fleets: FleetDocument[], shipType: string) {
     for (const fleet of fleets) {
       const ships = await this.shipService.findAll(fleet._id);
-      if (fleet.ships[shipType.id] > 0) {
-        return;
+      for (const ship of ships) {
+        if (ship.type === shipType) {
+          return;
+        }
       }
     }
-    throw new ForbiddenException(`You must have a fleet with ship '${shipType.id}' in the system to upgrade it.`);
+    throw new ForbiddenException(`You must have a fleet with ship '${shipType}' in the system to upgrade it.`);
   }
 }
