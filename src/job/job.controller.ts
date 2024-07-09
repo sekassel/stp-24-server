@@ -22,6 +22,11 @@ import {EmpireDocument} from '../empire/empire.schema';
 import {SystemService} from '../system/system.service';
 import {JobLogicService} from './job-logic.service';
 import {MemberService} from '../member/member.service';
+import {SystemDocument} from "../system/system.schema";
+import {FleetService} from "../fleet/fleet.service";
+import {Fleet, FleetDocument} from "../fleet/fleet.schema";
+import {SHIP_TYPES} from "../game-logic/ships";
+import {ShipService} from "../ship/ship.service";
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')
@@ -34,13 +39,17 @@ export class JobController {
     private readonly empireService: EmpireService,
     private readonly memberService: MemberService,
     private readonly systemService: SystemService,
+    private readonly fleetService: FleetService,
+    private readonly shipService: ShipService,
   ) {
   }
 
   @Get()
   @Auth()
-  @ApiOperation({description: 'Get the job list with optional filters for system and type. ' +
-      'The order of the jobs is determined by the priority (lower values first) and creation time (if same priority).'})
+  @ApiOperation({
+    description: 'Get the job list with optional filters for system and type. ' +
+      'The order of the jobs is determined by the priority (lower values first) and creation time (if same priority).'
+  })
   @ApiOkResponse({type: [Job]})
   @ApiForbiddenResponse({description: 'You can only access jobs for your own empire.'})
   @ApiQuery({
@@ -99,6 +108,9 @@ export class JobController {
       this.checkUserWrite(user, empire),
       dto.system ? this.systemService.find(dto.system) : Promise.resolve(undefined),
     ]);
+    if (dto.type === JobType.UPGRADE) {
+      this.checkFleet(empireDoc, system);
+    }
     const result = await this.jobService.createJob(dto, empireDoc, system ?? undefined);
     await this.empireService.saveAll([empireDoc]);
     return result;
@@ -159,5 +171,31 @@ export class JobController {
       return;
     }
     throw new ForbiddenException('You can only modify jobs for your own empire.');
+  }
+
+  private async checkFleet(empireId: Types.ObjectId, system: SystemDocument) {
+    // Add more requirements for system upgrades here
+    const fleets = await this.fleetService.findAll(empireId, system._id);
+    if (system.upgrade === "unexplored") {
+      if (!fleets) {
+        throw new ForbiddenException('You must have a fleet with ship \'science\' in the system to upgrade it.');
+      }
+      await this.checkShip(fleets, SHIP_TYPES.science);
+    } else if (system.upgrade === "explored") {
+      if (!fleets) {
+        throw new ForbiddenException('You must have a fleet with ship \'colony\' in the system to upgrade it.');
+      }
+      await this.checkShip(fleets, SHIP_TYPES.colony);
+    }
+  }
+
+  private async checkShip(fleets: FleetDocument[], shipType: typeof SHIP_TYPES) {
+    for (const fleet of fleets) {
+      const ships = await this.shipService.findAll(fleet._id);
+      if (fleet.ships[shipType.id] > 0) {
+        return;
+      }
+    }
+    throw new ForbiddenException(`You must have a fleet with ship '${shipType.id}' in the system to upgrade it.`);
   }
 }
