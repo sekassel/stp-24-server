@@ -1,7 +1,7 @@
 const port = +(process.env.PORT || 3000);
 
 export const environment = {
-  version: process.env.API_VERSION || 'v3',
+  version: process.env.API_VERSION || 'v4',
   nodeEnv: process.env.NODE_ENV || 'development',
   port,
   baseUrl: process.env.BASE_URL || `http://localhost:${port}`,
