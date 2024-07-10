@@ -257,10 +257,71 @@ export const SHIP_TYPES = {
     },
   },
 
+  /** The Vanguard is a specialized support ship, designed to enhance fleet capabilities through electronic warfare and
+   * tactical coordination. */
+  vanguard: {
+    id: 'vanguard',
+    build_time: 0,
+    health: 200,
+    speed: 5,
+    attack: {
+      default: 50,
+      cruiser: 30,
+      battleship: 20,
+      carrier: 50,
+      dreadnought: 10,
+    },
+    defense: {
+      default: 50,
+      cruiser: 30,
+      battleship: 20,
+      carrier: 50,
+      dreadnought: 10,
+    },
+    cost: {
+      minerals: 300,
+      energy: 200,
+    },
+    upkeep: {
+      energy: 25,
+    },
+  },
+
+  /** The Sentinel serves as a heavily armed and armored patrol ship designed to secure key locations and provide robust
+   * defense against enemy incursions. */
+  sentinel: {
+    id: 'sentinel',
+    build_time: 0,
+    health: 200,
+    speed: 5,
+    attack: {
+      default: 50,
+      cruiser: 30,
+      battleship: 20,
+      carrier: 50,
+      dreadnought: 10,
+    },
+    defense: {
+      default: 50,
+      cruiser: 30,
+      battleship: 20,
+      carrier: 50,
+      dreadnought: 10,
+    },
+    cost: {
+      minerals: 300,
+      energy: 200,
+    },
+    upkeep: {
+      energy: 25,
+    },
+  },
+
   /**
    * Large
    * */
 
+  /** Heavy frontline combat. */
   battleship: {
     id: 'battleship',
     build_time: 0,
