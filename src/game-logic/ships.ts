@@ -10,7 +10,7 @@ export const SHIP_TYPES = {
     id: 'explorer',
     build_time: 4, // ship_construction + faster_ship_construction tech tree
     health: 100, // armor_plating tech tree
-    speed: 5,
+    speed: 5, // ship_speed tech tree
     attack: {
     },
     defense: {
@@ -35,7 +35,7 @@ export const SHIP_TYPES = {
     id: 'colonizer',
     build_time: 5, // ship_construction + faster_ship_construction tech tree
     health: 100, // armor_plating tech tree
-    speed: 5,
+    speed: 5, // ship_speed tech tree
     attack: {
     },
     defense: {
@@ -65,7 +65,7 @@ export const SHIP_TYPES = {
     id: 'interceptor',
     build_time: 4, // small_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 10,
+    speed: 10, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,
@@ -94,7 +94,7 @@ export const SHIP_TYPES = {
     id: 'fighter',
     build_time: 4, // small_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 10,
+    speed: 10, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,
@@ -125,7 +125,7 @@ export const SHIP_TYPES = {
     id: 'corvette',
     build_time: 0, // small_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 10,
+    speed: 10, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,
@@ -154,7 +154,7 @@ export const SHIP_TYPES = {
     id: 'bomber',
     build_time: 0, // small_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 10,
+    speed: 10, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,
@@ -183,7 +183,7 @@ export const SHIP_TYPES = {
     id: 'frigate',
     build_time: 0, // small_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 8,
+    speed: 8, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,
@@ -216,7 +216,7 @@ export const SHIP_TYPES = {
     id: 'destroyer',
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 5,
+    speed: 5, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,
@@ -245,7 +245,7 @@ export const SHIP_TYPES = {
     id: 'cruiser',
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 5,
+    speed: 5, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,
@@ -275,7 +275,7 @@ export const SHIP_TYPES = {
     id: 'vanguard',
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 5,
+    speed: 5, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,
@@ -305,7 +305,7 @@ export const SHIP_TYPES = {
     id: 'sentinel',
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 5,
+    speed: 5, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,
@@ -338,7 +338,7 @@ export const SHIP_TYPES = {
     id: 'battleship',
     build_time: 0, // large_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 5,
+    speed: 5, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,
@@ -367,7 +367,7 @@ export const SHIP_TYPES = {
     id: 'carrier',
     build_time: 0, // large_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 5,
+    speed: 5, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,
@@ -396,7 +396,7 @@ export const SHIP_TYPES = {
     id: 'dreadnought',
     build_time: 0, // large_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
-    speed: 5,
+    speed: 5, // ship_speed tech tree
     attack: {
       default: 50,
       cruiser: 30,

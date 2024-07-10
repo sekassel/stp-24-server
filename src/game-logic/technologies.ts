@@ -1373,7 +1373,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** Small */
-  small_ship_construction: {
+  small_ship_construction: { // increase ship build time
     id: 'small_ship_construction',
     tags: ['engineering', 'construction'],
     cost: 1,
@@ -1458,7 +1458,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** Medium */
-  medium_ship_construction: {
+  medium_ship_construction: { // increase ship build time
     id: 'medium_ship_construction',
     tags: ['engineering', 'construction'],
     cost: 1,
@@ -1527,7 +1527,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** Large */
-  large_ship_construction: {
+  large_ship_construction: { // increase ship build time
     id: 'large_ship_construction',
     tags: ['engineering', 'construction'],
     cost: 2,
@@ -1611,7 +1611,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  faster_ship_construction_1: {
+  faster_ship_construction_1: { // increase ship build time
     id: 'faster_ship_construction_1',
     tags: ['engineering', 'construction'],
     cost: 2,
@@ -1684,7 +1684,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  armor_plating_1: {
+  armor_plating_1: { // increase ship health
     id: 'armor_plating_1',
     tags: ['engineering', 'construction'],
     cost: 1,
@@ -1768,6 +1768,95 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'ships.dreadnought.health',
+        multiplier: 1.2,
+      },
+    ],
+  },
+
+  ship_speed_1: { // increase ship speed
+    id: 'ship_speed_1',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['ship_construction'],
+    effects: [
+      {
+        variable: 'ships.explorer.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.colonizer.speed',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  ship_speed_2: {
+    id: 'ship_speed_2',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_speed_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.corvette.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.bomber.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.frigate.speed',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  ship_speed_3: {
+    id: 'ship_speed_3',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['ship_speed_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.cruiser.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.vanguard.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.sentinel.speed',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  ship_speed_4: {
+    id: 'ship_speed_4',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['ship_speed_3'],
+    effects: [
+      {
+        variable: 'ships.battleship.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.carrier.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.dreadnought.speed',
         multiplier: 1.2,
       },
     ],
