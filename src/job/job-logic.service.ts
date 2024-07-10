@@ -99,6 +99,8 @@ export class JobLogicService {
           time: this.empireLogicService.getShipTime(empire, ship),
         };
       }
+      default:
+        throw new BadRequestException('Invalid job type.');
     }
   }
 
