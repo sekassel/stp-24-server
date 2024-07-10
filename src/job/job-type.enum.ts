@@ -3,4 +3,6 @@ export enum JobType {
   DISTRICT = 'district',
   UPGRADE = 'upgrade',
   TECHNOLOGY = 'technology',
+  SHIP = 'ship',
+  TRAVEL = 'travel',
 }
