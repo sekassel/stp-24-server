@@ -8,7 +8,7 @@ export const SHIP_TYPES = {
   /** Exploration and research. */
   explorer: { // science
     id: 'explorer',
-    build_time: 4,
+    build_time: 4, // ship_construction + faster_ship_construction tech tree
     health: 100,
     speed: 5,
     attack: {
@@ -33,7 +33,7 @@ export const SHIP_TYPES = {
   /** Colonization and expansion. */
   colonizer: { // colony
     id: 'colonizer',
-    build_time: 5,
+    build_time: 5, // ship_construction + faster_ship_construction tech tree
     health: 100,
     speed: 5,
     attack: {
@@ -63,7 +63,7 @@ export const SHIP_TYPES = {
   /** Rapid response and short-range combat. */
   interceptor: {
     id: 'interceptor',
-    build_time: 4,
+    build_time: 4, // small_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 10,
     attack: {
@@ -92,7 +92,7 @@ export const SHIP_TYPES = {
   /** Space superiority and dogfighting. */
   fighter: {
     id: 'fighter',
-    build_time: 4,
+    build_time: 4, // small_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 10,
     attack: {
@@ -123,7 +123,7 @@ export const SHIP_TYPES = {
   /** Light skirmisher and scout. */
   corvette: {
     id: 'corvette',
-    build_time: 0, // fast_small_ship_production tech tree
+    build_time: 0, // small_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 10,
     attack: {
@@ -152,7 +152,7 @@ export const SHIP_TYPES = {
   /** Anti-capital ship warfare. */
   bomber: {
     id: 'bomber',
-    build_time: 0, // fast_small_ship_production tech tree
+    build_time: 0, // small_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 10,
     attack: {
@@ -181,7 +181,7 @@ export const SHIP_TYPES = {
   /** Light escort and multi-role vessel. */
   frigate: {
     id: 'frigate',
-    build_time: 0, // fast_small_ship_production tech tree
+    build_time: 0, // small_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 8,
     attack: {
@@ -214,7 +214,7 @@ export const SHIP_TYPES = {
   /** Escort and anti-small ship warfare. */
   destroyer: {
     id: 'destroyer',
-    build_time: 0,
+    build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 5,
     attack: {
@@ -243,7 +243,7 @@ export const SHIP_TYPES = {
   /** Frontline combat and fleet coordination. */
   cruiser: {
     id: 'cruiser',
-    build_time: 0,
+    build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 5,
     attack: {
@@ -273,7 +273,7 @@ export const SHIP_TYPES = {
    * tactical coordination. */
   vanguard: {
     id: 'vanguard',
-    build_time: 0,
+    build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 5,
     attack: {
@@ -303,7 +303,7 @@ export const SHIP_TYPES = {
    * defense against enemy incursions. */
   sentinel: {
     id: 'sentinel',
-    build_time: 0,
+    build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 5,
     attack: {
@@ -336,7 +336,7 @@ export const SHIP_TYPES = {
   /** Heavy frontline combat. */
   battleship: {
     id: 'battleship',
-    build_time: 0,
+    build_time: 0, // large_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 5,
     attack: {
@@ -365,7 +365,7 @@ export const SHIP_TYPES = {
   /** Fleet support and strike craft deployment. */
   carrier: {
     id: 'carrier',
-    build_time: 0,
+    build_time: 0, // large_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 5,
     attack: {
@@ -394,7 +394,7 @@ export const SHIP_TYPES = {
   /** Super-heavy combat and fleet command. */
   dreadnought: {
     id: 'dreadnought',
-    build_time: 0,
+    build_time: 0, // large_ship_construction + faster_ship_construction tech tree
     health: 200,
     speed: 5,
     attack: {

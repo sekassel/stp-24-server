@@ -1361,7 +1361,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     cost: 4,
     requires: ['construction', 'computing'],
     effects: [
-      // TODO
+      {
+        variable: 'ships.explorer.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.colonizer.build_time',
+        multiplier: 0.9,
+      }
     ],
   },
 
@@ -1600,6 +1607,79 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       {
         variable: 'ships.dreadnought.build_time',
         base: 15,
+      },
+    ],
+  },
+
+  faster_ship_construction_1: {
+    id: 'faster_ship_construction_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_construction'],
+    effects: [
+      {
+        variable: 'ships.interceptor.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.fighter.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.corvette.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.bomber.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.frigate.build_time',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  faster_ship_construction_2: {
+    id: 'faster_ship_construction_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['faster_ship_construction_1'],
+    effects: [
+      {
+        variable: 'ships.destroyer.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.vanguard.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.sentinel.build_time',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  faster_ship_construction_3: {
+    id: 'faster_ship_construction_3',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['faster_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.battleship.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.carrier.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.dreadnought.build_time',
+        multiplier: 0.9,
       },
     ],
   },
