@@ -93,7 +93,7 @@ export class JobLogicService {
         if (!dto.ship) {
           throw new BadRequestException('Ship type is required for this job type.');
         }
-        const ship = SHIP_TYPES[dto.ship] ?? notFound(dto.ship);
+        const ship = SHIP_TYPES[dto.ship as ShipTypeName] ?? notFound(dto.ship as ShipTypeName);
         return {
           ...this.empireLogicService.getShipCost(empire, ship),
           time: this.empireLogicService.getShipTime(empire, ship),
