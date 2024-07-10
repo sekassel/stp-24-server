@@ -2,8 +2,8 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import {Empire, EmpireDocument} from './empire.schema';
 import {TECH_CATEGORIES, TECHNOLOGIES} from '../game-logic/technologies';
 import {notFound} from '@mean-stream/nestx';
-import {Technology, TechnologyTag, Variable} from '../game-logic/types';
-import {calculateVariable, calculateVariables, getVariables} from '../game-logic/variables';
+import {ShipType, Technology, TechnologyTag, Variable} from '../game-logic/types';
+import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
 import {RESOURCE_NAMES, ResourceName} from '../game-logic/resources';
 import {AggregateResult} from '../game-logic/aggregates';
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
@@ -167,4 +167,18 @@ export class EmpireLogicService {
     empire.technologies.push(technologyId);
   }
 
+  getShipCost(empire: EmpireDocument, ship: ShipType): Partial<Record<ResourceName, number>> {
+    const costVariables: Partial<Record<Variable, number>> = flatten(ship.cost, `ships.${ship.id}.cost.`);
+    calculateVariables(costVariables, empire);
+    return this.getCosts(`ships.${ship.id}.cost`, costVariables);
+  }
+
+  getShipTime(empire: EmpireDocument, ship: ShipType): number {
+    const buildTimeVariable: Variable = `ships.${ship.id}.build_time` as Variable;
+    const variables: Partial<Record<Variable, number>> = {
+      [buildTimeVariable]: ship.build_time,
+    };
+    calculateVariables(variables, empire);
+    return variables[buildTimeVariable]!;
+  }
 }

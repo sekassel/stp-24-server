@@ -68,6 +68,9 @@ export class JobService extends MongooseRepository<Job> {
         jobData.building = dto.building;
       } else if (dto.type === JobType.DISTRICT) {
         jobData.district = dto.district;
+      } else if (dto.type === JobType.SHIP) {
+        jobData.fleet = dto.fleet;
+        jobData.ship = dto.ship;
       }
     }
     return this.create(jobData);

@@ -15,7 +15,7 @@ import {BUILDINGS} from '../game-logic/buildings';
 import {Variable} from '../game-logic/types';
 import {DISTRICTS} from '../game-logic/districts';
 import {Types} from "mongoose";
-import {ShipTypeName} from "../game-logic/ships";
+import {SHIP_TYPES, ShipTypeName} from "../game-logic/ships";
 import {FleetDocument} from "../fleet/fleet.schema";
 import {ShipDocument} from "../ship/ship.schema";
 
@@ -79,8 +79,7 @@ export class JobLogicService {
           time: variables[`systems.${nextUpgrade}.upgrade_time`],
         };
       }
-
-      case JobType.TECHNOLOGY:
+      case JobType.TECHNOLOGY: {
         if (!dto.technology) {
           throw new BadRequestException('Technology ID is required for this job type.');
         }
@@ -89,6 +88,17 @@ export class JobLogicService {
           research: this.empireLogicService.getTechnologyCost(empire, technology),
           time: this.empireLogicService.getTechnologyTime(empire, technology),
         };
+      }
+      case JobType.SHIP: {
+        if (!dto.ship) {
+          throw new BadRequestException('Ship type is required for this job type.');
+        }
+        const ship = SHIP_TYPES[dto.ship] ?? notFound(dto.ship);
+        return {
+          ...this.empireLogicService.getShipCost(empire, ship),
+          time: this.empireLogicService.getShipTime(empire, ship),
+        };
+      }
     }
   }
 
