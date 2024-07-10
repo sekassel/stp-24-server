@@ -5,6 +5,7 @@ export const SHIP_TYPES = {
    * Utility
    * */
 
+  /** Exploration and research. */
   explorer: { // science
     id: 'explorer',
     build_time: 4,
@@ -29,6 +30,7 @@ export const SHIP_TYPES = {
     },
   },
 
+  /** Colonization and expansion. */
   colonizer: { // colony
     id: 'colonizer',
     build_time: 5,
@@ -52,10 +54,13 @@ export const SHIP_TYPES = {
       energy: 8,
     },
   },
+  /** =============================================================================================================== */
 
   /**
    * Small
    * */
+
+  /** Rapid response and short-range combat. */
   interceptor: {
     id: 'interceptor',
     build_time: 4,
@@ -84,6 +89,7 @@ export const SHIP_TYPES = {
     },
   },
 
+  /** Space superiority and dogfighting. */
   fighter: {
     id: 'fighter',
     build_time: 4,
@@ -113,6 +119,8 @@ export const SHIP_TYPES = {
   },
 
   // All ships from here have to be unlocked by tech tree -> build_time = 0
+
+  /** Light skirmisher and scout. */
   corvette: {
     id: 'corvette',
     build_time: 0, // fast_small_ship_production tech tree
@@ -141,6 +149,7 @@ export const SHIP_TYPES = {
     },
   },
 
+  /** Anti-capital ship warfare. */
   bomber: {
     id: 'bomber',
     build_time: 0, // fast_small_ship_production tech tree
@@ -169,6 +178,7 @@ export const SHIP_TYPES = {
     },
   },
 
+  /** Light escort and multi-role vessel. */
   frigate: {
     id: 'frigate',
     build_time: 0, // fast_small_ship_production tech tree
@@ -201,6 +211,7 @@ export const SHIP_TYPES = {
    * Medium
    * */
 
+  /** Escort and anti-small ship warfare. */
   destroyer: {
     id: 'destroyer',
     build_time: 0,
@@ -229,6 +240,7 @@ export const SHIP_TYPES = {
     },
   },
 
+  /** Frontline combat and fleet coordination. */
   cruiser: {
     id: 'cruiser',
     build_time: 0,
@@ -350,6 +362,7 @@ export const SHIP_TYPES = {
     },
   },
 
+  /** Fleet support and strike craft deployment. */
   carrier: {
     id: 'carrier',
     build_time: 0,
@@ -378,6 +391,7 @@ export const SHIP_TYPES = {
     },
   },
 
+  /** Super-heavy combat and fleet command. */
   dreadnought: {
     id: 'dreadnought',
     build_time: 0,
