@@ -17,16 +17,13 @@ import {DISTRICTS} from '../game-logic/districts';
 import {Types} from "mongoose";
 import {ShipTypeName} from "../game-logic/ships";
 import {FleetDocument} from "../fleet/fleet.schema";
-import {FleetService} from "../fleet/fleet.service";
-import {ShipService} from "../ship/ship.service";
+import {ShipDocument} from "../ship/ship.schema";
 
 @Injectable()
 export class JobLogicService {
   constructor(
     private readonly empireLogicService: EmpireLogicService,
     private readonly systemLogicService: SystemLogicService,
-    private readonly fleetService: FleetService,
-    private readonly shipService: ShipService,
   ) {
   }
 
@@ -126,32 +123,28 @@ export class JobLogicService {
     }
   }
 
-  async checkFleetAccess(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument) {
+  checkFleetAccess(dto: CreateJobDto, empire: EmpireDocument, fleets: FleetDocument[], ships: ShipDocument[], system?: SystemDocument,) {
     if (system && dto.type === JobType.UPGRADE && (system.upgrade === 'unexplored' || system.upgrade === 'explored')) {
       if (!system) {
         throw new NotFoundException('System not found.');
       }
-      await this.checkFleet(empire._id, system, system.upgrade === 'unexplored' ? 'science' : 'colony');
+      this.checkFleet(empire._id, system, system.upgrade === 'unexplored' ? 'science' : 'colony', fleets, ships);
     }
   }
 
-  private async checkFleet(empireId: Types.ObjectId, system: SystemDocument, shipType: ShipTypeName) {
-    const fleets = await this.fleetService.findAll({empire: empireId, location: system._id});
+  checkFleet(empireId: Types.ObjectId, system: SystemDocument, shipType: ShipTypeName, fleets: FleetDocument[], ships: ShipDocument[]) {
     if (!fleets || fleets.length === 0) {
       this.throwForbiddenException(shipType);
     }
-    await this.checkShip(fleets, shipType);
+    this.checkShip(ships, shipType);
   }
 
-  private async checkShip(fleets: FleetDocument[], shipType: ShipTypeName) {
-    for (const fleet of fleets) {
-      const ships = await this.shipService.findAll({fleet: fleet._id});
-      if (!ships || ships.length === 0) {
-        this.throwForbiddenException(shipType);
-      }
-      if (ships.some(ship => ship.type === shipType)) {
-        return;
-      }
+  private checkShip(ships: ShipDocument[], shipType: ShipTypeName) {
+    if (!ships || ships.length === 0) {
+      this.throwForbiddenException(shipType);
+    }
+    if (ships.some(ship => ship.type === shipType)) {
+      return;
     }
     this.throwForbiddenException(shipType);
   }
