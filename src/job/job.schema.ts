@@ -11,7 +11,7 @@ import {AsObjectId, Ref} from '@mean-stream/nestx';
 import {JobType} from './job-type.enum';
 import {TECHNOLOGY_IDS} from '../game-logic/technologies';
 import {ErrorResponse} from '../util/error-response';
-import {SHIP_NAMES, SHIP_TYPES} from "../game-logic/ships";
+import {SHIP_NAMES} from "../game-logic/ships";
 
 export type JobDocument = Job & Document<Types.ObjectId>;
 
@@ -95,7 +95,7 @@ export class Job extends GlobalSchema {
 
   @Prop({type: String})
   @ApiPropertyOptional({
-    enum: SHIP_TYPES,
+    example: 'science',
     description: 'Ship type name for the job. Required for type=ship.',
   })
   @ValidateIf((job, value) => value || job.type === JobType.SHIP)
