@@ -39,8 +39,10 @@ export class JobController {
 
   @Get()
   @Auth()
-  @ApiOperation({description: 'Get the job list with optional filters for system and type. ' +
-      'The order of the jobs is determined by the priority (lower values first) and creation time (if same priority).'})
+  @ApiOperation({
+    description: 'Get the job list with optional filters for system and type. ' +
+      'The order of the jobs is determined by the priority (lower values first) and creation time (if same priority).'
+  })
   @ApiOkResponse({type: [Job]})
   @ApiForbiddenResponse({description: 'You can only access jobs for your own empire.'})
   @ApiQuery({

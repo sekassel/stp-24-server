@@ -1,3 +1,5 @@
+import {ShipType} from './types';
+
 export const SHIP_TYPES = {
   /**
    * Utility

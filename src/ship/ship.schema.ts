@@ -1,10 +1,10 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
-import {IsNumber, IsObject, IsOptional, IsIn} from 'class-validator';
+import {IsIn, IsNumber, IsObject, IsOptional} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
-import {AsObjectId, Ref} from '@mean-stream/nestx';
-import {SHIP_TYPES} from "../game-logic/ships";
+import {OptionalRef, Ref} from '@mean-stream/nestx';
+import {SHIP_TYPES, ShipTypeName} from "../game-logic/ships";
 
 export type ShipDocument = Ship & Document<Types.ObjectId>;
 
@@ -13,21 +13,18 @@ export class Ship extends GlobalSchema {
   @Ref('Game')
   game: Types.ObjectId;
 
-  @Ref('Empire')
+  @OptionalRef('Empire')
   @ApiPropertyOptional({description: 'Owner Empire ID, or undefined if not owned by anyone (wild fleets).'})
-  @AsObjectId()
-  @IsOptional()
   empire?: Types.ObjectId;
 
   @Ref('Fleet')
   @ApiProperty({description: 'ID of the parent fleet.'})
-  @AsObjectId()
   fleet: Types.ObjectId;
 
-  @Prop({required: true})
+  @Prop({type: String, required: true})
   @ApiProperty({description: 'Type of the ship.'})
   @IsIn(Object.values(SHIP_TYPES))
-  type: string;
+  type: ShipTypeName;
 
   @Prop({required: true})
   @ApiProperty({description: 'Current health of the ship.'})

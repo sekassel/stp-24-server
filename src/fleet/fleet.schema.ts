@@ -3,7 +3,7 @@ import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {IsObject, IsOptional, IsString, ValidateNested} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
-import {AsObjectId, Ref} from '@mean-stream/nestx';
+import {OptionalRef, Ref} from '@mean-stream/nestx';
 import {EffectSource} from "../game-logic/types";
 import {ShipTypeName} from "../game-logic/ships";
 
@@ -14,10 +14,8 @@ export class Fleet extends GlobalSchema {
   @Ref('Game')
   game: Types.ObjectId;
 
-  @Ref('Empire')
+  @OptionalRef('Empire')
   @ApiPropertyOptional({description: 'Owner Empire ID, or undefined if not owned by anyone (wild fleets).'})
-  @AsObjectId()
-  @IsOptional()
   empire?: Types.ObjectId;
 
   @Prop({required: true})
@@ -25,15 +23,14 @@ export class Fleet extends GlobalSchema {
   @IsString()
   name: string;
 
-  @Prop({required: true})
+  @Ref('System')
   @ApiProperty({description: 'ID of the system the fleet is currently stationed at.'})
-  @AsObjectId()
   location: Types.ObjectId;
 
-  @Prop({type: Map, of: Number})
+  @Prop({type: Object})
   @ApiProperty({description: 'Number of ships within this fleet if fully built.'})
   @IsObject()
-  size: Record<ShipTypeName, number>;
+  size: Partial<Record<ShipTypeName, number>>;
 
   @Prop({type: Object, default: {}})
   @ApiPropertyOptional({description: 'Custom data, visible only to the owner empire.'})
