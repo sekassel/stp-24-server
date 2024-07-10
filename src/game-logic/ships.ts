@@ -34,7 +34,7 @@ export const SHIP_TYPES = {
   },
 
   colonizer: { // colony
-    id: 'explorer',
+    id: 'colonizer',
     build_time: 5,
     health: 100,
     speed: 5,
