@@ -9,6 +9,8 @@ export class CreateJobDto extends PickType(Job, [
   'building',
   'district',
   'technology',
+  'fleet',
+  'ship',
 ] as const) {
 }
 
