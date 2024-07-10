@@ -1684,6 +1684,95 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  armor_plating_1: {
+    id: 'armor_plating_1',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['ship_construction'],
+    effects: [
+      {
+        variable: 'ships.explorer.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.colonizer.health',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  armor_plating_2: {
+    id: 'armor_plating_2',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['armor_plating_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.corvette.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.bomber.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.frigate.health',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  armor_plating_3: {
+    id: 'armor_plating_3',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['armor_plating_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.cruiser.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.vanguard.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.sentinel.health',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  armor_plating_4: {
+    id: 'armor_plating_4',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['armor_plating_3'],
+    effects: [
+      {
+        variable: 'ships.battleship.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.carrier.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.dreadnought.health',
+        multiplier: 1.2,
+      },
+    ],
+  },
+
 };
 
 

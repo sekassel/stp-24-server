@@ -9,7 +9,7 @@ export const SHIP_TYPES = {
   explorer: { // science
     id: 'explorer',
     build_time: 4, // ship_construction + faster_ship_construction tech tree
-    health: 100,
+    health: 100, // armor_plating tech tree
     speed: 5,
     attack: {
     },
@@ -34,7 +34,7 @@ export const SHIP_TYPES = {
   colonizer: { // colony
     id: 'colonizer',
     build_time: 5, // ship_construction + faster_ship_construction tech tree
-    health: 100,
+    health: 100, // armor_plating tech tree
     speed: 5,
     attack: {
     },
@@ -64,7 +64,7 @@ export const SHIP_TYPES = {
   interceptor: {
     id: 'interceptor',
     build_time: 4, // small_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 10,
     attack: {
       default: 50,
@@ -93,7 +93,7 @@ export const SHIP_TYPES = {
   fighter: {
     id: 'fighter',
     build_time: 4, // small_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 10,
     attack: {
       default: 50,
@@ -124,7 +124,7 @@ export const SHIP_TYPES = {
   corvette: {
     id: 'corvette',
     build_time: 0, // small_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 10,
     attack: {
       default: 50,
@@ -153,7 +153,7 @@ export const SHIP_TYPES = {
   bomber: {
     id: 'bomber',
     build_time: 0, // small_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 10,
     attack: {
       default: 50,
@@ -182,7 +182,7 @@ export const SHIP_TYPES = {
   frigate: {
     id: 'frigate',
     build_time: 0, // small_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 8,
     attack: {
       default: 50,
@@ -215,7 +215,7 @@ export const SHIP_TYPES = {
   destroyer: {
     id: 'destroyer',
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 5,
     attack: {
       default: 50,
@@ -244,7 +244,7 @@ export const SHIP_TYPES = {
   cruiser: {
     id: 'cruiser',
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 5,
     attack: {
       default: 50,
@@ -274,7 +274,7 @@ export const SHIP_TYPES = {
   vanguard: {
     id: 'vanguard',
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 5,
     attack: {
       default: 50,
@@ -304,7 +304,7 @@ export const SHIP_TYPES = {
   sentinel: {
     id: 'sentinel',
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 5,
     attack: {
       default: 50,
@@ -337,7 +337,7 @@ export const SHIP_TYPES = {
   battleship: {
     id: 'battleship',
     build_time: 0, // large_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 5,
     attack: {
       default: 50,
@@ -366,7 +366,7 @@ export const SHIP_TYPES = {
   carrier: {
     id: 'carrier',
     build_time: 0, // large_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 5,
     attack: {
       default: 50,
@@ -395,7 +395,7 @@ export const SHIP_TYPES = {
   dreadnought: {
     id: 'dreadnought',
     build_time: 0, // large_ship_construction + faster_ship_construction tech tree
-    health: 200,
+    health: 200, // armor_plating tech tree
     speed: 5,
     attack: {
       default: 50,
