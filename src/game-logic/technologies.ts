@@ -2007,6 +2007,95 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  efficient_ships_1: { // reduce ship upkeep
+    id: 'efficient_ships_1',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['ship_construction'],
+    effects: [
+      {
+        variable: 'ships.explorer.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.colonizer.upkeep.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_ships_2: {
+    id: 'efficient_ships_2',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['efficient_ships_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.fighter.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.corvette.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.bomber.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.frigate.upkeep.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_ships_3: {
+    id: 'efficient_ships_3',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['efficient_ships_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.cruiser.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.vanguard.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.sentinel.upkeep.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_ships_4: {
+    id: 'efficient_ships_4',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['efficient_ships_3'],
+    effects: [
+      {
+        variable: 'ships.battleship.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.carrier.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.dreadnought.upkeep.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+
 };
 
 

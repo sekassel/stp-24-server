@@ -25,7 +25,7 @@ export const SHIP_TYPES = {
       minerals: 75,
       energy: 50,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 5,
     },
   },
@@ -50,7 +50,7 @@ export const SHIP_TYPES = {
       minerals: 100,
       energy: 75,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 8,
     },
   },
@@ -84,7 +84,7 @@ export const SHIP_TYPES = {
       minerals: 75,
       energy: 50,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 10,
     },
   },
@@ -113,7 +113,7 @@ export const SHIP_TYPES = {
       minerals: 75,
       energy: 50,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 10,
     },
   },
@@ -144,7 +144,7 @@ export const SHIP_TYPES = {
       minerals: 100,
       energy: 50,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 10,
     },
   },
@@ -173,7 +173,7 @@ export const SHIP_TYPES = {
       minerals: 125,
       energy: 75,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 10,
     },
   },
@@ -202,10 +202,11 @@ export const SHIP_TYPES = {
       minerals: 125,
       energy: 75,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 10,
     },
   },
+  /** =============================================================================================================== */
 
   /**
    * Medium
@@ -235,7 +236,7 @@ export const SHIP_TYPES = {
       minerals: 250,
       energy: 150,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 20,
     },
   },
@@ -264,7 +265,7 @@ export const SHIP_TYPES = {
       minerals: 300,
       energy: 200,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 25,
     },
   },
@@ -294,7 +295,7 @@ export const SHIP_TYPES = {
       minerals: 300,
       energy: 200,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 25,
     },
   },
@@ -324,10 +325,11 @@ export const SHIP_TYPES = {
       minerals: 300,
       energy: 200,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 25,
     },
   },
+  /** =============================================================================================================== */
 
   /**
    * Large
@@ -357,7 +359,7 @@ export const SHIP_TYPES = {
       minerals: 750,
       energy: 250,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 100,
     },
   },
@@ -386,7 +388,7 @@ export const SHIP_TYPES = {
       minerals: 800,
       energy: 400,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 200,
     },
   },
@@ -415,7 +417,7 @@ export const SHIP_TYPES = {
       minerals: 1200,
       energy: 500,
     },
-    upkeep: {
+    upkeep: { // efficient_ships tech tree
       energy: 300,
     },
   },
