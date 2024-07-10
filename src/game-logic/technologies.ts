@@ -1862,6 +1862,151 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  cheap_ships_1: { // reduce ship cost
+    id: 'cheap_ships_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_construction'],
+    effects: [
+      {
+        variable: 'ships.explorer.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.explorer.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.colonizer.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.colonizer.cost.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  cheap_ships_2: {
+    id: 'cheap_ships_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['cheap_ships_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.interceptor.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.fighter.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.fighter.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.corvette.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.corvette.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.bomber.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.bomber.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.frigate.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.frigate.cost.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  cheap_ships_3: {
+    id: 'cheap_ships_3',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['cheap_ships_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.destroyer.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.cruiser.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.cruiser.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.vanguard.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.vanguard.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.sentinel.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.sentinel.cost.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  cheap_ships_4: {
+    id: 'cheap_ships_4',
+    tags: ['engineering', 'construction'],
+    cost: 16,
+    requires: ['cheap_ships_3'],
+    effects: [
+      {
+        variable: 'ships.battleship.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.battleship.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.carrier.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.carrier.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.dreadnought.cost.minerals',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.dreadnought.cost.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+
 };
 
 

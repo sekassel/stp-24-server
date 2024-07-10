@@ -21,7 +21,7 @@ export const SHIP_TYPES = {
       carrier: 1,
       dreadnought: 1,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 75,
       energy: 50,
     },
@@ -46,7 +46,7 @@ export const SHIP_TYPES = {
       carrier: 1,
       dreadnought: 1,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 100,
       energy: 75,
     },
@@ -80,7 +80,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 75,
       energy: 50,
     },
@@ -109,7 +109,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 75,
       energy: 50,
     },
@@ -140,7 +140,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 100,
       energy: 50,
     },
@@ -169,7 +169,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 125,
       energy: 75,
     },
@@ -198,7 +198,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 125,
       energy: 75,
     },
@@ -231,7 +231,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 250,
       energy: 150,
     },
@@ -260,7 +260,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 300,
       energy: 200,
     },
@@ -290,7 +290,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 300,
       energy: 200,
     },
@@ -320,7 +320,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 300,
       energy: 200,
     },
@@ -353,7 +353,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 750,
       energy: 250,
     },
@@ -382,7 +382,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 800,
       energy: 400,
     },
@@ -411,7 +411,7 @@ export const SHIP_TYPES = {
       carrier: 50,
       dreadnought: 10,
     },
-    cost: {
+    cost: { // cheap_ships tech tree
       minerals: 1200,
       energy: 500,
     },
