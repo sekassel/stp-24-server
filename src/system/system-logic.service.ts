@@ -10,6 +10,9 @@ import {BUILDING_NAMES, BuildingName, BUILDINGS} from '../game-logic/buildings';
 import {ResourceName} from '../game-logic/resources';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {AggregateResult} from '../game-logic/aggregates';
+import {FleetDocument} from "../fleet/fleet.schema";
+import {ShipDocument} from "../ship/ship.schema";
+import {SHIP_TYPES} from "../game-logic/ships";
 
 @Injectable()
 export class SystemLogicService {
@@ -213,5 +216,39 @@ export class SystemLogicService {
       });
     }
     return total;
+  }
+
+  getTravelTime(paths: SystemDocument[], fleet: FleetDocument, ships: ShipDocument[]): number {
+    const slowestShipSpeed = this.getSlowestShipSpeed(ships);
+    let totalTravelTime = 0;
+    for (let i = 1; i < paths.length; i++) {
+      const fromSystem = paths[i - 1];
+      const toSystem = paths[i];
+      const linkTime = this.getLinkTime(fromSystem, toSystem);
+      if (linkTime === null) {
+        throw new ConflictException(`No link from ${fromSystem._id} to ${toSystem._id}`);
+      }
+      totalTravelTime += linkTime;
+    }
+    return Math.round(totalTravelTime / slowestShipSpeed);
+  }
+
+  private getLinkTime(fromSystem: SystemDocument, toSystem: SystemDocument): number | null {
+    const linkTime = fromSystem.links[toSystem._id.toString()];
+    return linkTime !== undefined ? linkTime : null;
+  }
+
+  private getSlowestShipSpeed(ships: ShipDocument[]): number {
+    if (!ships || ships.length === 0) {
+      throw new ConflictException('No ships in the fleet.');
+    }
+    let slowestSpeed = Infinity;
+    for (const ship of ships) {
+      const speed = SHIP_TYPES[ship.type].speed;
+      if (speed < slowestSpeed) {
+        slowestSpeed = speed;
+      }
+    }
+    return slowestSpeed;
   }
 }

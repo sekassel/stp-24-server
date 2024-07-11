@@ -1,4 +1,10 @@
-import {BadRequestException, ForbiddenException, Injectable, NotFoundException} from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common';
 import {EmpireDocument} from '../empire/empire.schema';
 import {ResourceName} from '../game-logic/resources';
 import {CreateJobDto} from './job.dto';
@@ -29,7 +35,7 @@ export class JobLogicService {
   ) {
   }
 
-  getCostAndDuration(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName | 'time', number>> {
+  getCostAndDuration(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument, systemPaths?: SystemDocument[], fleet?: FleetDocument, ships?: ShipDocument[]): Partial<Record<ResourceName | 'time', number>> {
     switch (dto.type as JobType) {
       case JobType.BUILDING: {
         if (!system) notFound(dto.system);
@@ -102,12 +108,21 @@ export class JobLogicService {
         };
       }
       case JobType.TRAVEL: {
-        if (!dto.path || !dto.fleet) {
+        if (!systemPaths || !fleet) {
           throw new BadRequestException('Path and fleet id are required for this job type.');
         }
-        if (dto.path.length < 2) {
+        if (!ships || ships.length === 0) {
+          throw new ConflictException('There are no ships available to travel in this fleet.');
+        }
+        if (systemPaths.length < 2) {
           throw new BadRequestException('Path must contain at least two systems.');
         }
+        if (systemPaths[0]._id !== fleet.location) {
+          throw new BadRequestException('Path must start with the fleet\'s current location.');
+        }
+        return {
+          time: this.systemLogicService.getTravelTime(systemPaths, fleet, ships)
+        };
       }
       default:
         throw new BadRequestException('Invalid job type.');

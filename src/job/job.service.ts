@@ -15,6 +15,8 @@ import {TECHNOLOGIES} from '../game-logic/technologies';
 import {ErrorResponse} from '../util/error-response';
 import {FleetService} from "../fleet/fleet.service";
 import {ShipService} from "../ship/ship.service";
+import {SystemService} from "../system/system.service";
+import {ResourceName} from "../game-logic/resources";
 
 @Injectable()
 @EventRepository()
@@ -27,6 +29,7 @@ export class JobService extends MongooseRepository<Job> {
     private shipService: ShipService,
     private empireLogicService: EmpireLogicService,
     private jobLogicService: JobLogicService,
+    private systemService: SystemService,
   ) {
     super(model);
   }
@@ -42,8 +45,29 @@ export class JobService extends MongooseRepository<Job> {
       this.jobLogicService.checkFleetAccess(dto, empire, fleets, ships, system);
     }
 
-    // Calculate resource requirements for the job
-    const {time, ...cost} = this.jobLogicService.getCostAndDuration(dto, empire, system);
+    let time: number | undefined;
+    let cost: Partial<Record<ResourceName | 'time', number>> = {};
+    if (dto.type === JobType.TRAVEL) {
+      if (!dto.path || !dto.fleet) {
+        return null;
+      }
+      const systemPaths: SystemDocument[] = [];
+      for (const systemId of dto.path ?? []) {
+        const systemDoc = await this.systemService.find(systemId);
+        if (systemDoc) {
+          systemPaths.push(systemDoc);
+        }
+      }
+      const fleet = await this.fleetService.find(dto.fleet);
+      if (!fleet) {
+        return null;
+      }
+      const ships = await this.shipService.findAll({fleet: fleet._id});
+      ({time, ...cost} = this.jobLogicService.getCostAndDuration(dto, empire, system, systemPaths, fleet, ships));
+    } else {
+      // Calculate resource requirements for the job
+      ({time, ...cost} = this.jobLogicService.getCostAndDuration(dto, empire, system));
+    }
 
     // Deduct resources from the empire
     this.empireLogicService.deductResources(empire, cost);
@@ -133,7 +157,7 @@ export class JobService extends MongooseRepository<Job> {
     }
   }
 
-  private progressJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
+  private progressJob(job: JobDocument, empire: EmpireDocument, system ?: SystemDocument) {
     job.progress += 1;
     if (job.progress >= job.total) {
       this.completeJob(job, empire, system);
@@ -142,7 +166,7 @@ export class JobService extends MongooseRepository<Job> {
     }
   }
 
-  private completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
+  private completeJob(job: JobDocument, empire: EmpireDocument, system ?: SystemDocument) {
     try {
       this.jobLogicService.completeJob(job, empire, system);
       job.result = {statusCode: 200, error: '', message: 'Job completed successfully'};
