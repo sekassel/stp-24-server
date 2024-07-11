@@ -91,7 +91,7 @@ export const SHIP_TYPES = {
     build_time: 4, // small_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 10, // ship_speed tech tree
-    attack: {
+    attack: { // small_fighters tech tree
       default: 10,
       interceptor: 30,
       corvette: 50,
@@ -118,7 +118,7 @@ export const SHIP_TYPES = {
     build_time: 0, // small_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 10, // ship_speed tech tree
-    attack: {
+    attack: { // small_fighters tech tree
       default: 30,
     },
     defense: {
@@ -139,7 +139,7 @@ export const SHIP_TYPES = {
     build_time: 0, // small_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 10, // ship_speed tech tree
-    attack: {
+    attack: { // small_fighters tech tree
       default: 30,
       corvette: 50,
       frigate: 50,
@@ -162,7 +162,7 @@ export const SHIP_TYPES = {
     build_time: 0, // small_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 8, // ship_speed tech tree
-    attack: {
+    attack: { // small_fighters tech tree
       default: 50,
     },
     defense: {
@@ -188,7 +188,7 @@ export const SHIP_TYPES = {
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
-    attack: {
+    attack: { // medium_fighters tech tree
       default: 50,
     },
     defense: {
@@ -209,7 +209,7 @@ export const SHIP_TYPES = {
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
-    attack: {
+    attack: { // medium_fighters tech tree
       default: 100,
     },
     defense: {
@@ -231,7 +231,7 @@ export const SHIP_TYPES = {
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
-    attack: {
+    attack: { // medium_fighters tech tree
       default: 150,
     },
     defense: {
@@ -253,7 +253,7 @@ export const SHIP_TYPES = {
     build_time: 0, // medium_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
-    attack: {
+    attack: { // medium_fighters tech tree
       default: 200,
     },
     defense: {
@@ -279,7 +279,7 @@ export const SHIP_TYPES = {
     build_time: 0, // large_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
-    attack: {
+    attack: { // large_fighters tech tree
       default: 200,
     },
     defense: {
@@ -300,7 +300,7 @@ export const SHIP_TYPES = {
     build_time: 0, // large_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
-    attack: {
+    attack: { // large_fighters tech tree
       default: 300,
     },
     defense: {
@@ -321,7 +321,7 @@ export const SHIP_TYPES = {
     build_time: 0, // large_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
-    attack: {
+    attack: { // large_fighters tech tree
       default: 400,
     },
     defense: {

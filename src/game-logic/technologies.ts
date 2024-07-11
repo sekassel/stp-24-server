@@ -2128,6 +2128,218 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  small_fighters_1: { // increase ship attack
+    id: 'small_fighters_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_construction'],
+    precedes: ['small_fighters_2'],
+    effects: [
+      {
+        variable: 'ships.interceptor.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.interceptor.attack.fighter',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.interceptor.attack.corvette',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.interceptor.attack.bomber',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.interceptor.attack.frigate',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.attack.interceptor',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.attack.corvette',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.attack.bomber',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.attack.frigate',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.corvette.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.bomber.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.frigate.attack.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  small_fighters_2: {
+    id: 'small_fighters_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['small_fighters_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.interceptor.attack.fighter',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.interceptor.attack.corvette',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.interceptor.attack.bomber',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.interceptor.attack.frigate',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.attack.interceptor',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.attack.corvette',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.attack.bomber',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.attack.frigate',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.corvette.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.bomber.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.frigate.attack.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  medium_fighters_1: {
+    id: 'medium_fighters_1',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['small_fighters_1'],
+    precedes: ['medium_fighters_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.cruiser.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.vanguard.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.sentinel.attack.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  medium_fighters_2: {
+    id: 'medium_fighters_2',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['medium_fighters_1'],
+    effects: [
+      {
+        variable: 'ships.destroyer.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.cruiser.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.vanguard.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.sentinel.attack.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  large_fighters_1: {
+    id: 'large_fighters_1',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['medium_fighters_1'],
+    precedes: ['large_fighters_2'],
+    effects: [
+      {
+        variable: 'ships.battleship.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.carrier.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.dreadnought.attack.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  large_fighters_2: {
+    id: 'large_fighters_2',
+    tags: ['engineering', 'construction'],
+    cost: 16,
+    requires: ['large_fighters_1'],
+    effects: [
+      {
+        variable: 'ships.battleship.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.carrier.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.dreadnought.attack.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+
 };
 
 
