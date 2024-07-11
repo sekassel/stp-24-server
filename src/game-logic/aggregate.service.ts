@@ -58,19 +58,19 @@ export class AggregateService {
 
   aggregateTechCost(empire: Empire, technology: Technology): AggregateResult {
     const aggregate: AggregateResult = {items: [], total: 0};
-    this.empireLogicService.getTechnologyCost(empire as EmpireDocument, technology, aggregate);
+    this.empireLogicService.getTechnologyCost(empire, technology, aggregate);
     return aggregate;
   }
 
   aggregateTechTime(empire: Empire, technology: Technology): AggregateResult {
     const aggregate: AggregateResult = {items: [], total: 0};
-    this.empireLogicService.getTechnologyTime(empire as EmpireDocument, technology, aggregate);
+    this.empireLogicService.getTechnologyTime(empire, technology, aggregate);
     return aggregate;
   }
 
   aggregateSystemHealthOrDefense(empire: Empire, system: System, which: 'health' | 'defense'): AggregateResult {
     const aggregate: AggregateResult = {items: [], total: 0};
-    this.systemLogicService.maxHealthOrDefense(system as SystemDocument, empire as EmpireDocument, which, undefined, aggregate);
+    this.systemLogicService.maxHealthOrDefense(system, empire, which, undefined, aggregate);
     return aggregate;
   }
 
