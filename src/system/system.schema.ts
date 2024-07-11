@@ -38,6 +38,11 @@ export class System extends GlobalSchema {
   @IsString()
   name?: string;
 
+  @Prop({default: 0})
+  @ApiProperty({description: 'Current health of the system.'})
+  @IsNumber()
+  health: number;
+
   @Prop({type: Object, default: {}})
   @IsObject()
   @ApiProperty({

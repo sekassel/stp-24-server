@@ -108,6 +108,26 @@ export const AGGREGATES: Record<string, AggregateFn> = {
       const tech = TECHNOLOGIES[technology] ?? notFound(technology);
       return service.aggregateTechTime(empire, tech);
     },
+  },
+  'system.max_health': {
+    description: 'Calculates the maximum health of a system',
+    params: {
+      system: 'The ID of the system to calculate',
+    },
+    compute: (service, empire, systems, {system}) => {
+      const sys = systems.find(s => s._id.equals(system)) ?? notFound(system);
+      return service.aggregateSystemHealthOrDefense(empire, sys, 'health');
+    },
+  },
+  'system.defense': {
+    description: 'Calculates the defense value of a system',
+    params: {
+      system: 'The ID of the system to calculate',
+    },
+    compute: (service, empire, systems, {system}) => {
+      const sys = systems.find(s => s._id.equals(system)) ?? notFound(system);
+      return service.aggregateSystemHealthOrDefense(empire, sys, 'defense');
+    },
   }
 };
 export type AggregateId = keyof typeof AGGREGATES;

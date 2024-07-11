@@ -5,6 +5,8 @@ export const SYSTEM_UPGRADES = {
     id: 'unexplored',
     next: 'explored',
     upgrade_time: 0,
+    health: 0,
+    defense: 0,
     pop_growth: 0,
     cost: {},
     upkeep: {},
@@ -15,6 +17,8 @@ export const SYSTEM_UPGRADES = {
     next: 'colonized',
     upgrade_time: 3, // fast_system_upgrade tech tree
     pop_growth: 0,
+    health: 0,
+    defense: 0,
     cost: {},
     upkeep: {},
     capacity_multiplier: 1,
@@ -23,6 +27,8 @@ export const SYSTEM_UPGRADES = {
     id: 'colonized',
     next: 'upgraded',
     upgrade_time: 12, // fast_system_upgrade tech tree
+    health: 200,
+    defense: 100,
     pop_growth: 0.05, // pop_growth_colonized tech tree
     cost: {
       minerals: 100, // cheap_claims tech tree
@@ -39,6 +45,8 @@ export const SYSTEM_UPGRADES = {
     id: 'upgraded',
     next: 'developed',
     upgrade_time: 9, // fast_system_upgrade tech tree
+    health: 300,
+    defense: 150,
     pop_growth: 0.02, // pop_growth_upgraded tech tree
     cost: {
       minerals: 100, // cheap_claims tech tree
@@ -56,6 +64,8 @@ export const SYSTEM_UPGRADES = {
     id: 'developed',
     next: undefined,
     upgrade_time: 9, // fast_system_upgrade tech tree
+    health: 400,
+    defense: 200,
     pop_growth: 0.01,
     cost: {
       alloys: 200, // cheap_claims tech tree
