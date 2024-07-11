@@ -1473,6 +1473,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'ships.cruiser.build_time',
         base: 9,
       },
+      {
+        variable: 'ships.vanguard.build_time',
+        base: 10,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 11,
+      },
     ],
   },
   fast_medium_ship_construction_1: {
@@ -1489,6 +1497,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       {
         variable: 'ships.cruiser.build_time',
         base: 8,
+      },
+      {
+        variable: 'ships.vanguard.build_time',
+        base: 9,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 10,
       },
     ],
   },
@@ -1507,6 +1523,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'ships.cruiser.build_time',
         base: 7,
       },
+      {
+        variable: 'ships.vanguard.build_time',
+        base: 8,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 9,
+      },
     ],
   },
   fast_medium_ship_construction_3: {
@@ -1522,6 +1546,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       {
         variable: 'ships.cruiser.build_time',
         base: 6,
+      },
+      {
+        variable: 'ships.vanguard.build_time',
+        base: 7,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 8,
       },
     ],
   },
