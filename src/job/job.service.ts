@@ -15,6 +15,8 @@ import {TECHNOLOGIES} from '../game-logic/technologies';
 import {ErrorResponse} from '../util/error-response';
 import {FleetService} from "../fleet/fleet.service";
 import {ShipService} from "../ship/ship.service";
+import {FleetDocument} from "../fleet/fleet.schema";
+import {ShipDocument} from "../ship/ship.schema";
 
 @Injectable()
 @EventRepository()
