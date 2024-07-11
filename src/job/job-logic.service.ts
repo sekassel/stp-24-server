@@ -92,14 +92,22 @@ export class JobLogicService {
         };
       }
       case JobType.SHIP: {
-        if (!dto.ship) {
-          throw new BadRequestException('Ship type is required for this job type.');
+        if (!dto.ship || !dto.fleet) {
+          throw new BadRequestException('Ship type and fleet id are required for this job type.');
         }
         const ship = SHIP_TYPES[dto.ship as ShipTypeName] ?? notFound(dto.ship as ShipTypeName);
         return {
           ...this.empireLogicService.getShipCost(empire, ship),
           time: this.empireLogicService.getShipTime(empire, ship),
         };
+      }
+      case JobType.TRAVEL: {
+        if (!dto.path || !dto.fleet) {
+          throw new BadRequestException('Path and fleet id are required for this job type.');
+        }
+        if (dto.path.length < 2) {
+          throw new BadRequestException('Path must contain at least two systems.');
+        }
       }
       default:
         throw new BadRequestException('Invalid job type.');

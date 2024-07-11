@@ -102,6 +102,13 @@ export class Job extends GlobalSchema {
   @IsIn(SHIP_NAMES)
   ship?: string;
 
+  @Prop({type: String, default: []})
+  @ApiPropertyOptional({
+    description: 'Path of system IDs for the job. First element must be the fleets current system. Required for type=travel.',
+    ...MONGO_ID_FORMAT,
+  })
+  path?: Types.ObjectId[];
+
   @Prop({type: Object, default: {}})
   @ApiPropertyOptional({
     description: 'Initial cost of resources for the job',
