@@ -117,7 +117,7 @@ export class JobLogicService {
         if (systemPaths.length < 2) {
           throw new BadRequestException('Path must contain at least two systems.');
         }
-        if (systemPaths[0]._id !== fleet.location) {
+        if (!systemPaths[0]._id.equals(fleet.location)) {
           throw new BadRequestException('Path must start with the fleet\'s current location.');
         }
         return {
