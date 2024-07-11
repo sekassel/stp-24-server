@@ -225,3 +225,20 @@
 ## Bugfixes
 
 * Creating a new game no longer marks all other games of the same owner as updated, allowing them to be cleaned up properly.
+
+# v4.0.0 (2024-07-XX)
+
+## BREAKING CHANGES
+
+* Exploring a system now requires a fleet with a science ship in the system.
+* Colonizing a system now requires a fleet with a colony ship in the system.
+
+## New Features
+
++ Added Fleets and Ships.
++ Added Wars.
++ Added Ship types (designs) and associated variables.
++ Added the `buildings.fortress.health` and `buildings.fortress.defense` variables.
++ Added the `systems.<upgrade>.health` and `systems.<upgrade>.defense` variables.
++ Added the `health` property to Systems.
++ Added the `system.max_health` and `system.defense` aggregates.
