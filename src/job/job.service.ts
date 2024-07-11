@@ -39,8 +39,8 @@ export class JobService extends MongooseRepository<Job> {
       if (!system) {
         return null;
       }
-      const fleets = await this.getFleets(empire._id, system._id)
-      const ships = await this.getAllShipsForFleets(fleets);
+      const fleets = await this.fleetService.findAll({empire: empire._id, location: system._id});
+      const ships = await this.shipService.findAll({fleet: {$in: fleets.map(f => f._id)}});
       this.jobLogicService.checkFleetAccess(dto, empire, fleets, ships, system);
     }
 

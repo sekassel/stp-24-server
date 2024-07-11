@@ -42,7 +42,7 @@ import {ShipModule} from "./ship/ship.module";
     SentryModule.forRootAsync({
       inject: [HttpAdapterHost],
       useFactory: async (adapterHost: HttpAdapterHost) => ({
-        enabled: environment.nodeEnv !== 'development',
+        enabled: environment.sentry.enabled,
         dsn: environment.sentry.dsn,
         environment: environment.nodeEnv,
         release: environment.version,
