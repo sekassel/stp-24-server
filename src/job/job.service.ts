@@ -181,7 +181,6 @@ export class JobService extends MongooseRepository<Job> {
               continue;
             }
             linkTimeSum += Math.round(this.systemLogicService.getLinkTime(fromSystem, toSystem, slowestShipSpeed)!);
-            console.log("linkTime for ", fromSystem._id, " to ", toSystem._id, " is ", linkTimeSum);
 
             if (job.progress + 1 >= linkTimeSum) {
               fleet.location = toSystem._id;
