@@ -52,6 +52,7 @@ export class EmpireService extends MongooseRepository<Empire> {
           }
           empire.resources[resource] += resources[resource];
         }
+        empire.markModified('resources');
       } else {
         this.empireLogicService.tradeResources(empire, resources);
       }
