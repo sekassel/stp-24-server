@@ -3,7 +3,7 @@ import type {Building} from './types';
 export const BUILDINGS = {
   exchange: {
     id: 'exchange',
-    build_time: 9,
+    build_time: 9, // fast_building_construction tech tree
     cost: {
       minerals: 100, // cheap_buildings tech tree
     },
@@ -18,7 +18,7 @@ export const BUILDINGS = {
   // basic resource buildings. cost should be around 75, upkeep around 5, production around 10
   power_plant: {
     id: 'power_plant',
-    build_time: 6,
+    build_time: 6, // fast_building_construction tech tree
     cost: { // cheap_buildings, improved_production, efficient_resources tech trees
       minerals: 75, // silicon solar collectors // cheap_buildings tech tree
     },
@@ -31,7 +31,7 @@ export const BUILDINGS = {
   },
   mine: { // cheap_buildings, efficient_buildings, improved_production tech trees
     id: 'mine',
-    build_time: 6,
+    build_time: 6, // fast_building_construction tech tree
     cost: {
       minerals: 50, // building the supporting structure // cheap_buildings tech tree
       energy: 25, // digging the mine // cheap_buildings tech tree
@@ -46,7 +46,7 @@ export const BUILDINGS = {
   },
   farm: { // cheap_buildings, efficient_buildings, improved_production tech trees
     id: 'farm',
-    build_time: 6,
+    build_time: 6, // fast_building_construction tech tree
     cost: {
       energy: 75, // tilling the soil // cheap_buildings tech tree
     },
@@ -61,7 +61,7 @@ export const BUILDINGS = {
   // advanced resource buildings. cost should be around 100, upkeep around 20, production around 10
   research_lab: { // cheap_buildings, efficient_buildings, improved_production tech trees
     id: 'research_lab',
-    build_time: 9,
+    build_time: 9, // fast_building_construction tech tree
     cost: {
       minerals: 100, // building the lab // cheap_buildings tech tree
     },
@@ -75,7 +75,7 @@ export const BUILDINGS = {
   },
   foundry: { // cheap_buildings, efficient_buildings, improved_production tech trees
     id: 'foundry',
-    build_time: 9,
+    build_time: 9, // fast_building_construction tech tree
     cost: {
       minerals: 100, // building the foundry // cheap_buildings tech tree
     },
@@ -89,7 +89,7 @@ export const BUILDINGS = {
   },
   factory: {
     id: 'factory',
-    build_time: 9,
+    build_time: 9, // fast_building_construction tech tree
     cost: {
       minerals: 100, // cheap_buildings tech tree
     },
@@ -103,7 +103,7 @@ export const BUILDINGS = {
   },
   refinery: { // cheap_buildings, efficient_buildings, improved_production tech trees
     id: 'refinery',
-    build_time: 9,
+    build_time: 9, // fast_building_construction tech tree
     cost: {
       minerals: 100, // building the refinery // cheap_buildings tech tree
     },
@@ -117,7 +117,7 @@ export const BUILDINGS = {
   },
   shipyard: {
     id: 'shipyard',
-    build_time: 12,
+    build_time: 12, // fast_building_construction tech tree
     cost: {
       minerals: 50, // cheap_buildings tech tree
       alloys: 75, // cheap_buildings tech tree
@@ -133,7 +133,7 @@ export const BUILDINGS = {
   },
   fortress: {
     id: 'fortress',
-    build_time: 12,
+    build_time: 12, // fast_building_construction tech tree
     health: 100,
     defense: 100,
     cost: {

@@ -15,7 +15,7 @@ export const SYSTEM_UPGRADES = {
   explored: {
     id: 'explored',
     next: 'colonized',
-    upgrade_time: 3,
+    upgrade_time: 3, // fast_system_upgrade tech tree
     pop_growth: 0,
     health: 0,
     defense: 0,
@@ -26,7 +26,7 @@ export const SYSTEM_UPGRADES = {
   colonized: {
     id: 'colonized',
     next: 'upgraded',
-    upgrade_time: 12,
+    upgrade_time: 12, // fast_system_upgrade tech tree
     health: 200,
     defense: 100,
     pop_growth: 0.05, // pop_growth_colonized tech tree
@@ -44,7 +44,7 @@ export const SYSTEM_UPGRADES = {
   upgraded: {
     id: 'upgraded',
     next: 'developed',
-    upgrade_time: 9,
+    upgrade_time: 9, // fast_system_upgrade tech tree
     health: 300,
     defense: 150,
     pop_growth: 0.02, // pop_growth_upgraded tech tree
@@ -63,7 +63,7 @@ export const SYSTEM_UPGRADES = {
   developed: {
     id: 'developed',
     next: undefined,
-    upgrade_time: 9,
+    upgrade_time: 9, // fast_system_upgrade tech tree
     health: 400,
     defense: 200,
     pop_growth: 0.01,

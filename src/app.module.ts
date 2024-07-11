@@ -23,6 +23,9 @@ import {IncomingMessage} from 'http';
 import {AuthService} from './auth/auth.service';
 import {FriendModule} from './friend/friend.module';
 import {JobModule} from './job/job.module';
+import {WarModule} from "./war/war.module";
+import {FleetModule} from "./fleet/fleet.module";
+import {ShipModule} from "./ship/ship.module";
 
 @Module({
   imports: [
@@ -39,7 +42,7 @@ import {JobModule} from './job/job.module';
     SentryModule.forRootAsync({
       inject: [HttpAdapterHost],
       useFactory: async (adapterHost: HttpAdapterHost) => ({
-        enabled: environment.nodeEnv !== 'development',
+        enabled: environment.sentry.enabled,
         dsn: environment.sentry.dsn,
         environment: environment.nodeEnv,
         release: environment.version,
@@ -60,6 +63,9 @@ import {JobModule} from './job/job.module';
     SystemModule,
     EmpireModule,
     JobModule,
+    WarModule,
+    FleetModule,
+    ShipModule,
     AchievementSummaryModule,
     AchievementModule,
     PresetsModule,

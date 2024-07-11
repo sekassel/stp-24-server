@@ -1,5 +1,5 @@
-import {Body, Controller, ForbiddenException, Get, Param, Patch} from '@nestjs/common';
-import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, refs} from '@nestjs/swagger';
+import {Body, Controller, ForbiddenException, Get, Param, ParseBoolPipe, Patch, Query} from '@nestjs/common';
+import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags, refs} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
 import {Throttled} from '../util/throttled.decorator';
@@ -9,6 +9,7 @@ import {Empire} from './empire.schema';
 import {EmpireService} from './empire.service';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
+import {MemberService} from '../member/member.service';
 
 @Controller('games/:game/empires')
 @ApiTags('Game Empires')
@@ -17,6 +18,7 @@ import {Types} from 'mongoose';
 @Throttled()
 export class EmpireController {
   constructor(
+    private readonly memberService: MemberService,
     private readonly empireService: EmpireService,
   ) {
   }
@@ -39,11 +41,19 @@ export class EmpireController {
     @Param('empire', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<Empire | ReadEmpireDto | null> {
     const empire = await this.empireService.find(id) ?? notFound(id);
-    return currentUser._id.equals(empire.user) ? empire : this.empireService.mask(empire);
+    return currentUser._id.equals(empire.user) || await this.memberService.isSpectator(empire.game, currentUser._id)
+      ? empire
+      : this.empireService.mask(empire);
   }
 
   @Patch(':empire')
   @ApiOperation({description: 'Update empire details.'})
+  @ApiQuery({
+    name: 'free',
+    description: 'Change the resources directly without spending or receiving credits. ' +
+      'Useful for events, testing or debugging. ' +
+      'Note that it is not possible to change the population directly.',
+  })
   @ApiOkResponse({type: Empire})
   @ApiForbiddenResponse({description: 'Cannot modify another user\'s empire.'})
   @NotFound('Game or empire not found.')
@@ -52,12 +62,13 @@ export class EmpireController {
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('empire', ObjectIdPipe) id: Types.ObjectId,
     @Body() dto: UpdateEmpireDto,
+    @Query('free', new ParseBoolPipe({optional: true})) free = false,
   ): Promise<Empire | null> {
     const empire = await this.empireService.find(id) ?? notFound(id);
     if (!currentUser._id.equals(empire.user)) {
       throw new ForbiddenException('Cannot modify another user\'s empire.');
     }
-    this.empireService.updateEmpire(empire, dto);
+    this.empireService.updateEmpire(empire, dto, free);
     await this.empireService.saveAll([empire]); // emits update event
     return empire;
   }

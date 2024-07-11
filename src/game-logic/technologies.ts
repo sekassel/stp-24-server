@@ -20,6 +20,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'technologies.society.cost_multiplier',
+        multiplier: 0.95,
+      },
+      {
+        variable: 'technologies.society.time_multiplier',
         multiplier: 0.9,
       },
     ],
@@ -34,6 +38,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'technologies.society.cost_multiplier',
         multiplier: 0.95,
       },
+      {
+        variable: 'technologies.society.time_multiplier',
+        multiplier: 0.9,
+      },
     ],
   },
   computing: {
@@ -45,6 +53,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'technologies.physics.cost_multiplier',
         multiplier: 0.95,
       },
+      {
+        variable: 'technologies.physics.time_multiplier',
+        multiplier: 0.9,
+      },
     ],
   },
   engineering: {
@@ -54,6 +66,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'technologies.engineering.cost_multiplier',
+        multiplier: 0.95,
+      },
+      {
+        variable: 'technologies.engineering.time_multiplier',
         multiplier: 0.9,
       },
     ],
@@ -68,6 +84,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'technologies.construction.cost_multiplier',
         multiplier: 0.95,
       },
+      {
+        variable: 'technologies.construction.time_multiplier',
+        multiplier: 0.9,
+      },
     ],
   },
   production: {
@@ -79,6 +99,10 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       {
         variable: 'technologies.production.cost_multiplier',
         multiplier: 0.95,
+      },
+      {
+        variable: 'technologies.production.time_multiplier',
+        multiplier: 0.9,
       },
     ],
   },
@@ -448,6 +472,72 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       {
         variable: 'buildings.fortress.upkeep.minerals',
         multiplier: 0.85,
+      },
+    ],
+  },
+
+  /** buildings: decrease build time */
+  faster_building_construction_1: {
+    id: 'faster_building_construction_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['construction'],
+    effects: [
+      {
+        variable: 'buildings.farm.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'buildings.mine.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'buildings.power_plant.build_time',
+        multiplier: 0.75,
+      },
+    ],
+  },
+  faster_building_construction_2: {
+    id: 'faster_building_construction_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['faster_building_construction_1'],
+    effects: [
+      {
+        variable: 'buildings.refinery.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'buildings.foundry.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'buildings.factory.build_time',
+        multiplier: 0.75,
+      },
+    ],
+  },
+  faster_building_construction_3: {
+    id: 'faster_building_construction_3',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['faster_building_construction_2'],
+    effects: [
+      {
+        variable: 'buildings.exchange.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'buildings.research_lab.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'buildings.shipyard.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'buildings.fortress.build_time',
+        multiplier: 0.75,
       },
     ],
   },
@@ -876,6 +966,68 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  /** all districts: reduce build time */
+  faster_district_construction_1: {
+    id: 'faster_district_construction_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['construction'],
+    effects: [
+      {
+        variable: 'districts.mining.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'districts.agriculture.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'districts.energy.build_time',
+        multiplier: 0.75,
+      },
+    ],
+  },
+  faster_district_construction_2: {
+    id: 'faster_district_construction_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['faster_district_construction_1'],
+    effects: [
+      {
+        variable: 'districts.city.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'districts.industry.build_time',
+        multiplier: 0.75,
+      },
+    ],
+  },
+  faster_district_construction_3: {
+    id: 'faster_district_construction_3',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['faster_district_construction_2'],
+    effects: [
+      {
+        variable: 'districts.ancient_foundry.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'districts.ancient_factory.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'districts.ancient_refinery.build_time',
+        multiplier: 0.75,
+      },
+      {
+        variable: 'districts.research_site.build_time',
+        multiplier: 0.75,
+      },
+    ],
+  },
+
   /** mining district: reduce initial mineral and energy cost */
   mining_foundation_1: {
     id: 'mining_foundation_1',
@@ -1216,6 +1368,34 @@ generate_sequence('unemployed_pop_cost', ['society', 'state'],
     multiplierIncrement: -0.05,
     exponentialBase: 3,
   }, ['demographic']); // -5% -> -15% -> -45%
+generate_sequence('faster_research', ['physics', 'computing'], 'empire.technologies.research_time',
+  {multiplierIncrement: -0.1}, ['computing']);
+
+/** systems: reduced upgrade time */
+generate_sequence('faster_explored_system_upgrade', ['physics', 'computing'],
+  'systems.explored.upgrade_time',
+  {
+    multiplierIncrement: -0.1,
+    exponentialBase: 2,
+  }, ['computing']);
+generate_sequence('faster_colonized_system_upgrade', ['engineering', 'construction'],
+  'systems.colonized.upgrade_time',
+  {
+    multiplierIncrement: -0.1,
+    exponentialBase: 2,
+  }, ['construction']);
+generate_sequence('faster_upgraded_system_upgrade', ['engineering', 'construction'],
+  'systems.upgraded.upgrade_time',
+  {
+    multiplierIncrement: -0.1,
+    exponentialBase: 2,
+  }, ['construction', 'faster_colonized_system_upgrade_3']);
+generate_sequence('faster_developed_system_upgrade', ['engineering', 'construction'],
+  'systems.developed.upgrade_time',
+  {
+    multiplierIncrement: -0.1,
+    exponentialBase: 2,
+  }, ['construction', 'faster_upgraded_system_upgrade_3']);
 
 // basic resources
 generate_sequence('energy_production', ['physics', 'energy'],

@@ -12,6 +12,7 @@ import {JobLogicService} from './job-logic.service';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {GlobalSchema} from '../util/schema';
 import {TECHNOLOGIES} from '../game-logic/technologies';
+import {ErrorResponse} from '../util/error-response';
 
 @Injectable()
 @EventRepository()
@@ -57,36 +58,43 @@ export class JobService extends MongooseRepository<Job> {
   }
 
   updateJobs(empire: EmpireDocument, jobs: JobDocument[], systems: SystemDocument[]) {
-    const systemJobsMap: Record<string, JobDocument[]> = {};
-    const progressingTechnologyTags: Record<string, boolean> = {};
+    const systemJobs = new Set<string>;
+    const techTagJobs = new Set<string>;
 
     for (const job of jobs) {
-      if (job.type === JobType.TECHNOLOGY) {
-        if (!job.technology) {
-          continue;
-        }
-        const technology = TECHNOLOGIES[job.technology];
-        if (technology) {
-          const primaryTag = technology.tags[0];
-          if (!progressingTechnologyTags[primaryTag]) {
-            progressingTechnologyTags[primaryTag] = true;
-            this.progressJob(job, empire);
+      switch (job.type) {
+        case JobType.TECHNOLOGY: {
+          if (!job.technology) {
+            continue;
           }
+          const technology = TECHNOLOGIES[job.technology];
+          if (!technology) {
+            continue;
+          }
+          const primaryTag = technology.tags[0];
+          if (techTagJobs.has(primaryTag)) {
+            continue;
+          }
+          techTagJobs.add(primaryTag);
+          this.progressJob(job, empire);
+          break;
         }
-      } else {
-        if (!job.system) {
-          continue;
-        }
-        (systemJobsMap[job.system.toString()] ??= []).push(job);
-      }
-    }
-
-    for (const [systemId, jobsInSystem] of Object.entries(systemJobsMap)) {
-      const system = systems.find(s => s._id.equals(systemId));
-
-      for (const job of jobsInSystem) {
-        if (job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE) {
+        case JobType.BUILDING:
+        case JobType.DISTRICT:
+        case JobType.UPGRADE: {
+          if (!job.system) {
+            continue;
+          }
+          const system = systems.find(s => s._id.equals(job.system));
+          if (!system) {
+            continue;
+          }
+          if (systemJobs.has(job.system.toString())) {
+            continue;
+          }
+          systemJobs.add(job.system.toString());
           this.progressJob(job, empire, system);
+          break;
         }
       }
     }
@@ -107,10 +115,11 @@ export class JobService extends MongooseRepository<Job> {
       job.result = {statusCode: 200, error: '', message: 'Job completed successfully'};
     } catch (error) {
       if (error instanceof HttpException) {
-        job.result = {
+        const response = error.getResponse();
+        job.result = typeof response === 'object' ? response as ErrorResponse : {
           statusCode: error.getStatus(),
-          error: HttpStatus[error.getStatus()],
-          message: error.message,
+          error: error.message,
+          message: response,
         };
       } else {
         throw error;
