@@ -66,19 +66,15 @@ export const SHIP_TYPES = {
     build_time: 4, // small_ship_construction + faster_ship_construction tech tree
     health: 200, // armor_plating tech tree
     speed: 10, // ship_speed tech tree
-    attack: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+    attack: { // small_fighters tech tree
+      default: 10,
+      fighter: 30,
+      corvette: 30,
+      bomber: 30,
+      frigate: 30,
     },
     defense: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 10,
     },
     cost: { // cheap_ships tech tree
       minerals: 75,
@@ -96,18 +92,14 @@ export const SHIP_TYPES = {
     health: 200, // armor_plating tech tree
     speed: 10, // ship_speed tech tree
     attack: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 10,
+      interceptor: 30,
+      corvette: 50,
+      bomber: 50,
+      frigate: 50,
     },
     defense: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 10,
     },
     cost: { // cheap_ships tech tree
       minerals: 75,
@@ -127,18 +119,10 @@ export const SHIP_TYPES = {
     health: 200, // armor_plating tech tree
     speed: 10, // ship_speed tech tree
     attack: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 30,
     },
     defense: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 30,
     },
     cost: { // cheap_ships tech tree
       minerals: 100,
@@ -156,18 +140,12 @@ export const SHIP_TYPES = {
     health: 200, // armor_plating tech tree
     speed: 10, // ship_speed tech tree
     attack: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 30,
+      corvette: 50,
+      frigate: 50,
     },
     defense: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 30,
     },
     cost: { // cheap_ships tech tree
       minerals: 125,
@@ -186,17 +164,9 @@ export const SHIP_TYPES = {
     speed: 8, // ship_speed tech tree
     attack: {
       default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
     },
     defense: {
       default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
     },
     cost: { // cheap_ships tech tree
       minerals: 125,
@@ -220,21 +190,13 @@ export const SHIP_TYPES = {
     speed: 5, // ship_speed tech tree
     attack: {
       default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
     },
     defense: {
       default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
     },
     cost: { // cheap_ships tech tree
       minerals: 250,
-      energy: 150,
+      energy: 125,
     },
     upkeep: { // efficient_ships tech tree
       energy: 20,
@@ -248,22 +210,14 @@ export const SHIP_TYPES = {
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
     attack: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 100,
     },
     defense: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 100,
     },
     cost: { // cheap_ships tech tree
-      minerals: 300,
-      energy: 200,
+      minerals: 250,
+      energy: 150,
     },
     upkeep: { // efficient_ships tech tree
       energy: 25,
@@ -278,18 +232,10 @@ export const SHIP_TYPES = {
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
     attack: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 150,
     },
     defense: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 150,
     },
     cost: { // cheap_ships tech tree
       minerals: 300,
@@ -308,22 +254,14 @@ export const SHIP_TYPES = {
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
     attack: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 200,
     },
     defense: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 200,
     },
     cost: { // cheap_ships tech tree
-      minerals: 300,
-      energy: 200,
+      minerals: 350,
+      energy: 250,
     },
     upkeep: { // efficient_ships tech tree
       energy: 25,
@@ -342,18 +280,10 @@ export const SHIP_TYPES = {
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
     attack: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 200,
     },
     defense: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 200,
     },
     cost: { // cheap_ships tech tree
       minerals: 750,
@@ -371,18 +301,10 @@ export const SHIP_TYPES = {
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
     attack: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 300,
     },
     defense: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 300,
     },
     cost: { // cheap_ships tech tree
       minerals: 800,
@@ -400,18 +322,10 @@ export const SHIP_TYPES = {
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
     attack: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 400,
     },
     defense: {
-      default: 50,
-      cruiser: 30,
-      battleship: 20,
-      carrier: 50,
-      dreadnought: 10,
+      default: 400,
     },
     cost: { // cheap_ships tech tree
       minerals: 1200,
