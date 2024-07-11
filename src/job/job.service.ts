@@ -17,6 +17,7 @@ import {FleetService} from "../fleet/fleet.service";
 import {ShipService} from "../ship/ship.service";
 import {SystemService} from "../system/system.service";
 import {ResourceName} from "../game-logic/resources";
+import {SystemLogicService} from "../system/system-logic.service";
 
 @Injectable()
 @EventRepository()
@@ -28,6 +29,7 @@ export class JobService extends MongooseRepository<Job> {
     private fleetService: FleetService,
     private shipService: ShipService,
     private empireLogicService: EmpireLogicService,
+    private systemLogicService: SystemLogicService,
     private jobLogicService: JobLogicService,
     private systemService: SystemService,
   ) {
@@ -94,12 +96,15 @@ export class JobService extends MongooseRepository<Job> {
       } else if (dto.type === JobType.SHIP) {
         jobData.fleet = dto.fleet;
         jobData.ship = dto.ship;
+      } else if (dto.type === JobType.TRAVEL) {
+        jobData.fleet = dto.fleet;
+        jobData.path = dto.path;
       }
     }
     return this.create(jobData);
   }
 
-  updateJobs(empire: EmpireDocument, jobs: JobDocument[], systems: SystemDocument[]) {
+  async updateJobs(empire: EmpireDocument, jobs: JobDocument[], systems: SystemDocument[]) {
     const systemJobs = new Set<string>;
     const techTagJobs = new Set<string>;
     const shipBuildJobs = new Set<string>;
@@ -154,11 +159,43 @@ export class JobService extends MongooseRepository<Job> {
           this.progressJob(job, empire, system);
           break;
         }
+        case JobType.TRAVEL: {
+          if (!job.fleet || !job.path) {
+            continue;
+          }
+          const fleet = await this.fleetService.find(job.fleet);
+          const ships = await this.shipService.findAll({fleet: fleet?._id});
+          const systems = await this.systemService.findAll({_id: {$in: job.path}});
+
+          if (!fleet || !ships) {
+            continue;
+          }
+          const slowestShipSpeed = this.systemLogicService.getSlowestShipSpeed(ships);
+
+          let linkTimeSum = 0;
+          for (let i = 1; i < job.path.length; i++) {
+            const fromSystem = systems.find(system => system._id.equals(job.path![i - 1]));
+            const toSystem = systems.find(system => system._id.equals(job.path![i]));
+
+            if (!fromSystem || !toSystem) {
+              continue;
+            }
+            linkTimeSum += Math.round(this.systemLogicService.getLinkTime(fromSystem, toSystem, slowestShipSpeed)!);
+            console.log("linkTime for ", fromSystem._id, " to ", toSystem._id, " is ", linkTimeSum);
+
+            if (job.progress + 1 >= linkTimeSum) {
+              fleet.location = toSystem._id;
+            }
+          }
+          fleet.markModified('location');
+          await this.fleetService.saveAll([fleet]);
+          this.progressJob(job, empire);
+        }
       }
     }
   }
 
-  private progressJob(job: JobDocument, empire: EmpireDocument, system ?: SystemDocument) {
+  private progressJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
     job.progress += 1;
     if (job.progress >= job.total) {
       this.completeJob(job, empire, system);

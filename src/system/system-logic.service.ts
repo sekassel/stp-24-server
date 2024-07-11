@@ -224,26 +224,24 @@ export class SystemLogicService {
     for (let i = 1; i < paths.length; i++) {
       const fromSystem = paths[i - 1];
       const toSystem = paths[i];
-      const linkTime = this.getLinkTime(fromSystem, toSystem);
+      const linkTime = this.getLinkTime(fromSystem, toSystem, slowestShipSpeed);
       if (linkTime === null) {
         throw new ConflictException(`No link from ${fromSystem._id} to ${toSystem._id}`);
       }
       totalTravelTime += linkTime;
     }
-    const time = Math.round(totalTravelTime / slowestShipSpeed);
-    console.log("time:", time);
-    return time;
+    return Math.round(totalTravelTime);
   }
 
-  private getLinkTime(fromSystem: SystemDocument, toSystem: SystemDocument): number | null {
+  getLinkTime(fromSystem: SystemDocument, toSystem: SystemDocument, slowestShipSpeed: number): number | null {
     if (fromSystem._id.equals(toSystem._id)) {
       return 0;
     }
     const linkTime = fromSystem.links[toSystem._id.toString()];
-    return linkTime !== undefined ? linkTime : null;
+    return linkTime !== undefined ? linkTime / slowestShipSpeed : null;
   }
 
-  private getSlowestShipSpeed(ships: ShipDocument[]): number {
+  getSlowestShipSpeed(ships: ShipDocument[]): number {
     if (!ships || ships.length === 0) {
       throw new ConflictException('No ships in the fleet.');
     }
