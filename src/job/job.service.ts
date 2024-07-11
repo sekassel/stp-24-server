@@ -47,8 +47,10 @@ export class JobService extends MongooseRepository<Job> {
 
     let time: number | undefined;
     let cost: Partial<Record<ResourceName | 'time', number>> = {};
+
     if (dto.type === JobType.TRAVEL) {
       if (!dto.path || !dto.fleet) {
+        console.log('Path or fleet not found', dto.path, dto.fleet);
         return null;
       }
       const systemPaths: SystemDocument[] = [];

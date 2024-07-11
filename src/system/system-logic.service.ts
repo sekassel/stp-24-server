@@ -230,10 +230,15 @@ export class SystemLogicService {
       }
       totalTravelTime += linkTime;
     }
-    return Math.round(totalTravelTime / slowestShipSpeed);
+    const time = Math.round(totalTravelTime / slowestShipSpeed);
+    console.log("time:", time);
+    return time;
   }
 
   private getLinkTime(fromSystem: SystemDocument, toSystem: SystemDocument): number | null {
+    if (fromSystem._id.equals(toSystem._id)) {
+      return 0;
+    }
     const linkTime = fromSystem.links[toSystem._id.toString()];
     return linkTime !== undefined ? linkTime : null;
   }

@@ -97,6 +97,7 @@ export class JobController {
     @AuthUser() user: User,
     @Body() dto: CreateJobDto,
   ): Promise<Job | null> {
+    console.log(dto);
     const [empireDoc, system] = await Promise.all([
       this.checkUserWrite(user, empire),
       dto.system ? this.systemService.find(dto.system) : Promise.resolve(undefined),
