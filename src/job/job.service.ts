@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
 import {Model} from 'mongoose';
@@ -13,6 +13,8 @@ import {EmpireLogicService} from '../empire/empire-logic.service';
 import {GlobalSchema} from '../util/schema';
 import {TECHNOLOGIES} from '../game-logic/technologies';
 import {ErrorResponse} from '../util/error-response';
+import {FleetService} from "../fleet/fleet.service";
+import {ShipService} from "../ship/ship.service";
 
 @Injectable()
 @EventRepository()
@@ -21,6 +23,8 @@ export class JobService extends MongooseRepository<Job> {
     @InjectModel(Job.name) model: Model<Job>,
     private empireService: EmpireService,
     private eventEmitter: EventService,
+    private fleetService: FleetService,
+    private shipService: ShipService,
     private empireLogicService: EmpireLogicService,
     private jobLogicService: JobLogicService,
   ) {
@@ -28,6 +32,16 @@ export class JobService extends MongooseRepository<Job> {
   }
 
   async createJob(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument): Promise<Job | null> {
+    // Check fleet access
+    if (dto.type === JobType.UPGRADE) {
+      if (!system) {
+        return null;
+      }
+      const fleets = await this.fleetService.findAll({empire: empire._id, location: system._id});
+      const ships = await this.shipService.findAll({fleet: {$in: fleets.map(f => f._id)}});
+      this.jobLogicService.checkFleetAccess(dto, empire, fleets, ships, system);
+    }
+
     // Calculate resource requirements for the job
     const {time, ...cost} = this.jobLogicService.getCostAndDuration(dto, empire, system);
 
