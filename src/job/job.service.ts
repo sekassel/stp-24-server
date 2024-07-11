@@ -1,7 +1,7 @@
 import {HttpException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
-import {Model, Types} from 'mongoose';
+import {Model} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {CreateJobDto} from './job.dto';
 import {EmpireService} from '../empire/empire.service';
@@ -15,8 +15,6 @@ import {TECHNOLOGIES} from '../game-logic/technologies';
 import {ErrorResponse} from '../util/error-response';
 import {FleetService} from "../fleet/fleet.service";
 import {ShipService} from "../ship/ship.service";
-import {FleetDocument} from "../fleet/fleet.schema";
-import {ShipDocument} from "../ship/ship.schema";
 
 @Injectable()
 @EventRepository()
@@ -79,6 +77,7 @@ export class JobService extends MongooseRepository<Job> {
   updateJobs(empire: EmpireDocument, jobs: JobDocument[], systems: SystemDocument[]) {
     const systemJobs = new Set<string>;
     const techTagJobs = new Set<string>;
+    const shipBuildJobs = new Set<string>;
 
     for (const job of jobs) {
       switch (job.type) {
@@ -115,6 +114,21 @@ export class JobService extends MongooseRepository<Job> {
           this.progressJob(job, empire, system);
           break;
         }
+        case JobType.SHIP: {
+          if (!job.fleet || !job.ship || !job.system) {
+            continue;
+          }
+          const system = systems.find(s => s._id.equals(job.system));
+          if (!system) {
+            continue;
+          }
+          if (shipBuildJobs.has(job.system.toString())) {
+            continue;
+          }
+          shipBuildJobs.add(job.system.toString());
+          this.progressJob(job, empire, system);
+          break;
+        }
       }
     }
   }
@@ -144,20 +158,6 @@ export class JobService extends MongooseRepository<Job> {
         throw error;
       }
     }
-  }
-
-  private async getFleets(empireId: Types.ObjectId, systemId: Types.ObjectId): Promise<FleetDocument[]> {
-    return await this.fleetService.findAll({empire: empireId, location: systemId});
-  }
-
-  private async getShips(fleetId: Types.ObjectId): Promise<ShipDocument[]> {
-    return await this.shipService.findAll({fleet: fleetId});
-  }
-
-  private async getAllShipsForFleets(fleets: FleetDocument[]): Promise<ShipDocument[]> {
-    const shipPromises = fleets.map(fleet => this.getShips(fleet._id));
-    const shipsArray = await Promise.all(shipPromises);
-    return shipsArray.flat();
   }
 
   private async emit(event: string, job: Job) {
