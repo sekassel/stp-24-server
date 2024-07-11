@@ -1,14 +1,15 @@
 import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
-import {SystemDocument} from './system.schema';
+import {System, SystemDocument} from './system.schema';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {SYSTEM_UPGRADES} from '../game-logic/system-upgrade';
 import {calculateVariable, calculateVariables, getVariables} from '../game-logic/variables';
 import {SYSTEM_TYPES} from '../game-logic/system-types';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {District, Variable} from '../game-logic/types';
-import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
+import {BUILDING_NAMES, BuildingName, BUILDINGS} from '../game-logic/buildings';
 import {ResourceName} from '../game-logic/resources';
 import {EmpireLogicService} from '../empire/empire-logic.service';
+import {AggregateResult} from '../game-logic/aggregates';
 
 @Injectable()
 export class SystemLogicService {
@@ -181,5 +182,36 @@ export class SystemLogicService {
         empire.markModified('resources');
       }
     }
+  }
+
+  maxHealthOrDefense(system: System, empire: Empire, which: 'health' | 'defense', variables?: Record<Variable, number>, aggregate?: AggregateResult): number {
+    const upgradeVariable = `systems.${system.upgrade}.${which}` as const satisfies Variable;
+    const fortressVariable = `buildings.fortress.${which}` as const satisfies Variable;
+    const relevantVariables = variables ?? {
+      [upgradeVariable]: SYSTEM_UPGRADES[system.upgrade][which],
+      [fortressVariable]: BUILDINGS.fortress[which],
+    };
+    if (!variables) {
+      calculateVariables(relevantVariables, empire, system);
+    }
+
+    const baseValue = relevantVariables[upgradeVariable];
+    const fortressCount = system.buildings.filter(b => b === 'fortress').length;
+    const fortressBonus = fortressCount * relevantVariables[fortressVariable];
+    const total = baseValue + fortressBonus;
+    if (aggregate) {
+      aggregate.total += total;
+      aggregate.items.push({
+        variable: upgradeVariable,
+        count: 1,
+        subtotal: baseValue,
+      });
+      fortressBonus && aggregate.items.push({
+        variable: fortressVariable,
+        count: fortressCount,
+        subtotal: fortressBonus,
+      });
+    }
+    return total;
   }
 }

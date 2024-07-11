@@ -199,3 +199,29 @@
 * Upgrading or developing a system no longer fails with a `400 Bad Request` error.
 * Jobs on the same system can no longer progress in parallel.
 * The Job status now reflects the contents of other `ErrorResponse`s.
+
+# v3.1.0 (2024-07-11)
+
+## New Content
+
++ Added 21 new technologies:
+  * `faster_building_construction_1,2,3`
+  * `faster_district_construction_1,2,3`
+  * `faster_research_1,2,3`
+  * `faster_explored_system_upgrade_1,2,3`
+  * `faster_colonized_system_upgrade_1,2,3`
+  * `faster_upgraded_system_upgrade_1,2,3`
+  * `faster_developed_system_upgrade_1,2,3`
+
+## New Features
+
++ Added the `free` query parameter to the `PATCH .../empires/:empire` endpoint for directly manipulating resources without affecting credits.
+
+## Improvements
+
+* Spectators can now read all empire's variables, aggregates, private Empire data, and Jobs.
+* Some technologies now reduce the time for researching technologies.
+
+## Bugfixes
+
+* Creating a new game no longer marks all other games of the same owner as updated, allowing them to be cleaned up properly.

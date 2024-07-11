@@ -11,6 +11,7 @@ import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {GameLogicService} from './game-logic.service';
 import {EmpireLogicService} from '../empire/empire-logic.service';
+import {SystemLogicService} from '../system/system-logic.service';
 
 @Injectable()
 export class AggregateService {
@@ -19,6 +20,7 @@ export class AggregateService {
     private readonly systemService: SystemService,
     private readonly gameLogicService: GameLogicService,
     private readonly empireLogicService: EmpireLogicService,
+    private readonly systemLogicService: SystemLogicService,
   ) {
   }
 
@@ -56,13 +58,19 @@ export class AggregateService {
 
   aggregateTechCost(empire: Empire, technology: Technology): AggregateResult {
     const aggregate: AggregateResult = {items: [], total: 0};
-    this.empireLogicService.getTechnologyCost(empire as EmpireDocument, technology, aggregate);
+    this.empireLogicService.getTechnologyCost(empire, technology, aggregate);
     return aggregate;
   }
 
   aggregateTechTime(empire: Empire, technology: Technology): AggregateResult {
     const aggregate: AggregateResult = {items: [], total: 0};
-    this.empireLogicService.getTechnologyTime(empire as EmpireDocument, technology, aggregate);
+    this.empireLogicService.getTechnologyTime(empire, technology, aggregate);
+    return aggregate;
+  }
+
+  aggregateSystemHealthOrDefense(empire: Empire, system: System, which: 'health' | 'defense'): AggregateResult {
+    const aggregate: AggregateResult = {items: [], total: 0};
+    this.systemLogicService.maxHealthOrDefense(system, empire, which, undefined, aggregate);
     return aggregate;
   }
 
