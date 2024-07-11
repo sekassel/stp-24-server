@@ -2340,6 +2340,146 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  small_ship_defense_1: { // increase ship defense
+    id: 'small_ship_defense_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_construction'],
+    precedes: ['small_ship_defense_2'],
+    effects: [
+      {
+        variable: 'ships.interceptor.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.corvette.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.bomber.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.frigate.defense.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  small_ship_defense_2: {
+    id: 'small_ship_defense_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['small_ship_defense_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.corvette.defense.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  medium_ship_defense_1: {
+    id: 'medium_ship_defense_1',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['small_ship_defense_1'],
+    precedes: ['medium_ship_defense_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.cruiser.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.vanguard.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.sentinel.defense.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  medium_ship_defense_2: {
+    id: 'medium_ship_defense_2',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['medium_ship_defense_1'],
+    effects: [
+      {
+        variable: 'ships.destroyer.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.cruiser.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.vanguard.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.sentinel.defense.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  large_ship_defense_1: {
+    id: 'large_ship_defense_1',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['medium_ship_defense_1'],
+    precedes: ['large_ship_defense_2'],
+    effects: [
+      {
+        variable: 'ships.battleship.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.carrier.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.dreadnought.defense.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  large_ship_defense_2: {
+    id: 'large_ship_defense_2',
+    tags: ['engineering', 'construction'],
+    cost: 16,
+    requires: ['large_ship_defense_1'],
+    effects: [
+      {
+        variable: 'ships.battleship.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.carrier.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.dreadnought.defense.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+
 };
 
 

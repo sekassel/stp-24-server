@@ -73,7 +73,7 @@ export const SHIP_TYPES = {
       bomber: 30,
       frigate: 30,
     },
-    defense: {
+    defense: { // small_ship_defense tech tree
       default: 10,
     },
     cost: { // cheap_ships tech tree
@@ -98,7 +98,7 @@ export const SHIP_TYPES = {
       bomber: 50,
       frigate: 50,
     },
-    defense: {
+    defense: { // small_ship_defense tech tree
       default: 10,
     },
     cost: { // cheap_ships tech tree
@@ -121,7 +121,7 @@ export const SHIP_TYPES = {
     attack: { // small_fighters tech tree
       default: 30,
     },
-    defense: {
+    defense: { // small_ship_defense tech tree
       default: 30,
     },
     cost: { // cheap_ships tech tree
@@ -144,7 +144,7 @@ export const SHIP_TYPES = {
       corvette: 50,
       frigate: 50,
     },
-    defense: {
+    defense: { // small_ship_defense tech tree
       default: 30,
     },
     cost: { // cheap_ships tech tree
@@ -165,7 +165,7 @@ export const SHIP_TYPES = {
     attack: { // small_fighters tech tree
       default: 50,
     },
-    defense: {
+    defense: { // small_ship_defense tech tree
       default: 50,
     },
     cost: { // cheap_ships tech tree
@@ -191,7 +191,7 @@ export const SHIP_TYPES = {
     attack: { // medium_fighters tech tree
       default: 50,
     },
-    defense: {
+    defense: { // medium_ship_defense tech tree
       default: 50,
     },
     cost: { // cheap_ships tech tree
@@ -212,7 +212,7 @@ export const SHIP_TYPES = {
     attack: { // medium_fighters tech tree
       default: 100,
     },
-    defense: {
+    defense: { // medium_ship_defense tech tree
       default: 100,
     },
     cost: { // cheap_ships tech tree
@@ -234,7 +234,7 @@ export const SHIP_TYPES = {
     attack: { // medium_fighters tech tree
       default: 150,
     },
-    defense: {
+    defense: { // medium_ship_defense tech tree
       default: 150,
     },
     cost: { // cheap_ships tech tree
@@ -256,7 +256,7 @@ export const SHIP_TYPES = {
     attack: { // medium_fighters tech tree
       default: 200,
     },
-    defense: {
+    defense: { // medium_ship_defense tech tree
       default: 200,
     },
     cost: { // cheap_ships tech tree
@@ -282,7 +282,7 @@ export const SHIP_TYPES = {
     attack: { // large_fighters tech tree
       default: 200,
     },
-    defense: {
+    defense: { // large_ship_defense tech tree
       default: 200,
     },
     cost: { // cheap_ships tech tree
@@ -303,7 +303,7 @@ export const SHIP_TYPES = {
     attack: { // large_fighters tech tree
       default: 300,
     },
-    defense: {
+    defense: { // large_ship_defense tech tree
       default: 300,
     },
     cost: { // cheap_ships tech tree
@@ -324,7 +324,7 @@ export const SHIP_TYPES = {
     attack: { // large_fighters tech tree
       default: 400,
     },
-    defense: {
+    defense: { // large_ship_defense tech tree
       default: 400,
     },
     cost: { // cheap_ships tech tree
