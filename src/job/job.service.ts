@@ -1,7 +1,7 @@
 import {HttpException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
-import {Model, Types} from 'mongoose';
+import {Model} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {CreateJobDto} from './job.dto';
 import {EmpireService} from '../empire/empire.service';
@@ -15,8 +15,6 @@ import {TECHNOLOGIES} from '../game-logic/technologies';
 import {ErrorResponse} from '../util/error-response';
 import {FleetService} from "../fleet/fleet.service";
 import {ShipService} from "../ship/ship.service";
-import {FleetDocument} from "../fleet/fleet.schema";
-import {ShipDocument} from "../ship/ship.schema";
 
 @Injectable()
 @EventRepository()
@@ -39,8 +37,8 @@ export class JobService extends MongooseRepository<Job> {
       if (!system) {
         return null;
       }
-      const fleets = await this.getFleets(empire._id, system._id)
-      const ships = await this.getAllShipsForFleets(fleets);
+      const fleets = await this.fleetService.findAll({empire: empire._id, location: system._id});
+      const ships = await this.shipService.findAll({fleet: {$in: fleets.map(f => f._id)}});
       this.jobLogicService.checkFleetAccess(dto, empire, fleets, ships, system);
     }
 
@@ -141,20 +139,6 @@ export class JobService extends MongooseRepository<Job> {
         throw error;
       }
     }
-  }
-
-  private async getFleets(empireId: Types.ObjectId, systemId: Types.ObjectId): Promise<FleetDocument[]> {
-    return await this.fleetService.findAll({empire: empireId, location: systemId});
-  }
-
-  private async getShips(fleetId: Types.ObjectId): Promise<ShipDocument[]> {
-    return await this.shipService.findAll({fleet: fleetId});
-  }
-
-  private async getAllShipsForFleets(fleets: FleetDocument[]): Promise<ShipDocument[]> {
-    const shipPromises = fleets.map(fleet => this.getShips(fleet._id));
-    const shipsArray = await Promise.all(shipPromises);
-    return shipsArray.flat();
   }
 
   private async emit(event: string, job: Job) {
