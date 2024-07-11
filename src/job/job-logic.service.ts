@@ -18,12 +18,14 @@ import {Types} from "mongoose";
 import {SHIP_TYPES, ShipTypeName} from "../game-logic/ships";
 import {FleetDocument} from "../fleet/fleet.schema";
 import {ShipDocument} from "../ship/ship.schema";
+import {ShipService} from "../ship/ship.service";
 
 @Injectable()
 export class JobLogicService {
   constructor(
     private readonly empireLogicService: EmpireLogicService,
     private readonly systemLogicService: SystemLogicService,
+    private readonly shipService: ShipService,
   ) {
   }
 
@@ -114,7 +116,8 @@ export class JobLogicService {
         if (!job.technology) {
           throw new BadRequestException('Technology ID is required for this job type.');
         }
-        return this.empireLogicService.unlockTechnology(job.technology, empire);
+        this.empireLogicService.unlockTechnology(job.technology, empire);
+        break;
 
       case JobType.BUILDING:
         if (!job.building) {
@@ -128,10 +131,17 @@ export class JobLogicService {
           throw new BadRequestException('District name is required for this job type.');
         }
         this.systemLogicService.buildDistrict(system ?? notFound(job.system), job.district);
-        return;
+        break;
 
       case JobType.UPGRADE:
-        return this.systemLogicService.upgradeSystem(system ?? notFound(job.system), empire);
+        this.systemLogicService.upgradeSystem(system ?? notFound(job.system), empire);
+        break;
+
+      case JobType.SHIP:
+        if (!job.fleet || !job.ship) {
+          throw new BadRequestException('Fleet and ship type are required for this job type.');
+        }
+        return this.shipService.buildShip(system ?? notFound(job.system), job);
     }
   }
 

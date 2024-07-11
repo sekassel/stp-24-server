@@ -80,7 +80,7 @@ export class SystemLogicService {
   }
 
   buildBuilding(system: SystemDocument, building: BuildingName) {
-    if (this.usedCapacity(system) + 1> system.capacity) {
+    if (this.usedCapacity(system) + 1 > system.capacity) {
       throw new BadRequestException('System is at capacity.');
     }
     system.buildings.push(building);
