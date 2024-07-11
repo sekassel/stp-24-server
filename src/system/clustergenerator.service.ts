@@ -160,6 +160,7 @@ export class ClusterGeneratorService {
       districts: {},
       buildings: [],
       population: 0,
+      health: 0,
       updatedAt: new Date(),
       createdAt: new Date(),
     };
