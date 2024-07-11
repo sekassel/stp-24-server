@@ -185,21 +185,19 @@ export class SystemLogicService {
   }
 
   maxHealthOrDefense(system: System, empire: Empire, which: 'health' | 'defense', variables?: Record<Variable, number>, aggregate?: AggregateResult): number {
-    const upgradeVariable: Variable = `systems.${system.upgrade}.${which}`;
-    const fortressVariable: Variable = `buildings.fortress.${which}`;
-    let relevantVariables: Partial<Record<Variable, number>>;
-    if (variables) {
-      relevantVariables = variables;
-    } else {
-      relevantVariables = {
-        [upgradeVariable]: SYSTEM_UPGRADES[system.upgrade][which],
-        [fortressVariable]: BUILDINGS.fortress[which],
-      };
+    const upgradeVariable = `systems.${system.upgrade}.${which}` as const satisfies Variable;
+    const fortressVariable = `buildings.fortress.${which}` as const satisfies Variable;
+    const relevantVariables = variables ?? {
+      [upgradeVariable]: SYSTEM_UPGRADES[system.upgrade][which],
+      [fortressVariable]: BUILDINGS.fortress[which],
+    };
+    if (!variables) {
       calculateVariables(relevantVariables, empire, system);
     }
-    const baseValue = relevantVariables[upgradeVariable]!;
+
+    const baseValue = relevantVariables[upgradeVariable];
     const fortressCount = system.buildings.filter(b => b === 'fortress').length;
-    const fortressBonus = fortressCount * relevantVariables[fortressVariable]!;
+    const fortressBonus = fortressCount * relevantVariables[fortressVariable];
     const total = baseValue + fortressBonus;
     if (aggregate) {
       aggregate.total += total;
