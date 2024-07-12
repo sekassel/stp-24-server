@@ -1,4 +1,4 @@
-import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
+import {BadRequestException, ConflictException, Injectable, NotFoundException} from '@nestjs/common';
 import {System, SystemDocument} from './system.schema';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {SYSTEM_UPGRADES} from '../game-logic/system-upgrade';
@@ -10,6 +10,9 @@ import {BUILDING_NAMES, BuildingName, BUILDINGS} from '../game-logic/buildings';
 import {ResourceName} from '../game-logic/resources';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {AggregateResult} from '../game-logic/aggregates';
+import {FleetDocument} from "../fleet/fleet.schema";
+import {ShipDocument} from "../ship/ship.schema";
+import {SHIP_TYPES} from "../game-logic/ships";
 
 @Injectable()
 export class SystemLogicService {
@@ -80,7 +83,7 @@ export class SystemLogicService {
   }
 
   buildBuilding(system: SystemDocument, building: BuildingName) {
-    if (this.usedCapacity(system) + 1> system.capacity) {
+    if (this.usedCapacity(system) + 1 > system.capacity) {
       throw new BadRequestException('System is at capacity.');
     }
     system.buildings.push(building);
@@ -213,5 +216,45 @@ export class SystemLogicService {
       });
     }
     return total;
+  }
+
+  getTravelTime(paths: SystemDocument[], fleet: FleetDocument, ships: ShipDocument[], empire: EmpireDocument): number {
+    const slowestShipSpeed = this.getSlowestShipSpeed(ships, empire);
+    let totalTravelTime = 0;
+    for (let i = 1; i < paths.length; i++) {
+      const fromSystem = paths[i - 1];
+      const toSystem = paths[i];
+      const linkTime = this.getLinkTime(fromSystem, toSystem, slowestShipSpeed);
+      if (linkTime === null) {
+        throw new ConflictException(`No link from ${fromSystem._id} to ${toSystem._id}`);
+      }
+      totalTravelTime += linkTime;
+    }
+    return Math.round(totalTravelTime);
+  }
+
+  getLinkTime(fromSystem: SystemDocument, toSystem: SystemDocument, slowestShipSpeed: number): number | null {
+    if (fromSystem._id.equals(toSystem._id)) {
+      return 0;
+    }
+    const linkTime = fromSystem.links[toSystem._id.toString()];
+    return linkTime !== undefined ? linkTime / slowestShipSpeed : null;
+  }
+
+  getSlowestShipSpeed(ships: ShipDocument[], empire: EmpireDocument): number {
+    if (!ships || ships.length === 0) {
+      throw new NotFoundException('No ships in the fleet.');
+    }
+    let slowestSpeed = Infinity;
+    for (const ship of ships) {
+      const variableKey = `ships.${ship.type}.speed` as keyof typeof speedVariables;
+      const speedVariables: Partial<Record<Variable, number>> = {[variableKey]: SHIP_TYPES[ship.type].speed};
+      calculateVariables(speedVariables, empire);
+      const calculatedSpeed = speedVariables[variableKey];
+      if (calculatedSpeed !== undefined && calculatedSpeed < slowestSpeed) {
+        slowestSpeed = calculatedSpeed;
+      }
+    }
+    return slowestSpeed;
   }
 }

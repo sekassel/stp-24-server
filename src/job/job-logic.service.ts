@@ -15,19 +15,21 @@ import {BUILDINGS} from '../game-logic/buildings';
 import {Variable} from '../game-logic/types';
 import {DISTRICTS} from '../game-logic/districts';
 import {Types} from "mongoose";
-import {ShipTypeName} from "../game-logic/ships";
+import {SHIP_TYPES, ShipTypeName} from "../game-logic/ships";
 import {FleetDocument} from "../fleet/fleet.schema";
 import {ShipDocument} from "../ship/ship.schema";
+import {ShipService} from "../ship/ship.service";
 
 @Injectable()
 export class JobLogicService {
   constructor(
     private readonly empireLogicService: EmpireLogicService,
     private readonly systemLogicService: SystemLogicService,
+    private readonly shipService: ShipService,
   ) {
   }
 
-  getCostAndDuration(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument): Partial<Record<ResourceName | 'time', number>> {
+  getCostAndDuration(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument, systemPaths?: SystemDocument[], fleet?: FleetDocument, ships?: ShipDocument[]): Partial<Record<ResourceName | 'time', number>> {
     switch (dto.type as JobType) {
       case JobType.BUILDING: {
         if (!system) notFound(dto.system);
@@ -79,8 +81,7 @@ export class JobLogicService {
           time: variables[`systems.${nextUpgrade}.upgrade_time`],
         };
       }
-
-      case JobType.TECHNOLOGY:
+      case JobType.TECHNOLOGY: {
         if (!dto.technology) {
           throw new BadRequestException('Technology ID is required for this job type.');
         }
@@ -89,6 +90,33 @@ export class JobLogicService {
           research: this.empireLogicService.getTechnologyCost(empire, technology),
           time: this.empireLogicService.getTechnologyTime(empire, technology),
         };
+      }
+      case JobType.SHIP: {
+        if (!dto.ship || !dto.fleet) {
+          throw new BadRequestException('Ship type and fleet id are required for this job type.');
+        }
+        const ship = SHIP_TYPES[dto.ship as ShipTypeName] ?? notFound(dto.ship as ShipTypeName);
+        return {
+          ...this.empireLogicService.getShipCost(empire, ship),
+          time: this.empireLogicService.getShipTime(empire, ship),
+        };
+      }
+      case JobType.TRAVEL: {
+        if (!systemPaths || !fleet) {
+          throw new BadRequestException('Path and fleet id are required for this job type.');
+        }
+        if (!ships || ships.length === 0) {
+          throw new NotFoundException('There are no ships available to travel in this fleet.');
+        }
+        if (!systemPaths[0]._id.equals(fleet.location)) {
+          throw new BadRequestException('Path must start with the fleet\'s current location.');
+        }
+        return {
+          time: this.systemLogicService.getTravelTime(systemPaths, fleet, ships, empire)
+        };
+      }
+      default:
+        throw new BadRequestException('Invalid job type.');
     }
   }
 
@@ -96,13 +124,14 @@ export class JobLogicService {
     job.cost && this.empireLogicService.refundResources(empire, job.cost);
   }
 
-  completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
+  async completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
     switch (job.type as JobType) {
       case JobType.TECHNOLOGY:
         if (!job.technology) {
           throw new BadRequestException('Technology ID is required for this job type.');
         }
-        return this.empireLogicService.unlockTechnology(job.technology, empire);
+        this.empireLogicService.unlockTechnology(job.technology, empire);
+        break;
 
       case JobType.BUILDING:
         if (!job.building) {
@@ -116,10 +145,17 @@ export class JobLogicService {
           throw new BadRequestException('District name is required for this job type.');
         }
         this.systemLogicService.buildDistrict(system ?? notFound(job.system), job.district);
-        return;
+        break;
 
       case JobType.UPGRADE:
-        return this.systemLogicService.upgradeSystem(system ?? notFound(job.system), empire);
+        this.systemLogicService.upgradeSystem(system ?? notFound(job.system), empire);
+        break;
+
+      case JobType.SHIP:
+        if (!job.fleet || !job.ship) {
+          throw new BadRequestException('Fleet and ship type are required for this job type.');
+        }
+        await this.shipService.buildShip(system ?? notFound(job.system), job);
     }
   }
 

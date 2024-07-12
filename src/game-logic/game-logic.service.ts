@@ -103,17 +103,17 @@ export class GameLogicService {
 
     await this.jobService.deleteMany({game: game._id, $expr: {$gte: ['$progress', '$total']}});
     const jobs = await this.jobService.findAll({game: game._id}, {sort: {priority: 1, createdAt: 1}});
-    this._updateGame(empires, systems, jobs);
+    await this._updateGame(empires, systems, jobs);
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
     await this.jobService.saveAll(jobs);
   }
 
-  private _updateGame(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
+  private async _updateGame(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
       const empireJobs = jobs.filter(job => job.empire.equals(empire._id));
-      this.jobService.updateJobs(empire, empireJobs, systems);
+      await this.jobService.updateJobs(empire, empireJobs, systems);
       this.updateEmpire(empire, empireSystems);
     }
   }

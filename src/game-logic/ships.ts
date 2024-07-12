@@ -338,3 +338,4 @@ export const SHIP_TYPES = {
 
 } as const;
 export type ShipTypeName = keyof typeof SHIP_TYPES;
+export const SHIP_NAMES = Object.keys(SHIP_TYPES) as ShipTypeName[];
