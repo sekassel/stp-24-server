@@ -15,11 +15,6 @@ export const SHIP_TYPES = {
     },
     defense: {
       default: 10,
-      destroyer: 5,
-      cruiser: 5,
-      battleship: 1,
-      carrier: 1,
-      dreadnought: 1,
     },
     cost: { // cheap_ships tech tree
       alloys: 75,
@@ -41,11 +36,6 @@ export const SHIP_TYPES = {
     },
     defense: {
       default: 10,
-      destroyer: 5,
-      cruiser: 5,
-      battleship: 1,
-      carrier: 1,
-      dreadnought: 1,
     },
     cost: { // cheap_ships tech tree
       alloys: 100,
