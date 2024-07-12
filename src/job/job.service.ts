@@ -1,4 +1,4 @@
-import {HttpException, Injectable} from '@nestjs/common';
+import {ForbiddenException, HttpException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
 import {Model, Types} from 'mongoose';
@@ -52,6 +52,10 @@ export class JobService extends MongooseRepository<Job> {
     if (dto.type === JobType.TRAVEL) {
       if (!dto.path || !dto.fleet) {
         return null;
+      }
+      const travelJobs = await this.findAll({fleet: new Types.ObjectId(dto.fleet), type: JobType.TRAVEL});
+      if (travelJobs.length > 0) {
+        throw new ForbiddenException('Fleet is already traveling.');
       }
       const systemPaths = await this.systemService.findAll({_id: {$in: dto.path}});
       const fleet = await this.fleetService.find(dto.fleet);
