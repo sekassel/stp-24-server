@@ -46,7 +46,6 @@ export class JobService extends MongooseRepository<Job> {
       const ships = await this.shipService.findAll({fleet: {$in: fleets.map(f => f._id)}});
       this.jobLogicService.checkFleetAccess(dto, empire, fleets, ships, system);
     }
-
     let time: number | undefined;
     let cost: Partial<Record<ResourceName | 'time', number>> = {};
 
@@ -54,13 +53,7 @@ export class JobService extends MongooseRepository<Job> {
       if (!dto.path || !dto.fleet) {
         return null;
       }
-      const systemPaths: SystemDocument[] = [];
-      for (const systemId of dto.path ?? []) {
-        const systemDoc = await this.systemService.find(systemId);
-        if (systemDoc) {
-          systemPaths.push(systemDoc);
-        }
-      }
+      const systemPaths = await this.systemService.findAll({_id: {$in: dto.path}});
       const fleet = await this.fleetService.find(dto.fleet);
       if (!fleet) {
         return null;
@@ -89,16 +82,21 @@ export class JobService extends MongooseRepository<Job> {
       jobData.technology = dto.technology;
     } else {
       jobData.system = dto.system;
-      if (dto.type === JobType.BUILDING) {
-        jobData.building = dto.building;
-      } else if (dto.type === JobType.DISTRICT) {
-        jobData.district = dto.district;
-      } else if (dto.type === JobType.SHIP) {
-        jobData.fleet = dto.fleet;
-        jobData.ship = dto.ship;
-      } else if (dto.type === JobType.TRAVEL) {
-        jobData.fleet = dto.fleet;
-        jobData.path = dto.path;
+      switch (dto.type) {
+        case JobType.BUILDING:
+          jobData.building = dto.building;
+          break;
+        case JobType.DISTRICT:
+          jobData.district = dto.district;
+          break;
+        case JobType.SHIP:
+          jobData.ship = dto.ship;
+          jobData.fleet = dto.fleet;
+          break;
+        case JobType.TRAVEL:
+          jobData.path = dto.path;
+          jobData.fleet = dto.fleet;
+          break;
       }
     }
     return this.create(jobData);
@@ -164,13 +162,13 @@ export class JobService extends MongooseRepository<Job> {
             continue;
           }
           const fleet = await this.fleetService.find(job.fleet);
-          const ships = await this.shipService.findAll({fleet: fleet?._id});
+          const ships = await this.shipService.findAll({fleet: job.fleet});
           const systems = await this.systemService.findAll({_id: {$in: job.path}});
 
           if (!fleet || !ships) {
             continue;
           }
-          const slowestShipSpeed = this.systemLogicService.getSlowestShipSpeed(ships);
+          const slowestShipSpeed = this.systemLogicService.getSlowestShipSpeed(ships, empire);
 
           let linkTimeSum = 0;
           for (let i = 1; i < job.path.length; i++) {
@@ -186,7 +184,6 @@ export class JobService extends MongooseRepository<Job> {
               fleet.location = toSystem._id;
             }
           }
-          fleet.markModified('location');
           await this.fleetService.saveAll([fleet]);
           this.progressJob(job, empire);
         }

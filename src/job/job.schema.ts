@@ -5,13 +5,13 @@ import {DISTRICT_NAMES, DistrictName} from '../game-logic/districts';
 import {RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
 import {ResourceName} from '../game-logic/resources';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema, MONGO_ID_FORMAT} from '../util/schema';
-import {IsEnum, IsIn, IsNumber, IsObject, IsOptional, ValidateIf} from 'class-validator';
+import {ArrayMinSize, IsEnum, IsIn, IsNumber, IsObject, IsOptional, ValidateIf} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {AsObjectId, Ref, RefArray} from '@mean-stream/nestx';
 import {JobType} from './job-type.enum';
 import {TECHNOLOGY_IDS} from '../game-logic/technologies';
 import {ErrorResponse} from '../util/error-response';
-import {SHIP_NAMES} from "../game-logic/ships";
+import {SHIP_NAMES, ShipTypeName} from "../game-logic/ships";
 
 export type JobDocument = Job & Document<Types.ObjectId>;
 
@@ -100,15 +100,16 @@ export class Job extends GlobalSchema {
   })
   @ValidateIf((job, value) => value || job.type === JobType.SHIP)
   @IsIn(SHIP_NAMES)
-  ship?: string;
+  ship?: ShipTypeName;
 
-  @Prop({type: [String]})
+  @Prop()
   @ApiPropertyOptional({
     example: ['60d6f7eb8b4b8a001d6f7eb1', '60d6f7eb8b4b8a001d6f7eb2'],
     description: 'Path of system IDs for the job. First element must be the fleet\'s current system. Required for type=travel.',
   })
   @ValidateIf((job, value) => value || job.type === JobType.TRAVEL)
   @RefArray('System')
+  @ArrayMinSize(2)
   path?: Types.ObjectId[];
 
   @Prop({type: Object, default: {}})

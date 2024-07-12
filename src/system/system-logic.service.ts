@@ -1,8 +1,8 @@
-import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
+import {BadRequestException, ConflictException, Injectable, NotFoundException} from '@nestjs/common';
 import {System, SystemDocument} from './system.schema';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {SYSTEM_UPGRADES} from '../game-logic/system-upgrade';
-import {calculateVariable, calculateVariables, getVariables} from '../game-logic/variables';
+import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
 import {SYSTEM_TYPES} from '../game-logic/system-types';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {District, Variable} from '../game-logic/types';
@@ -218,8 +218,8 @@ export class SystemLogicService {
     return total;
   }
 
-  getTravelTime(paths: SystemDocument[], fleet: FleetDocument, ships: ShipDocument[]): number {
-    const slowestShipSpeed = this.getSlowestShipSpeed(ships);
+  getTravelTime(paths: SystemDocument[], fleet: FleetDocument, ships: ShipDocument[], empire: EmpireDocument): number {
+    const slowestShipSpeed = this.getSlowestShipSpeed(ships, empire);
     let totalTravelTime = 0;
     for (let i = 1; i < paths.length; i++) {
       const fromSystem = paths[i - 1];
@@ -241,15 +241,19 @@ export class SystemLogicService {
     return linkTime !== undefined ? linkTime / slowestShipSpeed : null;
   }
 
-  getSlowestShipSpeed(ships: ShipDocument[]): number {
+  getSlowestShipSpeed(ships: ShipDocument[], empire: EmpireDocument): number {
     if (!ships || ships.length === 0) {
-      throw new ConflictException('No ships in the fleet.');
+      throw new NotFoundException('No ships in the fleet.');
     }
     let slowestSpeed = Infinity;
     for (const ship of ships) {
-      const speed = SHIP_TYPES[ship.type].speed;
-      if (speed < slowestSpeed) {
-        slowestSpeed = speed;
+      const speedVariables: Partial<Record<Variable, number>> = flatten(SHIP_TYPES[ship.type].speed, `ships.${ship.type}.speed.`);
+      calculateVariables(speedVariables, empire);
+      const variableKey = `ships.${ship.type}.speed.` as keyof typeof speedVariables;
+      const calculatedSpeed = speedVariables[variableKey];
+      console.log(calculatedSpeed);
+      if (calculatedSpeed !== undefined && calculatedSpeed < slowestSpeed) {
+        slowestSpeed = calculatedSpeed;
       }
     }
     return slowestSpeed;

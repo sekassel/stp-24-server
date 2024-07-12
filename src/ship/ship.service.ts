@@ -35,9 +35,10 @@ export class ShipService extends MongooseRepository<Ship> {
         name: `Fleet ${Date.now()}`,
         size: {[job.ship as ShipTypeName]: 1},
         game: job.game});
-      return await this.createShip(newFleet._id, job.empire, job.ship as ShipTypeName, job.game);
+      await this.createShip(newFleet._id, job.empire, job.ship!, job.game);
+    } else {
+      await this.createShip(fleet._id, job.empire, job.ship!, job.game);
     }
-    await this.createShip(fleet._id, job.empire, job.ship as ShipTypeName, job.game);
   }
 
   async createShip(fleet: Types.ObjectId, empire: Types.ObjectId, shipType: ShipTypeName, game: Types.ObjectId) {
