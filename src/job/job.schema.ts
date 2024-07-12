@@ -96,8 +96,9 @@ export class Job extends GlobalSchema {
 
   @Prop({type: String})
   @ApiPropertyOptional({
-    example: 'science',
+    example: 'explorer',
     description: 'Ship type name for the job. Required for type=ship.',
+    enum: SHIP_NAMES,
   })
   @ValidateIf((job, value) => value || job.type === JobType.SHIP)
   @IsIn(SHIP_NAMES)

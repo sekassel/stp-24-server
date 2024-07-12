@@ -322,19 +322,49 @@ export class ShipType {
   @IsNumber()
   speed: number;
 
-  @ApiProperty({description: 'Attack damage against each other type of ships.'})
+  @ApiProperty({
+    description: 'Attack damage against each other type of ships.',
+    example: {
+      default: 10,
+      bomber: 20,
+    },
+    type: 'object',
+    additionalProperties: {
+      type: 'integer',
+      default: 0,
+      minimum: 0,
+    },
+  })
   @IsObject()
   attack: Record<string, number>;
 
-  @ApiProperty({description: 'Defense against each other type of ship.'})
+  @ApiProperty({
+    description: 'Defense against each other type of ship.',
+    example: {
+      default: 10,
+      bomber: 20,
+    },
+    type: 'object',
+    additionalProperties: {
+      type: 'integer',
+      default: 0,
+      minimum: 0,
+    },
+  })
   @IsObject()
   defense: Record<string, number>;
 
-  @ApiProperty({description: 'Costs to build this type of ship.'})
+  @ApiProperty({
+    ...RESOURCES_SCHEMA_PROPERTIES,
+    description: 'Costs to build this type of ship.',
+  })
   @IsObject()
   cost: Partial<Record<ResourceName, number>>;
 
-  @ApiProperty({description: 'Periodic cost to maintain this type of ship.'})
+  @ApiProperty({
+    ...RESOURCES_SCHEMA_PROPERTIES,
+    description: 'Periodic cost to maintain this type of ship.',
+  })
   @IsObject()
   upkeep: Partial<Record<ResourceName, number>>;
 }

@@ -41,6 +41,7 @@ export class War extends GlobalSchema {
   @Prop({type: Object, default: {}})
   @ApiPropertyOptional({
     description: 'Custom data, visible to everyone.',
+    additionalProperties: true,
   })
   @IsOptional()
   @IsObject()

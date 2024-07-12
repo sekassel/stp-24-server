@@ -5,7 +5,8 @@ import {IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested} from 'class-
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {OptionalRef, Ref} from '@mean-stream/nestx';
 import {EffectSource} from "../game-logic/types";
-import {ShipTypeName} from "../game-logic/ships";
+import {SHIP_NAMES, SHIP_TYPES, ShipTypeName} from '../game-logic/ships';
+import {Type} from 'class-transformer';
 
 export type FleetDocument = Fleet & Document<Types.ObjectId>;
 
@@ -29,26 +30,45 @@ export class Fleet extends GlobalSchema {
   location: Types.ObjectId;
 
   @Prop({type: Object})
-  @ApiProperty({description: 'Number of ships within this fleet if fully built.'})
+  @ApiProperty({
+    description: 'Number of ships within this fleet if fully built.',
+    example: {
+      colonizer: 1,
+      destroyer: 10,
+    },
+    type: 'object',
+    additionalProperties: {
+      type: 'integer',
+      default: 0,
+      minimum: 0,
+    },
+  })
   @IsObject()
   size: Partial<Record<ShipTypeName, number>>;
 
   @Prop({type: Object, default: {}})
-  @ApiPropertyOptional({description: 'Custom data, visible only to the owner empire.'})
+  @ApiPropertyOptional({
+    description: 'Custom data, visible only to the owner empire.',
+    additionalProperties: true,
+  })
   @IsObject()
   @IsOptional()
   _private?: Record<string, any>;
 
   @Prop({type: Object, default: {}})
-  @ApiPropertyOptional({description: 'Custom data, visible to everyone.'})
+  @ApiPropertyOptional({
+    description: 'Custom data, visible to everyone.',
+    additionalProperties: true,
+  })
   @IsObject()
   @IsOptional()
   _public?: Record<string, any>;
 
-  @Prop({type: [Object], default: []})
-  @ApiPropertyOptional({description: 'Custom effects.'})
-  @ValidateNested({each: true})
+  @Prop({type: [EffectSource], default: []})
+  @ApiPropertyOptional({description: 'Custom effects.', type: [EffectSource]})
   @IsOptional()
+  @ValidateNested({each: true})
+  @Type(() => EffectSource)
   effects?: EffectSource[];
 }
 
