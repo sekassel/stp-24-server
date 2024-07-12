@@ -18,8 +18,8 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
-  ApiTags
-} from "@nestjs/swagger";
+  ApiTags, refs,
+} from '@nestjs/swagger';
 import {Validated} from "../util/validated.decorator";
 import {Throttled} from "../util/throttled.decorator";
 import {FleetService} from "./fleet.service";
@@ -96,7 +96,7 @@ export class FleetController {
 
   @Get(':id')
   @Auth()
-  @ApiOkResponse({type: ReadFleetDto})
+  @ApiOkResponse({schema: {oneOf: refs(Fleet, ReadFleetDto)}})
   @NotFound('Fleet not found.')
   async getFleet(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
@@ -116,7 +116,7 @@ export class FleetController {
 
   @Patch(':id')
   @Auth()
-  @ApiOkResponse({type: ReadFleetDto})
+  @ApiOkResponse({type: Fleet})
   @NotFound('Fleet not found.')
   @ApiForbiddenResponse({description: 'You do not own this fleet.'})
   async updateFleet(
@@ -131,7 +131,7 @@ export class FleetController {
 
   @Delete(':id')
   @Auth()
-  @ApiOkResponse({type: ReadFleetDto})
+  @ApiOkResponse({type: Fleet})
   @NotFound('Fleet not found.')
   @ApiForbiddenResponse({description: 'You do not own this fleet.'})
   async deleteFleet(

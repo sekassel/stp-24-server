@@ -9,7 +9,7 @@ import {
   Param,
   Patch
 } from "@nestjs/common";
-import {ApiConflictResponse, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags} from "@nestjs/swagger";
+import {ApiConflictResponse, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, refs} from '@nestjs/swagger';
 import {Validated} from "../util/validated.decorator";
 import {Throttled} from "../util/throttled.decorator";
 import {ShipService} from "./ship.service";
@@ -53,7 +53,7 @@ export class ShipController {
 
   @Get(':id')
   @Auth()
-  @ApiOkResponse({type: ReadShipDto})
+  @ApiOkResponse({schema: {oneOf: refs(Ship, ReadShipDto)}})
   @NotFound('Ship not found.')
   async getFleetShip(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
@@ -69,7 +69,7 @@ export class ShipController {
 
   @Patch(':id')
   @Auth()
-  @ApiOkResponse({type: ReadShipDto})
+  @ApiOkResponse({type: Ship})
   @NotFound('Ship not found.')
   @ApiForbiddenResponse({description: 'You do not own this ship.'})
   @ApiConflictResponse({description: 'Both fleets need to be in the same location to transfer ships.'})
@@ -102,7 +102,7 @@ export class ShipController {
 
   @Delete(':id')
   @Auth()
-  @ApiOkResponse({type: ReadShipDto})
+  @ApiOkResponse({type: Ship})
   @NotFound('Ship not found.')
   @ApiForbiddenResponse({description: 'You do not own this ship.'})
   async deleteFleetShip(
