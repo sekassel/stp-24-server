@@ -1,5 +1,3 @@
-import {ShipType} from './types';
-
 export const SHIP_TYPES = {
   /**
    * Utility
@@ -11,8 +9,7 @@ export const SHIP_TYPES = {
     build_time: 4, // ship_construction + faster_ship_construction tech tree
     health: 100, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
-    attack: {
-    },
+    attack: {},
     defense: {
       default: 10,
     },
@@ -32,8 +29,7 @@ export const SHIP_TYPES = {
     build_time: 5, // ship_construction + faster_ship_construction tech tree
     health: 100, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
-    attack: {
-    },
+    attack: {},
     defense: {
       default: 10,
     },
@@ -42,8 +38,8 @@ export const SHIP_TYPES = {
       energy: 75,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 10,
-      energy: 2,
+      fuel: 2,
+      energy: 0.4,
     },
   },
   /** =============================================================================================================== */
@@ -73,8 +69,8 @@ export const SHIP_TYPES = {
       energy: 50,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 10,
-      energy: 2,
+      fuel: 2,
+      energy: 0.4,
     },
   },
 
@@ -99,8 +95,8 @@ export const SHIP_TYPES = {
       energy: 50,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 10,
-      energy: 2,
+      fuel: 2.5,
+      energy: 0.5,
     },
   },
 
@@ -123,8 +119,8 @@ export const SHIP_TYPES = {
       energy: 50,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 10,
-      energy: 2,
+      fuel: 2.5,
+      energy: 0.5,
     },
   },
 
@@ -147,8 +143,8 @@ export const SHIP_TYPES = {
       energy: 75,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 10,
-      energy: 2,
+      fuel: 2.5,
+      energy: 0.5,
     },
   },
 
@@ -169,8 +165,8 @@ export const SHIP_TYPES = {
       energy: 75,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 10,
-      energy: 2,
+      fuel: 2.5,
+      energy: 0.5,
     },
   },
   /** =============================================================================================================== */
@@ -196,8 +192,8 @@ export const SHIP_TYPES = {
       energy: 125,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 20,
-      energy: 4,
+      fuel: 5,
+      energy: 1,
     },
   },
 
@@ -218,8 +214,8 @@ export const SHIP_TYPES = {
       energy: 150,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 25,
-      energy: 5,
+      fuel: 6.25,
+      energy: 1.25,
     },
   },
 
@@ -241,8 +237,8 @@ export const SHIP_TYPES = {
       energy: 200,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 25,
-      energy: 5,
+      fuel: 6.25,
+      energy: 1.25,
     },
   },
 
@@ -264,8 +260,8 @@ export const SHIP_TYPES = {
       energy: 250,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 25,
-      energy: 5,
+      fuel: 6.25,
+      energy: 1.25,
     },
   },
   /** =============================================================================================================== */
@@ -281,18 +277,18 @@ export const SHIP_TYPES = {
     health: 200, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
     attack: { // large_fighters tech tree
-      default: 200,
+      default: 250,
     },
     defense: { // large_ship_defense tech tree
-      default: 200,
+      default: 250,
     },
     cost: { // cheap_ships tech tree
       alloys: 750,
       energy: 250,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 100,
-      energy: 20,
+      fuel: 12.5,
+      energy: 2.5,
     },
   },
 
@@ -313,8 +309,8 @@ export const SHIP_TYPES = {
       energy: 400,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 200,
-      energy: 40,
+      fuel: 20,
+      energy: 4,
     },
   },
 
@@ -335,8 +331,8 @@ export const SHIP_TYPES = {
       energy: 500,
     },
     upkeep: { // efficient_ships tech tree
-      fuel: 300,
-      energy: 60,
+      fuel: 25,
+      energy: 5,
     },
   },
 
