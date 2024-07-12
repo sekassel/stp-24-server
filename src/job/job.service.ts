@@ -1,7 +1,7 @@
 import {HttpException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
-import {Model, Types} from 'mongoose';
+import {Model} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {CreateJobDto} from './job.dto';
 import {EmpireService} from '../empire/empire.service';
@@ -15,8 +15,6 @@ import {TECHNOLOGIES} from '../game-logic/technologies';
 import {ErrorResponse} from '../util/error-response';
 import {FleetService} from "../fleet/fleet.service";
 import {ShipService} from "../ship/ship.service";
-import {FleetDocument} from "../fleet/fleet.schema";
-import {ShipDocument} from "../ship/ship.schema";
 
 @Injectable()
 @EventRepository()
@@ -142,7 +140,7 @@ export class JobService extends MongooseRepository<Job> {
       }
     }
   }
-  
+
   private async emit(event: string, job: Job) {
     const empire = await this.empireService.find(job.empire);
     if (!empire) {
