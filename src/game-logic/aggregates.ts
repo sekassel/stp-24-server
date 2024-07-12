@@ -1,4 +1,3 @@
-import {System} from '../system/system.schema';
 import {Empire} from '../empire/empire.schema';
 import {ApiProperty} from '@nestjs/swagger';
 import {Variable} from './types';
@@ -7,6 +6,7 @@ import {BadRequestException} from '@nestjs/common';
 import {TECHNOLOGIES} from './technologies';
 import {notFound} from '@mean-stream/nestx';
 import {AggregateService} from './aggregate.service';
+import {System} from '../system/system.schema';
 
 export class AggregateFn {
   description: string;
@@ -128,6 +128,18 @@ export const AGGREGATES: Record<string, AggregateFn> = {
       const sys = systems.find(s => s._id.equals(system)) ?? notFound(system);
       return service.aggregateSystemHealthOrDefense(empire, sys, 'defense');
     },
-  }
+  },
+  'fleet.power': {
+    description: 'Calculates the total power of a fleet',
+    params: {
+      fleet: 'The ID of the fleet to calculate',
+    },
+    compute: (service, empire, systems, {fleet}) => {
+      return { // TODO Fleet power aggregate
+        total: 0,
+        items: [],
+      };
+    },
+  },
 };
 export type AggregateId = keyof typeof AGGREGATES;
