@@ -1,7 +1,7 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
-import {IsObject, IsOptional, IsString, ValidateNested} from 'class-validator';
+import {IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {OptionalRef, Ref} from '@mean-stream/nestx';
 import {EffectSource} from "../game-logic/types";
@@ -21,6 +21,7 @@ export class Fleet extends GlobalSchema {
   @Prop({required: true})
   @ApiProperty({description: 'Custom name of the fleet.'})
   @IsString()
+  @IsNotEmpty({message: 'Fleet name must not be empty.'})
   name: string;
 
   @Ref('System')
