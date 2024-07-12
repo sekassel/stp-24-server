@@ -1,7 +1,7 @@
 import {HttpException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
-import {Model} from 'mongoose';
+import {Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {CreateJobDto} from './job.dto';
 import {EmpireService} from '../empire/empire.service';
@@ -162,9 +162,8 @@ export class JobService extends MongooseRepository<Job> {
             continue;
           }
           const fleet = await this.fleetService.find(job.fleet);
-          const ships = await this.shipService.findAll({fleet: job.fleet});
+          const ships = await this.shipService.findAll({fleet: new Types.ObjectId(job.fleet)});
           const systems = await this.systemService.findAll({_id: {$in: job.path}});
-
           if (!fleet || !ships) {
             continue;
           }
