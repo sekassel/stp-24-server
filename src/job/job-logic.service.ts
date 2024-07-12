@@ -124,7 +124,7 @@ export class JobLogicService {
     job.cost && this.empireLogicService.refundResources(empire, job.cost);
   }
 
-  completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
+  async completeJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
     switch (job.type as JobType) {
       case JobType.TECHNOLOGY:
         if (!job.technology) {
@@ -155,7 +155,7 @@ export class JobLogicService {
         if (!job.fleet || !job.ship) {
           throw new BadRequestException('Fleet and ship type are required for this job type.');
         }
-        this.shipService.buildShip(system ?? notFound(job.system), job);
+        await this.shipService.buildShip(system ?? notFound(job.system), job);
     }
   }
 

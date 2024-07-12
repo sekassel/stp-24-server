@@ -122,7 +122,7 @@ export class JobService extends MongooseRepository<Job> {
             continue;
           }
           techTagJobs.add(primaryTag);
-          this.progressJob(job, empire);
+          await this.progressJob(job, empire);
           break;
         }
         case JobType.BUILDING:
@@ -139,7 +139,7 @@ export class JobService extends MongooseRepository<Job> {
             continue;
           }
           systemJobs.add(job.system.toString());
-          this.progressJob(job, empire, system);
+          await this.progressJob(job, empire, system);
           break;
         }
         case JobType.SHIP: {
@@ -154,7 +154,7 @@ export class JobService extends MongooseRepository<Job> {
             continue;
           }
           shipBuildJobs.add(job.system.toString());
-          this.progressJob(job, empire, system);
+          await this.progressJob(job, empire, system);
           break;
         }
         case JobType.TRAVEL: {
@@ -185,24 +185,24 @@ export class JobService extends MongooseRepository<Job> {
             }
           }
           await this.fleetService.saveAll([fleet]);
-          this.progressJob(job, empire);
+          await this.progressJob(job, empire);
         }
       }
     }
   }
 
-  private progressJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
+  private async progressJob(job: JobDocument, empire: EmpireDocument, system?: SystemDocument) {
     job.progress += 1;
     if (job.progress >= job.total) {
-      this.completeJob(job, empire, system);
+      await this.completeJob(job, empire, system);
     } else {
       job.markModified('progress');
     }
   }
 
-  private completeJob(job: JobDocument, empire: EmpireDocument, system ?: SystemDocument) {
+  private async completeJob(job: JobDocument, empire: EmpireDocument, system ?: SystemDocument) {
     try {
-      this.jobLogicService.completeJob(job, empire, system);
+      await this.jobLogicService.completeJob(job, empire, system);
       job.result = {statusCode: 200, error: '', message: 'Job completed successfully'};
     } catch (error) {
       if (error instanceof HttpException) {
