@@ -21,7 +21,7 @@ export class Fleet extends GlobalSchema {
   @Prop({required: true})
   @ApiProperty({description: 'Custom name of the fleet.'})
   @IsString()
-  @IsNotEmpty({message: 'Fleet name must not be empty.'})
+  @IsNotEmpty()
   name: string;
 
   @Ref('System')
