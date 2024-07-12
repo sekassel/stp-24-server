@@ -26,7 +26,8 @@ export const SHIP_TYPES = {
       energy: 50,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 5,
+      fuel: 5,
+      energy: 1,
     },
   },
 
@@ -51,7 +52,8 @@ export const SHIP_TYPES = {
       energy: 75,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 8,
+      fuel: 10,
+      energy: 2,
     },
   },
   /** =============================================================================================================== */
@@ -81,7 +83,8 @@ export const SHIP_TYPES = {
       energy: 50,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 10,
+      fuel: 10,
+      energy: 2,
     },
   },
 
@@ -106,7 +109,8 @@ export const SHIP_TYPES = {
       energy: 50,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 10,
+      fuel: 10,
+      energy: 2,
     },
   },
 
@@ -129,7 +133,8 @@ export const SHIP_TYPES = {
       energy: 50,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 10,
+      fuel: 10,
+      energy: 2,
     },
   },
 
@@ -152,7 +157,8 @@ export const SHIP_TYPES = {
       energy: 75,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 10,
+      fuel: 10,
+      energy: 2,
     },
   },
 
@@ -173,7 +179,8 @@ export const SHIP_TYPES = {
       energy: 75,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 10,
+      fuel: 10,
+      energy: 2,
     },
   },
   /** =============================================================================================================== */
@@ -199,7 +206,8 @@ export const SHIP_TYPES = {
       energy: 125,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 20,
+      fuel: 20,
+      energy: 4,
     },
   },
 
@@ -220,7 +228,8 @@ export const SHIP_TYPES = {
       energy: 150,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 25,
+      fuel: 25,
+      energy: 5,
     },
   },
 
@@ -242,7 +251,8 @@ export const SHIP_TYPES = {
       energy: 200,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 25,
+      fuel: 25,
+      energy: 5,
     },
   },
 
@@ -264,7 +274,8 @@ export const SHIP_TYPES = {
       energy: 250,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 25,
+      fuel: 25,
+      energy: 5,
     },
   },
   /** =============================================================================================================== */
@@ -290,7 +301,8 @@ export const SHIP_TYPES = {
       energy: 250,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 100,
+      fuel: 100,
+      energy: 20,
     },
   },
 
@@ -311,7 +323,8 @@ export const SHIP_TYPES = {
       energy: 400,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 200,
+      fuel: 200,
+      energy: 40,
     },
   },
 
@@ -332,7 +345,8 @@ export const SHIP_TYPES = {
       energy: 500,
     },
     upkeep: { // efficient_ships tech tree
-      energy: 300,
+      fuel: 300,
+      energy: 60,
     },
   },
 
