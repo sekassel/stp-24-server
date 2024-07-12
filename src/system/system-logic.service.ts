@@ -251,7 +251,6 @@ export class SystemLogicService {
       const speedVariables: Partial<Record<Variable, number>> = {[variableKey]: SHIP_TYPES[ship.type].speed};
       calculateVariables(speedVariables, empire);
       const calculatedSpeed = speedVariables[variableKey];
-      console.log(calculatedSpeed);
       if (calculatedSpeed !== undefined && calculatedSpeed < slowestSpeed) {
         slowestSpeed = calculatedSpeed;
       }

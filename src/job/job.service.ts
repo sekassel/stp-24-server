@@ -105,7 +105,7 @@ export class JobService extends MongooseRepository<Job> {
   async updateJobs(empire: EmpireDocument, jobs: JobDocument[], systems: SystemDocument[]) {
     const systemJobs = new Set<string>;
     const techTagJobs = new Set<string>;
-    const shipBuildJobs = new Set<string>;
+    const shipBuildJobs = new Map<string, number>;
 
     for (const job of jobs) {
       switch (job.type) {
@@ -150,10 +150,13 @@ export class JobService extends MongooseRepository<Job> {
           if (!system) {
             continue;
           }
-          if (shipBuildJobs.has(job.system.toString())) {
+
+          const shipyardCount = system.buildings.filter(building => building === 'shipyard').length;
+          const ongoingJobs = shipBuildJobs.get(job.system.toString()) || 0;
+          if (shipyardCount === 0 || ongoingJobs >= shipyardCount) {
             continue;
           }
-          shipBuildJobs.add(job.system.toString());
+          shipBuildJobs.set(job.system.toString(), ongoingJobs + 1);
           await this.progressJob(job, empire, system);
           break;
         }
