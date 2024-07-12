@@ -1351,6 +1351,1135 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
+  /**
+   * Ship technologies
+   * */
+
+  ship_construction: {
+    id: 'ship_construction',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['construction', 'computing'],
+    effects: [
+      {
+        variable: 'ships.explorer.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.colonizer.build_time',
+        multiplier: 0.9,
+      }
+    ],
+  },
+
+  /** Small */
+  small_ship_construction: { // increase ship build time
+    id: 'small_ship_construction',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['ship_construction'],
+    precedes: ['fast_small_ship_construction_1'],
+    effects: [
+      {
+        variable: 'ships.corvette.build_time',
+        base: 5,
+      },
+      {
+        variable: 'ships.bomber.build_time',
+        base: 5,
+      },
+      {
+        variable: 'ships.frigate.build_time',
+        base: 6,
+      },
+    ],
+  },
+  fast_small_ship_construction_1: {
+    id: 'fast_small_ship_construction_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['small_ship_construction'],
+    precedes: ['fast_small_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.corvette.build_time',
+        base: 4,
+      },
+      {
+        variable: 'ships.bomber.build_time',
+        base: 4,
+      },
+      {
+        variable: 'ships.frigate.build_time',
+        base: 5,
+      },
+    ],
+  },
+  fast_small_ship_construction_2: {
+    id: 'fast_small_ship_construction_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['fast_small_ship_construction_1'],
+    precedes: ['fast_small_ship_construction_3'],
+    effects: [
+      {
+        variable: 'ships.corvette.build_time',
+        base: 3,
+      },
+      {
+        variable: 'ships.bomber.build_time',
+        base: 3,
+      },
+      {
+        variable: 'ships.frigate.build_time',
+        base: 4,
+      },
+    ],
+  },
+  fast_small_ship_construction_3: {
+    id: 'fast_small_ship_construction_3',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['fast_small_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.corvette.build_time',
+        base: 2,
+      },
+      {
+        variable: 'ships.bomber.build_time',
+        base: 2,
+      },
+      {
+        variable: 'ships.frigate.build_time',
+        base: 3,
+      },
+    ],
+  },
+
+  /** Medium */
+  medium_ship_construction: { // increase ship build time
+    id: 'medium_ship_construction',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['ship_construction'],
+    precedes: ['fast_medium_ship_construction_1'],
+    effects: [
+      {
+        variable: 'ships.destroyer.build_time',
+        base: 7,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 9,
+      },
+      {
+        variable: 'ships.vanguard.build_time',
+        base: 10,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 11,
+      },
+    ],
+  },
+  fast_medium_ship_construction_1: {
+    id: 'fast_medium_ship_construction_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['medium_ship_construction'],
+    precedes: ['fast_medium_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.build_time',
+        base: 6,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 8,
+      },
+      {
+        variable: 'ships.vanguard.build_time',
+        base: 9,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 10,
+      },
+    ],
+  },
+  fast_medium_ship_construction_2: {
+    id: 'fast_medium_ship_construction_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['fast_medium_ship_construction_1'],
+    precedes: ['fast_medium_ship_construction_3'],
+    effects: [
+      {
+        variable: 'ships.destroyer.build_time',
+        base: 5,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 7,
+      },
+      {
+        variable: 'ships.vanguard.build_time',
+        base: 8,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 9,
+      },
+    ],
+  },
+  fast_medium_ship_construction_3: {
+    id: 'fast_medium_ship_construction_3',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['fast_medium_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.build_time',
+        base: 4,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 6,
+      },
+      {
+        variable: 'ships.vanguard.build_time',
+        base: 7,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        base: 8,
+      },
+    ],
+  },
+
+  /** Large */
+  large_ship_construction: { // increase ship build time
+    id: 'large_ship_construction',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_construction'],
+    precedes: ['fast_large_ship_construction_1'],
+    effects: [
+      {
+        variable: 'ships.battleship.build_time',
+        base: 12,
+      },
+      {
+        variable: 'ships.carrier.build_time',
+        base: 15,
+      },
+      {
+        variable: 'ships.dreadnought.build_time',
+        base: 18,
+      },
+    ],
+  },
+  fast_large_ship_construction_1: {
+    id: 'fast_large_ship_construction_1',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['large_ship_construction'],
+    precedes: ['fast_large_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.battleship.build_time',
+        base: 11,
+      },
+      {
+        variable: 'ships.carrier.build_time',
+        base: 14,
+      },
+      {
+        variable: 'ships.dreadnought.build_time',
+        base: 17,
+      },
+    ],
+  },
+  fast_large_ship_construction_2: {
+    id: 'fast_large_ship_construction_2',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['fast_large_ship_construction_1'],
+    precedes: ['fast_large_ship_construction_3'],
+    effects: [
+      {
+        variable: 'ships.battleship.build_time',
+        base: 10,
+      },
+      {
+        variable: 'ships.carrier.build_time',
+        base: 13,
+      },
+      {
+        variable: 'ships.dreadnought.build_time',
+        base: 16,
+      },
+    ],
+  },
+  fast_large_ship_construction_3: {
+    id: 'fast_large_ship_construction_3',
+    tags: ['engineering', 'construction'],
+    cost: 16,
+    requires: ['fast_large_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.battleship.build_time',
+        base: 9,
+      },
+      {
+        variable: 'ships.carrier.build_time',
+        base: 12,
+      },
+      {
+        variable: 'ships.dreadnought.build_time',
+        base: 15,
+      },
+    ],
+  },
+
+  faster_ship_construction_1: { // increase ship build time
+    id: 'faster_ship_construction_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_construction'],
+    effects: [
+      {
+        variable: 'ships.interceptor.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.fighter.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.corvette.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.bomber.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.frigate.build_time',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  faster_ship_construction_2: {
+    id: 'faster_ship_construction_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['faster_ship_construction_1'],
+    effects: [
+      {
+        variable: 'ships.destroyer.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.cruiser.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.vanguard.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.sentinel.build_time',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  faster_ship_construction_3: {
+    id: 'faster_ship_construction_3',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['faster_ship_construction_2'],
+    effects: [
+      {
+        variable: 'ships.battleship.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.carrier.build_time',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.dreadnought.build_time',
+        multiplier: 0.9,
+      },
+    ],
+  },
+
+  armor_plating_1: { // increase ship health
+    id: 'armor_plating_1',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['ship_construction'],
+    effects: [
+      {
+        variable: 'ships.explorer.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.colonizer.health',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  armor_plating_2: {
+    id: 'armor_plating_2',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['armor_plating_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.corvette.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.bomber.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.frigate.health',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  armor_plating_3: {
+    id: 'armor_plating_3',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['armor_plating_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.cruiser.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.vanguard.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.sentinel.health',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  armor_plating_4: {
+    id: 'armor_plating_4',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['armor_plating_3'],
+    effects: [
+      {
+        variable: 'ships.battleship.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.carrier.health',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.dreadnought.health',
+        multiplier: 1.2,
+      },
+    ],
+  },
+
+  ship_speed_1: { // increase ship speed
+    id: 'ship_speed_1',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['ship_construction'],
+    effects: [
+      {
+        variable: 'ships.explorer.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.colonizer.speed',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  ship_speed_2: {
+    id: 'ship_speed_2',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_speed_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.corvette.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.bomber.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.frigate.speed',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  ship_speed_3: {
+    id: 'ship_speed_3',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['ship_speed_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.cruiser.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.vanguard.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.sentinel.speed',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  ship_speed_4: {
+    id: 'ship_speed_4',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['ship_speed_3'],
+    effects: [
+      {
+        variable: 'ships.battleship.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.carrier.speed',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.dreadnought.speed',
+        multiplier: 1.2,
+      },
+    ],
+  },
+
+  cheap_ships_1: { // reduce ship cost
+    id: 'cheap_ships_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_construction'],
+    effects: [
+      {
+        variable: 'ships.explorer.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.explorer.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.colonizer.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.colonizer.cost.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  cheap_ships_2: {
+    id: 'cheap_ships_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['cheap_ships_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.interceptor.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.fighter.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.fighter.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.corvette.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.corvette.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.bomber.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.bomber.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.frigate.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.frigate.cost.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  cheap_ships_3: {
+    id: 'cheap_ships_3',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['cheap_ships_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.destroyer.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.cruiser.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.cruiser.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.vanguard.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.vanguard.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.sentinel.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.sentinel.cost.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  cheap_ships_4: {
+    id: 'cheap_ships_4',
+    tags: ['engineering', 'construction'],
+    cost: 16,
+    requires: ['cheap_ships_3'],
+    effects: [
+      {
+        variable: 'ships.battleship.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.battleship.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.carrier.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.carrier.cost.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.dreadnought.cost.alloys',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.dreadnought.cost.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+
+  efficient_ships_1: { // reduce ship upkeep
+    id: 'efficient_ships_1',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    requires: ['ship_construction'],
+    effects: [
+      {
+        variable: 'ships.explorer.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.colonizer.upkeep.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_ships_2: {
+    id: 'efficient_ships_2',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['efficient_ships_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.fighter.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.corvette.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.bomber.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.frigate.upkeep.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_ships_3: {
+    id: 'efficient_ships_3',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['efficient_ships_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.cruiser.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.vanguard.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.sentinel.upkeep.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+  efficient_ships_4: {
+    id: 'efficient_ships_4',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['efficient_ships_3'],
+    effects: [
+      {
+        variable: 'ships.battleship.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.carrier.upkeep.energy',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'ships.dreadnought.upkeep.energy',
+        multiplier: 0.9,
+      },
+    ],
+  },
+
+  small_fighters_1: { // increase ship attack
+    id: 'small_fighters_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_construction'],
+    precedes: ['small_fighters_2'],
+    effects: [
+      {
+        variable: 'ships.interceptor.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.interceptor.attack.fighter',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.interceptor.attack.corvette',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.interceptor.attack.bomber',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.interceptor.attack.frigate',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.attack.interceptor',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.attack.corvette',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.attack.bomber',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.attack.frigate',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.corvette.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.bomber.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.frigate.attack.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  small_fighters_2: {
+    id: 'small_fighters_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['small_fighters_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.interceptor.attack.fighter',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.interceptor.attack.corvette',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.interceptor.attack.bomber',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.interceptor.attack.frigate',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.attack.interceptor',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.attack.corvette',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.attack.bomber',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.attack.frigate',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.corvette.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.bomber.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.frigate.attack.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  medium_fighters_1: {
+    id: 'medium_fighters_1',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['small_fighters_1'],
+    precedes: ['medium_fighters_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.cruiser.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.vanguard.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.sentinel.attack.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  medium_fighters_2: {
+    id: 'medium_fighters_2',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['medium_fighters_1'],
+    effects: [
+      {
+        variable: 'ships.destroyer.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.cruiser.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.vanguard.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.sentinel.attack.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  large_fighters_1: {
+    id: 'large_fighters_1',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['medium_fighters_1'],
+    precedes: ['large_fighters_2'],
+    effects: [
+      {
+        variable: 'ships.battleship.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.carrier.attack.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.dreadnought.attack.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  large_fighters_2: {
+    id: 'large_fighters_2',
+    tags: ['engineering', 'construction'],
+    cost: 16,
+    requires: ['large_fighters_1'],
+    effects: [
+      {
+        variable: 'ships.battleship.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.carrier.attack.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.dreadnought.attack.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+
+  small_ship_defense_1: { // increase ship defense
+    id: 'small_ship_defense_1',
+    tags: ['engineering', 'construction'],
+    cost: 2,
+    requires: ['ship_construction'],
+    precedes: ['small_ship_defense_2'],
+    effects: [
+      {
+        variable: 'ships.interceptor.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.fighter.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.corvette.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.bomber.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.frigate.defense.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  small_ship_defense_2: {
+    id: 'small_ship_defense_2',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['small_ship_defense_1'],
+    effects: [
+      {
+        variable: 'ships.interceptor.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.fighter.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.corvette.defense.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  medium_ship_defense_1: {
+    id: 'medium_ship_defense_1',
+    tags: ['engineering', 'construction'],
+    cost: 4,
+    requires: ['small_ship_defense_1'],
+    precedes: ['medium_ship_defense_2'],
+    effects: [
+      {
+        variable: 'ships.destroyer.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.cruiser.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.vanguard.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.sentinel.defense.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  medium_ship_defense_2: {
+    id: 'medium_ship_defense_2',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['medium_ship_defense_1'],
+    effects: [
+      {
+        variable: 'ships.destroyer.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.cruiser.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.vanguard.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.sentinel.defense.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+  large_ship_defense_1: {
+    id: 'large_ship_defense_1',
+    tags: ['engineering', 'construction'],
+    cost: 8,
+    requires: ['medium_ship_defense_1'],
+    precedes: ['large_ship_defense_2'],
+    effects: [
+      {
+        variable: 'ships.battleship.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.carrier.defense.default',
+        multiplier: 1.1,
+      },
+      {
+        variable: 'ships.dreadnought.defense.default',
+        multiplier: 1.1,
+      },
+    ],
+  },
+  large_ship_defense_2: {
+    id: 'large_ship_defense_2',
+    tags: ['engineering', 'construction'],
+    cost: 16,
+    requires: ['large_ship_defense_1'],
+    effects: [
+      {
+        variable: 'ships.battleship.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.carrier.defense.default',
+        multiplier: 1.2,
+      },
+      {
+        variable: 'ships.dreadnought.defense.default',
+        multiplier: 1.2,
+      },
+    ],
+  },
+
 };
 
 

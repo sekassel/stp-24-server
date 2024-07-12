@@ -7,6 +7,7 @@ import {EMPIRE_VARIABLES} from './empire-variables';
 import {RESOURCES} from './resources';
 import {DISTRICTS} from './districts';
 import {SYSTEM_UPGRADES} from './system-upgrade';
+import {SHIP_TYPES} from "./ships";
 import {System} from '../system/system.schema';
 import {notFound} from '@mean-stream/nestx';
 
@@ -17,6 +18,7 @@ export const VARIABLES = {
   systems: SYSTEM_UPGRADES,
   resources: RESOURCES,
   technologies: TECH_CATEGORIES,
+  ships: SHIP_TYPES,
 } as const;
 
 export function getInitialVariables(): Record<Variable, number> {

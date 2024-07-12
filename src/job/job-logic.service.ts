@@ -128,7 +128,7 @@ export class JobLogicService {
       if (!system) {
         throw new NotFoundException('System not found.');
       }
-      this.checkFleet(empire._id, system, system.upgrade === 'unexplored' ? 'science' : 'colony', fleets, ships);
+      this.checkFleet(empire._id, system, system.upgrade === 'unexplored' ? 'explorer' : 'colonizer', fleets, ships);
     }
   }
 
