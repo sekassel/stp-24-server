@@ -1,7 +1,16 @@
 import {Controller, Get, Header, Param, Res} from '@nestjs/common';
 import {ApiExtraModels, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath} from '@nestjs/swagger';
 import {TRAITS} from '../game-logic/traits';
-import {Building, District, Resource, SystemType, SystemUpgrade, Technology, Trait} from '../game-logic/types';
+import {
+  Building,
+  District,
+  Resource,
+  ShipType,
+  SystemType,
+  SystemUpgrade,
+  Technology,
+  Trait,
+} from '../game-logic/types';
 import {Throttled} from '../util/throttled.decorator';
 import {NotFound} from '@mean-stream/nestx';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
@@ -15,10 +24,11 @@ import {Digraph, toDot} from 'ts-graphviz';
 import {toStream} from '@ts-graphviz/adapter';
 import {Response} from 'express';
 import {SYSTEM_TYPES} from '../game-logic/system-types';
+import {SHIP_TYPES, ShipTypeName} from '../game-logic/ships';
 
 @Controller('presets')
 @ApiTags('Presets')
-@ApiExtraModels(Resource, SystemUpgrade, SystemType)
+@ApiExtraModels(Resource, SystemUpgrade, SystemType, ShipType)
 @Throttled()
 export class PresetsController {
   @Get('resources')
@@ -158,6 +168,19 @@ export class PresetsController {
   @NotFound()
   getDistrict(@Param('id') id: string): District | undefined {
     return DISTRICTS[id as DistrictName];
+  }
+
+  @Get('ships')
+  @ApiOkResponse({type: [ShipType]})
+  getShipTypes(): ShipType[] {
+    return Object.values(SHIP_TYPES);
+  }
+
+  @Get('ships/:id')
+  @ApiOkResponse({type: ShipType})
+  @NotFound()
+  getShipType(@Param('id') id: string): ShipType | undefined {
+    return SHIP_TYPES[id as ShipTypeName];
   }
 
   @Get('traits')
