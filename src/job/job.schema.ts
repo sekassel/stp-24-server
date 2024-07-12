@@ -11,7 +11,7 @@ import {AsObjectId, Ref, RefArray} from '@mean-stream/nestx';
 import {JobType} from './job-type.enum';
 import {TECHNOLOGY_IDS} from '../game-logic/technologies';
 import {ErrorResponse} from '../util/error-response';
-import {SHIP_NAMES, ShipTypeName} from "../game-logic/ships";
+import {SHIP_NAMES, ShipTypeName} from '../game-logic/ships';
 
 export type JobDocument = Job & Document<Types.ObjectId>;
 
@@ -86,11 +86,12 @@ export class Job extends GlobalSchema {
   @IsIn(TECHNOLOGY_IDS)
   technology?: string;
 
-  @Prop({type: String})
+  @Prop({type: Types.ObjectId, ref: 'Fleet', required: false})
   @ApiPropertyOptional({
     description: 'Fleet ID for the job. Required for type=travel and type=ship.',
   })
   @ValidateIf((job, value) => value || job.type === JobType.TRAVEL || job.type === JobType.SHIP)
+  @AsObjectId()
   fleet?: Types.ObjectId;
 
   @Prop({type: String})
@@ -102,13 +103,12 @@ export class Job extends GlobalSchema {
   @IsIn(SHIP_NAMES)
   ship?: ShipTypeName;
 
-  @Prop()
+  @RefArray('System')
   @ApiPropertyOptional({
     example: ['60d6f7eb8b4b8a001d6f7eb1', '60d6f7eb8b4b8a001d6f7eb2'],
     description: 'Path of system IDs for the job. First element must be the fleet\'s current system. Required for type=travel.',
   })
   @ValidateIf((job, value) => value || job.type === JobType.TRAVEL)
-  @RefArray('System')
   @ArrayMinSize(2)
   path?: Types.ObjectId[];
 
