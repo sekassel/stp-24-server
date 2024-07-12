@@ -2,7 +2,7 @@ import {BadRequestException, ConflictException, Injectable, NotFoundException} f
 import {System, SystemDocument} from './system.schema';
 import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {SYSTEM_UPGRADES} from '../game-logic/system-upgrade';
-import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
+import {calculateVariable, calculateVariables, getVariables} from '../game-logic/variables';
 import {SYSTEM_TYPES} from '../game-logic/system-types';
 import {DistrictName, DISTRICTS} from '../game-logic/districts';
 import {District, Variable} from '../game-logic/types';
@@ -247,11 +247,10 @@ export class SystemLogicService {
     }
     let slowestSpeed = Infinity;
     for (const ship of ships) {
-      const speedVariables: Partial<Record<Variable, number>> = flatten(SHIP_TYPES[ship.type].speed, `ships.${ship.type}.speed.`);
+      const variableKey = `ships.${ship.type}.speed` as keyof typeof speedVariables;
+      const speedVariables: Partial<Record<Variable, number>> = {[variableKey]: SHIP_TYPES[ship.type].speed};
       calculateVariables(speedVariables, empire);
-      const variableKey = `ships.${ship.type}.speed.` as keyof typeof speedVariables;
       const calculatedSpeed = speedVariables[variableKey];
-      console.log(calculatedSpeed);
       if (calculatedSpeed !== undefined && calculatedSpeed < slowestSpeed) {
         slowestSpeed = calculatedSpeed;
       }
