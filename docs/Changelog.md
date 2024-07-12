@@ -230,8 +230,30 @@
 
 ## BREAKING CHANGES
 
-* Exploring a system now requires a fleet with a science ship in the system.
-* Colonizing a system now requires a fleet with a colony ship in the system.
+* Exploring a system now requires a fleet with an explorer ship in the system.
+* Colonizing a system now requires a fleet with a colonizer ship in the system.
+
+## New Content
+
++ Added 44 new technologies:
+  - `ship_construction`
+  - `small_ship_construction`
+  - `fast_small_ship_construction_1,2,3`
+  - `medium_ship_construction`
+  - `fast_medium_ship_construction_1,2,3`
+  - `large_ship_construction`
+  - `fast_large_ship_construction_1,2,3`
+  - `fast_ship_construction_1,2,3`
+  - `armor_plating_1,2,3,4`
+  - `ship_speed_1,2,3,4`
+  - `cheap_ships_1,2,3,4`
+  - `efficient_ships_1,2,3,4`
+  - `small_fighters_1,2`
+  - `medium_fighters_1,2`
+  - `large_fighters_1,2`
+  - `small_ship_defense_1,2`
+  - `medium_ship_defense_1,2`
+  - `large_ship_defense_1,2`
 
 ## New Features
 
@@ -242,3 +264,6 @@
 + Added the `systems.<upgrade>.health` and `systems.<upgrade>.defense` variables.
 + Added the `health` property to Systems.
 + Added the `system.max_health` and `system.defense` aggregates.
++ Added the `fleet.power` aggregate.
++ Added the `fleet`, `ship` and `path` properties to Jobs.
++ Added the `ship` and `travel` Job types.
