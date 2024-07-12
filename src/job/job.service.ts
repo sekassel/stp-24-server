@@ -142,21 +142,7 @@ export class JobService extends MongooseRepository<Job> {
       }
     }
   }
-
-  private async getFleets(empireId: Types.ObjectId, systemId: Types.ObjectId): Promise<FleetDocument[]> {
-    return await this.fleetService.findAll({empire: empireId, location: systemId});
-  }
-
-  private async getShips(fleetId: Types.ObjectId): Promise<ShipDocument[]> {
-    return await this.shipService.findAll({fleet: fleetId});
-  }
-
-  private async getAllShipsForFleets(fleets: FleetDocument[]): Promise<ShipDocument[]> {
-    const shipPromises = fleets.map(fleet => this.getShips(fleet._id));
-    const shipsArray = await Promise.all(shipPromises);
-    return shipsArray.flat();
-  }
-
+  
   private async emit(event: string, job: Job) {
     const empire = await this.empireService.find(job.empire);
     if (!empire) {
