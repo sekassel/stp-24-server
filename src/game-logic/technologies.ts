@@ -1901,7 +1901,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['ship_construction'],
     effects: [
       {
-        variable: 'ships.explorer.cost.minerals',
+        variable: 'ships.explorer.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -1909,7 +1909,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.9,
       },
       {
-        variable: 'ships.colonizer.cost.minerals',
+        variable: 'ships.colonizer.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -1925,7 +1925,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['cheap_ships_1'],
     effects: [
       {
-        variable: 'ships.interceptor.cost.minerals',
+        variable: 'ships.interceptor.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -1933,7 +1933,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.9,
       },
       {
-        variable: 'ships.fighter.cost.minerals',
+        variable: 'ships.fighter.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -1941,7 +1941,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.9,
       },
       {
-        variable: 'ships.corvette.cost.minerals',
+        variable: 'ships.corvette.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -1949,7 +1949,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.9,
       },
       {
-        variable: 'ships.bomber.cost.minerals',
+        variable: 'ships.bomber.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -1957,7 +1957,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.9,
       },
       {
-        variable: 'ships.frigate.cost.minerals',
+        variable: 'ships.frigate.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -1973,7 +1973,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['cheap_ships_2'],
     effects: [
       {
-        variable: 'ships.destroyer.cost.minerals',
+        variable: 'ships.destroyer.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -1981,7 +1981,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.9,
       },
       {
-        variable: 'ships.cruiser.cost.minerals',
+        variable: 'ships.cruiser.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -1989,7 +1989,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.9,
       },
       {
-        variable: 'ships.vanguard.cost.minerals',
+        variable: 'ships.vanguard.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -1997,7 +1997,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.9,
       },
       {
-        variable: 'ships.sentinel.cost.minerals',
+        variable: 'ships.sentinel.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -2013,7 +2013,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     requires: ['cheap_ships_3'],
     effects: [
       {
-        variable: 'ships.battleship.cost.minerals',
+        variable: 'ships.battleship.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -2021,7 +2021,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.9,
       },
       {
-        variable: 'ships.carrier.cost.minerals',
+        variable: 'ships.carrier.cost.alloys',
         multiplier: 0.9,
       },
       {
@@ -2029,7 +2029,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 0.9,
       },
       {
-        variable: 'ships.dreadnought.cost.minerals',
+        variable: 'ships.dreadnought.cost.alloys',
         multiplier: 0.9,
       },
       {

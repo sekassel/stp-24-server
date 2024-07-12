@@ -22,7 +22,7 @@ export const SHIP_TYPES = {
       dreadnought: 1,
     },
     cost: { // cheap_ships tech tree
-      minerals: 75,
+      alloys: 75,
       energy: 50,
     },
     upkeep: { // efficient_ships tech tree
@@ -47,7 +47,7 @@ export const SHIP_TYPES = {
       dreadnought: 1,
     },
     cost: { // cheap_ships tech tree
-      minerals: 100,
+      alloys: 100,
       energy: 75,
     },
     upkeep: { // efficient_ships tech tree
@@ -77,7 +77,7 @@ export const SHIP_TYPES = {
       default: 10,
     },
     cost: { // cheap_ships tech tree
-      minerals: 75,
+      alloys: 75,
       energy: 50,
     },
     upkeep: { // efficient_ships tech tree
@@ -102,7 +102,7 @@ export const SHIP_TYPES = {
       default: 10,
     },
     cost: { // cheap_ships tech tree
-      minerals: 75,
+      alloys: 75,
       energy: 50,
     },
     upkeep: { // efficient_ships tech tree
@@ -125,7 +125,7 @@ export const SHIP_TYPES = {
       default: 30,
     },
     cost: { // cheap_ships tech tree
-      minerals: 100,
+      alloys: 100,
       energy: 50,
     },
     upkeep: { // efficient_ships tech tree
@@ -148,7 +148,7 @@ export const SHIP_TYPES = {
       default: 30,
     },
     cost: { // cheap_ships tech tree
-      minerals: 125,
+      alloys: 125,
       energy: 75,
     },
     upkeep: { // efficient_ships tech tree
@@ -169,7 +169,7 @@ export const SHIP_TYPES = {
       default: 50,
     },
     cost: { // cheap_ships tech tree
-      minerals: 125,
+      alloys: 125,
       energy: 75,
     },
     upkeep: { // efficient_ships tech tree
@@ -195,7 +195,7 @@ export const SHIP_TYPES = {
       default: 50,
     },
     cost: { // cheap_ships tech tree
-      minerals: 250,
+      alloys: 250,
       energy: 125,
     },
     upkeep: { // efficient_ships tech tree
@@ -216,7 +216,7 @@ export const SHIP_TYPES = {
       default: 100,
     },
     cost: { // cheap_ships tech tree
-      minerals: 250,
+      alloys: 250,
       energy: 150,
     },
     upkeep: { // efficient_ships tech tree
@@ -238,7 +238,7 @@ export const SHIP_TYPES = {
       default: 150,
     },
     cost: { // cheap_ships tech tree
-      minerals: 300,
+      alloys: 300,
       energy: 200,
     },
     upkeep: { // efficient_ships tech tree
@@ -260,7 +260,7 @@ export const SHIP_TYPES = {
       default: 200,
     },
     cost: { // cheap_ships tech tree
-      minerals: 350,
+      alloys: 350,
       energy: 250,
     },
     upkeep: { // efficient_ships tech tree
@@ -286,7 +286,7 @@ export const SHIP_TYPES = {
       default: 200,
     },
     cost: { // cheap_ships tech tree
-      minerals: 750,
+      alloys: 750,
       energy: 250,
     },
     upkeep: { // efficient_ships tech tree
@@ -307,7 +307,7 @@ export const SHIP_TYPES = {
       default: 300,
     },
     cost: { // cheap_ships tech tree
-      minerals: 800,
+      alloys: 800,
       energy: 400,
     },
     upkeep: { // efficient_ships tech tree
@@ -328,7 +328,7 @@ export const SHIP_TYPES = {
       default: 400,
     },
     cost: { // cheap_ships tech tree
-      minerals: 1200,
+      alloys: 1200,
       energy: 500,
     },
     upkeep: { // efficient_ships tech tree
