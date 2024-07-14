@@ -68,4 +68,5 @@ export const SYSTEM_TYPES = {
     district_percentage: 0.8,
   },
 } as const satisfies Record<string, SystemType>;
+export const SYSTEM_TYPE_NAMES = Object.keys(SYSTEM_TYPES) as SystemTypeName[];
 export type SystemTypeName = keyof typeof SYSTEM_TYPES;

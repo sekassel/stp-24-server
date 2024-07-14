@@ -18,7 +18,7 @@ import {
 } from 'class-validator';
 import {BUILDING_NAMES, BuildingName} from '../game-logic/buildings';
 import {SYSTEM_UPGRADE_NAMES, SystemUpgradeName} from '../game-logic/system-upgrade';
-import {SystemTypeName} from '../game-logic/system-types';
+import {SYSTEM_TYPE_NAMES, SystemTypeName} from '../game-logic/system-types';
 import {EffectSource} from '../game-logic/types';
 import {Type} from 'class-transformer';
 
@@ -27,9 +27,9 @@ export class System extends GlobalSchema {
   @Ref('Game')
   game: Types.ObjectId;
 
-  @Prop({type: String})
-  @ApiProperty()
-  @IsString()
+  @Prop({type: String, enum: SYSTEM_TYPE_NAMES})
+  @ApiProperty({enum: SYSTEM_TYPE_NAMES})
+  @IsIn(SYSTEM_TYPE_NAMES)
   type: SystemTypeName;
 
   @Prop()
