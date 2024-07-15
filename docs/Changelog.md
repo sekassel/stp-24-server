@@ -226,6 +226,17 @@
 
 * Creating a new game no longer marks all other games of the same owner as updated, allowing them to be cleaned up properly.
 
+# v3.1.1 (2024-07-15)
+
+## Bugfixes
+
+* The `PATCH .../empires/:empire` endpoint with `free=true` now correctly updates the empire's resources.
+* The `UpdateSystemDto` now accepts the `effects` property.
+
+## Documentation
+
+* Documented the System `type` property correctly.
+
 # v4.0.0 (2024-07-XX)
 
 ## BREAKING CHANGES

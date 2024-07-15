@@ -7,6 +7,7 @@ export class UpdateSystemDto extends PartialType(PickType(System, [
   'name',
   'districts',
   'buildings',
+  'effects',
   '_public',
 ] as const)) {
   @ApiProperty({
