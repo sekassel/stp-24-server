@@ -14,6 +14,8 @@ import {SYSTEM_UPGRADES} from './system-upgrade';
 import {JobService} from '../job/job.service';
 import {JobDocument} from '../job/job.schema';
 import {SystemLogicService} from '../system/system-logic.service';
+import {FleetService} from '../fleet/fleet.service';
+import {ShipService} from '../ship/ship.service';
 
 @Injectable()
 export class GameLogicService {
@@ -23,6 +25,8 @@ export class GameLogicService {
     private memberService: MemberService,
     private empireService: EmpireService,
     private systemService: SystemService,
+    private fleetService: FleetService,
+    private shipService: ShipService,
     private jobService: JobService,
   ) {
   }
@@ -33,11 +37,6 @@ export class GameLogicService {
       empire: {$exists: true},
     });
     const empires = await this.empireService.initEmpires(members);
-    if (!empires.length) {
-      // game was already started
-      return;
-    }
-
     const systems = await this.systemService.generateMap(game);
     const homeSystems = new Set<string>();
 
@@ -69,6 +68,9 @@ export class GameLogicService {
       // then 3 pops will be unemployed initially.
       empire.homeSystem = homeSystem._id;
     }
+
+    const fleets = await this.fleetService.generateFleets(empires);
+    await this.shipService.createShips(fleets);
 
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);

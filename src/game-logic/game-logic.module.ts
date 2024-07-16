@@ -6,6 +6,8 @@ import {GameLogicController} from './game-logic.controller';
 import {MemberModule} from '../member/member.module';
 import {JobModule} from '../job/job.module';
 import {AggregateService} from './aggregate.service';
+import {FleetModule} from '../fleet/fleet.module';
+import {ShipModule} from '../ship/ship.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import {AggregateService} from './aggregate.service';
     SystemModule,
     EmpireModule,
     JobModule,
+    FleetModule,
+    ShipModule,
   ],
   providers: [GameLogicService, AggregateService],
   exports: [GameLogicService],
