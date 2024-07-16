@@ -2,7 +2,7 @@ import {ForbiddenException, HttpException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
 import {Model, Types} from 'mongoose';
-import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
+import {EventRepository, EventService, MongooseRepository, notFound} from '@mean-stream/nestx';
 import {CreateJobDto} from './job.dto';
 import {EmpireService} from '../empire/empire.service';
 import {EmpireDocument} from '../empire/empire.schema';
@@ -57,7 +57,8 @@ export class JobService extends MongooseRepository<Job> {
       if (travelJobs.length > 0) {
         throw new ForbiddenException('Fleet is already traveling.');
       }
-      const systemPaths = await this.systemService.findAll({_id: {$in: dto.path}});
+      const systemInPath = await this.systemService.findAll({_id: {$in: dto.path}});
+      const systemPaths = dto.path.map((id, index) => systemInPath.find(s => s._id.equals(id)) ?? notFound(`System at path[${index}] ${id}`));
       const fleet = await this.fleetService.find(dto.fleet);
       if (!fleet) {
         return null;
