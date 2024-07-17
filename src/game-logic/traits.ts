@@ -403,7 +403,7 @@ export const TRAITS: Record<string, Trait> = {
         multiplier: 0.8,
       },
       {
-        variable: 'buildings.power_plant.cost.minerals',
+        variable: 'buildings.exchange.cost.minerals',
         multiplier: 0.8,
       },
       {
@@ -432,7 +432,7 @@ export const TRAITS: Record<string, Trait> = {
         multiplier: 1.1,
       },
       {
-        variable: 'buildings.power_plant.cost.minerals',
+        variable: 'buildings.exchange.cost.minerals',
         multiplier: 1.1,
       },
       {

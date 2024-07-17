@@ -1478,7 +1478,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         base: 10,
       },
       {
-        variable: 'ships.cruiser.build_time',
+        variable: 'ships.sentinel.build_time',
         base: 11,
       },
     ],
@@ -1503,7 +1503,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         base: 9,
       },
       {
-        variable: 'ships.cruiser.build_time',
+        variable: 'ships.sentinel.build_time',
         base: 10,
       },
     ],
@@ -1528,7 +1528,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         base: 8,
       },
       {
-        variable: 'ships.cruiser.build_time',
+        variable: 'ships.sentinel.build_time',
         base: 9,
       },
     ],
@@ -1552,7 +1552,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         base: 7,
       },
       {
-        variable: 'ships.cruiser.build_time',
+        variable: 'ships.sentinel.build_time',
         base: 8,
       },
     ],
