@@ -72,6 +72,9 @@ export class GameLogicService {
     const fleets = await this.fleetService.generateFleets(empires);
     await this.shipService.createShips(fleets);
 
+    const rogueFleets = await this.fleetService.generateRogueFleets(game, systems.filter(s => !homeSystems.has(s._id.toString())));
+    await this.shipService.createShips(rogueFleets);
+
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
   }
