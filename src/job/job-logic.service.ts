@@ -14,7 +14,6 @@ import {calculateVariables, flatten} from '../game-logic/variables';
 import {BUILDINGS} from '../game-logic/buildings';
 import {Variable} from '../game-logic/types';
 import {DISTRICTS} from '../game-logic/districts';
-import {Types} from "mongoose";
 import {SHIP_TYPES, ShipTypeName} from "../game-logic/ships";
 import {FleetDocument} from "../fleet/fleet.schema";
 import {ShipDocument} from "../ship/ship.schema";
@@ -159,16 +158,16 @@ export class JobLogicService {
     }
   }
 
-  checkFleetAccess(dto: CreateJobDto, empire: EmpireDocument, fleets: FleetDocument[], ships: ShipDocument[], system?: SystemDocument,) {
+  checkFleetAccess(dto: CreateJobDto, fleets: FleetDocument[], ships: ShipDocument[], system?: SystemDocument) {
     if (system && dto.type === JobType.UPGRADE && (system.upgrade === 'unexplored' || system.upgrade === 'explored')) {
       if (!system) {
         throw new NotFoundException('System not found.');
       }
-      this.checkFleet(empire._id, system, system.upgrade === 'unexplored' ? 'explorer' : 'colonizer', fleets, ships);
+      this.checkFleet(system.upgrade === 'unexplored' ? 'explorer' : 'colonizer', fleets, ships);
     }
   }
 
-  checkFleet(empireId: Types.ObjectId, system: SystemDocument, shipType: ShipTypeName, fleets: FleetDocument[], ships: ShipDocument[]) {
+  checkFleet(shipType: ShipTypeName, fleets: FleetDocument[], ships: ShipDocument[]) {
     if (!fleets || fleets.length === 0) {
       this.throwForbiddenException(shipType);
     }
