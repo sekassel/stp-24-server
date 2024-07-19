@@ -163,7 +163,7 @@ export class JobLogicService {
       if (!system) {
         throw new NotFoundException('System not found.');
       }
-      this.checkFleet(system.upgrade === 'unexplored' ? 'explorer' : 'colonizer', fleets, ships);
+      return this.checkFleet(system.upgrade === 'unexplored' ? 'explorer' : 'colonizer', fleets, ships);
     }
   }
 
@@ -171,15 +171,16 @@ export class JobLogicService {
     if (!fleets || fleets.length === 0) {
       this.throwForbiddenException(shipType);
     }
-    this.checkShip(ships, shipType);
+    return this.checkShip(ships, shipType);
   }
 
   private checkShip(ships: ShipDocument[], shipType: ShipTypeName) {
     if (!ships || ships.length === 0) {
       this.throwForbiddenException(shipType);
     }
-    if (ships.some(ship => ship.type === shipType)) {
-      return;
+    const ship = ships.find(ship => ship.type === shipType);
+    if (ship) {
+      return ship;
     }
     this.throwForbiddenException(shipType);
   }

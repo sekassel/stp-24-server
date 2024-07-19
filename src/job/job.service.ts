@@ -44,7 +44,8 @@ export class JobService extends MongooseRepository<Job> {
       }
       const fleets = await this.fleetService.findAll({empire: empire._id, location: system._id});
       const ships = await this.shipService.findAll({fleet: {$in: fleets.map(f => f._id)}});
-      this.jobLogicService.checkFleetAccess(dto, fleets, ships, system);
+      const ship = this.jobLogicService.checkFleetAccess(dto, fleets, ships, system);
+      await this.shipService.deleteOne(ship!._id);
     }
     let time: number | undefined;
     let cost: Partial<Record<ResourceName | 'time', number>> = {};
