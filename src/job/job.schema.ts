@@ -88,6 +88,7 @@ export class Job extends GlobalSchema {
 
   @Prop({type: Types.ObjectId, ref: 'Fleet', required: false})
   @ApiPropertyOptional({
+    ...MONGO_ID_FORMAT,
     description: 'Fleet ID for the job. Required for type=travel and type=ship.',
   })
   @ValidateIf((job, value) => value || job.type === JobType.TRAVEL || job.type === JobType.SHIP)
