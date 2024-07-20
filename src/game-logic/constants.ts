@@ -25,6 +25,7 @@ export const HOMESYSTEM_BUILDINGS: BuildingName[] = [
   'foundry',
   'factory',
   'refinery',
+  'shipyard',
 ];
 
 export const COLOR_PALETTE = [
