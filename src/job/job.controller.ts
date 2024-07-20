@@ -138,9 +138,6 @@ export class JobController {
     const userEmpire = await this.checkUserWrite(user, empire);
     const job = await this.jobService.find(id) ?? notFound('Job not found.');
     if (job.cost && job.progress < job.total) {
-      if (job.system && job.type === JobType.UPGRADE) {
-        await this.jobService.refundShipResources(userEmpire, job.system);
-      }
       this.jobLogicService.refundResources(userEmpire, job);
       await this.empireService.saveAll([userEmpire]);
     }

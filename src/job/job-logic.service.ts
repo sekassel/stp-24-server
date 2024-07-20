@@ -75,8 +75,22 @@ export class JobLogicService {
           [`systems.${nextUpgrade}.upgrade_time`]: SYSTEM_UPGRADES[nextUpgrade].upgrade_time,
         };
         calculateVariables(variables, empire, system);
+
+        const totalCosts = {...this.empireLogicService.getCosts(`systems.${nextUpgrade}.cost`, variables)};
+        if (system.upgrade === 'explored') {
+          const colonizerShipCost = this.empireLogicService.getShipCost(empire, SHIP_TYPES.colonizer);
+          for (const [resource, cost] of Object.entries(colonizerShipCost)) {
+            const r = resource as ResourceName;
+            if (totalCosts[r]) {
+              totalCosts[r] += cost;
+            } else {
+              totalCosts[r] = cost;
+            }
+          }
+        }
+
         return {
-          ...this.empireLogicService.getCosts(`systems.${nextUpgrade}.cost`, variables),
+          ...totalCosts,
           time: variables[`systems.${nextUpgrade}.upgrade_time`],
         };
       }

@@ -18,7 +18,6 @@ import {ShipService} from "../ship/ship.service";
 import {SystemService} from "../system/system.service";
 import {ResourceName} from "../game-logic/resources";
 import {SystemLogicService} from "../system/system-logic.service";
-import {SHIP_TYPES} from "../game-logic/ships";
 
 @Injectable()
 @EventRepository()
@@ -224,14 +223,6 @@ export class JobService extends MongooseRepository<Job> {
       } else {
         throw error;
       }
-    }
-  }
-
-  async refundShipResources(userEmpire: EmpireDocument, systemId: Types.ObjectId) {
-    const system = await this.systemService.find(systemId);
-    if (system && system.upgrade === 'explored') {
-      const cost = this.empireLogicService.getShipCost(userEmpire, SHIP_TYPES.colonizer);
-      this.empireLogicService.refundResources(userEmpire, cost);
     }
   }
 
