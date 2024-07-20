@@ -1,7 +1,7 @@
-import {Injectable} from "@nestjs/common";
-import {OnEvent} from "@nestjs/event-emitter";
-import {ShipService} from "./ship.service";
-import {Fleet} from "../fleet/fleet.schema";
+import {Injectable} from '@nestjs/common';
+import {OnEvent} from '@nestjs/event-emitter';
+import {ShipService} from './ship.service';
+import {Fleet} from '../fleet/fleet.schema';
 
 @Injectable()
 export class ShipHandler {

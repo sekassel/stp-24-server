@@ -14,10 +14,11 @@ import {calculateVariables, flatten} from '../game-logic/variables';
 import {BUILDINGS} from '../game-logic/buildings';
 import {Variable} from '../game-logic/types';
 import {DISTRICTS} from '../game-logic/districts';
-import {SHIP_TYPES, ShipTypeName} from "../game-logic/ships";
-import {FleetDocument} from "../fleet/fleet.schema";
-import {ShipDocument} from "../ship/ship.schema";
-import {ShipService} from "../ship/ship.service";
+import {Types} from 'mongoose';
+import {SHIP_TYPES, ShipTypeName} from '../game-logic/ships';
+import {FleetDocument} from '../fleet/fleet.schema';
+import {ShipDocument} from '../ship/ship.schema';
+import {ShipService} from '../ship/ship.service';
 
 @Injectable()
 export class JobLogicService {

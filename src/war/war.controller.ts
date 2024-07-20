@@ -1,5 +1,6 @@
 import {
-  Body, ConflictException,
+  Body,
+  ConflictException,
   Controller,
   Delete,
   ForbiddenException,
@@ -8,8 +9,8 @@ import {
   Param,
   Patch,
   Post,
-  Query
-} from "@nestjs/common";
+  Query,
+} from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -17,19 +18,19 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
-  ApiTags
-} from "@nestjs/swagger";
-import {Validated} from "../util/validated.decorator";
-import {Throttled} from "../util/throttled.decorator";
-import {WarService} from "./war.service";
-import {Auth, AuthUser} from "../auth/auth.decorator";
-import {War} from "./war.schema";
-import {User} from "../user/user.schema";
-import {NotFound, ObjectIdPipe, OptionalObjectIdPipe} from "@mean-stream/nestx";
-import {Types} from "mongoose";
-import {CreateWarDto, UpdateWarDto} from "./war.dto";
-import {EmpireService} from "../empire/empire.service";
-import {EmpireDocument} from "../empire/empire.schema";
+  ApiTags,
+} from '@nestjs/swagger';
+import {Validated} from '../util/validated.decorator';
+import {Throttled} from '../util/throttled.decorator';
+import {WarService} from './war.service';
+import {Auth, AuthUser} from '../auth/auth.decorator';
+import {War} from './war.schema';
+import {User} from '../user/user.schema';
+import {NotFound, ObjectIdPipe, OptionalObjectIdPipe} from '@mean-stream/nestx';
+import {Types} from 'mongoose';
+import {CreateWarDto, UpdateWarDto} from './war.dto';
+import {EmpireService} from '../empire/empire.service';
+import {EmpireDocument} from '../empire/empire.schema';
 
 @Controller('games/:game/wars')
 @ApiTags('Wars')

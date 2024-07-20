@@ -57,7 +57,7 @@ export class GameLogicService {
       // every home system starts with 15 districts
       this.generateDistricts(homeSystem);
 
-      // plus 7 buildings, so 22 jobs in total
+      // plus 8 buildings, so 23 jobs in total
       homeSystem.buildings = HOMESYSTEM_BUILDINGS;
 
       const totalJobs = Object.values(homeSystem.districts).sum() + homeSystem.buildings.length;

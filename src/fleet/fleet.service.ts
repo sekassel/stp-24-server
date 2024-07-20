@@ -1,7 +1,7 @@
-import {Injectable} from "@nestjs/common";
-import {EventRepository, EventService, MongooseRepository} from "@mean-stream/nestx";
-import {InjectModel} from "@nestjs/mongoose";
-import {Model} from "mongoose";
+import {Injectable} from '@nestjs/common';
+import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
+import {InjectModel} from '@nestjs/mongoose';
+import {Model} from 'mongoose';
 import {Fleet, FleetDocument} from './fleet.schema';
 import {EmpireDocument} from '../empire/empire.schema';
 import {Game} from '../game/game.schema';

@@ -1,5 +1,5 @@
-import {War} from "./war.schema";
-import {PartialType, PickType} from "@nestjs/swagger";
+import {War} from './war.schema';
+import {PartialType, PickType} from '@nestjs/swagger';
 
 export class CreateWarDto extends PickType(War, [
   'attacker',

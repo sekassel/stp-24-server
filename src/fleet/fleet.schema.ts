@@ -4,8 +4,8 @@ import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
 import {IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {OptionalRef, Ref} from '@mean-stream/nestx';
-import {EffectSource} from "../game-logic/types";
-import {SHIP_NAMES, SHIP_TYPES, ShipTypeName} from '../game-logic/ships';
+import {EffectSource} from '../game-logic/types';
+import {ShipTypeName} from '../game-logic/ships';
 import {Type} from 'class-transformer';
 
 export type FleetDocument = Fleet & Document<Types.ObjectId>;
