@@ -1,12 +1,12 @@
-import {Injectable} from "@nestjs/common";
-import {EventRepository, EventService, MongooseRepository} from "@mean-stream/nestx";
-import {InjectModel} from "@nestjs/mongoose";
-import {Model, Types} from "mongoose";
+import {Injectable} from '@nestjs/common';
+import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
+import {InjectModel} from '@nestjs/mongoose';
+import {Model, Types} from 'mongoose';
 import {Ship, ShipDocument} from './ship.schema';
-import {SystemDocument} from "../system/system.schema";
-import {SHIP_TYPES, ShipTypeName} from "../game-logic/ships";
-import {FleetService} from "../fleet/fleet.service";
-import {JobDocument} from "../job/job.schema";
+import {SystemDocument} from '../system/system.schema';
+import {SHIP_TYPES, ShipTypeName} from '../game-logic/ships';
+import {FleetService} from '../fleet/fleet.service';
+import {JobDocument} from '../job/job.schema';
 import {FleetDocument} from '../fleet/fleet.schema';
 import {GlobalSchema} from '../util/schema';
 

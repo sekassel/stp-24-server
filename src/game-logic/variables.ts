@@ -7,7 +7,7 @@ import {EMPIRE_VARIABLES} from './empire-variables';
 import {RESOURCES} from './resources';
 import {DISTRICTS} from './districts';
 import {SYSTEM_UPGRADES} from './system-upgrade';
-import {SHIP_TYPES} from "./ships";
+import {SHIP_TYPES} from './ships';
 import {System} from '../system/system.schema';
 import {notFound} from '@mean-stream/nestx';
 

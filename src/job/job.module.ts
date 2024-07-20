@@ -9,8 +9,8 @@ import {SystemModule} from '../system/system.module';
 import {UserModule} from '../user/user.module';
 import {JobLogicService} from './job-logic.service';
 import {MemberModule} from '../member/member.module';
-import {FleetModule} from "../fleet/fleet.module";
-import {ShipModule} from "../ship/ship.module";
+import {FleetModule} from '../fleet/fleet.module';
+import {ShipModule} from '../ship/ship.module';
 
 @Module({
   imports: [

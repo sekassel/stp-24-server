@@ -13,11 +13,11 @@ import {EmpireLogicService} from '../empire/empire-logic.service';
 import {GlobalSchema} from '../util/schema';
 import {TECHNOLOGIES} from '../game-logic/technologies';
 import {ErrorResponse} from '../util/error-response';
-import {FleetService} from "../fleet/fleet.service";
-import {ShipService} from "../ship/ship.service";
-import {SystemService} from "../system/system.service";
-import {ResourceName} from "../game-logic/resources";
-import {SystemLogicService} from "../system/system-logic.service";
+import {FleetService} from '../fleet/fleet.service';
+import {ShipService} from '../ship/ship.service';
+import {SystemService} from '../system/system.service';
+import {ResourceName} from '../game-logic/resources';
+import {SystemLogicService} from '../system/system-logic.service';
 
 @Injectable()
 @EventRepository()

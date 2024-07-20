@@ -10,9 +10,9 @@ import {BUILDING_NAMES, BuildingName, BUILDINGS} from '../game-logic/buildings';
 import {ResourceName} from '../game-logic/resources';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {AggregateResult} from '../game-logic/aggregates';
-import {FleetDocument} from "../fleet/fleet.schema";
-import {ShipDocument} from "../ship/ship.schema";
-import {SHIP_TYPES} from "../game-logic/ships";
+import {FleetDocument} from '../fleet/fleet.schema';
+import {ShipDocument} from '../ship/ship.schema';
+import {SHIP_TYPES} from '../game-logic/ships';
 
 @Injectable()
 export class SystemLogicService {

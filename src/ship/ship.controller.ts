@@ -7,22 +7,22 @@ import {
   Get,
   NotFoundException,
   Param,
-  Patch
-} from "@nestjs/common";
+  Patch,
+} from '@nestjs/common';
 import {ApiConflictResponse, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, refs} from '@nestjs/swagger';
-import {Validated} from "../util/validated.decorator";
-import {Throttled} from "../util/throttled.decorator";
-import {ShipService} from "./ship.service";
-import {ReadShipDto, UpdateShipDto} from "./ship.dto";
-import {User} from "../user/user.schema";
-import {Auth, AuthUser} from "../auth/auth.decorator";
-import {NotFound, ObjectIdPipe} from "@mean-stream/nestx";
-import {Types} from "mongoose";
-import {Ship, ShipDocument} from "./ship.schema";
-import {EmpireDocument} from "../empire/empire.schema";
-import {FleetDocument} from "../fleet/fleet.schema";
-import {EmpireService} from "../empire/empire.service";
-import {FleetService} from "../fleet/fleet.service";
+import {Validated} from '../util/validated.decorator';
+import {Throttled} from '../util/throttled.decorator';
+import {ShipService} from './ship.service';
+import {ReadShipDto, UpdateShipDto} from './ship.dto';
+import {User} from '../user/user.schema';
+import {Auth, AuthUser} from '../auth/auth.decorator';
+import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
+import {Types} from 'mongoose';
+import {Ship, ShipDocument} from './ship.schema';
+import {EmpireDocument} from '../empire/empire.schema';
+import {FleetDocument} from '../fleet/fleet.schema';
+import {EmpireService} from '../empire/empire.service';
+import {FleetService} from '../fleet/fleet.service';
 
 @Controller('games/:game/fleets/:fleet/ships')
 @ApiTags('Ships')

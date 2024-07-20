@@ -1,5 +1,5 @@
-import {OmitType, PickType} from "@nestjs/swagger";
-import {Ship} from "./ship.schema";
+import {OmitType, PickType} from '@nestjs/swagger';
+import {Ship} from './ship.schema';
 
 export class ReadShipDto extends OmitType(Ship, [
   'health',

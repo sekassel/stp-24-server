@@ -1,5 +1,5 @@
-import {OmitType, PickType} from "@nestjs/swagger";
-import {Fleet} from "./fleet.schema";
+import {OmitType, PickType} from '@nestjs/swagger';
+import {Fleet} from './fleet.schema';
 import {PartialType} from '../util/partial-type';
 
 export class CreateFleetDto extends OmitType(Fleet, [
