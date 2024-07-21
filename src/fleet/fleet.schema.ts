@@ -31,7 +31,9 @@ export class Fleet extends GlobalSchema {
 
   @Prop({type: Object})
   @ApiProperty({
-    description: 'Number of ships within this fleet if fully built.',
+    description: 'The planned number of ships in this fleet. ' +
+      'This has no effect on the actual number of ships in the fleet, and no effects on the game in general. ' +
+      'The main purpose of this field is to remember the original size of the fleet in case of losses.',
     example: {
       colonizer: 1,
       destroyer: 10,
