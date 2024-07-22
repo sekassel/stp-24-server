@@ -44,7 +44,7 @@ export class SystemLogicService {
 
   generateDistricts(system: SystemDocument, empire: Empire) {
     // Set slots for generic districts to capacity
-    const nDistricts = SYSTEM_TYPES[system.type].district_percentage * system.capacity;
+    const nDistricts = Math.floor(SYSTEM_TYPES[system.type].district_percentage * system.capacity);
     if (!nDistricts) {
       return;
     }
@@ -76,8 +76,12 @@ export class SystemLogicService {
       const type = Object.entries(districtChances).randomWeighted(i => i[1])[0] as Variable;
 
       // This also allows custom variables to add new district chances
-      const district = type.split('.')[1] as DistrictName;
-      system.districtSlots[district] = (system.districtSlots[district] ?? 0) + 1;
+      const segments = type.split('.');
+      // Custom variables might also add completely unrelated things, so we need to double check
+      if (segments.length === 4 && segments[0] === 'districts' && segments[1] in DISTRICTS && segments[2] === 'chance' && segments[4] === system.type) {
+        const district = segments[1] as DistrictName;
+        system.districtSlots[district] = (system.districtSlots[district] ?? 0) + 1;
+      }
     }
     system.markModified('districtSlots');
   }
