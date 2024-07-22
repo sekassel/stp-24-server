@@ -237,12 +237,12 @@
 
 * Documented the System `type` property correctly.
 
-# v4.0.0 (2024-07-XX)
+# v4.0.0 (2024-07-22)
 
 ## BREAKING CHANGES
 
 * Exploring a system now requires a fleet with an explorer ship in the system.
-* Colonizing a system now requires a fleet with a colonizer ship in the system.
+* Colonizing a system now requires a fleet with a colonizer ship in the system (the colonizer will ship will be removed when the colonization job completes).
 
 ## New Content
 
@@ -265,6 +265,8 @@
   - `small_ship_defense_1,2`
   - `medium_ship_defense_1,2`
   - `large_ship_defense_1,2`
++ Empires spawn with a shipyard, an explorer ship and 3 fighter ships.
++ Rogue fleets now spawn in the galaxy.
 
 ## New Features
 
@@ -278,3 +280,9 @@
 + Added the `fleet.power` aggregate.
 + Added the `fleet`, `ship` and `path` properties to Jobs.
 + Added the `ship` and `travel` Job types.
+
+## Bugfixes
+
+* Fixed a bug where the `city` and `industry` district slots could be a decimal number.
+* Fixed a bug where an `undefined` district slot would appear.
+* Fixed some traits and technologies with duplicate effects.
