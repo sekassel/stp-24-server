@@ -132,6 +132,7 @@ export class GameLogicService {
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
     await this.jobService.saveAll(jobs);
+    await this.shipService.saveAll(ships);
   }
 
   private async updateEmpires(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
@@ -469,18 +470,21 @@ export class GameLogicService {
         continue;
       }
       // ignore friendly ships
+      if (ship.fleet.equals(otherShip.fleet)) {
+        continue;
+      }
       // Unowned/rogue fleets always attack.
       if (ship.empire && otherShip.empire && !this.isAtWar(wars, ship.empire, otherShip.empire)) {
         continue;
       }
 
       const shipVariables = fleetVariables[ship.fleet.toString()];
-      const attack = shipVariables[`ships.${ship.type}.damage.${otherShip.type}` as Variable] ?? shipVariables[`ships.${ship.type}.damage.default` as Variable] ?? 0;
+      const attack = shipVariables[`ships.${ship.type}.attack.${otherShip.type}` as Variable] ?? shipVariables[`ships.${ship.type}.attack.default` as Variable] ?? 0;
       const otherShipVariables = fleetVariables[otherShip.fleet.toString()];
       const defense = otherShipVariables[`ships.${otherShip.type}.defense.${ship.type}` as Variable] || otherShipVariables[`ships.${otherShip.type}.defense.default` as Variable] || 1;
 
       // The damage is calculated using A.attack[B.type] / B.defense[A.type] + log(A.experience)
-      const effectiveDamage = Math.max(attack / defense + Math.log(ship.experience), 0);
+      const effectiveDamage = Math.max(attack / defense + Math.log1p(ship.experience), 0);
       if (effectiveDamage > bestDamage) {
         bestDamage = effectiveDamage;
         bestShip = otherShip;
