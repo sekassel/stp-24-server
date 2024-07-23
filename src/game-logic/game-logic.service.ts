@@ -433,7 +433,7 @@ export class GameLogicService {
           }
 
           // TODO
-          //  - The damage is calculated using A.attack.system - system.defense + log(A.experience)
+          //  - The damage is calculated using A.attack.system / system.defense + log(A.experience)
           //  - If the system falls to 0 HP, the owner changes to the attacker.
         }
       }
@@ -457,10 +457,10 @@ export class GameLogicService {
       const shipVariables = fleetVariables[ship.fleet.toString()];
       const attack = shipVariables[`ships.${ship.type}.damage.${otherShip.type}` as Variable] ?? shipVariables[`ships.${ship.type}.damage.default` as Variable] ?? 0;
       const otherShipVariables = fleetVariables[otherShip.fleet.toString()];
-      const defense = otherShipVariables[`ships.${otherShip.type}.defense.${ship.type}` as Variable] ?? otherShipVariables[`ships.${otherShip.type}.defense.default` as Variable] ?? 0;
+      const defense = otherShipVariables[`ships.${otherShip.type}.defense.${ship.type}` as Variable] || otherShipVariables[`ships.${otherShip.type}.defense.default` as Variable] || 1;
 
-      // The damage is calculated using A.attack[B.type] - B.defense[A.type] + log(A.experience)
-      const effectiveDamage = Math.max(attack - defense + Math.log(ship.experience), 0);
+      // The damage is calculated using A.attack[B.type] / B.defense[A.type] + log(A.experience)
+      const effectiveDamage = Math.max(attack / defense + Math.log(ship.experience), 0);
       if (effectiveDamage > bestDamage) {
         bestDamage = effectiveDamage;
         bestShip = otherShip;
