@@ -323,10 +323,11 @@ export class ShipType {
   speed: number;
 
   @ApiProperty({
-    description: 'Attack damage against each other type of ships.',
+    description: 'Attack damage against each other type of ships, or systems.',
     example: {
       default: 10,
       bomber: 20,
+      system: 20,
     },
     type: 'object',
     additionalProperties: {

@@ -1,3 +1,5 @@
+import {ShipType} from './types';
+
 export const SHIP_TYPES = {
   /**
    * Utility
@@ -337,6 +339,6 @@ export const SHIP_TYPES = {
     },
   },
 
-} as const;
+} as const satisfies Record<string, ShipType>;
 export type ShipTypeName = keyof typeof SHIP_TYPES;
 export const SHIP_NAMES = Object.keys(SHIP_TYPES) as ShipTypeName[];
