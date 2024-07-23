@@ -19,7 +19,8 @@ import {ShipService} from '../ship/ship.service';
 import {FleetDocument} from '../fleet/fleet.schema';
 import {WarService} from '../war/war.service';
 import {ShipDocument} from '../ship/ship.schema';
-import {WarDocument} from '../war/war.schema';
+import {War, WarDocument} from '../war/war.schema';
+import {Types} from 'mongoose';
 
 @Injectable()
 export class GameLogicService {
@@ -402,7 +403,81 @@ export class GameLogicService {
       fleetVariables[fleet._id.toString()] = shipVariables;
     }
 
-    // TODO
+    for (const [systemId, fleets] of Object.entries(groupedBySystem)) {
+      const shipsInSystem = ships.filter(s => fleets.some(f => f._id.equals(s.fleet)));
+
+      // Ships with greater speed attack first
+      shipsInSystem.sortBy(s => {
+        return -(fleetVariables[s.fleet.toString()][`ships.${s.type}.speed`] ?? 0); // descending order
+      });
+
+      for (const ship of shipsInSystem) {
+        if (!ship.health) {
+          // If B falls to 0 HP, it does not attack and is deleted.
+          continue;
+        }
+
+        // At each period, each ship (A) picks one other ship (B) to attack (such that the damage is greatest)
+        const {bestShip, bestDamage} = this.findBestShipToAttack(shipsInSystem, ship, wars, fleetVariables);
+
+        if (bestShip) {
+          // The damage is deducted from B.health and added to A.experience
+          bestShip.health -= bestDamage;
+          ship.experience += bestDamage;
+        } else {
+          // If the defender has no (remaining) fleets in the system, the system is attacked.
+          const system = systems.find(s => s._id.equals(systemId));
+          if (!system || !system.owner || system.owner.equals(ship.empire)) {
+            // Unowned systems are never attacked.
+            continue;
+          }
+
+          // TODO
+          //  - The damage is calculated using A.attack.system - system.defense + log(A.experience)
+          //  - If the system falls to 0 HP, the owner changes to the attacker.
+        }
+      }
+    }
+  }
+
+  private findBestShipToAttack(shipsInSystem: ShipDocument[], ship: ShipDocument, wars: WarDocument[], fleetVariables: Record<string, Partial<Record<Variable, number>>>) {
+    let bestShip: ShipDocument | undefined;
+    let bestDamage = 0;
+    for (const otherShip of shipsInSystem) {
+      if (!otherShip.health) {
+        // ignore destroyed ships
+        continue;
+      }
+      // ignore friendly ships
+      // Unowned/rogue fleets always attack.
+      if (ship.empire && otherShip.empire && !this.isAtWar(wars, ship.empire, otherShip.empire)) {
+        continue;
+      }
+
+      const shipVariables = fleetVariables[ship.fleet.toString()];
+      const attack = shipVariables[`ships.${ship.type}.damage.${otherShip.type}` as Variable] ?? shipVariables[`ships.${ship.type}.damage.default` as Variable] ?? 0;
+      const otherShipVariables = fleetVariables[otherShip.fleet.toString()];
+      const defense = otherShipVariables[`ships.${otherShip.type}.defense.${ship.type}` as Variable] ?? otherShipVariables[`ships.${otherShip.type}.defense.default` as Variable] ?? 0;
+
+      // The damage is calculated using A.attack[B.type] - B.defense[A.type] + log(A.experience)
+      const effectiveDamage = Math.max(attack - defense + Math.log(ship.experience), 0);
+      if (effectiveDamage > bestDamage) {
+        bestDamage = effectiveDamage;
+        bestShip = otherShip;
+      }
+    }
+    return {bestShip, bestDamage};
+  }
+
+  private isAtWar(wars: War[], empire1: Types.ObjectId, empire2: Types.ObjectId): boolean {
+    if (empire1.equals(empire2)) {
+      // fast path
+      return false;
+    }
+    return wars.some(war =>
+      war.attacker.equals(empire1) && war.defender.equals(empire2)
+      || war.attacker.equals(empire2) && war.defender.equals(empire1)
+    );
   }
 
   private async healFleets(empires: EmpireDocument[], systems: SystemDocument[], fleets: FleetDocument[], ships: ShipDocument[]) {
