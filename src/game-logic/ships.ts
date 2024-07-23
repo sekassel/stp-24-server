@@ -134,6 +134,7 @@ export const SHIP_TYPES = {
       default: 30,
       corvette: 50,
       frigate: 50,
+      system: 50,
     },
     defense: { // small_ship_defense tech tree
       default: 30,
