@@ -403,6 +403,15 @@ export class GameLogicService {
       fleetVariables[fleet._id.toString()] = shipVariables;
     }
 
+    // Pre-calculate the defense of each system
+    const systemDefense: Record<string, number> = {};
+    for (const system of systems) {
+      const empire = system.owner && empires.find(e => e._id.equals(system.owner));
+      if (empire) {
+        systemDefense[system._id.toString()] = this.systemLogicService.maxHealthOrDefense(system, empire, 'defense');
+      }
+    }
+
     for (const [systemId, fleets] of Object.entries(groupedBySystem)) {
       const shipsInSystem = ships.filter(s => fleets.some(f => f._id.equals(s.fleet)));
 
@@ -424,6 +433,9 @@ export class GameLogicService {
           // The damage is deducted from B.health and added to A.experience
           bestShip.health -= bestDamage;
           ship.experience += bestDamage;
+          if (bestShip.health < 0) {
+            bestShip.health = 0;
+          }
         } else {
           // If the defender has no (remaining) fleets in the system, the system is attacked.
           const system = systems.find(s => s._id.equals(systemId));
@@ -432,9 +444,17 @@ export class GameLogicService {
             continue;
           }
 
-          // TODO
-          //  - The damage is calculated using A.attack.system / system.defense + log(A.experience)
-          //  - If the system falls to 0 HP, the owner changes to the attacker.
+          const shipVariables = fleetVariables[ship.fleet.toString()];
+          const attack = shipVariables[`ships.${ship.type}.damage.system` as Variable] ?? shipVariables[`ships.${ship.type}.damage.default` as Variable] ?? 0;
+          const defense = systemDefense[systemId] ?? 1;
+          // The damage is calculated using A.attack.system / system.defense + log(A.experience)
+          const damage = Math.max(attack / defense + Math.log(ship.experience), 0);
+          system.health -= damage;
+          if (system.health <= 0) {
+            system.health = 0;
+            // If the system falls to 0 HP, the owner changes to the attacker.
+            system.owner = ship.empire;
+          }
         }
       }
     }
