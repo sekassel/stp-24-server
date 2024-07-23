@@ -3,7 +3,7 @@ import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {EmpireDocument} from '../empire/empire.schema';
 import {SystemDocument} from '../system/system.schema';
-import {calculateVariables, getInitialVariables} from './variables';
+import {calculateVariables, EmpireEffectSources, getInitialVariables, getVariables} from './variables';
 import {Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {AggregateResult} from './aggregates';
@@ -16,6 +16,10 @@ import {JobDocument} from '../job/job.schema';
 import {SystemLogicService} from '../system/system-logic.service';
 import {FleetService} from '../fleet/fleet.service';
 import {ShipService} from '../ship/ship.service';
+import {FleetDocument} from '../fleet/fleet.schema';
+import {WarService} from '../war/war.service';
+import {ShipDocument} from '../ship/ship.schema';
+import {WarDocument} from '../war/war.schema';
 
 @Injectable()
 export class GameLogicService {
@@ -27,6 +31,7 @@ export class GameLogicService {
     private systemService: SystemService,
     private fleetService: FleetService,
     private shipService: ShipService,
+    private warService: WarService,
     private jobService: JobService,
   ) {
   }
@@ -105,16 +110,30 @@ export class GameLogicService {
   async updateGame(game: Game) {
     const empires = await this.empireService.findAll({game: game._id});
     const systems = await this.systemService.findAll({game: game._id});
+    const wars = await this.warService.findAll({game: game._id});
+    // TODO Optimize the fleet filter.
+    //  We are only interested in fleets that are at war with another fleet or system,
+    //  or fleets that are located in their owner's systems with shipyards for healing.
+    //  (The fleets are not the problem, but the potentially large amount of ships they contain.)
+    // The first condition in SQL:
+    //  SELECT * FROM fleets as attacker, wars as war, fleets as defender WHERE attacker.owner = war.attacker AND defender.owner = war.defender
+    // The second condition in SQL:
+    //  SELECT * FROM fleets as fleet, systems as system WHERE fleet.owner = system.owner AND 'building' IN system.buildings
+    const fleets = await this.fleetService.findAll({game: game._id});
+    const ships = await this.shipService.findAll({fleet: {$in: fleets.map(f => f._id)}});
 
     await this.jobService.deleteMany({game: game._id, $expr: {$gte: ['$progress', '$total']}});
     const jobs = await this.jobService.findAll({game: game._id}, {sort: {priority: 1, createdAt: 1}});
-    await this._updateGame(empires, systems, jobs);
+    await this.updateEmpires(empires, systems, jobs);
+    await this.updateFleetsAtWar(empires, systems, fleets, ships, wars);
+    await this.healFleets(empires, systems, fleets, ships);
+
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
     await this.jobService.saveAll(jobs);
   }
 
-  private async _updateGame(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
+  private async updateEmpires(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
       const empireJobs = jobs.filter(job => job.empire.equals(empire._id));
@@ -351,4 +370,42 @@ export class GameLogicService {
     system.population = population + growth;
   }
 
+  private async updateFleetsAtWar(empires: EmpireDocument[], systems: SystemDocument[], fleets: FleetDocument[], ships: ShipDocument[], wars: WarDocument[]) {
+    const groupedBySystem = fleets.reduce<Record<string, FleetDocument[]>>((acc, fleet) => {
+      (acc[fleet.location.toString()] ??= []).push(fleet);
+      return acc;
+    }, {});
+
+    // Calculate ship variables for each empire
+    const empireVariables: Record<string, Partial<Record<Variable, number>>> = {};
+    for (const empire of empires) {
+      const shipVariables = getVariables('ships');
+      calculateVariables(shipVariables, empire);
+      empireVariables[empire._id.toString()] = shipVariables;
+    }
+
+    // Calculate ship variables for each fleet either by reusing the empire's variables or by calculating them from the fleet's effects.
+    const fleetVariables: Record<string, Partial<Record<Variable, number>>> = {};
+    for (const fleet of fleets) {
+      if (!fleet.effects && fleet.empire) {
+        fleetVariables[fleet._id.toString()] = empireVariables[fleet.empire.toString()];
+        continue;
+      }
+      const shipVariables = getVariables('ships');
+      const empire: EmpireEffectSources = fleet.empire && empires.find(e => e._id.equals(fleet.empire)) || {
+        // Rogue fleets need a dummy empire to calculate their variables
+        effects: [],
+        technologies: [],
+        traits: [],
+      };
+      calculateVariables(shipVariables, empire, fleet);
+      fleetVariables[fleet._id.toString()] = shipVariables;
+    }
+
+    // TODO
+  }
+
+  private async healFleets(empires: EmpireDocument[], systems: SystemDocument[], fleets: FleetDocument[], ships: ShipDocument[]) {
+    // TODO
+  }
 }

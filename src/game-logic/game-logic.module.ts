@@ -8,6 +8,7 @@ import {JobModule} from '../job/job.module';
 import {AggregateService} from './aggregate.service';
 import {FleetModule} from '../fleet/fleet.module';
 import {ShipModule} from '../ship/ship.module';
+import {WarModule} from '../war/war.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {ShipModule} from '../ship/ship.module';
     JobModule,
     FleetModule,
     ShipModule,
+    WarModule,
   ],
   providers: [GameLogicService, AggregateService],
   exports: [GameLogicService],
