@@ -18,12 +18,14 @@ import {SHIP_TYPES, ShipTypeName} from '../game-logic/ships';
 import {FleetDocument} from '../fleet/fleet.schema';
 import {ShipDocument} from '../ship/ship.schema';
 import {ShipService} from '../ship/ship.service';
+import {FleetService} from '../fleet/fleet.service';
 
 @Injectable()
 export class JobLogicService {
   constructor(
     private readonly empireLogicService: EmpireLogicService,
     private readonly systemLogicService: SystemLogicService,
+    private readonly fleetService: FleetService,
     private readonly shipService: ShipService,
   ) {
   }
@@ -169,6 +171,14 @@ export class JobLogicService {
           throw new BadRequestException('Fleet and ship type are required for this job type.');
         }
         await this.shipService.buildShip(system ?? notFound(job.system), job);
+
+      case JobType.TRAVEL:
+        if (!job.fleet || !job.path) {
+          throw new BadRequestException('Fleet and path are required for this job type.');
+        }
+        // Ensure the fleet actually arrives at the destination, even if some rounding errors occur
+        await this.fleetService.update(job.fleet, {location: job.path[job.path.length - 1]});
+        break;
     }
   }
 
