@@ -133,6 +133,8 @@ export class GameLogicService {
     await this.systemService.saveAll(systems);
     await this.jobService.saveAll(jobs);
     await this.shipService.saveAll(ships);
+    // delete destroyed ships. We save all ships first to notify clients of 0HP with an updated event followed by the deleted event.
+    await this.shipService.deleteAll(ships.filter(s => !s.health));
   }
 
   private async updateEmpires(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
