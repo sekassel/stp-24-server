@@ -161,11 +161,11 @@ export class ShipController {
     if (!empire || !fleet.empire) {
       return false;
     }
-    return fleet.empire == empire._id;
+    return fleet.empire.equals(empire._id);
   }
 
-  private toReadShipDto(ship: Ship): ReadShipDto | Ship {
-    const {_private, health, ...rest} = ship;
-    return rest as ReadShipDto;
+  private toReadShipDto(ship: Ship): ReadShipDto {
+    const {_private, ...rest} = ship;
+    return rest;
   }
 }
