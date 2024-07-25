@@ -389,22 +389,7 @@ export class GameLogicService {
     }
 
     // Calculate ship variables for each fleet either by reusing the empire's variables or by calculating them from the fleet's effects.
-    const fleetVariables: Record<string, Partial<Record<Variable, number>>> = {};
-    for (const fleet of fleets) {
-      if (!fleet.effects && fleet.empire) {
-        fleetVariables[fleet._id.toString()] = empireVariables[fleet.empire.toString()];
-        continue;
-      }
-      const shipVariables = getVariables('ships');
-      const empire: EmpireEffectSources = fleet.empire && empires.find(e => e._id.equals(fleet.empire)) || {
-        // Rogue fleets need a dummy empire to calculate their variables
-        effects: [],
-        technologies: [],
-        traits: [],
-      };
-      calculateVariables(shipVariables, empire, fleet);
-      fleetVariables[fleet._id.toString()] = shipVariables;
-    }
+    const fleetVariables = this.calculateFleetVariables(empires, fleets, empireVariables);
 
     // Pre-calculate the defense of each system
     const systemDefense: Record<string, number> = {};
@@ -461,6 +446,26 @@ export class GameLogicService {
         }
       }
     }
+  }
+
+  private calculateFleetVariables(empires: EmpireDocument[], fleets: FleetDocument[], empireVariables: Record<string, Partial<Record<Variable, number>>>) {
+    const fleetVariables: Record<string, Partial<Record<Variable, number>>> = {};
+    for (const fleet of fleets) {
+      if (!fleet.effects && fleet.empire) {
+        fleetVariables[fleet._id.toString()] = empireVariables[fleet.empire.toString()];
+        continue;
+      }
+      const shipVariables = getVariables('ships');
+      const empire: EmpireEffectSources = fleet.empire && empires.find(e => e._id.equals(fleet.empire)) || {
+        // Rogue fleets need a dummy empire to calculate their variables
+        effects: [],
+        technologies: [],
+        traits: [],
+      };
+      calculateVariables(shipVariables, empire, fleet);
+      fleetVariables[fleet._id.toString()] = shipVariables;
+    }
+    return fleetVariables;
   }
 
   private findBestShipToAttack(shipsInSystem: ShipDocument[], ship: ShipDocument, wars: WarDocument[], fleetVariables: Record<string, Partial<Record<Variable, number>>>) {
@@ -523,24 +528,7 @@ export class GameLogicService {
     }
 
     // Calculate ship variables for each fleet either by reusing the empire's variables or by calculating them from the fleet's effects.
-    const fleetVariables: Record<string, Partial<Record<Variable, number>>> = {};
-    for (const fleet of fleets) {
-      if (!fleet.empire) {
-        // Rogue fleets cannot heal.
-        continue;
-      }
-      if (!fleet.effects) {
-        fleetVariables[fleet._id.toString()] = empireVariables[fleet.empire.toString()];
-        continue;
-      }
-      const fleetShipVariables = {...shipVariables};
-      const empire = empires.find(e => e._id.equals(fleet.empire));
-      if (!empire) {
-        continue;
-      }
-      calculateVariables(fleetShipVariables, empire, fleet);
-      fleetVariables[fleet._id.toString()] = fleetShipVariables;
-    }
+    const fleetVariables = this.calculateFleetVariables(empires, fleets, empireVariables);
 
     for (const fleet of fleets) {
       const system = systems.find(s => s._id.equals(fleet.location));
