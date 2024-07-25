@@ -22,6 +22,7 @@ import {EmpireDocument} from '../empire/empire.schema';
 import {SystemService} from '../system/system.service';
 import {JobLogicService} from './job-logic.service';
 import {MemberService} from '../member/member.service';
+import {MONGO_ID_FORMAT} from '../util/schema';
 
 @Controller('games/:game/empires/:empire/jobs')
 @ApiTags('Jobs')
@@ -46,27 +47,33 @@ export class JobController {
   @ApiOkResponse({type: [Job]})
   @ApiForbiddenResponse({description: 'You can only access jobs for your own empire.'})
   @ApiQuery({
+    name: 'type',
+    description: 'Filter jobs by type.',
+    required: false,
+    enum: JobType,
+  })
+  @ApiQuery({
     name: 'system',
     description: 'Filter jobs by system',
     required: false,
-    type: String,
-    example: '60d6f7eb8b4b8a001d6f7eb1',
+    ...MONGO_ID_FORMAT,
   })
   @ApiQuery({
-    name: 'type',
-    description: 'Filter jobs by type (`building`, `district`, `upgrade`, `technology`).',
+    name: 'fleet',
+    description: 'Filter jobs by fleet',
     required: false,
-    enum: JobType,
+    ...MONGO_ID_FORMAT,
   })
   async getJobs(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('empire', ObjectIdPipe) empire: Types.ObjectId,
     @AuthUser() user: User,
-    @Query('system', OptionalObjectIdPipe) system?: Types.ObjectId | undefined,
     @Query('type') type?: string,
+    @Query('system', OptionalObjectIdPipe) system?: Types.ObjectId | undefined,
+    @Query('fleet', OptionalObjectIdPipe) fleet?: Types.ObjectId | undefined,
   ): Promise<Job[]> {
     await this.checkUserRead(user, empire);
-    return this.jobService.findAll({game, empire, system, type}, {sort: {priority: 1, createdAt: 1}});
+    return this.jobService.findAll({game, empire, system, type, fleet}, {sort: {priority: 1, createdAt: 1}});
   }
 
   @Get(':id')

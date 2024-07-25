@@ -8,8 +8,17 @@ import {
   NotFoundException,
   Param,
   Patch,
+  Query,
 } from '@nestjs/common';
-import {ApiConflictResponse, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, refs} from '@nestjs/swagger';
+import {
+  ApiConflictResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+  refs,
+} from '@nestjs/swagger';
 import {Validated} from '../util/validated.decorator';
 import {Throttled} from '../util/throttled.decorator';
 import {ShipService} from './ship.service';
@@ -23,6 +32,7 @@ import {EmpireDocument} from '../empire/empire.schema';
 import {FleetDocument} from '../fleet/fleet.schema';
 import {EmpireService} from '../empire/empire.service';
 import {FleetService} from '../fleet/fleet.service';
+import {SHIP_NAMES, ShipTypeName} from '../game-logic/ships';
 
 @Controller('games/:game/fleets/:fleet/ships')
 @ApiTags('Ships')
@@ -40,13 +50,20 @@ export class ShipController {
   @Auth()
   @ApiOperation({description: 'Get all ships in the fleet.'})
   @ApiOkResponse({type: [ReadShipDto]})
+  @ApiQuery({
+    name: 'type',
+    description: 'Filter ships by type.',
+    required: false,
+    enum: SHIP_NAMES,
+  })
   async getFleetShips(
+    @AuthUser() user: User,
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Param('fleet', ObjectIdPipe) fleetId: Types.ObjectId,
-    @AuthUser() user: User,
+    @Query('type') type?: ShipTypeName,
   ): Promise<ReadShipDto[] | Ship[]> {
     const fleet = await this.getFleet(fleetId);
-    const ships = await this.shipService.findAll({fleet: fleet._id});
+    const ships = await this.shipService.findAll({fleet: fleet._id, type});
     const empire = await this.empireService.findOne({game, user: user._id});
     return this.checkUserAccess(fleet, empire) ? ships : ships.map(ship => this.toReadShipDto(ship.toObject()));
   }
