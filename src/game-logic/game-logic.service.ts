@@ -133,8 +133,8 @@ export class GameLogicService {
     await this.systemService.saveAll(systems);
     await this.jobService.saveAll(jobs);
     await this.shipService.saveAll(ships);
-    // delete destroyed ships. We save all ships first to notify clients of 0HP with an updated event followed by the deleted event.
-    await this.shipService.deleteAll(ships.filter(s => !s.health));
+    // We save all ships first to notify clients of 0HP with an updated event followed by the deleted event.
+    await this.deleteDestroyedShipsAndFleets(fleets, ships);
   }
 
   private async updateEmpires(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
@@ -531,5 +531,14 @@ export class GameLogicService {
     const maxHealth = variables[`ships.${ship.type}.health`]!;
     const shipyardHeal = healingRate * shipyards * maxHealth;
     ship.health = Math.min(maxHealth, ship.health + shipyardHeal);
+  }
+
+  private async deleteDestroyedShipsAndFleets(fleets: FleetDocument[], ships: ShipDocument[]) {
+    const deleteShips = ships.filter(s => !s.health);
+    await this.shipService.deleteAll(deleteShips);
+
+    // find all fleets that have no ships left as a result of the deleted ships
+    const deleteFleets = fleets.filter(f => deleteShips.some(s => s.fleet.equals(f._id)) && !ships.some(s => s.fleet.equals(f._id) && s.health));
+    await this.fleetService.deleteAll(deleteFleets);
   }
 }
