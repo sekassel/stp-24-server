@@ -2,7 +2,6 @@ import {OmitType, PickType} from '@nestjs/swagger';
 import {Ship} from './ship.schema';
 
 export class ReadShipDto extends OmitType(Ship, [
-  'health',
   '_private',
 ] as const) {}
 

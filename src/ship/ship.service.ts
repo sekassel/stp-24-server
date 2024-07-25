@@ -28,15 +28,20 @@ export class ShipService extends MongooseRepository<Ship> {
   async buildShip(system: SystemDocument, job: JobDocument) {
     const fleet = await this.fleetService.find(job.fleet!);
     if (!fleet || fleet.location.toString() !== system._id.toString()) {
-      const newFleet = await this.fleetService.create({
-        _private: {},
-        _public: {},
-        effects: [],
+      const newFleet = await this.fleetService.upsert({
+        game: job.game,
         empire: job.empire,
         location: system._id,
-        name: `Fleet ${Date.now()}`,
+      },{
+        game: job.game,
+        empire: job.empire,
+        location: system._id,
+        name: 'New Fleet',
         size: {[job.ship as ShipTypeName]: 1},
-        game: job.game});
+        effects: [],
+        _private: {},
+        _public: {},
+      });
       await this.create(this.createShip(newFleet._id, job.empire, job.ship!, job.game));
     } else {
       await this.create(this.createShip(fleet._id, job.empire, job.ship!, job.game));

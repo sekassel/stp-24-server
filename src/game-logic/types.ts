@@ -239,6 +239,11 @@ export class Building {
   build_time: number;
 
   @ApiPropertyOptional({
+    description: '(Shipyard) Ship health regeneration in percent per period.'
+  })
+  healing_rate?: number;
+
+  @ApiPropertyOptional({
     description: '(Fortress) Bonus to system health.'
   })
   health?: number;
@@ -323,10 +328,11 @@ export class ShipType {
   speed: number;
 
   @ApiProperty({
-    description: 'Attack damage against each other type of ships.',
+    description: 'Attack damage against each other type of ships, or systems.',
     example: {
       default: 10,
       bomber: 20,
+      system: 20,
     },
     type: 'object',
     additionalProperties: {

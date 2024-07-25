@@ -118,6 +118,7 @@ export const BUILDINGS = {
   shipyard: {
     id: 'shipyard',
     build_time: 12, // fast_building_construction tech tree
+    healing_rate: 0.1,
     cost: {
       minerals: 50, // cheap_buildings tech tree
       alloys: 75, // cheap_buildings tech tree

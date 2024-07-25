@@ -7,6 +7,7 @@ declare global {
     minBy(selector: (item: T) => number): T;
     maxBy(selector: (item: T) => number): T;
     countIf(predicate: (item: T) => boolean): number;
+    sortBy(selector: (item: T) => number): T[];
   }
 
   interface Math {
@@ -46,6 +47,10 @@ Array.prototype.maxBy = function(selector: (item: any) => number) {
 
 Array.prototype.countIf = function(predicate: (item: any) => boolean) {
   return this.reduce((a, c) => (predicate(c) ? a + 1 : a), 0);
+}
+
+Array.prototype.sortBy = function(selector: (item: any) => number) {
+  return this.sort((a, b) => selector(a) - selector(b));
 }
 
 Math.clamp = function(value: number, min: number, max: number) {

@@ -3,7 +3,7 @@ import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {EmpireDocument} from '../empire/empire.schema';
 import {SystemDocument} from '../system/system.schema';
-import {calculateVariables, getInitialVariables} from './variables';
+import {calculateVariables, EmpireEffectSources, getInitialVariables, getVariables} from './variables';
 import {Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {AggregateResult} from './aggregates';
@@ -16,6 +16,12 @@ import {JobDocument} from '../job/job.schema';
 import {SystemLogicService} from '../system/system-logic.service';
 import {FleetService} from '../fleet/fleet.service';
 import {ShipService} from '../ship/ship.service';
+import {FleetDocument} from '../fleet/fleet.schema';
+import {WarService} from '../war/war.service';
+import {ShipDocument} from '../ship/ship.schema';
+import {War, WarDocument} from '../war/war.schema';
+import {Types} from 'mongoose';
+import {BUILDINGS} from './buildings';
 
 @Injectable()
 export class GameLogicService {
@@ -27,6 +33,7 @@ export class GameLogicService {
     private systemService: SystemService,
     private fleetService: FleetService,
     private shipService: ShipService,
+    private warService: WarService,
     private jobService: JobService,
   ) {
   }
@@ -105,16 +112,33 @@ export class GameLogicService {
   async updateGame(game: Game) {
     const empires = await this.empireService.findAll({game: game._id});
     const systems = await this.systemService.findAll({game: game._id});
+    const wars = await this.warService.findAll({game: game._id});
+    // TODO Optimize the fleet filter.
+    //  We are only interested in fleets that are at war with another fleet or system,
+    //  or fleets that are located in their owner's systems with shipyards for healing.
+    //  (The fleets are not the problem, but the potentially large amount of ships they contain.)
+    // The first condition in SQL:
+    //  SELECT * FROM fleets as attacker, wars as war, fleets as defender WHERE attacker.owner = war.attacker AND defender.owner = war.defender
+    // The second condition in SQL:
+    //  SELECT * FROM fleets as fleet, systems as system WHERE fleet.owner = system.owner AND 'building' IN system.buildings
+    const fleets = await this.fleetService.findAll({game: game._id});
+    const ships = await this.shipService.findAll({fleet: {$in: fleets.map(f => f._id)}});
 
     await this.jobService.deleteMany({game: game._id, $expr: {$gte: ['$progress', '$total']}});
     const jobs = await this.jobService.findAll({game: game._id}, {sort: {priority: 1, createdAt: 1}});
-    await this._updateGame(empires, systems, jobs);
+    await this.updateEmpires(empires, systems, jobs);
+    await this.updateFleets(empires, systems, fleets, ships, wars);
+
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
     await this.jobService.saveAll(jobs);
+    await this.shipService.saveAll(ships);
+    // We save all ships first to notify clients of 0HP with an updated event followed by the deleted event.
+    await this.deleteDestroyedShipsAndFleets(fleets, ships);
+    await this.deleteEmpiresWithoutSystems(empires, systems);
   }
 
-  private async _updateGame(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
+  private async updateEmpires(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
       const empireJobs = jobs.filter(job => job.empire.equals(empire._id));
@@ -351,4 +375,179 @@ export class GameLogicService {
     system.population = population + growth;
   }
 
+  private async updateFleets(empires: EmpireDocument[], systems: SystemDocument[], fleets: FleetDocument[], ships: ShipDocument[], wars: WarDocument[]) {
+    const groupedBySystem = fleets.reduce<Record<string, FleetDocument[]>>((acc, fleet) => {
+      (acc[fleet.location.toString()] ??= []).push(fleet);
+      return acc;
+    }, {});
+
+    const shipVariables: Partial<Record<Variable, number>> = {
+      ...getVariables('ships'),
+      'buildings.shipyard.healing_rate': BUILDINGS.shipyard.healing_rate,
+    };
+
+    // Calculate ship variables for each empire
+    const empireVariables: Record<string, Partial<Record<Variable, number>>> = {};
+    for (const empire of empires) {
+      const empireShipVariables = {...shipVariables};
+      calculateVariables(empireShipVariables, empire);
+      empireVariables[empire._id.toString()] = empireShipVariables;
+    }
+
+    // Calculate ship variables for each fleet either by reusing the empire's variables or by calculating them from the fleet's effects.
+    const fleetVariables = this.calculateFleetVariables(empires, fleets, empireVariables);
+
+    // Pre-calculate the defense of each system
+    const systemDefense: Record<string, number> = {};
+    for (const system of systems) {
+      const empire = system.owner && empires.find(e => e._id.equals(system.owner));
+      if (empire) {
+        systemDefense[system._id.toString()] = this.systemLogicService.maxHealthOrDefense(system, empire, 'defense');
+      }
+    }
+
+    for (const [systemId, fleets] of Object.entries(groupedBySystem)) {
+      // If the defender has no (remaining) fleets in the system, the system is attacked.
+      const system = systems.find(s => s._id.equals(systemId));
+
+      const shipsInSystem = ships.filter(s => fleets.some(f => f._id.equals(s.fleet)));
+
+      // Ships with greater speed attack first
+      shipsInSystem.sortBy(s => {
+        return -(fleetVariables[s.fleet.toString()][`ships.${s.type}.speed`] ?? 0); // descending order
+      });
+
+      for (const ship of shipsInSystem) {
+        if (!ship.health) {
+          // If B falls to 0 HP, it does not attack and is deleted.
+          continue;
+        }
+
+        // At each period, each ship (A) picks one other ship (B) to attack (such that the damage is greatest)
+        const {bestShip, bestDamage} = this.findBestShipToAttack(shipsInSystem, ship, wars, fleetVariables);
+
+        if (bestShip) {
+          // The damage is deducted from B.health and added to A.experience
+          bestShip.health -= bestDamage;
+          ship.experience += bestDamage;
+          if (bestShip.health < 0) {
+            bestShip.health = 0;
+          }
+        } else if (system && system.owner) { // Unowned systems are never attacked.
+          const variables = fleetVariables[ship.fleet.toString()];
+          if (system.owner.equals(ship.empire)) {
+            // the empire is in control of the system, the ships can heal
+            const numShipyards = system.buildings.countIf(b => b === 'shipyard');
+            if (!numShipyards) {
+              continue;
+            }
+            this.healShip(ship, numShipyards, variables);
+          } else {
+            // Attack the system
+            this.attackSystem(ship, system, systemDefense[systemId] ?? 1, variables);
+          }
+        }
+      }
+    }
+  }
+
+  private calculateFleetVariables(empires: EmpireDocument[], fleets: FleetDocument[], empireVariables: Record<string, Partial<Record<Variable, number>>>) {
+    const fleetVariables: Record<string, Partial<Record<Variable, number>>> = {};
+    for (const fleet of fleets) {
+      if (!fleet.effects && fleet.empire) {
+        fleetVariables[fleet._id.toString()] = empireVariables[fleet.empire.toString()];
+        continue;
+      }
+      const shipVariables = getVariables('ships');
+      const empire: EmpireEffectSources = fleet.empire && empires.find(e => e._id.equals(fleet.empire)) || {
+        // Rogue fleets need a dummy empire to calculate their variables
+        effects: [],
+        technologies: [],
+        traits: [],
+      };
+      calculateVariables(shipVariables, empire, fleet);
+      fleetVariables[fleet._id.toString()] = shipVariables;
+    }
+    return fleetVariables;
+  }
+
+  private findBestShipToAttack(shipsInSystem: ShipDocument[], ship: ShipDocument, wars: WarDocument[], fleetVariables: Record<string, Partial<Record<Variable, number>>>) {
+    let bestShip: ShipDocument | undefined;
+    let bestDamage = 0;
+    for (const otherShip of shipsInSystem) {
+      if (!otherShip.health) {
+        // ignore destroyed ships
+        continue;
+      }
+      // ignore friendly ships
+      if (ship.fleet.equals(otherShip.fleet)) {
+        continue;
+      }
+      // Unowned/rogue fleets always attack.
+      if (ship.empire && otherShip.empire && !this.isAtWar(wars, ship.empire, otherShip.empire)) {
+        continue;
+      }
+
+      const shipVariables = fleetVariables[ship.fleet.toString()];
+      const attack = shipVariables[`ships.${ship.type}.attack.${otherShip.type}` as Variable] ?? shipVariables[`ships.${ship.type}.attack.default` as Variable] ?? 0;
+      const otherShipVariables = fleetVariables[otherShip.fleet.toString()];
+      const defense = otherShipVariables[`ships.${otherShip.type}.defense.${ship.type}` as Variable] || otherShipVariables[`ships.${otherShip.type}.defense.default` as Variable] || 1;
+
+      // The damage is calculated using A.attack[B.type] / B.defense[A.type] + log(A.experience)
+      const effectiveDamage = Math.max(attack / defense + Math.log1p(ship.experience), 0);
+      if (effectiveDamage > bestDamage) {
+        bestDamage = effectiveDamage;
+        bestShip = otherShip;
+      }
+    }
+    return {bestShip, bestDamage};
+  }
+
+  private isAtWar(wars: War[], empire1: Types.ObjectId, empire2: Types.ObjectId): boolean {
+    if (empire1.equals(empire2)) {
+      // fast path
+      return false;
+    }
+    return wars.some(war =>
+      war.attacker.equals(empire1) && war.defender.equals(empire2)
+      || war.attacker.equals(empire2) && war.defender.equals(empire1)
+    );
+  }
+
+  private attackSystem(ship: ShipDocument, system: SystemDocument, defense: number, variables: Partial<Record<Variable, number>>) {
+    const attack = variables[`ships.${ship.type}.damage.system` as Variable] ?? variables[`ships.${ship.type}.damage.default` as Variable] ?? 0;
+    // The damage is calculated using A.attack.system / system.defense + log(A.experience)
+    const damage = Math.max(attack / defense + Math.log(ship.experience), 0);
+    system.health -= damage;
+    if (system.health <= 0) {
+      system.health = 0;
+      // If the system falls to 0 HP, the owner changes to the attacker.
+      system.owner = ship.empire;
+    }
+  }
+
+  private healShip(ship: ShipDocument, shipyards: number, variables: Partial<Record<Variable, number>>) {
+    const healingRate = variables['buildings.shipyard.healing_rate'] ?? 0.1;
+    // Each shipyard heals 10% of the ship's health per period
+    const maxHealth = variables[`ships.${ship.type}.health`]!;
+    const shipyardHeal = healingRate * shipyards * maxHealth;
+    ship.health = Math.min(maxHealth, ship.health + shipyardHeal);
+  }
+
+  private async deleteDestroyedShipsAndFleets(fleets: FleetDocument[], ships: ShipDocument[]) {
+    const deleteShips = ships.filter(s => !s.health);
+    await this.shipService.deleteAll(deleteShips);
+
+    // find all fleets that have no ships left as a result of the deleted ships
+    const fleetIdsDeleted = new Set(deleteShips.map(s => s.fleet.toString()));
+    const fleetIdsWithShips = new Set(ships.filter(s => s.health).map(s => s.fleet.toString()));
+    const deleteFleets = fleets.filter(f => fleetIdsDeleted.has(f._id.toString()) && !fleetIdsWithShips.has(f._id.toString()));
+    await this.fleetService.deleteAll(deleteFleets);
+  }
+
+  private async deleteEmpiresWithoutSystems(empires: EmpireDocument[], systems: SystemDocument[]) {
+    const systemOwners = new Set(systems.map(s => s.owner?.toString()).filter(Boolean));
+    const deleteEmpires = empires.filter(empire => !systemOwners.has(empire._id.toString()));
+    await this.empireService.deleteAll(deleteEmpires);
+  }
 }
