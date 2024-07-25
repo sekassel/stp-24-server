@@ -135,6 +135,7 @@ export class GameLogicService {
     await this.shipService.saveAll(ships);
     // We save all ships first to notify clients of 0HP with an updated event followed by the deleted event.
     await this.deleteDestroyedShipsAndFleets(fleets, ships);
+    await this.deleteEmpiresWithoutSystems(empires, systems);
   }
 
   private async updateEmpires(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
@@ -540,5 +541,11 @@ export class GameLogicService {
     // find all fleets that have no ships left as a result of the deleted ships
     const deleteFleets = fleets.filter(f => deleteShips.some(s => s.fleet.equals(f._id)) && !ships.some(s => s.fleet.equals(f._id) && s.health));
     await this.fleetService.deleteAll(deleteFleets);
+  }
+
+  private async deleteEmpiresWithoutSystems(empires: EmpireDocument[], systems: SystemDocument[]) {
+    const systemOwners = new Set(systems.map(s => s.owner?.toString()).filter(Boolean));
+    const deleteEmpires = empires.filter(empire => !systemOwners.has(empire._id.toString()));
+    await this.empireService.deleteAll(deleteEmpires);
   }
 }
