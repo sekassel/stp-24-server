@@ -539,7 +539,9 @@ export class GameLogicService {
     await this.shipService.deleteAll(deleteShips);
 
     // find all fleets that have no ships left as a result of the deleted ships
-    const deleteFleets = fleets.filter(f => deleteShips.some(s => s.fleet.equals(f._id)) && !ships.some(s => s.fleet.equals(f._id) && s.health));
+    const fleetIdsDeleted = new Set(deleteShips.map(s => s.fleet.toString()));
+    const fleetIdsWithShips = new Set(ships.filter(s => s.health).map(s => s.fleet.toString()));
+    const deleteFleets = fleets.filter(f => fleetIdsDeleted.has(f._id.toString()) && !fleetIdsWithShips.has(f._id.toString()));
     await this.fleetService.deleteAll(deleteFleets);
   }
 
