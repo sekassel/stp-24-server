@@ -239,6 +239,11 @@ export class Building {
   build_time: number;
 
   @ApiPropertyOptional({
+    description: '(Shipyard) Ship health regeneration in percent per period.'
+  })
+  healing_rate?: number;
+
+  @ApiPropertyOptional({
     description: '(Fortress) Bonus to system health.'
   })
   health?: number;

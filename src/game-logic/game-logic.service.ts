@@ -4,7 +4,7 @@ import {SystemService} from '../system/system.service';
 import {EmpireDocument} from '../empire/empire.schema';
 import {SystemDocument} from '../system/system.schema';
 import {calculateVariables, EmpireEffectSources, getInitialVariables, getVariables} from './variables';
-import {Variable} from './types';
+import {ShipType, Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {AggregateResult} from './aggregates';
 import {Game} from '../game/game.schema';
@@ -21,6 +21,8 @@ import {WarService} from '../war/war.service';
 import {ShipDocument} from '../ship/ship.schema';
 import {War, WarDocument} from '../war/war.schema';
 import {Types} from 'mongoose';
+import {SHIP_NAMES, SHIP_TYPES} from './ships';
+import {BUILDINGS} from './buildings';
 
 @Injectable()
 export class GameLogicService {
@@ -505,6 +507,61 @@ export class GameLogicService {
   }
 
   private async healFleets(empires: EmpireDocument[], systems: SystemDocument[], fleets: FleetDocument[], ships: ShipDocument[]) {
-    // TODO
+    const shipVariables: Partial<Record<Variable, number>> = {
+      'buildings.shipyard.healing_rate': BUILDINGS.shipyard.healing_rate,
+    };
+    for (const ship of SHIP_NAMES) {
+      shipVariables[`ships.${ship}.health`] = SHIP_TYPES[ship].health;
+    }
+
+    // Calculate ship variables for each empire
+    const empireVariables: Record<string, Partial<Record<Variable, number>>> = {};
+    for (const empire of empires) {
+      const empireShipVariables = {...shipVariables};
+      calculateVariables(empireShipVariables, empire);
+      empireVariables[empire._id.toString()] = empireShipVariables;
+    }
+
+    // Calculate ship variables for each fleet either by reusing the empire's variables or by calculating them from the fleet's effects.
+    const fleetVariables: Record<string, Partial<Record<Variable, number>>> = {};
+    for (const fleet of fleets) {
+      if (!fleet.empire) {
+        // Rogue fleets cannot heal.
+        continue;
+      }
+      if (!fleet.effects) {
+        fleetVariables[fleet._id.toString()] = empireVariables[fleet.empire.toString()];
+        continue;
+      }
+      const fleetShipVariables = {...shipVariables};
+      const empire = empires.find(e => e._id.equals(fleet.empire));
+      if (!empire) {
+        continue;
+      }
+      calculateVariables(fleetShipVariables, empire, fleet);
+      fleetVariables[fleet._id.toString()] = fleetShipVariables;
+    }
+
+    for (const fleet of fleets) {
+      const system = systems.find(s => s._id.equals(fleet.location));
+      if (!system) {
+        continue;
+      }
+
+      const numShipyards = system.buildings.countIf(b => b === 'shipyard');
+      if (!numShipyards) {
+        continue;
+      }
+
+      const shipsInFleet = ships.filter(s => s.fleet.equals(fleet._id));
+      const variables = fleetVariables[fleet._id.toString()];
+      const healingRate = variables['buildings.shipyard.healing_rate'] ?? 0.1;
+      for (const ship of shipsInFleet) {
+        // Each shipyard heals 10% of the ship's health per period
+        const maxHealth = shipVariables[`ships.${ship.type}.health`]!;
+        const shipyardHeal = healingRate * numShipyards * maxHealth;
+        ship.health = Math.min(maxHealth, ship.health + shipyardHeal);
+      }
+    }
   }
 }
