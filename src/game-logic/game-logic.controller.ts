@@ -97,7 +97,6 @@ ${Object.entries(aggregate.optionalParams ?? {}).map(([param, desc]) => `- \`${p
   ): Promise<AggregateResult> {
     const empire = await this.empireService.find(id) ?? notFound(id);
     await this.checkUserAccess(currentUser, empire);
-    const systems = await this.systemService.findAll({owner: id});
     const aggregateFn = AGGREGATES[aggregate as AggregateId] ?? notFound(aggregate);
     if (aggregateFn.params) {
       const missingParams = Object.keys(aggregateFn.params).filter(param => !query[param]);
@@ -105,7 +104,7 @@ ${Object.entries(aggregate.optionalParams ?? {}).map(([param, desc]) => `- \`${p
         throw new BadRequestException(`Missing required parameters: ${missingParams.join(', ')}`);
       }
     }
-    return aggregateFn.compute(this.aggregateService, empire, systems, query);
+    return aggregateFn.compute(this.aggregateService, empire, query);
   }
 
   private async checkUserAccess(currentUser: User, empire: EmpireDocument) {

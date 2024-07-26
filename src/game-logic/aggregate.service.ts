@@ -13,16 +13,30 @@ import {GameLogicService} from './game-logic.service';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {SystemLogicService} from '../system/system-logic.service';
 import {Ship} from '../ship/ship.schema';
+import {ShipService} from '../ship/ship.service';
 
 @Injectable()
 export class AggregateService {
   constructor(
     private readonly empireService: EmpireService,
     private readonly systemService: SystemService,
+    private readonly shipService: ShipService,
     private readonly gameLogicService: GameLogicService,
     private readonly empireLogicService: EmpireLogicService,
     private readonly systemLogicService: SystemLogicService,
   ) {
+  }
+
+  async aggregateResourcesPeriodic(empire: Empire, system?: string, resource?: ResourceName): Promise<AggregateResult> {
+    const systems = system
+      ? [await this.systemService.find(new Types.ObjectId(system)) ?? notFound(system)]
+      : await this.systemService.findAll({owner: empire._id});
+    const ships = system ? [] : await this.shipService.findAll({empire: empire._id});
+    if (resource) {
+      return this.aggregateResources(empire, systems, ships, [resource])[0];
+    } else {
+      return this.aggregateAllResources(empire, systems, ships);
+    }
   }
 
   aggregateResources(empire: Empire, systems: System[], ships: Ship[], resources: ResourceName[]): AggregateResult[] {
@@ -69,13 +83,16 @@ export class AggregateService {
     return aggregate;
   }
 
-  aggregateSystemHealthOrDefense(empire: Empire, system: System, which: 'health' | 'defense'): AggregateResult {
+  async aggregateSystemHealthOrDefense(empire: Empire, system: string, which: 'health' | 'defense'): Promise<AggregateResult> {
+    const systemDoc = await this.systemService.find(new Types.ObjectId(system)) ?? notFound(system);
     const aggregate: AggregateResult = {items: [], total: 0};
-    this.systemLogicService.maxHealthOrDefense(system, empire, which, undefined, aggregate);
+    this.systemLogicService.maxHealthOrDefense(systemDoc, empire, which, undefined, aggregate);
     return aggregate;
   }
 
-  aggregateEconomy(empire: Empire, systems: System[], ships: Ship[] = []): AggregateResult {
+  async aggregateEconomy(empire: Empire): Promise<AggregateResult> {
+    const systems = await this.systemService.findAll({owner: empire._id});
+    const ships = await this.shipService.findAll({empire: empire._id});
     const items = this.summarizeResources(empire, systems, ships, [
       ['credits', 2],
       ['energy', 1],
@@ -90,7 +107,9 @@ export class AggregateService {
     };
   }
 
-  aggregateMilitary(empire: Empire, systems: System[], ships: Ship[] = []): AggregateResult {
+  async aggregateMilitary(empire: Empire): Promise<AggregateResult> {
+    const systems = await this.systemService.findAll({owner: empire._id});
+    const ships = await this.shipService.findAll({empire: empire._id});
     const items = this.summarizeResources(empire, systems, ships, [
       ['credits', 1],
       ['alloys', 2],
@@ -103,8 +122,10 @@ export class AggregateService {
     };
   }
 
-  aggregateTechnology(empire: Empire, systems: System[], ships: Ship[] = []): AggregateResult {
-    const items = this.summarizeResources(empire, systems, ships, [
+  async aggregateTechnology(empire: Empire): Promise<AggregateResult> {
+    const systems = await this.systemService.findAll({owner: empire._id});
+    // Don't load ships, they are irrelevant for technology
+    const items = this.summarizeResources(empire, systems, [], [
       ['research', 1],
     ]);
     const spentResearch = empire.technologies.map(t => TECHNOLOGIES[t]?.cost ?? 0).sum();
@@ -119,17 +140,10 @@ export class AggregateService {
     };
   }
 
-  async compare(empire: Empire, systems: System[], compare: string, fn: (empire: Empire, systems: System[]) => AggregateResult): Promise<AggregateResult> {
-    const compareId = new Types.ObjectId(compare);
-    const [compareEmpire, compareSystems] = await Promise.all([
-      this.empireService.find(compareId),
-      this.systemService.findAll({owner: compareId}),
-    ]);
-    if (!compareEmpire) {
-      notFound(`Empire ${compare}`);
-    }
-    const base = fn(empire, systems);
-    const compareResult = fn(compareEmpire, compareSystems);
+  async compare(empire: Empire, compare: string, fn: (empire: Empire) => Promise<AggregateResult>): Promise<AggregateResult> {
+    const compareEmpire = await this.empireService.find(new Types.ObjectId(compare)) ?? notFound(`Empire to compare: ${compare}`);
+    const base = await fn(empire);
+    const compareResult = await fn(compareEmpire);
     return {
       total: Math.log2(compareResult.total / base.total),
       items: [],

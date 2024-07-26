@@ -6,14 +6,13 @@ import {BadRequestException} from '@nestjs/common';
 import {TECHNOLOGIES} from './technologies';
 import {notFound} from '@mean-stream/nestx';
 import {AggregateService} from './aggregate.service';
-import {System} from '../system/system.schema';
 
 export class AggregateFn {
   description: string;
   params?: Record<string, string>;
   optionalParams?: Record<string, string>;
 
-  compute: (service: AggregateService, empire: Empire, systems: System[], params: Record<string, string>) => AggregateResult | Promise<AggregateResult>;
+  compute: (service: AggregateService, empire: Empire, params: Record<string, string>) => AggregateResult | Promise<AggregateResult>;
 }
 
 export class AggregateItem {
@@ -42,99 +41,80 @@ export const AGGREGATES: Record<string, AggregateFn> = {
       resource: 'The resource to calculate, e.g. `energy` or `population`',
       system: 'System ID. Only calculate production of a specific system.',
     },
-    compute: (service, empire, systems, {resource, system}) => {
+    compute: (service, empire, {resource, system}) => {
       if (resource && !RESOURCE_NAMES.includes(resource as ResourceName)) {
         throw new BadRequestException(`Invalid resource: ${resource}`);
       }
-      if (system) {
-        systems = systems.filter(s => s._id.equals(system));
-      }
-      if (resource) {
-        return service.aggregateResources(empire, systems, [], [resource as ResourceName])[0];
-      } else {
-        return service.aggregateAllResources(empire, systems, []);
-      }
+      return service.aggregateResourcesPeriodic(empire, system, resource as ResourceName);
     },
   },
   'empire.level.economy': {
     description: 'Calculates the total economy level of the empire',
-    compute: (service, empire, systems) => service.aggregateEconomy(empire, systems),
+    compute: (service, empire) => service.aggregateEconomy(empire),
   },
   'empire.compare.economy': {
     description: 'Calculates the economy level of the empire compared to another empire as a logarithmic difference',
     params: {
       compare: 'The ID of the empire to compare to',
     },
-    compute: (service, empire, systems, {compare}) => service.compare(empire, systems, compare, service.aggregateEconomy.bind(service)),
+    compute: (service, empire, {compare}) => service.compare(empire, compare, empire => service.aggregateEconomy(empire)),
   },
   'empire.level.military': {
     description: 'Calculates the total military level of the empire',
-    compute: (service, empire, systems) => service.aggregateMilitary(empire, systems),
+    compute: (service, empire) => service.aggregateMilitary(empire),
   },
   'empire.compare.military': {
     description: 'Calculates the military level of the empire compared to another empire as a logarithmic difference',
     params: {
       compare: 'The ID of the empire to compare to',
     },
-    compute: (service, empire, systems, {compare}) => service.compare(empire, systems, compare, service.aggregateMilitary.bind(service)),
+    compute: (service, empire, {compare}) => service.compare(empire, compare, empire => service.aggregateMilitary(empire)),
   },
   'empire.level.technology': {
     description: 'Calculates the total technology level of the empire',
-    compute: (service, empire, systems) => service.aggregateTechnology(empire, systems),
+    compute: (service, empire) => service.aggregateTechnology(empire),
   },
   'empire.compare.technology': {
     description: 'Calculates the technology level of the empire compared to another empire as a logarithmic difference',
     params: {
       compare: 'The ID of the empire to compare to',
     },
-    compute: (service, empire, systems, {compare}) => service.compare(empire, systems, compare, service.aggregateTechnology.bind(service)),
+    compute: (service, empire, {compare}) => service.compare(empire, compare, empire => service.aggregateTechnology(empire)),
   },
   'technology.cost': {
     description: 'Calculates the total cost of a technology',
     params: {
       technology: 'The ID of the technology to calculate',
     },
-    compute: (service, empire, systems, {technology}) => {
-      const tech = TECHNOLOGIES[technology] ?? notFound(technology);
-      return service.aggregateTechCost(empire, tech);
-    },
+    compute: (service, empire, {technology}) => service.aggregateTechCost(empire, TECHNOLOGIES[technology] ?? notFound(technology)),
   },
   'technology.time': {
     description: 'Calculates the total duration of a technology',
     params: {
       technology: 'The ID of the technology to calculate',
     },
-    compute: (service, empire, systems, {technology}) => {
-      const tech = TECHNOLOGIES[technology] ?? notFound(technology);
-      return service.aggregateTechTime(empire, tech);
-    },
+    compute: (service, empire, {technology}) => service.aggregateTechTime(empire, TECHNOLOGIES[technology] ?? notFound(technology)),
   },
   'system.max_health': {
     description: 'Calculates the maximum health of a system',
     params: {
       system: 'The ID of the system to calculate',
     },
-    compute: (service, empire, systems, {system}) => {
-      const sys = systems.find(s => s._id.equals(system)) ?? notFound(system);
-      return service.aggregateSystemHealthOrDefense(empire, sys, 'health');
-    },
+    compute: (service, empire, {system}) => service.aggregateSystemHealthOrDefense(empire, system, 'health'),
   },
   'system.defense': {
     description: 'Calculates the defense value of a system',
     params: {
       system: 'The ID of the system to calculate',
     },
-    compute: (service, empire, systems, {system}) => {
-      const sys = systems.find(s => s._id.equals(system)) ?? notFound(system);
-      return service.aggregateSystemHealthOrDefense(empire, sys, 'defense');
-    },
+    compute: (service, empire, {system}) => service.aggregateSystemHealthOrDefense(empire, system, 'defense'),
   },
   'fleet.power': {
     description: 'Calculates the total power of a fleet',
     params: {
       fleet: 'The ID of the fleet to calculate',
     },
-    compute: (service, empire, systems, {fleet}) => {
+    compute: (service, empire, {fleet}) => {
       return { // TODO Fleet power aggregate
         total: 0,
         items: [],
