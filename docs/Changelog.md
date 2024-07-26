@@ -286,3 +286,31 @@
 * Fixed a bug where the `city` and `industry` district slots could be a decimal number.
 * Fixed a bug where an `undefined` district slot would appear.
 * Fixed some traits and technologies with duplicate effects.
+
+# v4.0.1 (2024-07-26)
+
+## New Features
+
++ Added battle mechanics:
+  + Ships attack other ships in the same system if at war or part of rogue fleets.
+  + Ships can be destroyed in battle.
+  + Fleets can be destroyed if all ships are destroyed.
+  + Systems can be attacked and claimed by ships.
+  + Ships can be repaired in shipyards.
+  + Empires are deleted when all their systems are lost.
++ Implemented the `fleet.power` aggregate and made the `fleet` query parameter optional (to get the empire's total fleet power).
++ Implemented ship upkeep.
++ Added the `fleet` query parameter to the `GET .../jobs` endpoint.
++ Added the `type` query parameter to the `GET .../ships` endpoint.
++ Added the `buildings.shipyard.healing_rate` variable.
++ Added the `ships.bomber.attack.system` variable.
++ Added the `health` property to `ReadShipDto` (made it visible to everyone).
+
+## Improvements
+
+* Temporary fleets (that are created when the original fleet moves away from a shipyard while a ship is being built) are now re-used for additional ships.
+
+## Bugfixes
+
+* Fixed some cases where fleets would not end up in the destination system after traveling.
+* Fixed a `500 Internal Server Error` when upgrading a (colonized) system without a colonizer.
