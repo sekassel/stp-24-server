@@ -3,7 +3,7 @@ import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
 import {ResourceName} from './resources';
 import {AggregateItem, AggregateResult} from './aggregates';
-import {Technology} from './types';
+import {Technology, Variable} from './types';
 import {TECHNOLOGIES} from './technologies';
 import {Types} from 'mongoose';
 import {notFound} from '@mean-stream/nestx';
@@ -12,28 +12,45 @@ import {SystemService} from '../system/system.service';
 import {GameLogicService} from './game-logic.service';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {SystemLogicService} from '../system/system-logic.service';
+import {Ship} from '../ship/ship.schema';
+import {ShipService} from '../ship/ship.service';
+import {SHIP_NAMES} from './ships';
+import {calculateVariables, getVariables} from './variables';
 
 @Injectable()
 export class AggregateService {
   constructor(
     private readonly empireService: EmpireService,
     private readonly systemService: SystemService,
+    private readonly shipService: ShipService,
     private readonly gameLogicService: GameLogicService,
     private readonly empireLogicService: EmpireLogicService,
     private readonly systemLogicService: SystemLogicService,
   ) {
   }
 
-  aggregateResources(empire: Empire, systems: System[], resources: ResourceName[]): AggregateResult[] {
+  async aggregateResourcesPeriodic(empire: Empire, system?: string, resource?: ResourceName): Promise<AggregateResult> {
+    const systems = system
+      ? [await this.systemService.find(new Types.ObjectId(system)) ?? notFound(system)]
+      : await this.systemService.findAll({owner: empire._id});
+    const ships = system ? [] : await this.shipService.findAll({empire: empire._id});
+    if (resource) {
+      return this.aggregateResources(empire, systems, ships, [resource])[0];
+    } else {
+      return this.aggregateAllResources(empire, systems, ships);
+    }
+  }
+
+  aggregateResources(empire: Empire, systems: System[], ships: Ship[], resources: ResourceName[]): AggregateResult[] {
     const aggregates: Partial<Record<ResourceName, AggregateResult>> = Object.fromEntries(resources.map(r => [r, {
       total: 0,
       items: [],
     }]));
-    this.gameLogicService.updateEmpire(empire as EmpireDocument, systems as SystemDocument[], aggregates); // NB: this mutates empire and systems, but does not save them.
+    this.gameLogicService.updateEmpire(empire as EmpireDocument, systems as SystemDocument[], ships, aggregates); // NB: this mutates empire and systems, but does not save them.
     return resources.map(r => aggregates[r]!);
   }
 
-  aggregateAllResources(empire: Empire, systems: System[]): AggregateResult {
+  aggregateAllResources(empire: Empire, systems: System[], ships: Ship[]): AggregateResult {
     const initial = {
       ...empire.resources,
       // NB: This is necessary for single-system queries,
@@ -41,7 +58,7 @@ export class AggregateService {
       // which would result in a very negative population delta.
       population: systems.map(s => s.population).sum(),
     };
-    this.gameLogicService.updateEmpire(empire as EmpireDocument, systems as SystemDocument[]);
+    this.gameLogicService.updateEmpire(empire as EmpireDocument, systems as SystemDocument[], ships);
     // FIXME migration will never be accounted for
     //   - when querying all systems, migration is zero across them (since it's zero-sum)
     //   - when querying a single system, migration cannot happen
@@ -68,14 +85,51 @@ export class AggregateService {
     return aggregate;
   }
 
-  aggregateSystemHealthOrDefense(empire: Empire, system: System, which: 'health' | 'defense'): AggregateResult {
+  async aggregateSystemHealthOrDefense(empire: Empire, system: string, which: 'health' | 'defense'): Promise<AggregateResult> {
+    const systemDoc = await this.systemService.find(new Types.ObjectId(system)) ?? notFound(system);
     const aggregate: AggregateResult = {items: [], total: 0};
-    this.systemLogicService.maxHealthOrDefense(system, empire, which, undefined, aggregate);
+    this.systemLogicService.maxHealthOrDefense(systemDoc, empire, which, undefined, aggregate);
     return aggregate;
   }
 
-  aggregateEconomy(empire: Empire, systems: System[]): AggregateResult {
-    const items = this.summarizeResources(empire, systems, [
+  async aggregateFleetPower(empire: Empire, fleet?: string) {
+    const ships = fleet ? await this.shipService.findAll({empire: empire._id, fleet: new Types.ObjectId(fleet)}) : await this.shipService.findAll({empire: empire._id});
+    const items: AggregateItem[] = [];
+    this.calculateShipsPower(empire, ships, items);
+    return {
+      total: items.map(item => item.subtotal).sum(),
+      items,
+    };
+  }
+
+  private calculateShipsPower(empire: Empire, ships: Ship[], items: Array<AggregateItem>) {
+    const variables = getVariables('ships');
+    // We ignore that fleet might have effects here, I don't think it matters
+    calculateVariables(variables, empire);
+    for (const typeId of SHIP_NAMES) {
+      const count = ships.countIf(s => s.type === typeId);
+      for (const variable of [
+        `ships.${typeId}.health`,
+        `ships.${typeId}.speed`,
+        `ships.${typeId}.attack.default`,
+        `ships.${typeId}.defense.default`,
+      ] as Variable[]) {
+        const value = variables[variable];
+        if (value) {
+          items.push({
+            variable,
+            count,
+            subtotal: count * value,
+          });
+        }
+      }
+    }
+  }
+
+  async aggregateEconomy(empire: Empire): Promise<AggregateResult> {
+    const systems = await this.systemService.findAll({owner: empire._id});
+    const ships = await this.shipService.findAll({empire: empire._id});
+    const items = this.summarizeResources(empire, systems, ships, [
       ['credits', 2],
       ['energy', 1],
       ['minerals', 1],
@@ -89,21 +143,25 @@ export class AggregateService {
     };
   }
 
-  aggregateMilitary(empire: Empire, systems: System[]): AggregateResult {
-    const items = this.summarizeResources(empire, systems, [
+  async aggregateMilitary(empire: Empire): Promise<AggregateResult> {
+    const systems = await this.systemService.findAll({owner: empire._id});
+    const ships = await this.shipService.findAll({empire: empire._id});
+    const items = this.summarizeResources(empire, systems, ships, [
       ['credits', 1],
       ['alloys', 2],
       ['fuel', 1],
     ]);
-    // TODO consider active fleets
+    this.calculateShipsPower(empire, ships, items);
     return {
       total: items.map(item => item.subtotal).sum(),
       items,
     };
   }
 
-  aggregateTechnology(empire: Empire, systems: System[]): AggregateResult {
-    const items = this.summarizeResources(empire, systems, [
+  async aggregateTechnology(empire: Empire): Promise<AggregateResult> {
+    const systems = await this.systemService.findAll({owner: empire._id});
+    // Don't load ships, they are irrelevant for technology
+    const items = this.summarizeResources(empire, systems, [], [
       ['research', 1],
     ]);
     const spentResearch = empire.technologies.map(t => TECHNOLOGIES[t]?.cost ?? 0).sum();
@@ -118,26 +176,19 @@ export class AggregateService {
     };
   }
 
-  async compare(empire: Empire, systems: System[], compare: string, fn: (empire: Empire, systems: System[]) => AggregateResult): Promise<AggregateResult> {
-    const compareId = new Types.ObjectId(compare);
-    const [compareEmpire, compareSystems] = await Promise.all([
-      this.empireService.find(compareId),
-      this.systemService.findAll({owner: compareId}),
-    ]);
-    if (!compareEmpire) {
-      notFound(`Empire ${compare}`);
-    }
-    const base = fn(empire, systems);
-    const compareResult = fn(compareEmpire, compareSystems);
+  async compare(empire: Empire, compare: string, fn: (empire: Empire) => Promise<AggregateResult>): Promise<AggregateResult> {
+    const compareEmpire = await this.empireService.find(new Types.ObjectId(compare)) ?? notFound(`Empire to compare: ${compare}`);
+    const base = await fn(empire);
+    const compareResult = await fn(compareEmpire);
     return {
       total: Math.log2(compareResult.total / base.total),
       items: [],
     };
   }
 
-  private summarizeResources(empire: Empire, systems: System[], resources: [ResourceName, number][]) {
+  private summarizeResources(empire: Empire, systems: System[], ships: Ship[], resources: [ResourceName, number][]) {
     const items: AggregateItem[] = [];
-    const production = this.aggregateResources(empire, systems, resources.map(r => r[0]));
+    const production = this.aggregateResources(empire, systems, ships, resources.map(r => r[0]));
     for (let i = 0; i < resources.length; i++) {
       const [resource, weight] = resources[i];
       items.push({

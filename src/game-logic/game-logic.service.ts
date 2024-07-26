@@ -18,7 +18,7 @@ import {FleetService} from '../fleet/fleet.service';
 import {ShipService} from '../ship/ship.service';
 import {FleetDocument} from '../fleet/fleet.schema';
 import {WarService} from '../war/war.service';
-import {ShipDocument} from '../ship/ship.schema';
+import {Ship, ShipDocument} from '../ship/ship.schema';
 import {War, WarDocument} from '../war/war.schema';
 import {Types} from 'mongoose';
 import {BUILDINGS} from './buildings';
@@ -126,7 +126,7 @@ export class GameLogicService {
 
     await this.jobService.deleteMany({game: game._id, $expr: {$gte: ['$progress', '$total']}});
     const jobs = await this.jobService.findAll({game: game._id}, {sort: {priority: 1, createdAt: 1}});
-    await this.updateEmpires(empires, systems, jobs);
+    await this.updateEmpires(empires, systems, jobs, ships);
     await this.updateFleets(empires, systems, fleets, ships, wars);
 
     await this.empireService.saveAll(empires);
@@ -138,16 +138,17 @@ export class GameLogicService {
     await this.deleteEmpiresWithoutSystems(empires, systems);
   }
 
-  private async updateEmpires(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[]) {
+  private async updateEmpires(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[], ships: ShipDocument[]) {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
       const empireJobs = jobs.filter(job => job.empire.equals(empire._id));
+      const empireShips = ships.filter(ship => ship.empire?.equals(empire._id));
       await this.jobService.updateJobs(empire, empireJobs, systems);
-      this.updateEmpire(empire, empireSystems);
+      this.updateEmpire(empire, empireSystems, empireShips);
     }
   }
 
-  updateEmpire(empire: EmpireDocument, systems: SystemDocument[], aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
+  updateEmpire(empire: EmpireDocument, systems: SystemDocument[], ships: Ship[], aggregates?: Partial<Record<ResourceName, AggregateResult>>) {
     const variables = getInitialVariables();
     calculateVariables(variables, empire);
 
@@ -179,6 +180,18 @@ export class GameLogicService {
 
       if (popUpkeepPaid) {
         this.popGrowth(system, systemVariables, aggregates);
+      }
+    }
+
+    // handle ships upkeep
+    for (const ship of ships) {
+      for (const resource of RESOURCE_NAMES) {
+        const upkeepVariable = `ships.${ship.type}.upkeep.${resource}` as Variable;
+        const upkeep = variables[upkeepVariable];
+        if (upkeep) {
+          this.updateAggregate(aggregates?.[resource], upkeepVariable, 1, -upkeep);
+          this.deductResource(empire, resource, upkeep);
+        }
       }
     }
 
