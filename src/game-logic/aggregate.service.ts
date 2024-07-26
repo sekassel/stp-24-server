@@ -3,7 +3,7 @@ import {Empire, EmpireDocument} from '../empire/empire.schema';
 import {System, SystemDocument} from '../system/system.schema';
 import {ResourceName} from './resources';
 import {AggregateItem, AggregateResult} from './aggregates';
-import {Technology} from './types';
+import {Technology, Variable} from './types';
 import {TECHNOLOGIES} from './technologies';
 import {Types} from 'mongoose';
 import {notFound} from '@mean-stream/nestx';
@@ -14,6 +14,8 @@ import {EmpireLogicService} from '../empire/empire-logic.service';
 import {SystemLogicService} from '../system/system-logic.service';
 import {Ship} from '../ship/ship.schema';
 import {ShipService} from '../ship/ship.service';
+import {SHIP_NAMES} from './ships';
+import {calculateVariables, getVariables} from './variables';
 
 @Injectable()
 export class AggregateService {
@@ -90,6 +92,40 @@ export class AggregateService {
     return aggregate;
   }
 
+  async aggregateFleetPower(empire: Empire, fleet?: string) {
+    const ships = fleet ? await this.shipService.findAll({empire: empire._id, fleet: new Types.ObjectId(fleet)}) : await this.shipService.findAll({empire: empire._id});
+    const items: AggregateItem[] = [];
+    this.calculateShipsPower(empire, ships, items);
+    return {
+      total: items.map(item => item.subtotal).sum(),
+      items,
+    };
+  }
+
+  private calculateShipsPower(empire: Empire, ships: Ship[], items: Array<AggregateItem>) {
+    const variables = getVariables('ships');
+    // We ignore that fleet might have effects here, I don't think it matters
+    calculateVariables(variables, empire);
+    for (const typeId of SHIP_NAMES) {
+      const count = ships.countIf(s => s.type === typeId);
+      for (const variable of [
+        `ships.${typeId}.health`,
+        `ships.${typeId}.speed`,
+        `ships.${typeId}.attack.default`,
+        `ships.${typeId}.defense.default`,
+      ] as Variable[]) {
+        const value = variables[variable];
+        if (value) {
+          items.push({
+            variable,
+            count,
+            subtotal: count * value,
+          });
+        }
+      }
+    }
+  }
+
   async aggregateEconomy(empire: Empire): Promise<AggregateResult> {
     const systems = await this.systemService.findAll({owner: empire._id});
     const ships = await this.shipService.findAll({empire: empire._id});
@@ -115,7 +151,7 @@ export class AggregateService {
       ['alloys', 2],
       ['fuel', 1],
     ]);
-    // TODO consider active fleets
+    this.calculateShipsPower(empire, ships, items);
     return {
       total: items.map(item => item.subtotal).sum(),
       items,

@@ -110,16 +110,11 @@ export const AGGREGATES: Record<string, AggregateFn> = {
     compute: (service, empire, {system}) => service.aggregateSystemHealthOrDefense(empire, system, 'defense'),
   },
   'fleet.power': {
-    description: 'Calculates the total power of a fleet',
-    params: {
+    description: 'Calculates the total power of a fleet or empire',
+    optionalParams: {
       fleet: 'The ID of the fleet to calculate',
     },
-    compute: (service, empire, {fleet}) => {
-      return { // TODO Fleet power aggregate
-        total: 0,
-        items: [],
-      };
-    },
+    compute: (service, empire, {fleet}) => service.aggregateFleetPower(empire, fleet),
   },
 };
 export type AggregateId = keyof typeof AGGREGATES;
