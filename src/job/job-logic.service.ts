@@ -182,23 +182,14 @@ export class JobLogicService {
     }
   }
 
-  checkFleetAccess(dto: CreateJobDto, fleets: FleetDocument[], ships: ShipDocument[], system?: SystemDocument) {
-    if (system && dto.type === JobType.UPGRADE && (system.upgrade === 'unexplored' || system.upgrade === 'explored')) {
-      if (!system) {
-        throw new NotFoundException('System not found.');
-      }
-      return this.checkFleet(system.upgrade === 'unexplored' ? 'explorer' : 'colonizer', fleets, ships);
-    }
-  }
-
-  checkFleet(shipType: ShipTypeName, fleets: FleetDocument[], ships: ShipDocument[]) {
+  checkFleet(shipType: ShipTypeName, fleets: FleetDocument[], ships: ShipDocument[]): ShipDocument {
     if (!fleets || fleets.length === 0) {
       this.throwForbiddenException(shipType);
     }
     return this.checkShip(ships, shipType);
   }
 
-  private checkShip(ships: ShipDocument[], shipType: ShipTypeName) {
+  private checkShip(ships: ShipDocument[], shipType: ShipTypeName): ShipDocument {
     if (!ships || ships.length === 0) {
       this.throwForbiddenException(shipType);
     }
@@ -209,7 +200,7 @@ export class JobLogicService {
     this.throwForbiddenException(shipType);
   }
 
-  private throwForbiddenException(shipType: ShipTypeName) {
+  private throwForbiddenException(shipType: ShipTypeName): never {
     throw new ForbiddenException(`You must have a fleet with ship '${shipType}' in the system to upgrade it.`);
   }
 }

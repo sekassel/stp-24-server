@@ -1,4 +1,4 @@
-import {ForbiddenException, HttpException, Injectable} from '@nestjs/common';
+import {ForbiddenException, HttpException, Injectable, NotFoundException} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
 import {Model, Types} from 'mongoose';
@@ -40,12 +40,14 @@ export class JobService extends MongooseRepository<Job> {
     // Check fleet access
     if (dto.type === JobType.UPGRADE) {
       if (!system) {
-        return null;
+        throw new NotFoundException('System not found.');
       }
-      const fleets = await this.fleetService.findAll({empire: empire._id, location: system._id});
-      const ships = await this.shipService.findAll({fleet: {$in: fleets.map(f => f._id)}});
-      const ship = this.jobLogicService.checkFleetAccess(dto, fleets, ships, system);
-      await this.shipService.deleteOne(ship!._id);
+      if (system.upgrade === 'unexplored' || system.upgrade === 'explored') {
+        const fleets = await this.fleetService.findAll({empire: empire._id, location: system._id});
+        const ships = await this.shipService.findAll({fleet: {$in: fleets.map(f => f._id)}});
+        const ship = this.jobLogicService.checkFleet(system.upgrade === 'unexplored' ? 'explorer' : 'colonizer', fleets, ships);
+        await this.shipService.deleteOne(ship._id);
+      }
     }
     let time: number | undefined;
     let cost: Partial<Record<ResourceName | 'time', number>> = {};
