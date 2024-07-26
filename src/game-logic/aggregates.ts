@@ -50,9 +50,9 @@ export const AGGREGATES: Record<string, AggregateFn> = {
         systems = systems.filter(s => s._id.equals(system));
       }
       if (resource) {
-        return service.aggregateResources(empire, systems, [resource as ResourceName])[0];
+        return service.aggregateResources(empire, systems, [], [resource as ResourceName])[0];
       } else {
-        return service.aggregateAllResources(empire, systems);
+        return service.aggregateAllResources(empire, systems, []);
       }
     },
   },

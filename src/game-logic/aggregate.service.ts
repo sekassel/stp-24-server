@@ -12,6 +12,7 @@ import {SystemService} from '../system/system.service';
 import {GameLogicService} from './game-logic.service';
 import {EmpireLogicService} from '../empire/empire-logic.service';
 import {SystemLogicService} from '../system/system-logic.service';
+import {Ship} from '../ship/ship.schema';
 
 @Injectable()
 export class AggregateService {
@@ -24,16 +25,16 @@ export class AggregateService {
   ) {
   }
 
-  aggregateResources(empire: Empire, systems: System[], resources: ResourceName[]): AggregateResult[] {
+  aggregateResources(empire: Empire, systems: System[], ships: Ship[], resources: ResourceName[]): AggregateResult[] {
     const aggregates: Partial<Record<ResourceName, AggregateResult>> = Object.fromEntries(resources.map(r => [r, {
       total: 0,
       items: [],
     }]));
-    this.gameLogicService.updateEmpire(empire as EmpireDocument, systems as SystemDocument[], aggregates); // NB: this mutates empire and systems, but does not save them.
+    this.gameLogicService.updateEmpire(empire as EmpireDocument, systems as SystemDocument[], ships, aggregates); // NB: this mutates empire and systems, but does not save them.
     return resources.map(r => aggregates[r]!);
   }
 
-  aggregateAllResources(empire: Empire, systems: System[]): AggregateResult {
+  aggregateAllResources(empire: Empire, systems: System[], ships: Ship[]): AggregateResult {
     const initial = {
       ...empire.resources,
       // NB: This is necessary for single-system queries,
@@ -41,7 +42,7 @@ export class AggregateService {
       // which would result in a very negative population delta.
       population: systems.map(s => s.population).sum(),
     };
-    this.gameLogicService.updateEmpire(empire as EmpireDocument, systems as SystemDocument[]);
+    this.gameLogicService.updateEmpire(empire as EmpireDocument, systems as SystemDocument[], ships);
     // FIXME migration will never be accounted for
     //   - when querying all systems, migration is zero across them (since it's zero-sum)
     //   - when querying a single system, migration cannot happen
@@ -74,8 +75,8 @@ export class AggregateService {
     return aggregate;
   }
 
-  aggregateEconomy(empire: Empire, systems: System[]): AggregateResult {
-    const items = this.summarizeResources(empire, systems, [
+  aggregateEconomy(empire: Empire, systems: System[], ships: Ship[] = []): AggregateResult {
+    const items = this.summarizeResources(empire, systems, ships, [
       ['credits', 2],
       ['energy', 1],
       ['minerals', 1],
@@ -89,8 +90,8 @@ export class AggregateService {
     };
   }
 
-  aggregateMilitary(empire: Empire, systems: System[]): AggregateResult {
-    const items = this.summarizeResources(empire, systems, [
+  aggregateMilitary(empire: Empire, systems: System[], ships: Ship[] = []): AggregateResult {
+    const items = this.summarizeResources(empire, systems, ships, [
       ['credits', 1],
       ['alloys', 2],
       ['fuel', 1],
@@ -102,8 +103,8 @@ export class AggregateService {
     };
   }
 
-  aggregateTechnology(empire: Empire, systems: System[]): AggregateResult {
-    const items = this.summarizeResources(empire, systems, [
+  aggregateTechnology(empire: Empire, systems: System[], ships: Ship[] = []): AggregateResult {
+    const items = this.summarizeResources(empire, systems, ships, [
       ['research', 1],
     ]);
     const spentResearch = empire.technologies.map(t => TECHNOLOGIES[t]?.cost ?? 0).sum();
@@ -135,9 +136,9 @@ export class AggregateService {
     };
   }
 
-  private summarizeResources(empire: Empire, systems: System[], resources: [ResourceName, number][]) {
+  private summarizeResources(empire: Empire, systems: System[], ships: Ship[], resources: [ResourceName, number][]) {
     const items: AggregateItem[] = [];
-    const production = this.aggregateResources(empire, systems, resources.map(r => r[0]));
+    const production = this.aggregateResources(empire, systems, ships, resources.map(r => r[0]));
     for (let i = 0; i < resources.length; i++) {
       const [resource, weight] = resources[i];
       items.push({
