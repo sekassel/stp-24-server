@@ -203,7 +203,7 @@ export class SystemLogicService {
     }
 
     const baseValue = relevantVariables[upgradeVariable];
-    const fortressCount = system.buildings.filter(b => b === 'fortress').length;
+    const fortressCount = system.buildings.countIf(b => b === 'fortress');
     const fortressBonus = fortressCount * relevantVariables[fortressVariable];
     const total = baseValue + fortressBonus;
     if (aggregate) {

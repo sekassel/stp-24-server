@@ -56,6 +56,7 @@ export class GameLogicService {
       homeSystem.population = empire.resources.population;
       homeSystem.upgrade = 'upgraded';
       homeSystem.capacity *= SYSTEM_UPGRADES.upgraded.capacity_multiplier;
+      homeSystem.health = SYSTEM_UPGRADES.upgraded.health;
       if (member?.empire?.homeSystem) {
         homeSystem.type = member.empire.homeSystem;
       }
@@ -176,6 +177,8 @@ export class GameLogicService {
       this.processDistricts(system, systemUpkeepPaid, popCoverage, empire, systemVariables, aggregates);
       this.processBuildings(system, systemUpkeepPaid, popCoverage, empire, systemVariables, aggregates);
 
+      this.healSystem(system, empire, systemVariables);
+
       this.deductJoblessUpkeep(system, empire, systemVariables, aggregates);
 
       if (popUpkeepPaid) {
@@ -290,6 +293,14 @@ export class GameLogicService {
           empire.resources[resource as ResourceName] += amount;
         }
       }
+    }
+  }
+
+  private healSystem(system: SystemDocument, empire: EmpireDocument, variables: Record<Variable, number>) {
+    const maxHealth = this.systemLogicService.maxHealthOrDefense(system, empire, 'health', variables);
+    if (system.health < maxHealth) {
+      const healingRate = 0.1;
+      system.health = Math.min(maxHealth, system.health + healingRate * maxHealth);
     }
   }
 
