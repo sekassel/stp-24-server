@@ -160,13 +160,13 @@ export class JobController {
   }
 
   private async checkUserRead(user: User, empire: Types.ObjectId): Promise<void> {
-    const requestedEmpire = await this.empireService.findOne(empire) ?? notFound(empire);
+    const requestedEmpire = await this.empireService.find(empire, {projection: {game: 1, user: 1}}) ?? notFound(empire);
     if (requestedEmpire.user.equals(user._id)) {
       return;
     }
     if (await this.memberService.isSpectator(requestedEmpire.game, user._id)) {
       return;
     }
-    throw new ForbiddenException('You can only modify jobs for your own empire.');
+    throw new ForbiddenException('You can only read jobs for your own empire.');
   }
 }

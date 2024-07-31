@@ -5,7 +5,6 @@ import {
   Delete,
   ForbiddenException,
   Get,
-  NotFoundException,
   Param,
   Patch,
   Post,
@@ -26,11 +25,10 @@ import {WarService} from './war.service';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {War} from './war.schema';
 import {User} from '../user/user.schema';
-import {NotFound, ObjectIdPipe, OptionalObjectIdPipe} from '@mean-stream/nestx';
+import {notFound, NotFound, ObjectIdPipe, OptionalObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {CreateWarDto, UpdateWarDto} from './war.dto';
 import {EmpireService} from '../empire/empire.service';
-import {EmpireDocument} from '../empire/empire.schema';
 
 @Controller('games/:game/wars')
 @ApiTags('Wars')
@@ -55,10 +53,7 @@ export class WarController {
     @Body() createWarDto: CreateWarDto,
     @AuthUser() user: User,
   ): Promise<War | null> {
-    const userEmpire = await this.findUserEmpire(game, user);
-    if (!userEmpire._id.equals(createWarDto.attacker)) {
-      throw new ForbiddenException('You are not the attacker in this war.');
-    }
+    await this.checkWarAccess(createWarDto, user);
 
     const existingWar = await this.warService.findOne({
       game,
@@ -115,7 +110,8 @@ export class WarController {
     @Body() updateWarDto: UpdateWarDto,
     @AuthUser() user: User,
   ): Promise<War | null> {
-    await this.checkWarAccess(game, user, id);
+    const war = await this.warService.find(id) ?? notFound('War not found.');
+    await this.checkWarAccess(war, user);
     return this.warService.update(id, updateWarDto);
   }
 
@@ -130,25 +126,14 @@ export class WarController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<War | null> {
-    await this.checkWarAccess(game, user, id);
+    const war = await this.warService.find(id) ?? notFound('War not found.');
+    await this.checkWarAccess(war, user);
     return this.warService.delete(id);
   }
 
-  private async findUserEmpire(game: Types.ObjectId, user: User): Promise<EmpireDocument> {
-    const userEmpire = await this.empireService.findOne({game, user: user._id});
-    if (!userEmpire) {
-      throw new ForbiddenException('You do not own an empire in this game.');
-    }
-    return userEmpire;
-  }
-
-  private async checkWarAccess(game: Types.ObjectId, user: User, warId: Types.ObjectId) {
-    const userEmpire = await this.findUserEmpire(game, user);
-    const war = await this.warService.findOne(warId);
-    if (!war || !war.game.equals(game)) {
-      throw new NotFoundException('War not found.');
-    }
-    if (!war.attacker.equals(userEmpire._id)) {
+  private async checkWarAccess(war: War | CreateWarDto, user: User) {
+    const attackerEmpire = await this.empireService.find(war.attacker, {projection: 'user'}) ?? notFound(`Attacker empire ${war.attacker} not found.`);
+    if (user._id.equals(attackerEmpire.user)) {
       throw new ForbiddenException('You are not the attacker in this war.');
     }
   }

@@ -61,13 +61,13 @@ export class SystemController {
     @Body() dto: UpdateSystemDto,
   ): Promise<System | null> {
     const system = await this.systemService.find(id) ?? notFound(id);
-    const userEmpire = await this.empireService.findOne({user: currentUser._id, game}) ?? notFound('User empire not found.');
-    if (!system.owner || !system.owner.equals(userEmpire._id)) {
+    const ownerEmpire = system.owner && await this.empireService.find(system.owner);
+    if (!ownerEmpire || !ownerEmpire.user.equals(currentUser._id)) {
       throw new ForbiddenException('You are not the owner of this system.');
     }
-    await this.systemService.updateSystem(system, dto, userEmpire);
+    this.systemService.updateSystem(system, dto, ownerEmpire);
     await this.systemService.saveAll([system]) // emits update events
-    await this.empireService.saveAll([userEmpire]);
+    await this.empireService.saveAll([ownerEmpire]);
     return system;
   }
 }
