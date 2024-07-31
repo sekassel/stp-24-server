@@ -15,16 +15,19 @@ export class ReadEmpireDto extends OmitType(Empire, [
 ] as const) {
 }
 
-export class EmpireTemplate extends PickType(Empire, [
-  'name',
-  'description',
-  'color',
-  'flag',
-  'portrait',
-  'traits',
-  'effects',
-  '_private',
-  '_public',
+export class CreateEmpireDto extends OmitType(Empire, [
+  '_id',
+  'createdAt',
+  'updatedAt',
+  'game',
+  'user',
+] as const) {
+}
+
+export class EmpireTemplate extends OmitType(CreateEmpireDto, [
+  'technologies',
+  'resources',
+  'homeSystem',
 ] as const) {
   @Prop({type: String})
   @ApiPropertyOptional({
