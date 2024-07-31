@@ -22,6 +22,7 @@ import {Ship, ShipDocument} from '../ship/ship.schema';
 import {War, WarDocument} from '../war/war.schema';
 import {Types} from 'mongoose';
 import {BUILDINGS} from './buildings';
+import {Member} from '../member/member.schema';
 
 @Injectable()
 export class GameLogicService {
@@ -51,30 +52,7 @@ export class GameLogicService {
     for (const empire of empires) { // NB: cannot be indexed because some members may not have empires (spectators)
       const member = members.find(m => empire.user.equals(m.user));
       const homeSystem = this.selectHomeSystem(systems, homeSystems);
-
-      homeSystem.owner = empire._id;
-      homeSystem.population = empire.resources.population;
-      homeSystem.upgrade = 'upgraded';
-      homeSystem.capacity *= SYSTEM_UPGRADES.upgraded.capacity_multiplier;
-      homeSystem.health = SYSTEM_UPGRADES.upgraded.health;
-      if (member?.empire?.homeSystem) {
-        homeSystem.type = member.empire.homeSystem;
-      }
-      this.systemLogicService.generateDistricts(homeSystem, empire);
-
-      // every home system starts with 15 districts
-      this.generateDistricts(homeSystem);
-
-      // plus 8 buildings, so 23 jobs in total
-      homeSystem.buildings = HOMESYSTEM_BUILDINGS;
-
-      const totalJobs = Object.values(homeSystem.districts).sum() + homeSystem.buildings.length;
-      if (homeSystem.capacity < totalJobs) {
-        homeSystem.capacity = totalJobs;
-      }
-
-      // then 3 pops will be unemployed initially.
-      empire.homeSystem = homeSystem._id;
+      this.initHomeSystem(homeSystem, empire, member);
     }
 
     const fleets = await this.fleetService.generateFleets(empires);
@@ -97,6 +75,32 @@ export class GameLogicService {
       );
     homeSystems.add(homeSystem._id.toString());
     return homeSystem;
+  }
+
+  private initHomeSystem(homeSystem: SystemDocument, empire: EmpireDocument, member?: Member) {
+    homeSystem.owner = empire._id;
+    homeSystem.population = empire.resources.population;
+    homeSystem.upgrade = 'upgraded';
+    homeSystem.capacity *= SYSTEM_UPGRADES.upgraded.capacity_multiplier;
+    homeSystem.health = SYSTEM_UPGRADES.upgraded.health;
+    if (member?.empire?.homeSystem) {
+      homeSystem.type = member.empire.homeSystem;
+    }
+    this.systemLogicService.generateDistricts(homeSystem, empire);
+
+    // every home system starts with 15 districts
+    this.generateDistricts(homeSystem);
+
+    // plus 8 buildings, so 23 jobs in total
+    homeSystem.buildings = HOMESYSTEM_BUILDINGS;
+
+    const totalJobs = Object.values(homeSystem.districts).sum() + homeSystem.buildings.length;
+    if (homeSystem.capacity < totalJobs) {
+      homeSystem.capacity = totalJobs;
+    }
+
+    // then 3 pops will be unemployed initially.
+    empire.homeSystem = homeSystem._id;
   }
 
   private generateDistricts(homeSystem: SystemDocument) {
