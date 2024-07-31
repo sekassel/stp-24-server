@@ -7,7 +7,7 @@ import {SystemDocument} from '../system/system.schema';
 import {SHIP_TYPES, ShipTypeName} from '../game-logic/ships';
 import {FleetService} from '../fleet/fleet.service';
 import {JobDocument} from '../job/job.schema';
-import {FleetDocument} from '../fleet/fleet.schema';
+import {Fleet} from '../fleet/fleet.schema';
 import {GlobalSchema} from '../util/schema';
 
 @Injectable()
@@ -48,7 +48,7 @@ export class ShipService extends MongooseRepository<Ship> {
     }
   }
 
-  async createShips(fleets: FleetDocument[]): Promise<ShipDocument[]> {
+  async createShips(fleets: Fleet[]): Promise<ShipDocument[]> {
     return this.createMany(fleets.flatMap(fleet => Object.entries(fleet.size).flatMap(([type, count]) => {
       const shipType = type as ShipTypeName;
       return Array.from({length: count}, () => this.createShip(fleet._id, fleet.empire!, shipType, fleet.game));

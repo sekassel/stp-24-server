@@ -34,6 +34,7 @@ import {EmpireService} from '../empire/empire.service';
 import {User} from '../user/user.schema';
 import {SystemService} from '../system/system.service';
 import {EmpireDocument} from '../empire/empire.schema';
+import {GameService} from '../game/game.service';
 
 @Controller('games/:game/fleets')
 @ApiTags('Fleets')
@@ -41,6 +42,7 @@ import {EmpireDocument} from '../empire/empire.schema';
 @Throttled()
 export class FleetController {
   constructor(
+    private readonly gameService: GameService,
     private readonly fleetService: FleetService,
     private readonly empireService: EmpireService,
     private readonly systemService: SystemService,
@@ -54,10 +56,17 @@ export class FleetController {
   @ApiForbiddenResponse({description: 'You don\'t have an empire in this game.'})
   @ApiConflictResponse()
   @NotFound()
+  @ApiQuery({
+    name: 'ships',
+    description: 'Immediately populate the fleet with ships (for crises, only available to game owner)',
+    required: false,
+    type: Boolean,
+  })
   async createFleet(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Body() createFleetDto: CreateFleetDto,
     @AuthUser() user: User,
+    @Query('ships', new ParseBoolPipe({optional: true})) createShips?: boolean,
   ): Promise<Fleet | null> {
     const empire = await this.checkUserAccess(game, user);
     const system = await this.systemService.find(createFleetDto.location);
@@ -70,7 +79,15 @@ export class FleetController {
     if (!system.buildings.includes('shipyard')) {
       throw new ForbiddenException('The fleet must be built in a system with a shipyard building.');
     }
-    return this.fleetService.create({...createFleetDto, game, empire: empire._id, ships: 0});
+    let ships = 0;
+    if (createShips) {
+      const gameDoc = await this.gameService.find(game) ?? notFound(`Game ${game}`);
+      if (!gameDoc.owner.equals(user._id)) {
+        throw new ForbiddenException('Only the game owner can create ships for crises.');
+      }
+      ships = Object.values(createFleetDto.size).sum();
+    }
+    return this.fleetService.create({...createFleetDto, game, empire: empire._id, ships});
   }
 
   @Get()

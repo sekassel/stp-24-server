@@ -6,10 +6,12 @@ import {Fleet, FleetSchema} from './fleet.schema';
 import {FleetController} from './fleet.controller';
 import {EmpireModule} from '../empire/empire.module';
 import {SystemModule} from '../system/system.module';
+import {GameModule} from '../game/game.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{name: Fleet.name, schema: FleetSchema}]),
+    GameModule,
     EmpireModule,
     SystemModule,
   ],

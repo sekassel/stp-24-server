@@ -10,6 +10,13 @@ export class ShipHandler {
   ) {
   }
 
+  @OnEvent('games.*.fleets.*.created')
+  async onFleetCreated(fleet: Fleet): Promise<void> {
+    if (fleet.ships) { // this means the fleet was created with ships (crisis)
+      await this.shipService.createShips([fleet]);
+    }
+  }
+
   @OnEvent('games.*.fleets.*.deleted')
   async onFleetDeleted(fleet: Fleet): Promise<void> {
     await this.shipService.deleteMany({fleet: fleet._id});
