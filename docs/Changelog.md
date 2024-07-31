@@ -184,7 +184,7 @@
 * The tech tree now shows which technologies are superseded by others.
 
 ## Bugfixes
-* Fixed some situations where systems may not be connected to the rest of the map.
+* Fixed some situations where systems may not be connected to the rest of the map. [#21](https://github.com/sekassel/stp-24-server-tracker/issues/21)
 
 ## Removals
 - Removed the technology cost reduction when the user has already unlocked the technology in a previous game.
@@ -215,7 +215,7 @@
 
 ## New Features
 
-+ Added the `free` query parameter to the `PATCH .../empires/:empire` endpoint for directly manipulating resources without affecting credits.
++ Added the `free` query parameter to the `PATCH .../empires/:empire` endpoint for directly manipulating resources without affecting credits. [#24](https://github.com/sekassel/stp-24-server-tracker/issues/24)
 
 ## Improvements
 
@@ -314,3 +314,11 @@
 
 * Fixed some cases where fleets would not end up in the destination system after traveling.
 * Fixed a `500 Internal Server Error` when upgrading a (colonized) system without a colonizer.
+
+# v4.1.1
+
+## Bugfixes
+
+* Home systems now start at full health.
+* Systems can now heal up to their maximum health. [#28](https://github.com/sekassel/stp-24-server-tracker/issues/28)
+* Empires can no longer start with `uninhabitable_*` home systems.
