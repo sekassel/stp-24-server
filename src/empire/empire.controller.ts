@@ -1,15 +1,24 @@
-import {Body, Controller, ForbiddenException, Get, Param, ParseBoolPipe, Patch, Query} from '@nestjs/common';
-import {ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags, refs} from '@nestjs/swagger';
+import {Body, Controller, ForbiddenException, Get, Param, ParseBoolPipe, Patch, Post, Query} from '@nestjs/common';
+import {
+  ApiCreatedResponse,
+  ApiForbiddenResponse, ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+  refs,
+} from '@nestjs/swagger';
 import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
 import {Throttled} from '../util/throttled.decorator';
 import {Validated} from '../util/validated.decorator';
-import {ReadEmpireDto, UpdateEmpireDto} from './empire.dto';
+import {CreateEmpireDto, ReadEmpireDto, UpdateEmpireDto} from './empire.dto';
 import {Empire} from './empire.schema';
 import {EmpireService} from './empire.service';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {MemberService} from '../member/member.service';
+import {GameService} from '../game/game.service';
 
 @Controller('games/:game/empires')
 @ApiTags('Game Empires')
@@ -18,9 +27,30 @@ import {MemberService} from '../member/member.service';
 @Throttled()
 export class EmpireController {
   constructor(
+    private readonly gameService: GameService,
     private readonly memberService: MemberService,
     private readonly empireService: EmpireService,
   ) {
+  }
+
+  @Post()
+  @ApiCreatedResponse({type: Empire})
+  @ApiNotFoundResponse({description: 'Game not found.'})
+  @ApiForbiddenResponse({description: 'Only the game owner can create empires.'})
+  async create(
+    @Param('game', ObjectIdPipe) game: Types.ObjectId,
+    @Body() dto: CreateEmpireDto,
+    @AuthUser() currentUser: User,
+  ): Promise<Empire> {
+    const gameDoc = await this.gameService.find(game) ?? notFound(`Game ${game}`);
+    if (!gameDoc.owner.equals(currentUser._id)) {
+      throw new ForbiddenException('Only the game owner can create empires.');
+    }
+    return this.empireService.create({
+      ...dto,
+      game,
+      user: currentUser._id,
+    });
   }
 
   @Get()
