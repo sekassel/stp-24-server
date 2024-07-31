@@ -52,7 +52,8 @@ export class GameLogicService {
     for (const empire of empires) { // NB: cannot be indexed because some members may not have empires (spectators)
       const member = members.find(m => empire.user.equals(m.user));
       const homeSystem = this.selectHomeSystem(systems, homeSystems);
-      this.initHomeSystem(homeSystem, empire, member);
+      this.systemLogicService.initHomeSystem(homeSystem, empire, member);
+      empire.homeSystem = homeSystem._id;
     }
 
     const fleets = await this.fleetService.generateFleets(empires);
@@ -75,43 +76,6 @@ export class GameLogicService {
       );
     homeSystems.add(homeSystem._id.toString());
     return homeSystem;
-  }
-
-  private initHomeSystem(homeSystem: SystemDocument, empire: EmpireDocument, member?: Member) {
-    homeSystem.owner = empire._id;
-    homeSystem.population = empire.resources.population;
-    homeSystem.upgrade = 'upgraded';
-    homeSystem.capacity *= SYSTEM_UPGRADES.upgraded.capacity_multiplier;
-    homeSystem.health = SYSTEM_UPGRADES.upgraded.health;
-    if (member?.empire?.homeSystem) {
-      homeSystem.type = member.empire.homeSystem;
-    }
-    this.systemLogicService.generateDistricts(homeSystem, empire);
-
-    // every home system starts with 15 districts
-    this.generateDistricts(homeSystem);
-
-    // plus 8 buildings, so 23 jobs in total
-    homeSystem.buildings = HOMESYSTEM_BUILDINGS;
-
-    const totalJobs = Object.values(homeSystem.districts).sum() + homeSystem.buildings.length;
-    if (homeSystem.capacity < totalJobs) {
-      homeSystem.capacity = totalJobs;
-    }
-
-    // then 3 pops will be unemployed initially.
-    empire.homeSystem = homeSystem._id;
-  }
-
-  private generateDistricts(homeSystem: SystemDocument) {
-    for (const district of HOMESYSTEM_DISTRICTS) {
-      homeSystem.districts[district] = HOMESYSTEM_DISTRICT_COUNT;
-      if (!homeSystem.districtSlots[district] || homeSystem.districtSlots[district]! < HOMESYSTEM_DISTRICT_COUNT) {
-        homeSystem.districtSlots[district] = HOMESYSTEM_DISTRICT_COUNT;
-        homeSystem.markModified('districtSlots');
-      }
-    }
-    homeSystem.markModified('districts');
   }
 
   async updateGame(game: Game) {

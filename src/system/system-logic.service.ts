@@ -13,6 +13,8 @@ import {AggregateResult} from '../game-logic/aggregates';
 import {FleetDocument} from '../fleet/fleet.schema';
 import {ShipDocument} from '../ship/ship.schema';
 import {SHIP_TYPES} from '../game-logic/ships';
+import {Member} from '../member/member.schema';
+import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from '../game-logic/constants';
 
 @Injectable()
 export class SystemLogicService {
@@ -20,6 +22,42 @@ export class SystemLogicService {
     // Keep injections to a minimum, this should be pure logic
     private readonly empireLogicService: EmpireLogicService,
   ) {
+  }
+
+  initHomeSystem(homeSystem: SystemDocument, empire: Empire, member?: Member) {
+    homeSystem.owner = empire._id;
+    homeSystem.population = empire.resources.population;
+    homeSystem.upgrade = 'upgraded';
+    homeSystem.capacity *= SYSTEM_UPGRADES.upgraded.capacity_multiplier;
+    homeSystem.health = SYSTEM_UPGRADES.upgraded.health;
+    if (member?.empire?.homeSystem) {
+      homeSystem.type = member.empire.homeSystem;
+    }
+    this.generateDistrictSlots(homeSystem, empire);
+
+    // every home system starts with 15 districts
+    this.generateDistricts(homeSystem);
+
+    // plus 8 buildings, so 23 jobs in total
+    homeSystem.buildings = HOMESYSTEM_BUILDINGS;
+
+    const totalJobs = Object.values(homeSystem.districts).sum() + homeSystem.buildings.length;
+    if (homeSystem.capacity < totalJobs) {
+      homeSystem.capacity = totalJobs;
+    }
+
+    // then 3 pops will be unemployed initially.
+  }
+
+  private generateDistricts(homeSystem: SystemDocument) {
+    for (const district of HOMESYSTEM_DISTRICTS) {
+      homeSystem.districts[district] = HOMESYSTEM_DISTRICT_COUNT;
+      if (!homeSystem.districtSlots[district] || homeSystem.districtSlots[district]! < HOMESYSTEM_DISTRICT_COUNT) {
+        homeSystem.districtSlots[district] = HOMESYSTEM_DISTRICT_COUNT;
+        homeSystem.markModified('districtSlots');
+      }
+    }
+    homeSystem.markModified('districts');
   }
 
   upgradeSystem(system: SystemDocument, empire: EmpireDocument) {
@@ -33,7 +71,7 @@ export class SystemLogicService {
 
     switch (upgrade) {
       case 'explored':
-        this.generateDistricts(system, empire);
+        this.generateDistrictSlots(system, empire);
         break;
       case 'colonized':
         system.owner = empire._id;
@@ -42,7 +80,7 @@ export class SystemLogicService {
     }
   }
 
-  generateDistricts(system: SystemDocument, empire: Empire) {
+  generateDistrictSlots(system: SystemDocument, empire: Empire) {
     // Set slots for generic districts to capacity
     const nDistricts = Math.floor(SYSTEM_TYPES[system.type].district_percentage * system.capacity);
     if (!nDistricts) {
