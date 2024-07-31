@@ -25,7 +25,7 @@ import {ShipService} from './ship.service';
 import {ReadShipDto, UpdateShipDto} from './ship.dto';
 import {User} from '../user/user.schema';
 import {Auth, AuthUser} from '../auth/auth.decorator';
-import {NotFound, ObjectIdPipe} from '@mean-stream/nestx';
+import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {Ship, ShipDocument} from './ship.schema';
 import {EmpireDocument} from '../empire/empire.schema';
@@ -59,13 +59,12 @@ export class ShipController {
   async getFleetShips(
     @AuthUser() user: User,
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
-    @Param('fleet', ObjectIdPipe) fleetId: Types.ObjectId,
+    @Param('fleet', ObjectIdPipe) fleet: Types.ObjectId,
     @Query('type') type?: ShipTypeName,
   ): Promise<ReadShipDto[] | Ship[]> {
-    const fleet = await this.getFleet(fleetId);
-    const ships = await this.shipService.findAll({fleet: fleet._id, type});
-    const empire = await this.empireService.findOne({game, user: user._id});
-    return this.checkUserAccess(fleet, empire) ? ships : ships.map(ship => this.toReadShipDto(ship.toObject()));
+    const isOwner = await this.hasUserAccess(game, fleet, user);
+    const ships = await this.shipService.findAll({game, fleet, type});
+    return isOwner ? ships : ships.map(ship => this.toReadShipDto(ship.toObject()));
   }
 
   @Get(':id')
@@ -74,14 +73,13 @@ export class ShipController {
   @NotFound('Ship not found.')
   async getFleetShip(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
-    @Param('fleet', ObjectIdPipe) fleetId: Types.ObjectId,
+    @Param('fleet', ObjectIdPipe) fleet: Types.ObjectId,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
-  ): Promise<ReadShipDto | Ship> {
-    const fleet = await this.getFleet(fleetId);
-    const ship = await this.getShip(id, fleet._id);
-    const empire = await this.empireService.findOne({game, user: user._id});
-    return this.checkUserAccess(fleet, empire) ? ship : this.toReadShipDto(ship.toObject());
+  ): Promise<ReadShipDto | Ship | null> {
+    const isOwner = await this.hasUserAccess(game, fleet, user);
+    const ship = await this.shipService.findOne({game, fleet, _id: id});
+    return !ship || isOwner ? ship : this.toReadShipDto(ship.toObject());
   }
 
   @Patch(':id')
@@ -92,19 +90,17 @@ export class ShipController {
   @ApiConflictResponse({description: 'Both fleets need to be in the same location to transfer ships.'})
   async updateFleetShip(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
-    @Param('fleet', ObjectIdPipe) fleetId: Types.ObjectId,
+    @Param('fleet', ObjectIdPipe) fleet: Types.ObjectId,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() updateShipDto: UpdateShipDto,
     @AuthUser() user: User,
   ): Promise<Ship | null> {
-    const fleet = await this.getFleet(fleetId);
-    const ship = await this.getShip(id, fleet._id);
-    await this.getUserEmpireAccess(game, user, ship);
+    await this.checkUserAccess(game, fleet, user);
 
     // Change fleet if in same system
-    if (updateShipDto.fleet && !updateShipDto.fleet.equals(ship.fleet)) {
+    if (updateShipDto.fleet && !updateShipDto.fleet.equals(fleet)) {
       const newFleet = await this.fleetService.find(updateShipDto.fleet, {game});
-      const currentFleet = await this.fleetService.find(ship.fleet, {game});
+      const currentFleet = await this.fleetService.find(fleet, {game});
 
       if (!newFleet || !currentFleet) {
         throw new NotFoundException('Fleet not found.');
@@ -114,7 +110,7 @@ export class ShipController {
         throw new ConflictException('Both fleets need to be in the same location to transfer ships.');
       }
     }
-    return this.shipService.update(id, updateShipDto);
+    return this.shipService.updateOne({game, fleet, _id: id}, updateShipDto);
   }
 
   @Delete(':id')
@@ -124,44 +120,28 @@ export class ShipController {
   @ApiForbiddenResponse({description: 'You do not own this ship.'})
   async deleteFleetShip(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
-    @Param('fleet', ObjectIdPipe) fleetId: Types.ObjectId,
+    @Param('fleet', ObjectIdPipe) fleet: Types.ObjectId,
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<Ship | null> {
-    const fleet = await this.getFleet(fleetId);
-    await this.getUserEmpireAccess(game, user, await this.getShip(id, fleet._id));
-    return this.shipService.delete(id);
+    await this.checkUserAccess(game, fleet, user);
+    return this.shipService.deleteOne({game, fleet, _id: id});
   }
 
-  private async getFleet(fleetId: Types.ObjectId): Promise<FleetDocument> {
-    const fleet = await this.fleetService.find(fleetId);
-    if (!fleet) {
-      throw new NotFoundException('Fleet not found.');
-    }
-    return fleet;
-  }
-
-  private async getUserEmpireAccess(game: Types.ObjectId, user: User, ship: ShipDocument): Promise<EmpireDocument> {
-    const userEmpire = await this.empireService.findOne({game, user: user._id});
-    if (!userEmpire || !ship.empire?.equals(userEmpire._id)) {
-      throw new ForbiddenException('You do not own this ship.');
-    }
-    return userEmpire;
-  }
-
-  private async getShip(id: Types.ObjectId, fleetId: Types.ObjectId): Promise<ShipDocument> {
-    const ship = await this.shipService.find(id, {fleet: fleetId});
-    if (!ship) {
-      throw new NotFoundException('Ship not found.');
-    }
-    return ship;
-  }
-
-  private checkUserAccess(fleet: FleetDocument, empire: EmpireDocument | null): boolean {
-    if (!empire || !fleet.empire) {
+  private async hasUserAccess(game: Types.ObjectId, fleet: Types.ObjectId, user: User): Promise<boolean> {
+    const fleetDoc = await this.fleetService.findOne({game, _id: fleet}, {projection: 'empire'}) ?? notFound(`Fleet ${fleet} not found`);
+    if (!fleetDoc.empire) {
       return false;
     }
-    return fleet.empire.equals(empire._id);
+    const empire = await this.empireService.find(fleetDoc.empire, {projection: 'user'}) ?? notFound(`Empire ${fleetDoc.empire} not found`);
+    return user._id.equals(empire.user);
+  }
+
+  private async checkUserAccess(game: Types.ObjectId, fleet: Types.ObjectId, user: User): Promise<void> {
+    const isOwner = await this.hasUserAccess(game, fleet, user);
+    if (!isOwner) {
+      throw new ForbiddenException('You do not own this fleet.');
+    }
   }
 
   private toReadShipDto(ship: Ship): ReadShipDto {
