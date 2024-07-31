@@ -8,6 +8,7 @@ export class CreateFleetDto extends OmitType(Fleet, [
   'empire',
   'createdAt',
   'updatedAt',
+  'ships',
 ] as const) {}
 
 export class ReadFleetDto extends OmitType(Fleet, [

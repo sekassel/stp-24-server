@@ -30,6 +30,7 @@ export class FleetService extends MongooseRepository<Fleet> {
         game: empire.game,
         location: empire.homeSystem!,
         name: 'Explorer',
+        ships: 1,
         size: {
           explorer: 1,
         },
@@ -39,6 +40,7 @@ export class FleetService extends MongooseRepository<Fleet> {
         game: empire.game,
         location: empire.homeSystem!,
         name: '1st Fleet',
+        ships: 3,
         size: {
           fighter: 3,
         },
@@ -64,6 +66,7 @@ export class FleetService extends MongooseRepository<Fleet> {
         location: system._id,
         name: 'Rogue Fleet',
         size,
+        ships: shipCount,
       });
     }));
   }

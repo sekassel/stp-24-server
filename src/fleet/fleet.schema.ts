@@ -1,7 +1,7 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {Document, Types} from 'mongoose';
+import {Document, Types, VirtualPathFunctions} from 'mongoose';
 import {GLOBAL_SCHEMA_OPTIONS, GlobalSchema} from '../util/schema';
-import {IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested} from 'class-validator';
+import {IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, ValidateNested} from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {OptionalRef, Ref} from '@mean-stream/nestx';
 import {EffectSource} from '../game-logic/types';
@@ -10,7 +10,19 @@ import {Type} from 'class-transformer';
 
 export type FleetDocument = Fleet & Document<Types.ObjectId>;
 
-@Schema(GLOBAL_SCHEMA_OPTIONS)
+@Schema({
+  ...GLOBAL_SCHEMA_OPTIONS,
+  virtuals: {
+    ships: {
+      options: {
+        ref: 'Ship',
+        localField: '_id',
+        foreignField: 'fleet',
+        count: true,
+      },
+    } satisfies VirtualPathFunctions,
+  }
+})
 export class Fleet extends GlobalSchema {
   @Ref('Game')
   game: Types.ObjectId;
@@ -28,6 +40,12 @@ export class Fleet extends GlobalSchema {
   @Ref('System')
   @ApiProperty({description: 'ID of the system the fleet is currently stationed at.'})
   location: Types.ObjectId;
+
+  @ApiProperty({
+    description: 'The actual number of ships in this fleet.',
+  })
+  @IsNumber()
+  ships: number;
 
   @Prop({type: Object})
   @ApiProperty({

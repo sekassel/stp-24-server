@@ -7,6 +7,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseBoolPipe,
   Patch,
   Post,
   Query,
@@ -25,7 +26,7 @@ import {Validated} from '../util/validated.decorator';
 import {Throttled} from '../util/throttled.decorator';
 import {FleetService} from './fleet.service';
 import {Auth, AuthUser} from '../auth/auth.decorator';
-import {NotFound, ObjectIdPipe, OptionalObjectIdPipe} from '@mean-stream/nestx';
+import {notFound, NotFound, ObjectIdPipe, OptionalObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
 import {CreateFleetDto, ReadFleetDto, UpdateFleetDto} from './fleet.dto';
 import {Fleet} from './fleet.schema';
@@ -69,7 +70,7 @@ export class FleetController {
     if (!system.buildings.includes('shipyard')) {
       throw new ForbiddenException('The fleet must be built in a system with a shipyard building.');
     }
-    return this.fleetService.create({...createFleetDto, game, empire: empire._id});
+    return this.fleetService.create({...createFleetDto, game, empire: empire._id, ships: 0});
   }
 
   @Get()
@@ -82,15 +83,23 @@ export class FleetController {
     required: false,
     type: String,
   })
+  @ApiQuery({
+    name: 'ships',
+    description: 'Count number of actual ships in the fleet',
+    required: false,
+    type: Boolean,
+  })
   async getFleets(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,
     @Query('empire', OptionalObjectIdPipe) empire?: Types.ObjectId | undefined,
+    @Query('ships', new ParseBoolPipe({optional: true})) ships?: boolean,
   ): Promise<ReadFleetDto[]> {
     const fleets = await this.fleetService.findAll(empire ? {game, empire} : {game}, {
       projection: {
         effects: 0,
         _private: 0
-      }
+      },
+      populate: ships ? 'ships' : undefined,
     });
     return fleets.map(fleet => this.toReadFleetDto(fleet.toObject()));
   }
@@ -104,10 +113,7 @@ export class FleetController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @AuthUser() user: User,
   ): Promise<ReadFleetDto | Fleet> {
-    const fleet = await this.fleetService.find(id, {game});
-    if (!fleet) {
-      throw new NotFoundException('Fleet not found.');
-    }
+    const fleet = await this.fleetService.find(id, {populate: 'ships'}) ?? notFound(`Fleet ${id}`);
     const empire = await this.empireService.findOne({game, user: user._id});
     if (!empire || fleet.empire != empire._id) {
       return this.toReadFleetDto(fleet.toObject());
@@ -127,7 +133,7 @@ export class FleetController {
     @AuthUser() user: User,
   ): Promise<ReadFleetDto | null> {
     await this.checkFleetAccess(game, id, user);
-    return this.fleetService.update(id, updateFleetDto);
+    return this.fleetService.update(id, updateFleetDto, {populate: 'ships'});
   }
 
   @Delete(':id')
@@ -141,14 +147,11 @@ export class FleetController {
     @AuthUser() user: User,
   ): Promise<ReadFleetDto | null> {
     await this.checkFleetAccess(game, id, user);
-    return this.fleetService.delete(id);
+    return this.fleetService.delete(id, {populate: 'ships'});
   }
 
   private async checkFleetAccess(game: Types.ObjectId, id: Types.ObjectId, user: User): Promise<Fleet> {
-    const fleet = await this.fleetService.find(id, {game});
-    if (!fleet) {
-      throw new NotFoundException('Fleet not found.');
-    }
+    const fleet = await this.fleetService.find(id) ?? notFound(`Fleet ${id}`);
     const empire = await this.checkUserAccess(game, user);
     if (!fleet.empire || !fleet.empire.equals(empire._id)) {
       throw new ForbiddenException('You don\'t own this fleet.');
