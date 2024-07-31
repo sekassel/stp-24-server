@@ -1,7 +1,7 @@
 import {ApiPropertyOptional, OmitType, PickType} from '@nestjs/swagger';
 import {Empire} from './empire.schema';
 import {Prop} from '@nestjs/mongoose';
-import {SYSTEM_TYPES, SystemTypeName} from '../game-logic/system-types';
+import {INHABITABLE_SYSTEM_TYPES, SystemTypeName} from '../game-logic/system-types';
 import {IsIn, IsOptional} from 'class-validator';
 import {PartialType} from '../util/partial-type';
 import {RESOURCES_SCHEMA_PROPERTIES} from '../game-logic/types';
@@ -29,10 +29,10 @@ export class EmpireTemplate extends PickType(Empire, [
   @Prop({type: String})
   @ApiPropertyOptional({
     description: 'The type of home system for this empire. Random if not specified.',
-    enum: Object.keys(SYSTEM_TYPES),
+    enum: INHABITABLE_SYSTEM_TYPES,
   })
   @IsOptional()
-  @IsIn(Object.keys(SYSTEM_TYPES))
+  @IsIn(INHABITABLE_SYSTEM_TYPES)
   homeSystem?: SystemTypeName;
 }
 

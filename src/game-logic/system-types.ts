@@ -69,4 +69,5 @@ export const SYSTEM_TYPES = {
   },
 } as const satisfies Record<string, SystemType>;
 export const SYSTEM_TYPE_NAMES = Object.keys(SYSTEM_TYPES) as SystemTypeName[];
+export const INHABITABLE_SYSTEM_TYPES = SYSTEM_TYPE_NAMES.filter(s => !s.startsWith('uninhabitable_'));
 export type SystemTypeName = keyof typeof SYSTEM_TYPES;
