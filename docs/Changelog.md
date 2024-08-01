@@ -315,10 +315,25 @@
 * Fixed some cases where fleets would not end up in the destination system after traveling.
 * Fixed a `500 Internal Server Error` when upgrading a (colonized) system without a colonizer.
 
-# v4.1.1
+# v4.1.1 (2024-07-31)
 
 ## Bugfixes
 
 * Home systems now start at full health.
 * Systems can now heal up to their maximum health. [#28](https://github.com/sekassel/stp-24-server-tracker/issues/28)
 * Empires can no longer start with `uninhabitable_*` home systems.
+
+# v4.2.0 (2024-08-01)
+
+## New Features
++ Added the `ships` computed property to Fleets to count the number of actual ships (in endpoints that return one Fleet).
++ Added the `ships` query parameter to the `GET .../fleets` endpoint to enable computing `ships` in the list of Fleets.
++ Added the `ships` query parameter to the `POST .../fleets` endpoint to immediately spawn the ships specified by the Fleet size.
+  - Only the game owner can use this query parameter.
++ Added the `POST .../empires` endpoint to create a new empire.
+  - Only the game owner can use this endpoint.
+  - The new empire will be associated with the game owner's user.
+    This means a user may now have multiple empires in the same game.
+
+## Improvements
+* Adapted the access checks for systems, jobs, wars, fleets and ships to handle users with multiple empires in the same game.
