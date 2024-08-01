@@ -12,6 +12,8 @@ export type FleetDocument = Fleet & Document<Types.ObjectId>;
 
 @Schema({
   ...GLOBAL_SCHEMA_OPTIONS,
+  toJSON: {virtuals: true},
+  toObject: {virtuals: true},
   virtuals: {
     ships: {
       options: {
