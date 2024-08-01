@@ -5,7 +5,6 @@ import {
   Delete,
   ForbiddenException,
   Get,
-  NotFoundException,
   Param,
   ParseBoolPipe,
   Patch,
@@ -33,7 +32,6 @@ import {Fleet} from './fleet.schema';
 import {EmpireService} from '../empire/empire.service';
 import {User} from '../user/user.schema';
 import {SystemService} from '../system/system.service';
-import {EmpireDocument} from '../empire/empire.schema';
 import {GameService} from '../game/game.service';
 
 @Controller('games/:game/fleets')
@@ -53,8 +51,11 @@ export class FleetController {
   @Auth()
   @ApiOperation({description: 'Create a new fleet.'})
   @ApiCreatedResponse({type: Fleet})
-  @ApiForbiddenResponse({description: 'You don\'t have an empire in this game.'})
-  @ApiConflictResponse()
+  @ApiForbiddenResponse({
+    description: '- You can only build fleets in systems you own.\n' +
+      '- (if ships=true) Only the game owner can create ships for crises.',
+  })
+  @ApiConflictResponse({description: 'The fleet must be built in a system with a shipyard building.'})
   @NotFound()
   @ApiQuery({
     name: 'ships',
@@ -68,16 +69,16 @@ export class FleetController {
     @AuthUser() user: User,
     @Query('ships', new ParseBoolPipe({optional: true})) createShips?: boolean,
   ): Promise<Fleet | null> {
-    const empire = await this.checkUserAccess(game, user);
-    const system = await this.systemService.find(createFleetDto.location);
-    if (!system) {
-      throw new NotFoundException('System not found.');
+    const system = await this.systemService.find(createFleetDto.location) ?? notFound(`System ${createFleetDto.location}`);
+    if (!system.owner) {
+      throw new ForbiddenException('You can only build fleets in systems you own.');
     }
-    if (!system.owner?.equals(empire._id)) {
-      throw new ConflictException('You can only build fleets in systems you own.');
+    const empire = await this.empireService.find(system.owner) ?? notFound(`Empire ${system.owner}`);
+    if (!user._id.equals(empire.user)) {
+      throw new ForbiddenException('You can only build fleets in systems you own.');
     }
     if (!system.buildings.includes('shipyard')) {
-      throw new ForbiddenException('The fleet must be built in a system with a shipyard building.');
+      throw new ConflictException('The fleet must be built in a system with a shipyard building.');
     }
     let ships = 0;
     if (createShips) {
@@ -85,6 +86,8 @@ export class FleetController {
       if (!gameDoc.owner.equals(user._id)) {
         throw new ForbiddenException('Only the game owner can create ships for crises.');
       }
+      // The actual ships are created by ship.handler.ts,
+      // which detects the fleet created event and sees that the number is greater than 0.
       ships = Object.values(createFleetDto.size).sum();
     }
     return this.fleetService.create({...createFleetDto, game, empire: empire._id, ships});
@@ -131,11 +134,8 @@ export class FleetController {
     @AuthUser() user: User,
   ): Promise<ReadFleetDto | Fleet> {
     const fleet = await this.fleetService.find(id, {populate: 'ships'}) ?? notFound(`Fleet ${id}`);
-    const empire = await this.empireService.findOne({game, user: user._id});
-    if (!empire || fleet.empire != empire._id) {
-      return this.toReadFleetDto(fleet.toObject());
-    }
-    return fleet;
+    const empire = fleet.empire && await this.empireService.find(fleet.empire);
+    return empire?.user.equals(user._id) ? fleet : this.toReadFleetDto(fleet.toObject());
   }
 
   @Patch(':id')
@@ -167,21 +167,15 @@ export class FleetController {
     return this.fleetService.delete(id, {populate: 'ships'});
   }
 
-  private async checkFleetAccess(game: Types.ObjectId, id: Types.ObjectId, user: User): Promise<Fleet> {
+  async checkFleetAccess(game: Types.ObjectId, id: Types.ObjectId, user: User) {
     const fleet = await this.fleetService.find(id) ?? notFound(`Fleet ${id}`);
-    const empire = await this.checkUserAccess(game, user);
-    if (!fleet.empire || !fleet.empire.equals(empire._id)) {
-      throw new ForbiddenException('You don\'t own this fleet.');
+    if (!fleet.empire) {
+      throw new ForbiddenException('This fleet has no owner.');
     }
-    return fleet;
-  }
-
-  private async checkUserAccess(game: Types.ObjectId, user: User): Promise<EmpireDocument> {
-    const userEmpire = await this.empireService.findOne({game, user: user._id});
-    if (!userEmpire) {
-      throw new ForbiddenException('You don\'t have an empire in this game.');
+    const empire = await this.empireService.find(fleet.empire) ?? notFound(`Empire ${fleet.empire}`);
+    if (!empire.user.equals(user._id)) {
+      throw new ForbiddenException('You do not own this fleet.');
     }
-    return userEmpire;
   }
 
   private toReadFleetDto(fleet: Fleet): ReadFleetDto {
