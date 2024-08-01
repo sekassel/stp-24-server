@@ -16,31 +16,31 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   society: {
     id: 'society',
     tags: ['society'],
-    cost: 2,
+    cost: 1,
     effects: [
       {
         variable: 'technologies.society.cost_multiplier',
-        multiplier: 0.95,
+        multiplier: 0.9,
       },
       {
         variable: 'technologies.society.time_multiplier',
-        multiplier: 0.9,
+        multiplier: 0.8,
       },
     ],
   },
   demographic: {
     id: 'demographic',
-    tags: ['society'],
-    cost: 1,
+    tags: ['society', 'state'],
+    cost: 2,
     requires: ['society'],
     effects: [
       {
-        variable: 'technologies.society.cost_multiplier',
-        multiplier: 0.95,
+        variable: 'technologies.state.cost_multiplier',
+        multiplier: 0.9,
       },
       {
-        variable: 'technologies.society.time_multiplier',
-        multiplier: 0.9,
+        variable: 'technologies.state.time_multiplier',
+        multiplier: 0.8,
       },
     ],
   },
@@ -51,58 +51,58 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'technologies.physics.cost_multiplier',
-        multiplier: 0.95,
+        multiplier: 0.9,
       },
       {
         variable: 'technologies.physics.time_multiplier',
-        multiplier: 0.9,
+        multiplier: 0.8,
       },
     ],
   },
   engineering: {
     id: 'engineering',
     tags: ['engineering'],
-    cost: 2,
+    cost: 1,
     effects: [
       {
         variable: 'technologies.engineering.cost_multiplier',
-        multiplier: 0.95,
+        multiplier: 0.9,
       },
       {
         variable: 'technologies.engineering.time_multiplier',
-        multiplier: 0.9,
+        multiplier: 0.8,
       },
     ],
   },
   construction: {
     id: 'construction',
     tags: ['engineering', 'construction'],
-    cost: 1,
+    cost: 2,
     requires: ['engineering'],
     effects: [
       {
         variable: 'technologies.construction.cost_multiplier',
-        multiplier: 0.95,
+        multiplier: 0.9,
       },
       {
         variable: 'technologies.construction.time_multiplier',
-        multiplier: 0.9,
+        multiplier: 0.8,
       },
     ],
   },
   production: {
     id: 'production',
     tags: ['engineering', 'production'],
-    cost: 1,
+    cost: 2,
     requires: ['engineering'],
     effects: [
       {
         variable: 'technologies.production.cost_multiplier',
-        multiplier: 0.95,
+        multiplier: 0.9,
       },
       {
         variable: 'technologies.production.time_multiplier',
-        multiplier: 0.9,
+        multiplier: 0.8,
       },
     ],
   },
