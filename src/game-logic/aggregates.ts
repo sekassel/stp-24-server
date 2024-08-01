@@ -53,7 +53,9 @@ export const AGGREGATES: Record<string, AggregateFn> = {
     compute: (service, empire) => service.aggregateEconomy(empire),
   },
   'empire.compare.economy': {
-    description: 'Calculates the economy level of the empire compared to another empire as a logarithmic difference',
+    description: 'Calculates the economy level of the empire compared to another empire as a logarithmic difference.\n' +
+      'Precisely, the formula is `log2(compareResult / myResult)`.\n' +
+      'So a result of 1 means the other empire has twice the economy score, 2 means four times, etc., -1 means half, -2 means a quarter, etc.',
     params: {
       compare: 'The ID of the empire to compare to',
     },
@@ -64,7 +66,8 @@ export const AGGREGATES: Record<string, AggregateFn> = {
     compute: (service, empire) => service.aggregateMilitary(empire),
   },
   'empire.compare.military': {
-    description: 'Calculates the military level of the empire compared to another empire as a logarithmic difference',
+    description: 'Calculates the military level of the empire compared to another empire as a logarithmic difference. ' +
+      'See `empire.compare.economy` for details on the formula.',
     params: {
       compare: 'The ID of the empire to compare to',
     },
@@ -75,7 +78,8 @@ export const AGGREGATES: Record<string, AggregateFn> = {
     compute: (service, empire) => service.aggregateTechnology(empire),
   },
   'empire.compare.technology': {
-    description: 'Calculates the technology level of the empire compared to another empire as a logarithmic difference',
+    description: 'Calculates the technology level of the empire compared to another empire as a logarithmic difference. ' +
+      'See `empire.compare.economy` for details on the formula.',
     params: {
       compare: 'The ID of the empire to compare to',
     },
