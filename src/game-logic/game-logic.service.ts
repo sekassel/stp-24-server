@@ -269,6 +269,9 @@ export class GameLogicService {
     if (system.health < maxHealth) {
       const healingRate = 0.1;
       system.health = Math.min(maxHealth, system.health + healingRate * maxHealth);
+    } else if (system.health > maxHealth) {
+      // Correct system health. May happen if fortresses are destroyed.
+      system.health = maxHealth;
     }
   }
 
