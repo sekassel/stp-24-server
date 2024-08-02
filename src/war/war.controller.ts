@@ -133,7 +133,7 @@ export class WarController {
 
   private async checkWarAccess(war: War | CreateWarDto, user: User) {
     const attackerEmpire = await this.empireService.find(war.attacker, {projection: 'user'}) ?? notFound(`Attacker empire ${war.attacker} not found.`);
-    if (user._id.equals(attackerEmpire.user)) {
+    if (!user._id.equals(attackerEmpire.user)) {
       throw new ForbiddenException('You are not the attacker in this war.');
     }
   }
