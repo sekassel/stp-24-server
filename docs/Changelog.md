@@ -337,3 +337,18 @@
 
 ## Improvements
 * Adapted the access checks for systems, jobs, wars, fleets and ships to handle users with multiple empires in the same game.
+
+# v4.2.1 (2024-08-02)
+
+## Balancing
+* Adjusted the base research time and buffed the techs that reduce the research time for specific tags.
+
+## Bugfixes
+* After removing a fortress, the system health decreases back to the new maximum health in the next period.
+* Creating a `type=ship` Job without setting a `system` now produces a `400 Bad Request` error.
+* War declaration now correctly checks if the user is the attacker (and no longer allows declaring wars for other empires). 
+
+## Documentation
+* Explained the `empire.compare.*` aggregates more clearly.
+* Documented the required `system` property for `type=ship` Jobs.
+* Documented the behavior of WebSocket events for computed properties like `Game.members` and `Fleet.ships`.
