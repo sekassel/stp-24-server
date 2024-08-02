@@ -35,10 +35,10 @@ export class Job extends GlobalSchema {
 
   @Prop({type: Types.ObjectId, ref: 'System', required: false})
   @ApiPropertyOptional({
-    description: 'System ID for the job. Required for type=building, type=district, type=upgrade.',
+    description: 'System ID for the job. Required for type=building, type=district, type=upgrade and type=ship.',
     ...MONGO_ID_FORMAT,
   })
-  @ValidateIf((job, value) => value || job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE)
+  @ValidateIf((job, value) => value || job.type === JobType.BUILDING || job.type === JobType.DISTRICT || job.type === JobType.UPGRADE || job.type === JobType.SHIP)
   @AsObjectId()
   system?: Types.ObjectId;
 
