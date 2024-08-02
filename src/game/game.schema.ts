@@ -59,7 +59,7 @@ export class Game extends GlobalSchema {
   owner: Types.ObjectId;
 
   @ApiProperty({
-    description: 'The number of members in the game.',
+    description: '(Computed property) The number of members in the game.',
     type: 'integer',
     readOnly: true,
   })

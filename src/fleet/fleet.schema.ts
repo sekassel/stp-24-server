@@ -44,7 +44,8 @@ export class Fleet extends GlobalSchema {
   location: Types.ObjectId;
 
   @ApiProperty({
-    description: 'The actual number of ships in this fleet.',
+    description: '(Computed property) The actual number of ships in this fleet.',
+    readOnly: true,
   })
   @IsNumber()
   ships: number;
