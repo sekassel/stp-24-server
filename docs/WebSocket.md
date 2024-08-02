@@ -62,13 +62,14 @@ However, the payload within the `data` field may contain any JSON value, not jus
 The following table shows which events may be sent.
 Some events are only visible to certain users for privacy reasons.
 
-| Event Name                                                                 | Payload                                                                          | Visible to          | Note                                                  |
-|----------------------------------------------------------------------------|----------------------------------------------------------------------------------|---------------------|-------------------------------------------------------|
+| Event Name                                                                 | Payload                                                                          | Visible to          | Note                                                   |
+|----------------------------------------------------------------------------|----------------------------------------------------------------------------------|---------------------|--------------------------------------------------------|
 | `users.<userId>.{created,updated,deleted}`<sup>1, 2</sup>                  | [`User`](#model-User)                                                            | Everyone            |
 | `users.<userId>.achievements.<id>.{created,updated,deleted}`               | [`Achievement`](#model-Achievement)                                              | Everyone            |
 | `users.<from>.friends.<to>.{created,updated,deleted}`                      | [`Friend`](#model-Friend)                                                        | `from` or `to` User |
 | `games.<gameId>.{created,updated,deleted}`                                 | [`Game`](#model-Game)<sup>4</sup>                                                | Everyone            |
-| `games.<gameId>.ticked`                                                    | [`Game`](#model-Game)                                                            | Everyone            | Sent when ticking the game, after the `updated` event |
+| `games.<gameId>.started`                                                   | [`Game`](#model-Game)                                                            | Everyone            | Sent when starting the game, after the `updated` event |
+| `games.<gameId>.ticked`                                                    | [`Game`](#model-Game)                                                            | Everyone            | Sent when ticking the game, after the `updated` event  |
 | `games.<gameId>.members.<userId>.{created,updated,deleted}`                | [`Member`](#model-Member)                                                        | Everyone            |
 | `games.<gameId>.systems.<systemId>.{created,updated,deleted}`              | [`System`](#model-System)                                                        | Game Members        |
 | `games.<gameId>.empires.<empireId>.{created,updated,deleted}`              | [`Empire`](#model-Empire) or [`ReadEmpireDto`](#model-ReadEmpireDto)<sup>3</sup> | Game Members        |

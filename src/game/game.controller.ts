@@ -105,6 +105,7 @@ export class GameController {
     const result = await this.gameService.update(id, dto, {populate: 'members'});
     if (result && !existing.started && result.started) {
       await this.gameLogicService.startGame(result);
+      this.gameService.emit('started', result);
     }
     if (tick && result) {
       await this.gameLogicService.updateGame(result);
