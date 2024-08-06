@@ -56,11 +56,9 @@ export class GameLogicService {
       empire.homeSystem = homeSystem._id;
     }
 
-    const fleets = await this.fleetService.generateFleets(empires);
-    await this.shipService.createShips(fleets);
-
-    const rogueFleets = await this.fleetService.generateRogueFleets(game, systems.filter(s => !homeSystems.has(s._id.toString())));
-    await this.shipService.createShips(rogueFleets);
+    // Create fleets (ships are spawned automatically due to the fleet created handler
+    await this.fleetService.generateFleets(empires);
+    await this.fleetService.generateRogueFleets(game, systems.filter(s => !homeSystems.has(s._id.toString())));
 
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
