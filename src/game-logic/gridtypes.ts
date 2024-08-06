@@ -92,5 +92,5 @@ export const CIRCLE_GENERATOR = {
   radius_steps: 0.01,
   angle_steps: 100,
   radius_angle_percentage: 3,
-  collision_precision: 1.1, //The smaller the number the nearer the clusters are to each other
+  collision_precision: 1.2, //The smaller the number the nearer the clusters are to each other
 }
