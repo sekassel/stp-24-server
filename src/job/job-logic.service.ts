@@ -111,9 +111,13 @@ export class JobLogicService {
           throw new BadRequestException('Ship type and fleet id are required for this job type.');
         }
         const ship = SHIP_TYPES[dto.ship as ShipTypeName] ?? notFound(dto.ship as ShipTypeName);
+        const time = this.empireLogicService.getShipTime(empire, ship);
+        if (!time) {
+          throw new BadRequestException('This ship type is not unlocked yet (build_time=0).');
+        }
         return {
           ...this.empireLogicService.getShipCost(empire, ship),
-          time: this.empireLogicService.getShipTime(empire, ship),
+          time,
         };
       }
       case JobType.TRAVEL: {
