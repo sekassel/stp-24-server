@@ -693,7 +693,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_district_construction_1: {
     id: 'faster_district_construction_1',
     tags: ['engineering', 'construction'],
-    cost: 1,
+    cost: 2,
+    requires: ['district_specialization'],
     effects: [
       {
         variable: 'districts.mining.build_time',
@@ -712,7 +713,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_district_construction_2: {
     id: 'faster_district_construction_2',
     tags: ['engineering', 'construction'],
-    cost: 2,
+    cost: 3,
     requires: ['faster_district_construction_1'],
     effects: [
       {
@@ -728,7 +729,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_district_construction_3: {
     id: 'faster_district_construction_3',
     tags: ['engineering', 'construction'],
-    cost: 3,
+    cost: 4,
     requires: ['faster_district_construction_2'],
     effects: [
       {
@@ -800,7 +801,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     'improved_industry',
     ['engineering', 'production'],
     ['districts.industry.production.alloys', 'districts.industry.production.consumer_goods', 'districts.industry.production.fuel'],
-    {startCost: 1},
+    {startCost: 3},
+    ['district_production_increase'],
   ),
 
   /**
