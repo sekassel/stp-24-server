@@ -20,7 +20,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   more_colonists_1: {
     id: 'more_colonists_1',
     tags: ['society', 'biology'],
-    cost: 2,
+    cost: 1,
     precedes: ['more_colonists_2'],
     effects: [
       {
@@ -32,7 +32,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   more_colonists_2: {
     id: 'more_colonists_2',
     tags: ['society', 'biology'],
-    cost: 4,
+    cost: 2,
     precedes: ['more_colonists_3'],
     requires: ['more_colonists_1'],
     effects: [
@@ -45,7 +45,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   more_colonists_3: {
     id: 'more_colonists_3',
     tags: ['society', 'biology'],
-    cost: 8,
+    cost: 3,
     requires: ['more_colonists_2'],
     effects: [
       {
@@ -63,7 +63,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   cheap_claims_1: { // reduced system claim costs
     id: 'cheap_claims_1',
     tags: ['society', 'state'],
-    cost: 2,
+    cost: 1,
     effects: [
       {
         variable: 'systems.colonized.cost.energy',
@@ -78,7 +78,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   cheap_claims_2: { // reduced system upgrade costs
     id: 'cheap_claims_2',
     tags: ['society', 'state'],
-    cost: 4,
+    cost: 2,
     requires: ['cheap_claims_1'],
     effects: [
       {
@@ -94,7 +94,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   cheap_claims_3: { // reduced system development costs
     id: 'cheap_claims_3',
     tags: ['society', 'state'],
-    cost: 8,
+    cost: 3,
     requires: ['cheap_claims_2'],
     effects: [
       {
@@ -112,7 +112,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_systems_1: {
     id: 'efficient_systems_1',
     tags: ['physics', 'energy'],
-    cost: 4,
+    cost: 1,
     effects: [
       {
         variable: 'systems.colonized.upkeep.energy',
@@ -131,7 +131,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_systems_2: {
     id: 'efficient_systems_2',
     tags: ['physics', 'propulsion'],
-    cost: 8,
+    cost: 2,
     requires: ['efficient_systems_1'],
     effects: [
       {
@@ -151,7 +151,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_systems_3: {
     id: 'efficient_systems_3',
     tags: ['engineering', 'materials'],
-    cost: 8,
+    cost: 3,
     requires: ['efficient_systems_2'],
     effects: [
       {
@@ -171,7 +171,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_systems_4: {
     id: 'efficient_systems_4',
     tags: ['engineering', 'materials'],
-    cost: 8,
+    cost: 4,
     requires: ['efficient_systems_3'],
     effects: [
       {
@@ -193,8 +193,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   cheap_buildings_1: { // reduced basic building costs
     id: 'cheap_buildings_1',
     tags: ['engineering', 'construction'],
-    cost: 2,
-    precedes: ['cheap_buildings_2'],
+    cost: 1,
     effects: [
       {
         variable: 'buildings.power_plant.cost.minerals',
@@ -221,7 +220,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   cheap_buildings_2: { // reduced advanced building costs
     id: 'cheap_buildings_2',
     tags: ['engineering', 'construction'],
-    cost: 4,
+    cost: 2,
     requires: ['cheap_buildings_1'],
     effects: [
       {
@@ -245,7 +244,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   cheap_buildings_3: { // reduced advanced building costs
     id: 'cheap_buildings_3',
     tags: ['engineering', 'construction'],
-    cost: 4,
+    cost: 3,
     requires: ['cheap_buildings_2'],
     effects: [
       {
@@ -271,8 +270,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_buildings_1: { // reduced basic building energy upkeep
     id: 'efficient_buildings_1',
     tags: ['physics', 'energy'],
-    cost: 2,
-    precedes: ['efficient_buildings_2'],
+    cost: 1,
     effects: [
       {
         variable: 'buildings.mine.upkeep.energy',
@@ -295,7 +293,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_buildings_2: { // reduced advanced building energy upkeep
     id: 'efficient_buildings_2',
     tags: ['physics', 'energy'],
-    cost: 4,
+    cost: 2,
     requires: ['efficient_buildings_1'],
     effects: [
       {
@@ -331,7 +329,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_buildings_3: {
     id: 'efficient_buildings_3',
     tags: ['engineering', 'construction'],
-    cost: 8,
+    cost: 3,
     requires: ['efficient_buildings_2'],
     effects: [
       {
@@ -376,7 +374,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_building_construction_1: {
     id: 'faster_building_construction_1',
     tags: ['engineering', 'construction'],
-    cost: 2,
+    cost: 1,
     effects: [
       {
         variable: 'buildings.farm.build_time',
@@ -395,7 +393,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_building_construction_2: {
     id: 'faster_building_construction_2',
     tags: ['engineering', 'construction'],
-    cost: 4,
+    cost: 2,
     requires: ['faster_building_construction_1'],
     effects: [
       {
@@ -415,7 +413,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_building_construction_3: {
     id: 'faster_building_construction_3',
     tags: ['engineering', 'construction'],
-    cost: 8,
+    cost: 3,
     requires: ['faster_building_construction_2'],
     effects: [
       {
@@ -441,7 +439,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   improved_production_1: { // generally increased basic building production
     id: 'improved_production_1',
     tags: ['engineering', 'production'],
-    cost: 2,
+    cost: 1,
     precedes: ['improved_production_2'],
     effects: [
       {
@@ -469,7 +467,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   improved_production_2: { // further increased basic building production
     id: 'improved_production_2',
     tags: ['engineering', 'production'],
-    cost: 4,
+    cost: 2,
     requires: ['improved_production_1'],
     // NOT precedes: ["improved_production_3"], improved_production_3 switches to advanced buildings, so the basic buildings should still be improved
     effects: [
@@ -498,7 +496,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   improved_production_3: { // increased advanced building production
     id: 'improved_production_3',
     tags: ['engineering', 'production'],
-    cost: 8,
+    cost: 3,
     requires: ['improved_production_2'],
     precedes: ['improved_production_4'],
     effects: [
@@ -519,7 +517,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   improved_production_4: { // further increased advanced building production
     id: 'improved_production_4',
     tags: ['engineering', 'production'],
-    cost: 16,
+    cost: 4,
     requires: ['improved_production_3'],
     effects: [
       {
@@ -541,7 +539,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_resources_1: { // reduced basic building upkeep
     id: 'efficient_resources_1',
     tags: ['engineering', 'construction'],
-    cost: 2,
+    cost: 1,
     precedes: ['efficient_resources_2'],
     effects: [
       {
@@ -561,7 +559,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_resources_2: { // further reduced basic building upkeep
     id: 'efficient_resources_2',
     tags: ['engineering', 'construction'],
-    cost: 4,
+    cost: 2,
     requires: ['efficient_resources_1'],
     effects: [
       {
@@ -862,7 +860,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_district_construction_1: {
     id: 'faster_district_construction_1',
     tags: ['engineering', 'construction'],
-    cost: 2,
+    cost: 1,
     effects: [
       {
         variable: 'districts.mining.build_time',
@@ -881,7 +879,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_district_construction_2: {
     id: 'faster_district_construction_2',
     tags: ['engineering', 'construction'],
-    cost: 4,
+    cost: 2,
     requires: ['faster_district_construction_1'],
     effects: [
       {
@@ -897,7 +895,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_district_construction_3: {
     id: 'faster_district_construction_3',
     tags: ['engineering', 'construction'],
-    cost: 8,
+    cost: 3,
     requires: ['faster_district_construction_2'],
     effects: [
       {
@@ -1223,7 +1221,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   improved_industry_3: {
     id: 'improved_industry_3',
     tags: ['engineering', 'production'],
-    cost: 4,
+    cost: 3,
     requires: ['improved_industry_2'],
     effects: [
       {
@@ -2329,15 +2327,17 @@ generate_sequence('faster_colonized_system_upgrade', ['engineering', 'constructi
 generate_sequence('faster_upgraded_system_upgrade', ['engineering', 'construction'],
   'systems.upgraded.upgrade_time',
   {
+    startCost: 2,
     multiplierIncrement: -0.1,
     exponentialBase: 2,
-  }, ['faster_colonized_system_upgrade_3']);
+  }, ['faster_colonized_system_upgrade_1']);
 generate_sequence('faster_developed_system_upgrade', ['engineering', 'construction'],
   'systems.developed.upgrade_time',
   {
+    startCost: 3,
     multiplierIncrement: -0.1,
     exponentialBase: 2,
-  }, ['faster_upgraded_system_upgrade_3']);
+  }, ['faster_upgraded_system_upgrade_1']);
 
 // basic resources
 generate_sequence('energy_production', ['physics', 'energy'],
@@ -2512,7 +2512,7 @@ function generate_sequence(
 ) {
   for (let index = 1; index <= count; index++) {
     const exponential = exponentialBase ** (index - 1);
-    const cost = startCost * exponential;
+    const cost = startCost + (index - 1);
     const multiplier = 1 + multiplierIncrement * exponential;
     const id = base_id + '_' + index;
     TECHNOLOGIES[id] = {
