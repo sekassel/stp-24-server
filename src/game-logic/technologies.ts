@@ -16,6 +16,58 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * Pop Technologies
    ********************************************************************************************************************/
 
+  economy_specialization: {
+    id: 'economy_specialization',
+    tags: ['society', 'economy'],
+    cost: 1,
+    effects: [],
+  },
+
+  ...generate_sequence(
+    'unemployed_pop_cost',
+    ['society', 'state'],
+    'empire.pop.unemployed_upkeep.credits',
+    {startCost: 2, multiplierIncrement: -0.1},
+    ['economy_specialization'],
+  ), // -10% -> -20% -> -30%
+
+  /** empire: market fee reduction*/
+  ...generate_sequence(
+    'market_fee_reduction',
+    ['society', 'economy'],
+    'empire.market.fee',
+    {startCost: 2, multiplierIncrement: -0.05},
+    ['economy_specialization'],
+  ),
+
+  biology_specialization: {
+    id: 'biology_specialization',
+    tags: ['society', 'biology'],
+    cost: 1,
+    effects: [],
+  },
+  ...generate_sequence(
+    'pop_food_consumption',
+    ['society', 'biology'],
+    'empire.pop.consumption.food',
+    {startCost: 2, multiplierIncrement: -0.05},
+    ['biology_specialization'],
+  ),
+  ...generate_sequence(
+    'pop_growth_colonized',
+    ['society', 'biology'],
+    'systems.colonized.pop_growth',
+    {startCost: 2, multiplierIncrement: +0.1}, // pop growth is already a multiplier, so it will be 0.05 -> 0.05 * 1.1 = 0.055 -> 0.05 * 1.2 = 0.06
+    ['biology_specialization'],
+  ),
+  ...generate_sequence(
+    'pop_growth_upgraded',
+    ['society', 'biology'],
+    'systems.upgraded.pop_growth',
+    {startCost: 2, multiplierIncrement: +0.1},
+    ['biology_specialization'],
+  ),
+
   /*********************************************************************************************************************
    * System Technologies
    ********************************************************************************************************************/
@@ -1846,25 +1898,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * Misc Technologies
    ********************************************************************************************************************/
 
-  // special resources
-  ...generate_sequence('pop_food_consumption', ['society', 'biology'], 'empire.pop.consumption.food',
-    {multiplierIncrement: -0.05}),
-// pop growth is already a multiplier, so it will be 0.05 -> 0.05 * 1.1 = 0.055 -> 0.05 * 1.2 = 0.06
-  ...generate_sequence('pop_growth_colonized', ['society', 'biology'], 'systems.colonized.pop_growth',
-    {multiplierIncrement: +0.1}),
-  ...generate_sequence('pop_growth_upgraded', ['society', 'biology'], 'systems.upgraded.pop_growth',
-    {multiplierIncrement: +0.1}),
-  ...generate_sequence('unemployed_pop_cost', ['society', 'state'],
-    'empire.pop.unemployed_upkeep.credits',
-    {
-      multiplierIncrement: -0.1,
-    }), // -10% -> -20% -> -30%
   ...generate_sequence('faster_research', ['physics', 'computing'], 'empire.technologies.research_time',
     {multiplierIncrement: -0.1}),
-
-  /** empire: market fee reduction*/
-  ...generate_sequence('market_fee_reduction', ['society', 'economy'],
-    'empire.market.fee', {multiplierIncrement: -0.05}),
 };
 
 export const TECHNOLOGY_IDS = Object.keys(TECHNOLOGIES);
