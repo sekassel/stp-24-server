@@ -1358,16 +1358,16 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   ship_construction: {
     id: 'ship_construction',
     tags: ['engineering', 'construction'],
-    cost: 4,
+    cost: 2,
     requires: ['construction', 'computing'],
     effects: [
       {
         variable: 'ships.explorer.build_time',
-        multiplier: 0.9,
+        multiplier: 0.8,
       },
       {
         variable: 'ships.colonizer.build_time',
-        multiplier: 0.9,
+        multiplier: 0.8,
       }
     ],
   },
@@ -1376,9 +1376,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   small_ship_construction: { // increase ship build time
     id: 'small_ship_construction',
     tags: ['engineering', 'construction'],
-    cost: 1,
+    cost: 2,
     requires: ['ship_construction'],
-    precedes: ['fast_small_ship_construction_1'],
     effects: [
       {
         variable: 'ships.corvette.build_time',
@@ -1403,15 +1402,15 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'ships.corvette.build_time',
-        base: 4,
+        multiplier: 0.9,
       },
       {
         variable: 'ships.bomber.build_time',
-        base: 4,
+        multiplier: 0.9,
       },
       {
         variable: 'ships.frigate.build_time',
-        base: 5,
+        multiplier: 0.9,
       },
     ],
   },
@@ -1424,15 +1423,15 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'ships.corvette.build_time',
-        base: 3,
+        multiplier: 0.8,
       },
       {
         variable: 'ships.bomber.build_time',
-        base: 3,
+        multiplier: 0.8,
       },
       {
         variable: 'ships.frigate.build_time',
-        base: 4,
+        multiplier: 0.8,
       },
     ],
   },
@@ -1444,15 +1443,15 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'ships.corvette.build_time',
-        base: 2,
+        multiplier: 0.7,
       },
       {
         variable: 'ships.bomber.build_time',
-        base: 2,
+        multiplier: 0.7,
       },
       {
         variable: 'ships.frigate.build_time',
-        base: 3,
+        multiplier: 0.7,
       },
     ],
   },
@@ -1461,9 +1460,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   medium_ship_construction: { // increase ship build time
     id: 'medium_ship_construction',
     tags: ['engineering', 'construction'],
-    cost: 1,
-    requires: ['ship_construction'],
-    precedes: ['fast_medium_ship_construction_1'],
+    cost: 4,
+    requires: ['small_ship_construction'],
     effects: [
       {
         variable: 'ships.destroyer.build_time',
@@ -1492,19 +1490,19 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'ships.destroyer.build_time',
-        base: 6,
+        multiplier: 0.9,
       },
       {
         variable: 'ships.cruiser.build_time',
-        base: 8,
+        multiplier: 0.9,
       },
       {
         variable: 'ships.vanguard.build_time',
-        base: 9,
+        multiplier: 0.9,
       },
       {
         variable: 'ships.sentinel.build_time',
-        base: 10,
+        multiplier: 0.9,
       },
     ],
   },
@@ -1517,19 +1515,19 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'ships.destroyer.build_time',
-        base: 5,
+        multiplier: 0.8,
       },
       {
         variable: 'ships.cruiser.build_time',
-        base: 7,
+        multiplier: 0.8,
       },
       {
         variable: 'ships.vanguard.build_time',
-        base: 8,
+        multiplier: 0.8,
       },
       {
         variable: 'ships.sentinel.build_time',
-        base: 9,
+        multiplier: 0.8,
       },
     ],
   },
@@ -1541,19 +1539,19 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'ships.destroyer.build_time',
-        base: 4,
+        multiplier: 0.7,
       },
       {
         variable: 'ships.cruiser.build_time',
-        base: 6,
+        multiplier: 0.7,
       },
       {
         variable: 'ships.vanguard.build_time',
-        base: 7,
+        multiplier: 0.7,
       },
       {
         variable: 'ships.sentinel.build_time',
-        base: 8,
+        multiplier: 0.7,
       },
     ],
   },
@@ -1562,9 +1560,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   large_ship_construction: { // increase ship build time
     id: 'large_ship_construction',
     tags: ['engineering', 'construction'],
-    cost: 2,
-    requires: ['ship_construction'],
-    precedes: ['fast_large_ship_construction_1'],
+    cost: 8,
+    requires: ['medium_ship_construction'],
     effects: [
       {
         variable: 'ships.battleship.build_time',
@@ -1589,15 +1586,15 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'ships.battleship.build_time',
-        base: 11,
+        multiplier: 0.9,
       },
       {
         variable: 'ships.carrier.build_time',
-        base: 14,
+        multiplier: 0.9,
       },
       {
         variable: 'ships.dreadnought.build_time',
-        base: 17,
+        multiplier: 0.9,
       },
     ],
   },
@@ -1610,108 +1607,35 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     effects: [
       {
         variable: 'ships.battleship.build_time',
-        base: 10,
+        multiplier: 0.8,
       },
       {
         variable: 'ships.carrier.build_time',
-        base: 13,
+        multiplier: 0.8,
       },
       {
         variable: 'ships.dreadnought.build_time',
-        base: 16,
+        multiplier: 0.8,
       },
     ],
   },
   fast_large_ship_construction_3: {
     id: 'fast_large_ship_construction_3',
     tags: ['engineering', 'construction'],
-    cost: 16,
+    cost: 12,
     requires: ['fast_large_ship_construction_2'],
     effects: [
       {
         variable: 'ships.battleship.build_time',
-        base: 9,
+        multiplier: 0.7,
       },
       {
         variable: 'ships.carrier.build_time',
-        base: 12,
+        multiplier: 0.7,
       },
       {
         variable: 'ships.dreadnought.build_time',
-        base: 15,
-      },
-    ],
-  },
-
-  faster_ship_construction_1: { // increase ship build time
-    id: 'faster_ship_construction_1',
-    tags: ['engineering', 'construction'],
-    cost: 2,
-    requires: ['ship_construction'],
-    effects: [
-      {
-        variable: 'ships.interceptor.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.fighter.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.corvette.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.bomber.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.frigate.build_time',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  faster_ship_construction_2: {
-    id: 'faster_ship_construction_2',
-    tags: ['engineering', 'construction'],
-    cost: 4,
-    requires: ['faster_ship_construction_1'],
-    effects: [
-      {
-        variable: 'ships.destroyer.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.cruiser.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.vanguard.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.sentinel.build_time',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  faster_ship_construction_3: {
-    id: 'faster_ship_construction_3',
-    tags: ['engineering', 'construction'],
-    cost: 8,
-    requires: ['faster_ship_construction_2'],
-    effects: [
-      {
-        variable: 'ships.battleship.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.carrier.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.dreadnought.build_time',
-        multiplier: 0.9,
+        multiplier: 0.7,
       },
     ],
   },
