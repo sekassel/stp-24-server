@@ -12,9 +12,9 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   /** Technologies for empire variables (market, pop, system) */
 
-  /**
-   * pop technologies
-   */
+  /*********************************************************************************************************************
+   * Pop Technologies
+   ********************************************************************************************************************/
 
   /** colonists: increased pops (colonists) at system start */
   more_colonists_1: {
@@ -55,9 +55,9 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /**
-   * System technologies
-   */
+  /*********************************************************************************************************************
+   * System Technologies
+   ********************************************************************************************************************/
 
   /** system claims: colonizing, upgrading and developing systems */
   cheap_claims_1: { // reduced system claim costs
@@ -185,9 +185,9 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /**
-   * Technologies for buildings
-   * */
+  /*********************************************************************************************************************
+   * Building Technologies
+   ********************************************************************************************************************/
 
   building_specialization: {
     id: 'building_specialization',
@@ -590,9 +590,9 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /**
-   * District technologies //
-   */
+  /*********************************************************************************************************************
+   * District Technologies
+   ********************************************************************************************************************/
 
   /** all districts: unlock district specialization */
   district_specialization: {
@@ -817,9 +817,9 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ['district_production_increase'],
   ),
 
-  /**
-   * Ship technologies
-   * */
+  /*********************************************************************************************************************
+   * Ship Technologies
+   ********************************************************************************************************************/
 
   ship_construction: {
     id: 'ship_construction',
