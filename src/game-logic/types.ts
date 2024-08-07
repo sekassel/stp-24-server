@@ -87,10 +87,12 @@ export const TECHNOLOGY_TAGS = [
   'energy', // for power
   'computing', // for research
   'propulsion', // for fuel and speed
+  'weaponry', // for damage
   // engineering
   'materials', // for alloys, armor
   'construction', // for buildings, districts
   'production', // for mining, industry
+  'shipmaking', // for ships, shipyards
   // special
   'rare',
 ] as const;

@@ -1357,9 +1357,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   ship_construction: {
     id: 'ship_construction',
-    tags: ['engineering', 'construction'],
-    cost: 2,
-    requires: ['construction', 'computing'],
+    tags: ['engineering', 'shipmaking'],
+    cost: 1,
     effects: [
       {
         variable: 'ships.explorer.build_time',
@@ -1375,7 +1374,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** Small */
   small_ship_construction: { // increase ship build time
     id: 'small_ship_construction',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 2,
     requires: ['ship_construction'],
     effects: [
@@ -1395,7 +1394,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   fast_small_ship_construction_1: {
     id: 'fast_small_ship_construction_1',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 2,
     requires: ['small_ship_construction'],
     precedes: ['fast_small_ship_construction_2'],
@@ -1416,7 +1415,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   fast_small_ship_construction_2: {
     id: 'fast_small_ship_construction_2',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 4,
     requires: ['fast_small_ship_construction_1'],
     precedes: ['fast_small_ship_construction_3'],
@@ -1437,7 +1436,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   fast_small_ship_construction_3: {
     id: 'fast_small_ship_construction_3',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 8,
     requires: ['fast_small_ship_construction_2'],
     effects: [
@@ -1459,7 +1458,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** Medium */
   medium_ship_construction: { // increase ship build time
     id: 'medium_ship_construction',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 4,
     requires: ['small_ship_construction'],
     effects: [
@@ -1483,7 +1482,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   fast_medium_ship_construction_1: {
     id: 'fast_medium_ship_construction_1',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 2,
     requires: ['medium_ship_construction'],
     precedes: ['fast_medium_ship_construction_2'],
@@ -1508,7 +1507,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   fast_medium_ship_construction_2: {
     id: 'fast_medium_ship_construction_2',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 4,
     requires: ['fast_medium_ship_construction_1'],
     precedes: ['fast_medium_ship_construction_3'],
@@ -1533,7 +1532,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   fast_medium_ship_construction_3: {
     id: 'fast_medium_ship_construction_3',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 8,
     requires: ['fast_medium_ship_construction_2'],
     effects: [
@@ -1559,7 +1558,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** Large */
   large_ship_construction: { // increase ship build time
     id: 'large_ship_construction',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 8,
     requires: ['medium_ship_construction'],
     effects: [
@@ -1579,7 +1578,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   fast_large_ship_construction_1: {
     id: 'fast_large_ship_construction_1',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 4,
     requires: ['large_ship_construction'],
     precedes: ['fast_large_ship_construction_2'],
@@ -1600,7 +1599,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   fast_large_ship_construction_2: {
     id: 'fast_large_ship_construction_2',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 8,
     requires: ['fast_large_ship_construction_1'],
     precedes: ['fast_large_ship_construction_3'],
@@ -1621,7 +1620,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   fast_large_ship_construction_3: {
     id: 'fast_large_ship_construction_3',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 12,
     requires: ['fast_large_ship_construction_2'],
     effects: [
@@ -1642,7 +1641,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   armor_plating_1: { // increase ship health
     id: 'armor_plating_1',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'materials'],
     cost: 1,
     requires: ['ship_construction'],
     effects: [
@@ -1658,7 +1657,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   armor_plating_2: {
     id: 'armor_plating_2',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'materials'],
     cost: 2,
     requires: ['armor_plating_1', 'small_ship_construction'],
     effects: [
@@ -1686,7 +1685,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   armor_plating_3: {
     id: 'armor_plating_3',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'materials'],
     cost: 4,
     requires: ['armor_plating_2', 'medium_ship_construction'],
     effects: [
@@ -1710,7 +1709,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   armor_plating_4: {
     id: 'armor_plating_4',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'materials'],
     cost: 8,
     requires: ['armor_plating_3', 'large_ship_construction'],
     effects: [
@@ -1731,7 +1730,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   ship_speed_1: { // increase ship speed
     id: 'ship_speed_1',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'propulsion'],
     cost: 1,
     requires: ['ship_construction'],
     effects: [
@@ -1747,7 +1746,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   ship_speed_2: {
     id: 'ship_speed_2',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'propulsion'],
     cost: 2,
     requires: ['ship_speed_1', 'small_ship_construction'],
     effects: [
@@ -1775,7 +1774,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   ship_speed_3: {
     id: 'ship_speed_3',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'propulsion'],
     cost: 4,
     requires: ['ship_speed_2', 'medium_ship_construction'],
     effects: [
@@ -1799,7 +1798,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   ship_speed_4: {
     id: 'ship_speed_4',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'propulsion'],
     cost: 8,
     requires: ['ship_speed_3', 'large_ship_construction'],
     effects: [
@@ -1820,7 +1819,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   cheap_ships_1: { // reduce ship cost
     id: 'cheap_ships_1',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 2,
     requires: ['ship_construction'],
     effects: [
@@ -1844,7 +1843,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   cheap_ships_2: {
     id: 'cheap_ships_2',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 4,
     requires: ['cheap_ships_1', 'small_ship_construction'],
     effects: [
@@ -1892,7 +1891,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   cheap_ships_3: {
     id: 'cheap_ships_3',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 8,
     requires: ['cheap_ships_2', 'medium_ship_construction'],
     effects: [
@@ -1932,7 +1931,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   cheap_ships_4: {
     id: 'cheap_ships_4',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'shipmaking'],
     cost: 16,
     requires: ['cheap_ships_3', 'large_ship_construction'],
     effects: [
@@ -1965,7 +1964,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   efficient_ships_1: { // reduce ship upkeep
     id: 'efficient_ships_1',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'energy'],
     cost: 1,
     requires: ['ship_construction'],
     effects: [
@@ -1981,7 +1980,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   efficient_ships_2: {
     id: 'efficient_ships_2',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'energy'],
     cost: 2,
     requires: ['efficient_ships_1', 'small_ship_construction'],
     effects: [
@@ -2009,7 +2008,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   efficient_ships_3: {
     id: 'efficient_ships_3',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'energy'],
     cost: 4,
     requires: ['efficient_ships_2', 'medium_ship_construction'],
     effects: [
@@ -2033,7 +2032,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   efficient_ships_4: {
     id: 'efficient_ships_4',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'energy'],
     cost: 8,
     requires: ['efficient_ships_3', 'large_ship_construction'],
     effects: [
@@ -2054,7 +2053,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   small_fighters_1: { // increase ship attack
     id: 'small_fighters_1',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'weaponry'],
     cost: 2,
     requires: ['small_ship_construction'],
     precedes: ['small_fighters_2'],
@@ -2115,7 +2114,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   small_fighters_2: {
     id: 'small_fighters_2',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'weaponry'],
     cost: 4,
     requires: ['small_fighters_1'],
     effects: [
@@ -2175,7 +2174,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   medium_fighters_1: {
     id: 'medium_fighters_1',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'weaponry'],
     cost: 4,
     requires: ['small_fighters_1', 'medium_ship_construction'],
     precedes: ['medium_fighters_2'],
@@ -2200,7 +2199,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   medium_fighters_2: {
     id: 'medium_fighters_2',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'weaponry'],
     cost: 8,
     requires: ['medium_fighters_1'],
     effects: [
@@ -2224,7 +2223,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   large_fighters_1: {
     id: 'large_fighters_1',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'weaponry'],
     cost: 8,
     requires: ['medium_fighters_1', 'large_ship_construction'],
     precedes: ['large_fighters_2'],
@@ -2245,7 +2244,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   large_fighters_2: {
     id: 'large_fighters_2',
-    tags: ['engineering', 'construction'],
+    tags: ['physics', 'weaponry'],
     cost: 16,
     requires: ['large_fighters_1'],
     effects: [
@@ -2266,7 +2265,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   small_ship_defense_1: { // increase ship defense
     id: 'small_ship_defense_1',
-    tags: ['engineering', 'construction'],
+    tags: ['society', 'military'],
     cost: 2,
     requires: ['small_ship_construction'],
     precedes: ['small_ship_defense_2'],
@@ -2295,7 +2294,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   small_ship_defense_2: {
     id: 'small_ship_defense_2',
-    tags: ['engineering', 'construction'],
+    tags: ['society', 'military'],
     cost: 4,
     requires: ['small_ship_defense_1'],
     effects: [
@@ -2315,7 +2314,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   medium_ship_defense_1: {
     id: 'medium_ship_defense_1',
-    tags: ['engineering', 'construction'],
+    tags: ['society', 'military'],
     cost: 4,
     requires: ['small_ship_defense_1', 'medium_ship_construction'],
     precedes: ['medium_ship_defense_2'],
@@ -2340,7 +2339,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   medium_ship_defense_2: {
     id: 'medium_ship_defense_2',
-    tags: ['engineering', 'construction'],
+    tags: ['society', 'military'],
     cost: 8,
     requires: ['medium_ship_defense_1'],
     effects: [
@@ -2364,7 +2363,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   large_ship_defense_1: {
     id: 'large_ship_defense_1',
-    tags: ['engineering', 'construction'],
+    tags: ['society', 'military'],
     cost: 8,
     requires: ['medium_ship_defense_1', 'large_ship_construction'],
     precedes: ['large_ship_defense_2'],
@@ -2385,7 +2384,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
   large_ship_defense_2: {
     id: 'large_ship_defense_2',
-    tags: ['engineering', 'construction'],
+    tags: ['society', 'military'],
     cost: 16,
     requires: ['large_ship_defense_1'],
     effects: [
