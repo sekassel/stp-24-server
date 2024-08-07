@@ -586,48 +586,48 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   district_specialization: {
     id: 'district_specialization',
     tags: ['engineering', 'construction'],
-    cost: 2,
+    cost: 1,
     effects: [],
   },
   district_production_increase: {
     id: 'district_production_increase',
     tags: ['engineering', 'construction'],
-    cost: 1,
+    cost: 2,
     requires: ['district_specialization'],
     effects: [],
   },
   ancient_district_production_increase: {
     id: 'ancient_district_production_increase',
     tags: ['engineering', 'construction'],
-    cost: 1,
+    cost: 3,
     requires: ['district_production_increase'],
     effects: [],
   },
   district_cost_reduction: {
     id: 'district_cost_reduction',
     tags: ['engineering', 'construction'],
-    cost: 1,
+    cost: 2,
     requires: ['district_specialization'],
     effects: [],
   },
   ancient_district_cost_reduction: {
     id: 'ancient_district_cost_reduction',
     tags: ['engineering', 'construction'],
-    cost: 2,
+    cost: 3,
     requires: ['district_cost_reduction'],
     effects: [],
   },
   district_upkeep_reduction: {
     id: 'district_upkeep_reduction',
     tags: ['engineering', 'construction'],
-    cost: 1,
+    cost: 2,
     requires: ['district_specialization'],
     effects: [],
   },
   ancient_district_upkeep_reduction: {
     id: 'ancient_district_upkeep_reduction',
     tags: ['engineering', 'construction'],
-    cost: 2,
+    cost: 3,
     requires: ['district_upkeep_reduction'],
     effects: [],
   },
@@ -645,217 +645,49 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   ancient_military_activation: {
     id: 'ancient_military_activation',
     tags: ['society', 'military', 'rare'],
-    cost: 2,
+    cost: 3,
     requires: ['ancient_mastery'],
-    precedes: ['ancient_military_1'],
     effects: [],
   },
-  ancient_military_1: {
-    id: 'ancient_military_1',
-    tags: ['society', 'military', 'rare'],
-    cost: 4,
-    requires: ['ancient_military_activation'],
-    precedes: ['ancient_military_2'],
-    effects: [
-      {
-        variable: 'districts.research_site.chance.ancient_military',
-        multiplier: 1.05,
-      },
-      {
-        variable: 'districts.ancient_foundry.chance.ancient_military',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'districts.ancient_refinery.chance.ancient_military',
-        multiplier: 1.05,
-      },
-    ],
-  },
-  ancient_military_2: {
-    id: 'ancient_military_2',
-    tags: ['society', 'military', 'rare'],
-    cost: 8,
-    requires: ['ancient_military_1'],
-    precedes: ['ancient_military_3'],
-    effects: [
-      {
-        variable: 'districts.research_site.chance.ancient_military',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'districts.ancient_foundry.chance.ancient_military',
-        multiplier: 1.2,
-      },
-      {
-        variable: 'districts.ancient_refinery.chance.ancient_military',
-        multiplier: 1.1,
-      },
-    ],
-  },
-  ancient_military_3: {
-    id: 'ancient_military_3',
-    tags: ['society', 'military', 'rare'],
-    cost: 16,
-    requires: ['ancient_military_2'],
-    effects: [
-      {
-        variable: 'districts.research_site.chance.ancient_military',
-        multiplier: 1.15,
-      },
-      {
-        variable: 'districts.ancient_foundry.chance.ancient_military',
-        multiplier: 1.3,
-      },
-      {
-        variable: 'districts.ancient_refinery.chance.ancient_military',
-        multiplier: 1.15,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'ancient_military',
+    ['society', 'military', 'rare'],
+    ['districts.research_site.chance.ancient_military', 'districts.ancient_foundry.chance.ancient_military', 'districts.ancient_refinery.chance.ancient_military'],
+    {startCost: 4},
+    ['ancient_military_activation'],
+  ),
 
   /** all districts: chance for ancient industry */
   ancient_industry_activation: {
     id: 'ancient_industry_activation',
     tags: ['engineering', 'production', 'rare'],
-    cost: 2,
+    cost: 3,
     requires: ['ancient_mastery'],
-    precedes: ['ancient_industry_1'],
     effects: [],
   },
-  ancient_industry_1: {
-    id: 'ancient_industry_1',
-    tags: ['engineering', 'production', 'rare'],
-    cost: 4,
-    requires: ['ancient_industry_activation'],
-    precedes: ['ancient_industry_2'],
-    effects: [
-      {
-        variable: 'districts.research_site.chance.ancient_industry',
-        multiplier: 1.05,
-      },
-      {
-        variable: 'districts.ancient_foundry.chance.ancient_industry',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'districts.ancient_refinery.chance.ancient_industry',
-        multiplier: 1.05,
-      },
-    ],
-  },
-  ancient_industry_2: {
-    id: 'ancient_industry_2',
-    tags: ['engineering', 'production', 'rare'],
-    cost: 8,
-    requires: ['ancient_industry_1'],
-    precedes: ['ancient_industry_3'],
-    effects: [
-      {
-        variable: 'districts.research_site.chance.ancient_industry',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'districts.ancient_foundry.chance.ancient_industry',
-        multiplier: 1.2,
-      },
-      {
-        variable: 'districts.ancient_refinery.chance.ancient_industry',
-        multiplier: 1.1,
-      },
-    ],
-  },
-  ancient_industry_3: {
-    id: 'ancient_industry_3',
-    tags: ['engineering', 'production', 'rare'],
-    cost: 16,
-    requires: ['ancient_industry_2'],
-    effects: [
-      {
-        variable: 'districts.research_site.chance.ancient_industry',
-        multiplier: 1.15,
-      },
-      {
-        variable: 'districts.ancient_foundry.chance.ancient_industry',
-        multiplier: 1.3,
-      },
-      {
-        variable: 'districts.ancient_refinery.chance.ancient_industry',
-        multiplier: 1.15,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'ancient_industry',
+    ['engineering', 'production', 'rare'],
+    ['districts.research_site.chance.ancient_industry', 'districts.ancient_foundry.chance.ancient_industry', 'districts.ancient_refinery.chance.ancient_industry'],
+    {startCost: 4},
+    ['ancient_industry_activation'],
+  ),
 
   /** all districts: chance for ancient technology */
   ancient_tech_activation: {
     id: 'ancient_tech_activation',
     tags: ['physics', 'computing', 'rare'],
-    cost: 2,
+    cost: 3,
     requires: ['ancient_mastery'],
-    precedes: ['ancient_tech_1'],
     effects: [],
   },
-  ancient_tech_1: {
-    id: 'ancient_tech_1',
-    tags: ['physics', 'computing', 'rare'],
-    cost: 4,
-    requires: ['ancient_tech_activation'],
-    precedes: ['ancient_tech_2'],
-    effects: [
-      {
-        variable: 'districts.research_site.chance.ancient_technology',
-        multiplier: 1.05,
-      },
-      {
-        variable: 'districts.ancient_foundry.chance.ancient_technology',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'districts.ancient_refinery.chance.ancient_technology',
-        multiplier: 1.05,
-      },
-    ],
-  },
-  ancient_tech_2: {
-    id: 'ancient_tech_2',
-    tags: ['physics', 'computing', 'rare'],
-    cost: 8,
-    requires: ['ancient_tech_1'],
-    precedes: ['ancient_tech_3'],
-    effects: [
-      {
-        variable: 'districts.research_site.chance.ancient_technology',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'districts.ancient_foundry.chance.ancient_technology',
-        multiplier: 1.2,
-      },
-      {
-        variable: 'districts.ancient_refinery.chance.ancient_technology',
-        multiplier: 1.1,
-      },
-    ],
-  },
-  ancient_tech_3: {
-    id: 'ancient_tech_3',
-    tags: ['physics', 'computing', 'rare'],
-    cost: 16,
-    requires: ['ancient_tech_2'],
-    effects: [
-      {
-        variable: 'districts.research_site.chance.ancient_technology',
-        multiplier: 1.15,
-      },
-      {
-        variable: 'districts.ancient_foundry.chance.ancient_technology',
-        multiplier: 1.3,
-      },
-      {
-        variable: 'districts.ancient_refinery.chance.ancient_technology',
-        multiplier: 1.15,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'ancient_tech',
+    ['physics', 'computing', 'rare'],
+    ['districts.research_site.chance.ancient_technology', 'districts.ancient_foundry.chance.ancient_technology', 'districts.ancient_refinery.chance.ancient_technology'],
+    {startCost: 4},
+    ['ancient_tech_activation'],
+  ),
 
   /** all districts: reduce build time */
   faster_district_construction_1: {
@@ -919,326 +751,57 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   },
 
   /** mining district: reduce initial mineral and energy cost */
-  mining_foundation_1: {
-    id: 'mining_foundation_1',
-    tags: ['physics', 'energy'],
-    cost: 2,
-    requires: ['district_cost_reduction'],
-    precedes: ['mining_foundation_2'],
-    effects: [
-      {
-        variable: 'districts.mining.cost.minerals',
-        multiplier: 0.95,
-      },
-      {
-        variable: 'districts.mining.cost.energy',
-        multiplier: 0.95,
-      },
-    ],
-  },
-  mining_foundation_2: {
-    id: 'mining_foundation_2',
-    tags: ['physics', 'energy'],
-    cost: 4,
-    requires: ['mining_foundation_1'],
-    precedes: ['mining_foundation_3'],
-    effects: [
-      {
-        variable: 'districts.mining.cost.minerals',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'districts.mining.cost.energy',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  mining_foundation_3: {
-    id: 'mining_foundation_3',
-    tags: ['physics', 'energy'],
-    cost: 8,
-    requires: ['mining_foundation_2'],
-    effects: [
-      {
-        variable: 'districts.mining.cost.minerals',
-        multiplier: 0.85,
-      },
-      {
-        variable: 'districts.mining.cost.energy',
-        multiplier: 0.85,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'mining_foundation',
+    ['physics', 'energy'],
+    ['districts.mining.cost.minerals', 'districts.mining.cost.energy'],
+    {startCost: 2, multiplierIncrement: -0.05},
+    ['district_cost_reduction'],
+  ),
 
   /** ancient_foundry: reduce energy and mineral upkeep */
-  efficient_ancient_foundry_1: {
-    id: 'efficient_ancient_foundry_1',
-    tags: ['physics', 'energy'],
-    cost: 2,
-    requires: ['ancient_district_upkeep_reduction'],
-    precedes: ['efficient_ancient_foundry_2'],
-    effects: [
-      {
-        variable: 'districts.ancient_foundry.upkeep.minerals',
-        multiplier: 0.95,
-      },
-      {
-        variable: 'districts.ancient_foundry.upkeep.energy',
-        multiplier: 0.95,
-      },
-    ],
-  },
-  efficient_ancient_foundry_2: {
-    id: 'efficient_ancient_foundry_2',
-    tags: ['physics', 'energy'],
-    cost: 4,
-    requires: ['efficient_ancient_foundry_1'],
-    precedes: ['efficient_ancient_foundry_3'],
-    effects: [
-      {
-        variable: 'districts.ancient_foundry.upkeep.minerals',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'districts.ancient_foundry.upkeep.energy',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  efficient_ancient_foundry_3: {
-    id: 'efficient_ancient_foundry_3',
-    tags: ['physics', 'energy'],
-    cost: 8,
-    requires: ['efficient_ancient_foundry_2'],
-    effects: [
-      {
-        variable: 'districts.ancient_foundry.upkeep.minerals',
-        multiplier: 0.85,
-      },
-      {
-        variable: 'districts.ancient_foundry.upkeep.energy',
-        multiplier: 0.85,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'efficient_ancient_foundry',
+    ['physics', 'energy'],
+    ['districts.ancient_foundry.upkeep.minerals', 'districts.ancient_foundry.upkeep.energy'],
+    {startCost: 3, multiplierIncrement: -0.05},
+    ['ancient_district_upkeep_reduction'],
+  ),
 
   /** ancient_refinery: reduce energy and mineral upkeep */
-  efficient_ancient_refinery_1: {
-    id: 'efficient_ancient_refinery_1',
-    tags: ['physics', 'energy'],
-    cost: 2,
-    requires: ['ancient_district_upkeep_reduction'],
-    precedes: ['efficient_ancient_refinery_2'],
-    effects: [
-      {
-        variable: 'districts.ancient_refinery.upkeep.minerals',
-        multiplier: 0.95,
-      },
-      {
-        variable: 'districts.ancient_refinery.upkeep.energy',
-        multiplier: 0.95,
-      },
-    ],
-  },
-  efficient_ancient_refinery_2: {
-    id: 'efficient_ancient_refinery_2',
-    tags: ['physics', 'energy'],
-    cost: 4,
-    requires: ['efficient_ancient_refinery_1'],
-    precedes: ['efficient_ancient_refinery_3'],
-    effects: [
-      {
-        variable: 'districts.ancient_refinery.upkeep.minerals',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'districts.ancient_refinery.upkeep.energy',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  efficient_ancient_refinery_3: {
-    id: 'efficient_ancient_refinery_3',
-    tags: ['physics', 'energy'],
-    cost: 8,
-    requires: ['efficient_ancient_refinery_2'],
-    effects: [
-      {
-        variable: 'districts.ancient_refinery.upkeep.minerals',
-        multiplier: 0.85,
-      },
-      {
-        variable: 'districts.ancient_refinery.upkeep.energy',
-        multiplier: 0.85,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'efficient_ancient_refinery',
+    ['physics', 'energy'],
+    ['districts.ancient_refinery.upkeep.minerals', 'districts.ancient_refinery.upkeep.energy'],
+    {startCost: 3, multiplierIncrement: -0.05},
+    ['ancient_district_upkeep_reduction'],
+  ),
 
   /** city: reduce upkeep */
-  efficient_city_1: {
-    id: 'efficient_city_1',
-    tags: ['engineering', 'construction'],
-    cost: 1,
-    requires: ['district_upkeep_reduction'],
-    precedes: ['efficient_city_2'],
-    effects: [
-      {
-        variable: 'districts.city.upkeep.energy',
-        multiplier: 0.95,
-      },
-      {
-        variable: 'districts.city.upkeep.consumer_goods',
-        multiplier: 0.95,
-      },
-    ],
-  },
-  efficient_city_2: {
-    id: 'efficient_city_2',
-    tags: ['engineering', 'construction'],
-    cost: 2,
-    requires: ['efficient_city_1'],
-    precedes: ['efficient_city_3'],
-    effects: [
-      {
-        variable: 'districts.city.upkeep.energy',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'districts.city.upkeep.consumer_goods',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  efficient_city_3: {
-    id: 'efficient_city_3',
-    tags: ['engineering', 'construction'],
-    cost: 4,
-    requires: ['efficient_city_2'],
-    effects: [
-      {
-        variable: 'districts.city.upkeep.energy',
-        multiplier: 0.85,
-      },
-      {
-        variable: 'districts.city.upkeep.consumer_goods',
-        multiplier: 0.85,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'efficient_city',
+    ['engineering', 'construction'],
+    ['districts.city.upkeep.energy', 'districts.city.upkeep.consumer_goods'],
+    {startCost: 2, multiplierIncrement: -0.05},
+    ['district_upkeep_reduction'],
+  ),
 
   /** industry: reduce upkeep */
-  efficient_industry_1: {
-    id: 'efficient_industry_1',
-    tags: ['engineering', 'construction'],
-    cost: 1,
-    requires: ['district_upkeep_reduction'],
-    precedes: ['efficient_industry_2'],
-    effects: [
-      {
-        variable: 'districts.industry.upkeep.energy',
-        multiplier: 0.95,
-      },
-      {
-        variable: 'districts.industry.upkeep.minerals',
-        multiplier: 0.95,
-      },
-    ],
-  },
-  efficient_industry_2: {
-    id: 'efficient_industry_2',
-    tags: ['engineering', 'construction'],
-    cost: 2,
-    requires: ['efficient_industry_1'],
-    precedes: ['efficient_industry_3'],
-    effects: [
-      {
-        variable: 'districts.industry.upkeep.energy',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'districts.industry.upkeep.minerals',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  efficient_industry_3: {
-    id: 'efficient_industry_3',
-    tags: ['engineering', 'construction'],
-    cost: 4,
-    requires: ['efficient_industry_2'],
-    effects: [
-      {
-        variable: 'districts.industry.upkeep.energy',
-        multiplier: 0.85,
-      },
-      {
-        variable: 'districts.industry.upkeep.minerals',
-        multiplier: 0.85,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'efficient_industry',
+    ['engineering', 'construction'],
+    ['districts.industry.upkeep.energy', 'districts.industry.upkeep.minerals'],
+    {startCost: 2, multiplierIncrement: -0.05},
+    ['district_upkeep_reduction'],
+  ),
+
   /** industry: increase production */
-  improved_industry_1: {
-    id: 'improved_industry_1',
-    tags: ['engineering', 'production'],
-    cost: 1,
-    precedes: ['improved_industry_2'],
-    effects: [
-      {
-        variable: 'districts.industry.production.alloys',
-        multiplier: 1.05,
-      },
-      {
-        variable: 'districts.industry.production.consumer_goods',
-        multiplier: 1.05,
-      },
-      {
-        variable: 'districts.industry.production.fuel',
-        multiplier: 1.05,
-      },
-    ],
-  },
-  improved_industry_2: {
-    id: 'improved_industry_2',
-    tags: ['engineering', 'production'],
-    cost: 2,
-    requires: ['improved_industry_1'],
-    precedes: ['improved_industry_3'],
-    effects: [
-      {
-        variable: 'districts.industry.production.alloys',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'districts.industry.production.consumer_goods',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'districts.industry.production.fuel',
-        multiplier: 1.1,
-      },
-    ],
-  },
-  improved_industry_3: {
-    id: 'improved_industry_3',
-    tags: ['engineering', 'production'],
-    cost: 3,
-    requires: ['improved_industry_2'],
-    effects: [
-      {
-        variable: 'districts.industry.production.alloys',
-        multiplier: 1.15,
-      },
-      {
-        variable: 'districts.industry.production.consumer_goods',
-        multiplier: 1.15,
-      },
-      {
-        variable: 'districts.industry.production.fuel',
-        multiplier: 1.15,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'improved_industry',
+    ['engineering', 'production'],
+    ['districts.industry.production.alloys', 'districts.industry.production.consumer_goods', 'districts.industry.production.fuel'],
+    {startCost: 1},
+  ),
 
   /**
    * Ship technologies
@@ -1281,68 +844,13 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_small_ship_construction_1: {
-    id: 'fast_small_ship_construction_1',
-    tags: ['engineering', 'shipmaking'],
-    cost: 3,
-    requires: ['small_ship_construction'],
-    precedes: ['fast_small_ship_construction_2'],
-    effects: [
-      {
-        variable: 'ships.corvette.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.bomber.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.frigate.build_time',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  fast_small_ship_construction_2: {
-    id: 'fast_small_ship_construction_2',
-    tags: ['engineering', 'shipmaking'],
-    cost: 4,
-    requires: ['fast_small_ship_construction_1'],
-    precedes: ['fast_small_ship_construction_3'],
-    effects: [
-      {
-        variable: 'ships.corvette.build_time',
-        multiplier: 0.8,
-      },
-      {
-        variable: 'ships.bomber.build_time',
-        multiplier: 0.8,
-      },
-      {
-        variable: 'ships.frigate.build_time',
-        multiplier: 0.8,
-      },
-    ],
-  },
-  fast_small_ship_construction_3: {
-    id: 'fast_small_ship_construction_3',
-    tags: ['engineering', 'shipmaking'],
-    cost: 5,
-    requires: ['fast_small_ship_construction_2'],
-    effects: [
-      {
-        variable: 'ships.corvette.build_time',
-        multiplier: 0.7,
-      },
-      {
-        variable: 'ships.bomber.build_time',
-        multiplier: 0.7,
-      },
-      {
-        variable: 'ships.frigate.build_time',
-        multiplier: 0.7,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'fast_small_ship_construction',
+    ['engineering', 'shipmaking'],
+    ['ships.corvette.build_time', 'ships.bomber.build_time', 'ships.frigate.build_time'],
+    {startCost: 3, multiplierIncrement: -0.1, exponentialBase: 1},
+    ['small_ship_construction'],
+  ),
 
   /** Medium */
   medium_ship_construction: { // increase ship build time
@@ -1369,80 +877,13 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_medium_ship_construction_1: {
-    id: 'fast_medium_ship_construction_1',
-    tags: ['engineering', 'shipmaking'],
-    cost: 4,
-    requires: ['medium_ship_construction'],
-    precedes: ['fast_medium_ship_construction_2'],
-    effects: [
-      {
-        variable: 'ships.destroyer.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.cruiser.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.vanguard.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.sentinel.build_time',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  fast_medium_ship_construction_2: {
-    id: 'fast_medium_ship_construction_2',
-    tags: ['engineering', 'shipmaking'],
-    cost: 5,
-    requires: ['fast_medium_ship_construction_1'],
-    precedes: ['fast_medium_ship_construction_3'],
-    effects: [
-      {
-        variable: 'ships.destroyer.build_time',
-        multiplier: 0.8,
-      },
-      {
-        variable: 'ships.cruiser.build_time',
-        multiplier: 0.8,
-      },
-      {
-        variable: 'ships.vanguard.build_time',
-        multiplier: 0.8,
-      },
-      {
-        variable: 'ships.sentinel.build_time',
-        multiplier: 0.8,
-      },
-    ],
-  },
-  fast_medium_ship_construction_3: {
-    id: 'fast_medium_ship_construction_3',
-    tags: ['engineering', 'shipmaking'],
-    cost: 6,
-    requires: ['fast_medium_ship_construction_2'],
-    effects: [
-      {
-        variable: 'ships.destroyer.build_time',
-        multiplier: 0.7,
-      },
-      {
-        variable: 'ships.cruiser.build_time',
-        multiplier: 0.7,
-      },
-      {
-        variable: 'ships.vanguard.build_time',
-        multiplier: 0.7,
-      },
-      {
-        variable: 'ships.sentinel.build_time',
-        multiplier: 0.7,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'fast_medium_ship_construction',
+    ['engineering', 'shipmaking'],
+    ['ships.destroyer.build_time', 'ships.cruiser.build_time', 'ships.vanguard.build_time', 'ships.sentinel.build_time'],
+    {startCost: 4, multiplierIncrement: -0.1, exponentialBase: 1},
+    ['medium_ship_construction'],
+  ),
 
   /** Large */
   large_ship_construction: { // increase ship build time
@@ -1465,68 +906,13 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
     ],
   },
-  fast_large_ship_construction_1: {
-    id: 'fast_large_ship_construction_1',
-    tags: ['engineering', 'shipmaking'],
-    cost: 5,
-    requires: ['large_ship_construction'],
-    precedes: ['fast_large_ship_construction_2'],
-    effects: [
-      {
-        variable: 'ships.battleship.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.carrier.build_time',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'ships.dreadnought.build_time',
-        multiplier: 0.9,
-      },
-    ],
-  },
-  fast_large_ship_construction_2: {
-    id: 'fast_large_ship_construction_2',
-    tags: ['engineering', 'shipmaking'],
-    cost: 6,
-    requires: ['fast_large_ship_construction_1'],
-    precedes: ['fast_large_ship_construction_3'],
-    effects: [
-      {
-        variable: 'ships.battleship.build_time',
-        multiplier: 0.8,
-      },
-      {
-        variable: 'ships.carrier.build_time',
-        multiplier: 0.8,
-      },
-      {
-        variable: 'ships.dreadnought.build_time',
-        multiplier: 0.8,
-      },
-    ],
-  },
-  fast_large_ship_construction_3: {
-    id: 'fast_large_ship_construction_3',
-    tags: ['engineering', 'shipmaking'],
-    cost: 7,
-    requires: ['fast_large_ship_construction_2'],
-    effects: [
-      {
-        variable: 'ships.battleship.build_time',
-        multiplier: 0.7,
-      },
-      {
-        variable: 'ships.carrier.build_time',
-        multiplier: 0.7,
-      },
-      {
-        variable: 'ships.dreadnought.build_time',
-        multiplier: 0.7,
-      },
-    ],
-  },
+  ...generate_sequence(
+    'fast_large_ship_construction',
+    ['engineering', 'shipmaking'],
+    ['ships.battleship.build_time', 'ships.carrier.build_time', 'ships.dreadnought.build_time'],
+    {startCost: 5, multiplierIncrement: -0.1, exponentialBase: 1},
+    ['large_ship_construction'],
+  ),
 
   armor_plating_1: { // increase ship health
     id: 'armor_plating_1',
