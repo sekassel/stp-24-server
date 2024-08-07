@@ -755,7 +755,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     'mining_foundation',
     ['physics', 'energy'],
     ['districts.mining.cost.minerals', 'districts.mining.cost.energy'],
-    {startCost: 2, multiplierIncrement: -0.05},
+    {startCost: 3, multiplierIncrement: -0.05},
     ['district_cost_reduction'],
   ),
 
@@ -764,7 +764,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     'efficient_ancient_foundry',
     ['physics', 'energy'],
     ['districts.ancient_foundry.upkeep.minerals', 'districts.ancient_foundry.upkeep.energy'],
-    {startCost: 3, multiplierIncrement: -0.05},
+    {startCost: 4, multiplierIncrement: -0.05},
     ['ancient_district_upkeep_reduction'],
   ),
 
@@ -773,7 +773,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     'efficient_ancient_refinery',
     ['physics', 'energy'],
     ['districts.ancient_refinery.upkeep.minerals', 'districts.ancient_refinery.upkeep.energy'],
-    {startCost: 3, multiplierIncrement: -0.05},
+    {startCost: 4, multiplierIncrement: -0.05},
     ['ancient_district_upkeep_reduction'],
   ),
 
@@ -782,7 +782,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     'efficient_city',
     ['engineering', 'construction'],
     ['districts.city.upkeep.energy', 'districts.city.upkeep.consumer_goods'],
-    {startCost: 2, multiplierIncrement: -0.05},
+    {startCost: 3, multiplierIncrement: -0.05},
     ['district_upkeep_reduction'],
   ),
 
@@ -791,7 +791,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     'efficient_industry',
     ['engineering', 'construction'],
     ['districts.industry.upkeep.energy', 'districts.industry.upkeep.minerals'],
-    {startCost: 2, multiplierIncrement: -0.05},
+    {startCost: 3, multiplierIncrement: -0.05},
     ['district_upkeep_reduction'],
   ),
 
@@ -1738,27 +1738,27 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   // basic district resource production
   ...generate_sequence('energy_district_production', ['physics', 'energy'],
-    'districts.energy.production.energy', {}, ['district_production_increase']),
+    'districts.energy.production.energy', {startCost: 3}, ['district_production_increase']),
   ...generate_sequence('mining_district_production', ['engineering', 'production'],
     'districts.mining.production.minerals',
-    {}, ['district_production_increase']),
+    {startCost: 3}, ['district_production_increase']),
   ...generate_sequence('agriculture_district_production', ['society', 'biology'],
     'districts.agriculture.production.food',
-    {}, ['district_production_increase']),
+    {startCost: 3}, ['district_production_increase']),
   // advanced district resource production
   ...generate_sequence('research_site_production', ['physics', 'computing'],
     'districts.research_site.production.research',
-    {}, ['district_production_increase']),
+    {startCost: 4}, ['ancient_district_production_increase']),
   ...generate_sequence('ancient_foundry_production', ['engineering', 'materials'],
     'districts.ancient_foundry.production.alloys',
-    {}, ['ancient_district_production_increase']),
+    {startCost: 4}, ['ancient_district_production_increase']),
   ...generate_sequence('ancient_refinery_production', ['physics', 'propulsion'],
     'districts.ancient_refinery.production.fuel',
-    {}, ['ancient_district_production_increase']),
+    {startCost: 4}, ['ancient_district_production_increase']),
   /** city: credit production */
   ...generate_sequence('city_production', ['society', 'economy'],
     'districts.city.production.credits',
-    {}, ['district_production_increase']),
+    {startCost: 3}, ['district_production_increase']),
 
   /** empire: market fee reduction*/
   ...generate_sequence('market_fee_reduction', ['society', 'economy'],
@@ -1766,54 +1766,54 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** energy district: reduce initial mineral cost */
   ...generate_sequence('effective_energy', ['engineering', 'construction'],
     'districts.energy.cost.minerals',
-    {multiplierIncrement: -0.1},
+    {startCost: 3, multiplierIncrement: -0.1},
     ['district_cost_reduction']),
   /** energy district: reduce mineral upkeep */
   ...generate_sequence('efficient_energy', ['engineering', 'construction'],
     'districts.energy.upkeep.minerals',
-    {multiplierIncrement: -0.1},
+    {startCost: 3, multiplierIncrement: -0.1},
     ['district_upkeep_reduction']),
   /** mining district: reduce energy upkeep */
   ...generate_sequence('efficient_mining', ['physics', 'energy'], 'districts.mining.upkeep.energy',
-    {multiplierIncrement: -0.1},
+    {startCost: 3, multiplierIncrement: -0.1},
     ['district_upkeep_reduction']),
   /** agricultural district: reduce initial energy cost */
   ...generate_sequence('agriculture_cost_reduction', ['physics', 'energy'],
     'districts.agriculture.cost.energy',
-    {multiplierIncrement: -0.1},
+    {startCost: 3, multiplierIncrement: -0.1},
     ['district_cost_reduction']),
   /** agricultural district: reduce energy upkeep */
   ...generate_sequence('efficient_agriculture', ['physics', 'energy'],
     'districts.agriculture.upkeep.energy',
-    {multiplierIncrement: -0.1},
+    {startCost: 3, multiplierIncrement: -0.1},
     ['district_upkeep_reduction']),
   /** research site: reduce initial mineral cost */
   ...generate_sequence('effective_lab_building', ['engineering', 'construction'],
     'districts.research_site.cost.minerals',
-    {multiplierIncrement: -0.1},
+    {startCost: 3, multiplierIncrement: -0.1},
     ['district_cost_reduction']),
   /** research site: reduce energy upkeep */
   ...generate_sequence('efficient_research', ['physics', 'energy'],
     'districts.research_site.upkeep.energy',
-    {multiplierIncrement: -0.1},
+    {startCost: 3, multiplierIncrement: -0.1},
     ['district_upkeep_reduction']),
   /** ancient_foundry: reduce initial mineral cost */
   ...generate_sequence('ancient_foundry_structure', ['engineering', 'construction'],
     'districts.ancient_foundry.cost.minerals',
-    {multiplierIncrement: -0.1},
+    {startCost: 4, multiplierIncrement: -0.1},
     ['ancient_district_cost_reduction']),
   /** ancient_refinery: reduce initial mineral cost */
   ...generate_sequence('ancient_refinery_structure', ['engineering', 'construction'],
     'districts.ancient_refinery.cost.minerals',
-    {multiplierIncrement: -0.1},
+    {startCost: 4, multiplierIncrement: -0.1},
     ['ancient_district_cost_reduction']),
   /** city: reduce initial mineral cost */
   ...generate_sequence('city_structure', ['engineering', 'construction'], 'districts.city.cost.minerals',
-    {multiplierIncrement: -0.1},
+    {startCost: 3, multiplierIncrement: -0.1},
     ['district_cost_reduction']),
   /** industry: reduce initial mineral cost */
   ...generate_sequence('industry_structure', ['engineering', 'construction'], 'districts.industry.cost.minerals',
-    {multiplierIncrement: -0.1},
+    {startCost: 3, multiplierIncrement: -0.1},
     ['district_cost_reduction']),
 };
 
