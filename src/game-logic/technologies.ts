@@ -12,105 +12,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   /** Technologies for empire variables (market, pop, system) */
 
-  /** society: unlock technologies*/
-  society: {
-    id: 'society',
-    tags: ['society'],
-    cost: 1,
-    effects: [
-      {
-        variable: 'technologies.society.cost_multiplier',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'technologies.society.time_multiplier',
-        multiplier: 0.8,
-      },
-    ],
-  },
-  demographic: {
-    id: 'demographic',
-    tags: ['society', 'state'],
-    cost: 2,
-    requires: ['society'],
-    effects: [
-      {
-        variable: 'technologies.state.cost_multiplier',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'technologies.state.time_multiplier',
-        multiplier: 0.8,
-      },
-    ],
-  },
-  computing: {
-    id: 'computing',
-    tags: ['physics', 'computing'],
-    cost: 1,
-    effects: [
-      {
-        variable: 'technologies.physics.cost_multiplier',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'technologies.physics.time_multiplier',
-        multiplier: 0.8,
-      },
-    ],
-  },
-  engineering: {
-    id: 'engineering',
-    tags: ['engineering'],
-    cost: 1,
-    effects: [
-      {
-        variable: 'technologies.engineering.cost_multiplier',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'technologies.engineering.time_multiplier',
-        multiplier: 0.8,
-      },
-    ],
-  },
-  construction: {
-    id: 'construction',
-    tags: ['engineering', 'construction'],
-    cost: 2,
-    requires: ['engineering'],
-    effects: [
-      {
-        variable: 'technologies.construction.cost_multiplier',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'technologies.construction.time_multiplier',
-        multiplier: 0.8,
-      },
-    ],
-  },
-  production: {
-    id: 'production',
-    tags: ['engineering', 'production'],
-    cost: 2,
-    requires: ['engineering'],
-    effects: [
-      {
-        variable: 'technologies.production.cost_multiplier',
-        multiplier: 0.9,
-      },
-      {
-        variable: 'technologies.production.time_multiplier',
-        multiplier: 0.8,
-      },
-    ],
-  },
-
-  /**
-   * Market technologies, market fee is already a multiplier
-   */
-
   /**
    * pop technologies
    */
@@ -121,7 +22,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     tags: ['society', 'biology'],
     cost: 2,
     precedes: ['more_colonists_2'],
-    requires: ['demographic'],
     effects: [
       {
         variable: 'empire.pop.colonists',
@@ -164,7 +64,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'cheap_claims_1',
     tags: ['society', 'state'],
     cost: 2,
-    requires: ['society'],
     effects: [
       {
         variable: 'systems.colonized.cost.energy',
@@ -214,7 +113,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_systems_1',
     tags: ['physics', 'energy'],
     cost: 4,
-    requires: ['computing'],
     effects: [
       {
         variable: 'systems.colonized.upkeep.energy',
@@ -296,7 +194,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'cheap_buildings_1',
     tags: ['engineering', 'construction'],
     cost: 2,
-    requires: ['construction'],
     precedes: ['cheap_buildings_2'],
     effects: [
       {
@@ -375,7 +272,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_buildings_1',
     tags: ['physics', 'energy'],
     cost: 2,
-    requires: ['computing'],
     precedes: ['efficient_buildings_2'],
     effects: [
       {
@@ -481,7 +377,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'faster_building_construction_1',
     tags: ['engineering', 'construction'],
     cost: 2,
-    requires: ['construction'],
     effects: [
       {
         variable: 'buildings.farm.build_time',
@@ -547,7 +442,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'improved_production_1',
     tags: ['engineering', 'production'],
     cost: 2,
-    requires: ['production'],
     precedes: ['improved_production_2'],
     effects: [
       {
@@ -648,7 +542,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'efficient_resources_1',
     tags: ['engineering', 'construction'],
     cost: 2,
-    requires: ['construction'],
     precedes: ['efficient_resources_2'],
     effects: [
       {
@@ -695,7 +588,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'district_specialization',
     tags: ['engineering', 'construction'],
     cost: 2,
-    requires: ['engineering', 'computing'],
     effects: [],
   },
   district_production_increase: {
@@ -971,7 +863,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'faster_district_construction_1',
     tags: ['engineering', 'construction'],
     cost: 2,
-    requires: ['construction'],
     effects: [
       {
         variable: 'districts.mining.build_time',
@@ -1292,7 +1183,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'improved_industry_1',
     tags: ['engineering', 'production'],
     cost: 1,
-    requires: ['production'],
     precedes: ['improved_industry_2'],
     effects: [
       {
@@ -2408,20 +2298,20 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
 // special resources
 generate_sequence('pop_food_consumption', ['society', 'biology'], 'empire.pop.consumption.food',
-  {multiplierIncrement: -0.05}, ['demographic']);
+  {multiplierIncrement: -0.05});
 // pop growth is already a multiplier, so it will be 0.05 -> 0.05 * 1.1 = 0.055 -> 0.05 * 1.2 = 0.06
 generate_sequence('pop_growth_colonized', ['society', 'biology'], 'systems.colonized.pop_growth',
-  {multiplierIncrement: +0.1}, ['demographic']);
+  {multiplierIncrement: +0.1});
 generate_sequence('pop_growth_upgraded', ['society', 'biology'], 'systems.upgraded.pop_growth',
-  {multiplierIncrement: +0.1}, ['demographic']);
+  {multiplierIncrement: +0.1});
 generate_sequence('unemployed_pop_cost', ['society', 'state'],
   'empire.pop.unemployed_upkeep.credits',
   {
     multiplierIncrement: -0.05,
     exponentialBase: 3,
-  }, ['demographic']); // -5% -> -15% -> -45%
+  }); // -5% -> -15% -> -45%
 generate_sequence('faster_research', ['physics', 'computing'], 'empire.technologies.research_time',
-  {multiplierIncrement: -0.1}, ['computing']);
+  {multiplierIncrement: -0.1});
 
 /** systems: reduced upgrade time */
 generate_sequence('faster_explored_system_upgrade', ['physics', 'computing'],
@@ -2429,43 +2319,43 @@ generate_sequence('faster_explored_system_upgrade', ['physics', 'computing'],
   {
     multiplierIncrement: -0.1,
     exponentialBase: 2,
-  }, ['computing']);
+  });
 generate_sequence('faster_colonized_system_upgrade', ['engineering', 'construction'],
   'systems.colonized.upgrade_time',
   {
     multiplierIncrement: -0.1,
     exponentialBase: 2,
-  }, ['construction']);
+  });
 generate_sequence('faster_upgraded_system_upgrade', ['engineering', 'construction'],
   'systems.upgraded.upgrade_time',
   {
     multiplierIncrement: -0.1,
     exponentialBase: 2,
-  }, ['construction', 'faster_colonized_system_upgrade_3']);
+  }, ['faster_colonized_system_upgrade_3']);
 generate_sequence('faster_developed_system_upgrade', ['engineering', 'construction'],
   'systems.developed.upgrade_time',
   {
     multiplierIncrement: -0.1,
     exponentialBase: 2,
-  }, ['construction', 'faster_upgraded_system_upgrade_3']);
+  }, ['faster_upgraded_system_upgrade_3']);
 
 // basic resources
 generate_sequence('energy_production', ['physics', 'energy'],
   'buildings.power_plant.production.energy',
-  {}, ['computing']);
+  {});
 generate_sequence('mineral_production', ['engineering', 'production'],
   'buildings.mine.production.minerals',
-  {}, ['production']);
+  {});
 generate_sequence('food_production', ['society', 'biology'],
-  'buildings.farm.production.food', {}, ['demographic']);
+  'buildings.farm.production.food', {});
 // advanced resources
 generate_sequence('research_production', ['physics', 'computing'],
   'buildings.research_lab.production.research',
-  {}, ['computing']);
+  {});
 generate_sequence('alloy_production', ['engineering', 'materials'],
-  'buildings.foundry.production.alloys', {}, ['production']);
+  'buildings.foundry.production.alloys', {});
 generate_sequence('fuel_production', ['engineering', 'production'],
-  'buildings.refinery.production.fuel', {}, ['production']);
+  'buildings.refinery.production.fuel', {});
 
 // basic district resource production
 generate_sequence('energy_district_production', ['physics', 'energy'],
@@ -2493,7 +2383,7 @@ generate_sequence('city_production', ['society', 'economy'],
 
 /** empire: market fee reduction*/
 generate_sequence('market_fee_reduction', ['society', 'economy'],
-  'empire.market.fee', {multiplierIncrement: -0.05}, ['society']);
+  'empire.market.fee', {multiplierIncrement: -0.05});
 /** energy district: reduce initial mineral cost */
 generate_sequence('effective_energy', ['engineering', 'construction'],
   'districts.energy.cost.minerals',
