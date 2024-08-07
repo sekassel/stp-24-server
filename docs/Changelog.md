@@ -360,7 +360,7 @@
   - Added new tech tags: `weaponry` (physics) and `shipmaking` (engineering)
   - Adjusted costs of all techs to be linear and according to the level in the tech tree.
   - Adjusted variable modifiers of many techs to be linear (e.g. -5%, -10%, -15% instead of -5%, -10%, -20%)
-  - Added 3 new technologies: `biology_specialization`, `building_specialization`, `economy_specialization`
+  - Added 4 new technologies: `biology_specialization`, `economy_specialization`, `building_specialization`, `system_specialization`
   - Removed 8 technologies: `computing`, `construction`, `demographic`, `engineering`, `production`, `faster_ship_construction_1,2,3`
   - Diff of resulting tech list: https://www.diffchecker.com/ShjjrptE/
 
