@@ -16,11 +16,23 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * Pop Technologies
    ********************************************************************************************************************/
 
+  /*********************************************************************************************************************
+   * System Technologies
+   ********************************************************************************************************************/
+
+  system_specialization: {
+    id: 'system_specialization',
+    tags: ['society', 'state'],
+    cost: 1,
+    effects: [],
+  },
+
   /** colonists: increased pops (colonists) at system start */
   more_colonists_1: {
     id: 'more_colonists_1',
     tags: ['society', 'biology'],
-    cost: 1,
+    cost: 2,
+    requires: ['system_specialization'],
     precedes: ['more_colonists_2'],
     effects: [
       {
@@ -32,7 +44,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   more_colonists_2: {
     id: 'more_colonists_2',
     tags: ['society', 'biology'],
-    cost: 2,
+    cost: 3,
     precedes: ['more_colonists_3'],
     requires: ['more_colonists_1'],
     effects: [
@@ -45,7 +57,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   more_colonists_3: {
     id: 'more_colonists_3',
     tags: ['society', 'biology'],
-    cost: 3,
+    cost: 4,
     requires: ['more_colonists_2'],
     effects: [
       {
@@ -55,15 +67,12 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     ],
   },
 
-  /*********************************************************************************************************************
-   * System Technologies
-   ********************************************************************************************************************/
-
   /** system claims: colonizing, upgrading and developing systems */
   cheap_claims_1: { // reduced system claim costs
     id: 'cheap_claims_1',
     tags: ['society', 'state'],
-    cost: 1,
+    cost: 2,
+    requires: ['system_specialization'],
     effects: [
       {
         variable: 'systems.colonized.cost.energy',
@@ -78,7 +87,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   cheap_claims_2: { // reduced system upgrade costs
     id: 'cheap_claims_2',
     tags: ['society', 'state'],
-    cost: 2,
+    cost: 3,
     requires: ['cheap_claims_1'],
     effects: [
       {
@@ -94,7 +103,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   cheap_claims_3: { // reduced system development costs
     id: 'cheap_claims_3',
     tags: ['society', 'state'],
-    cost: 3,
+    cost: 4,
     requires: ['cheap_claims_2'],
     effects: [
       {
@@ -112,7 +121,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_systems_1: {
     id: 'efficient_systems_1',
     tags: ['physics', 'energy'],
-    cost: 1,
+    cost: 2,
+    requires: ['system_specialization'],
     effects: [
       {
         variable: 'systems.colonized.upkeep.energy',
@@ -131,7 +141,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_systems_2: {
     id: 'efficient_systems_2',
     tags: ['physics', 'propulsion'],
-    cost: 2,
+    cost: 3,
     requires: ['efficient_systems_1'],
     effects: [
       {
@@ -151,7 +161,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_systems_3: {
     id: 'efficient_systems_3',
     tags: ['engineering', 'materials'],
-    cost: 3,
+    cost: 4,
     requires: ['efficient_systems_2'],
     effects: [
       {
@@ -171,7 +181,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_systems_4: {
     id: 'efficient_systems_4',
     tags: ['engineering', 'materials'],
-    cost: 4,
+    cost: 5,
     requires: ['efficient_systems_3'],
     effects: [
       {
@@ -190,22 +200,28 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     'systems.explored.upgrade_time',
     {
       multiplierIncrement: -0.1,
-    }),
+      startCost: 2,
+    },
+    ['system_specialization'],
+  ),
   ...generate_sequence('faster_colonized_system_upgrade', ['engineering', 'construction'],
     'systems.colonized.upgrade_time',
     {
       multiplierIncrement: -0.1,
-    }),
+      startCost: 2,
+    },
+    ['system_specialization'],
+  ),
   ...generate_sequence('faster_upgraded_system_upgrade', ['engineering', 'construction'],
     'systems.upgraded.upgrade_time',
     {
-      startCost: 2,
+      startCost: 3,
       multiplierIncrement: -0.1,
     }, ['faster_colonized_system_upgrade_1']),
   ...generate_sequence('faster_developed_system_upgrade', ['engineering', 'construction'],
     'systems.developed.upgrade_time',
     {
-      startCost: 3,
+      startCost: 4,
       multiplierIncrement: -0.1,
     }, ['faster_upgraded_system_upgrade_1']),
 
