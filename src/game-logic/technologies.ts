@@ -1790,13 +1790,13 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   /** research site: reduce initial mineral cost */
   ...generate_sequence('effective_lab_building', ['engineering', 'construction'],
     'districts.research_site.cost.minerals',
-    {startCost: 3, multiplierIncrement: -0.1},
-    ['district_cost_reduction']),
+    {startCost: 4, multiplierIncrement: -0.1},
+    ['ancient_district_cost_reduction']),
   /** research site: reduce energy upkeep */
   ...generate_sequence('efficient_research', ['physics', 'energy'],
     'districts.research_site.upkeep.energy',
-    {startCost: 3, multiplierIncrement: -0.1},
-    ['district_upkeep_reduction']),
+    {startCost: 4, multiplierIncrement: -0.1},
+    ['ancient_district_upkeep_reduction']),
   /** ancient_foundry: reduce initial mineral cost */
   ...generate_sequence('ancient_foundry_structure', ['engineering', 'construction'],
     'districts.ancient_foundry.cost.minerals',
