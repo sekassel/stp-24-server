@@ -352,3 +352,22 @@
 * Explained the `empire.compare.*` aggregates more clearly.
 * Documented the required `system` property for `type=ship` Jobs.
 * Documented the behavior of WebSocket events for computed properties like `Game.members` and `Fleet.ships`.
+
+# v4.3.0 (2024-08-07)
+
+## Balancing
+- Major Technology Rebalancing:
+  - Added new tech tags: `weaponry` (physics) and `shipmaking` (engineering)
+  - Adjusted costs of all techs to be linear and according to the level in the tech tree.
+  - Adjusted variable modifiers of many techs to be linear (e.g. -5%, -10%, -15% instead of -5%, -10%, -20%)
+  - Added 3 new technologies: `biology_specialization`, `building_specialization`, `economy_specialization`
+  - Removed 8 technologies: `computing`, `construction`, `demographic`, `engineering`, `production`, `faster_ship_construction_1,2,3`
+  - Diff of resulting tech list: https://www.diffchecker.com/ShjjrptE/
+
+## New Features
++ Added a new `games.<gameId>.started` event that is sent when a game is started.
+
+## Bugfixes
+* It is no longer possible to build ships if their `build_time` is 0 (this indicates they must be researched first).
+* Reduced the chance to generate overlapping systems. [#27](https://github.com/sekassel/stp-24-server-tracker/issues/27)
+* Ships no longer spawn twice when starting a game. [#29](https://github.com/sekassel/stp-24-server-tracker/issues/29)
