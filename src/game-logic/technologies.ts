@@ -2501,7 +2501,8 @@ export const TECHNOLOGY_IDS = Object.keys(TECHNOLOGIES);
 function generate_sequence(
   base_id: string,
   tags: Technology['tags'],
-  variable: Variable, {
+  variable: Variable | Variable[],
+  {
     multiplierIncrement = +0.05,
     exponentialBase = 2,
     count = 3,
@@ -2509,6 +2510,7 @@ function generate_sequence(
   } = {},
   requirement?: readonly string[],
 ): Record<string, Technology> {
+  const variables = Array.isArray(variable) ? variable : [variable];
   const result: Record<string, Technology> = {};
   for (let index = 1; index <= count; index++) {
     const exponential = exponentialBase ** (index - 1);
@@ -2521,12 +2523,10 @@ function generate_sequence(
       cost,
       requires: requirement && index == 1 ? requirement : (index > 1 ? [base_id + '_' + (index - 1)] : undefined),
       precedes: index < count ? [base_id + '_' + (index + 1)] : undefined,
-      effects: [
-        {
-          variable,
-          multiplier,
-        },
-      ],
+      effects: variables.map(variable => ({
+        variable,
+        multiplier,
+      })),
     };
   }
   return result;
