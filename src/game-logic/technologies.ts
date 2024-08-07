@@ -20,7 +20,16 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'economy_specialization',
     tags: ['society', 'economy'],
     cost: 1,
-    effects: [],
+    effects: [
+      {
+        variable: 'technologies.economy.cost_multiplier',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'technologies.economy.time_multiplier',
+        multiplier: 0.9,
+      },
+    ],
   },
 
   ...generate_sequence(
@@ -44,7 +53,16 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'biology_specialization',
     tags: ['society', 'biology'],
     cost: 1,
-    effects: [],
+    effects: [
+      {
+        variable: 'technologies.biology.cost_multiplier',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'technologies.biology.time_multiplier',
+        multiplier: 0.9,
+      },
+    ],
   },
   ...generate_sequence(
     'pop_food_consumption',
@@ -76,7 +94,16 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'system_specialization',
     tags: ['society', 'state'],
     cost: 1,
-    effects: [],
+    effects: [
+      {
+        variable: 'technologies.state.cost_multiplier',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'technologies.state.time_multiplier',
+        multiplier: 0.9,
+      },
+    ],
   },
 
   /** colonists: increased pops (colonists) at system start */
@@ -283,9 +310,18 @@ export const TECHNOLOGIES: Record<string, Technology> = {
 
   building_specialization: {
     id: 'building_specialization',
-    tags: ['engineering', 'construction'],
+    tags: ['engineering', 'production'],
     cost: 1,
-    effects: [],
+    effects: [
+      {
+        variable: 'technologies.production.cost_multiplier',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'technologies.production.time_multiplier',
+        multiplier: 0.9,
+      },
+    ],
   },
 
   /** buildings: reduce initial cost */
@@ -725,7 +761,16 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     id: 'district_specialization',
     tags: ['engineering', 'construction'],
     cost: 1,
-    effects: [],
+    effects: [
+      {
+        variable: 'technologies.construction.cost_multiplier',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'technologies.construction.time_multiplier',
+        multiplier: 0.9,
+      },
+    ],
   },
   district_production_increase: {
     id: 'district_production_increase',
@@ -1035,6 +1080,14 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       {
         variable: 'ships.colonizer.build_time',
         multiplier: 0.8,
+      },
+      {
+        variable: 'technologies.shipmaking.cost_multiplier',
+        multiplier: 0.9,
+      },
+      {
+        variable: 'technologies.shipmaking.time_multiplier',
+        multiplier: 0.9,
       },
     ],
   },
