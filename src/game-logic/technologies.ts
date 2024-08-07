@@ -189,11 +189,19 @@ export const TECHNOLOGIES: Record<string, Technology> = {
    * Technologies for buildings
    * */
 
+  building_specialization: {
+    id: 'building_specialization',
+    tags: ['engineering', 'construction'],
+    cost: 1,
+    effects: [],
+  },
+
   /** buildings: reduce initial cost */
   cheap_buildings_1: { // reduced basic building costs
     id: 'cheap_buildings_1',
     tags: ['engineering', 'construction'],
-    cost: 1,
+    cost: 2,
+    requires: ['building_specialization'],
     effects: [
       {
         variable: 'buildings.power_plant.cost.minerals',
@@ -220,7 +228,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   cheap_buildings_2: { // reduced advanced building costs
     id: 'cheap_buildings_2',
     tags: ['engineering', 'construction'],
-    cost: 2,
+    cost: 3,
     requires: ['cheap_buildings_1'],
     effects: [
       {
@@ -244,7 +252,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   cheap_buildings_3: { // reduced advanced building costs
     id: 'cheap_buildings_3',
     tags: ['engineering', 'construction'],
-    cost: 3,
+    cost: 4,
     requires: ['cheap_buildings_2'],
     effects: [
       {
@@ -270,7 +278,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_buildings_1: { // reduced basic building energy upkeep
     id: 'efficient_buildings_1',
     tags: ['physics', 'energy'],
-    cost: 1,
+    cost: 2,
+    requires: ['building_specialization'],
     effects: [
       {
         variable: 'buildings.mine.upkeep.energy',
@@ -293,7 +302,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_buildings_2: { // reduced advanced building energy upkeep
     id: 'efficient_buildings_2',
     tags: ['physics', 'energy'],
-    cost: 2,
+    cost: 3,
     requires: ['efficient_buildings_1'],
     effects: [
       {
@@ -329,7 +338,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_buildings_3: {
     id: 'efficient_buildings_3',
     tags: ['engineering', 'construction'],
-    cost: 3,
+    cost: 4,
     requires: ['efficient_buildings_2'],
     effects: [
       {
@@ -375,7 +384,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_building_construction_1: {
     id: 'faster_building_construction_1',
     tags: ['engineering', 'construction'],
-    cost: 1,
+    cost: 2,
+    requires: ['building_specialization'],
     effects: [
       {
         variable: 'buildings.farm.build_time',
@@ -394,7 +404,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_building_construction_2: {
     id: 'faster_building_construction_2',
     tags: ['engineering', 'construction'],
-    cost: 2,
+    cost: 3,
     requires: ['faster_building_construction_1'],
     effects: [
       {
@@ -414,7 +424,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   faster_building_construction_3: {
     id: 'faster_building_construction_3',
     tags: ['engineering', 'construction'],
-    cost: 3,
+    cost: 4,
     requires: ['faster_building_construction_2'],
     effects: [
       {
@@ -440,7 +450,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   improved_production_1: { // generally increased basic building production
     id: 'improved_production_1',
     tags: ['engineering', 'production'],
-    cost: 1,
+    cost: 2,
+    requires: ['building_specialization'],
     precedes: ['improved_production_2'],
     effects: [
       {
@@ -468,7 +479,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   improved_production_2: { // further increased basic building production
     id: 'improved_production_2',
     tags: ['engineering', 'production'],
-    cost: 2,
+    cost: 3,
     requires: ['improved_production_1'],
     // NOT precedes: ["improved_production_3"], improved_production_3 switches to advanced buildings, so the basic buildings should still be improved
     effects: [
@@ -497,7 +508,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   improved_production_3: { // increased advanced building production
     id: 'improved_production_3',
     tags: ['engineering', 'production'],
-    cost: 3,
+    cost: 4,
     requires: ['improved_production_2'],
     precedes: ['improved_production_4'],
     effects: [
@@ -518,7 +529,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   improved_production_4: { // further increased advanced building production
     id: 'improved_production_4',
     tags: ['engineering', 'production'],
-    cost: 4,
+    cost: 5,
     requires: ['improved_production_3'],
     effects: [
       {
@@ -540,7 +551,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_resources_1: { // reduced basic building upkeep
     id: 'efficient_resources_1',
     tags: ['engineering', 'construction'],
-    cost: 1,
+    cost: 2,
+    requires: ['building_specialization'],
     precedes: ['efficient_resources_2'],
     effects: [
       {
@@ -560,7 +572,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   efficient_resources_2: { // further reduced basic building upkeep
     id: 'efficient_resources_2',
     tags: ['engineering', 'construction'],
-    cost: 2,
+    cost: 3,
     requires: ['efficient_resources_1'],
     effects: [
       {
@@ -1723,20 +1735,35 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   // basic resources
   ...generate_sequence('energy_production', ['physics', 'energy'],
     'buildings.power_plant.production.energy',
-    {}),
+    {startCost: 2},
+    ['building_specialization'],
+  ),
   ...generate_sequence('mineral_production', ['engineering', 'production'],
     'buildings.mine.production.minerals',
-    {}),
+    {startCost: 2},
+    ['building_specialization'],
+  ),
   ...generate_sequence('food_production', ['society', 'biology'],
-    'buildings.farm.production.food', {}),
+    'buildings.farm.production.food',
+    {startCost: 2},
+    ['building_specialization'],
+  ),
   // advanced resources
   ...generate_sequence('research_production', ['physics', 'computing'],
     'buildings.research_lab.production.research',
-    {}),
+    {startCost: 2},
+    ['building_specialization'],
+  ),
   ...generate_sequence('alloy_production', ['engineering', 'materials'],
-    'buildings.foundry.production.alloys', {}),
+    'buildings.foundry.production.alloys',
+    {startCost: 2},
+    ['building_specialization'],
+  ),
   ...generate_sequence('fuel_production', ['engineering', 'production'],
-    'buildings.refinery.production.fuel', {}),
+    'buildings.refinery.production.fuel',
+    {startCost: 2},
+    ['building_specialization'],
+  ),
 
   // basic district resource production
   ...generate_sequence('energy_district_production', ['physics', 'energy'],
