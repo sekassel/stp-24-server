@@ -848,7 +848,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     'fast_small_ship_construction',
     ['engineering', 'shipmaking'],
     ['ships.corvette.build_time', 'ships.bomber.build_time', 'ships.frigate.build_time'],
-    {startCost: 3, multiplierIncrement: -0.1, exponentialBase: 1},
+    {startCost: 3, multiplierIncrement: -0.1},
     ['small_ship_construction'],
   ),
 
@@ -881,7 +881,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     'fast_medium_ship_construction',
     ['engineering', 'shipmaking'],
     ['ships.destroyer.build_time', 'ships.cruiser.build_time', 'ships.vanguard.build_time', 'ships.sentinel.build_time'],
-    {startCost: 4, multiplierIncrement: -0.1, exponentialBase: 1},
+    {startCost: 4, multiplierIncrement: -0.1},
     ['medium_ship_construction'],
   ),
 
@@ -910,7 +910,7 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     'fast_large_ship_construction',
     ['engineering', 'shipmaking'],
     ['ships.battleship.build_time', 'ships.carrier.build_time', 'ships.dreadnought.build_time'],
-    {startCost: 5, multiplierIncrement: -0.1, exponentialBase: 1},
+    {startCost: 5, multiplierIncrement: -0.1},
     ['large_ship_construction'],
   ),
 
@@ -1689,9 +1689,8 @@ export const TECHNOLOGIES: Record<string, Technology> = {
   ...generate_sequence('unemployed_pop_cost', ['society', 'state'],
     'empire.pop.unemployed_upkeep.credits',
     {
-      multiplierIncrement: -0.05,
-      exponentialBase: 3,
-    }), // -5% -> -15% -> -45%
+      multiplierIncrement: -0.1,
+    }), // -10% -> -20% -> -30%
   ...generate_sequence('faster_research', ['physics', 'computing'], 'empire.technologies.research_time',
     {multiplierIncrement: -0.1}),
 
@@ -1700,27 +1699,23 @@ export const TECHNOLOGIES: Record<string, Technology> = {
     'systems.explored.upgrade_time',
     {
       multiplierIncrement: -0.1,
-      exponentialBase: 2,
     }),
   ...generate_sequence('faster_colonized_system_upgrade', ['engineering', 'construction'],
     'systems.colonized.upgrade_time',
     {
       multiplierIncrement: -0.1,
-      exponentialBase: 2,
     }),
   ...generate_sequence('faster_upgraded_system_upgrade', ['engineering', 'construction'],
     'systems.upgraded.upgrade_time',
     {
       startCost: 2,
       multiplierIncrement: -0.1,
-      exponentialBase: 2,
     }, ['faster_colonized_system_upgrade_1']),
   ...generate_sequence('faster_developed_system_upgrade', ['engineering', 'construction'],
     'systems.developed.upgrade_time',
     {
       startCost: 3,
       multiplierIncrement: -0.1,
-      exponentialBase: 2,
     }, ['faster_upgraded_system_upgrade_1']),
 
   // basic resources
@@ -1844,14 +1839,13 @@ export const TECHNOLOGY_IDS = Object.keys(TECHNOLOGIES);
  * },
  * TECHNOLOGIES.energy_production_3 = {
  *   id: 'energy_production_3',
- *   cost: 4,
+ *   cost: 3,
  *   requires: ['energy_production_2'],
- *   effects: +20% $resources.energy$ from $buildings.power_plant$ per $period$',
+ *   effects: +15% $resources.energy$ from $buildings.power_plant$ per $period$',
  * }
  * @example
  * ...generate_sequence('unemployed_pop_cost', 'pop.consumption.credits.unemployed', '$resources.credits$ per unemployed $resources.population$ per $period$', {
  *   multiplierIncrement: -0.05,
- *   exponentialBase: 3,
  * });
  * // generates:
  * TECHNOLOGIES.unemployed_pop_cost_1 = {
@@ -1862,16 +1856,16 @@ export const TECHNOLOGY_IDS = Object.keys(TECHNOLOGIES);
  * },
  * TECHNOLOGIES.unemployed_pop_cost_2 = {
  *   id: 'unemployed_pop_cost_2',
- *   cost: 3, // here the cost is 3x the previous cost, because exponentialBase is 3
+ *   cost: 2,
  *   requires: ['unemployed_pop_cost_1'],
  *   precedes: ['unemployed_pop_cost_3'],
- *   effects: -15% $resources.credits$ per unemployed $resources.population$ per $period$', // 3x the previous effect
+ *   effects: -10% $resources.credits$ per unemployed $resources.population$ per $period$',
  * },
  * TECHNOLOGIES.unemployed_pop_cost_3 = {
  *   id: 'unemployed_pop_cost_3',
- *   cost: 9, // again 3x the previous cost
+ *   cost: 3,
  *   requires: ['unemployed_pop_cost_2'],
- *   effects: -45% $resources.credits$ per unemployed $resources.population$ per $period$',
+ *   effects: -15% $resources.credits$ per unemployed $resources.population$ per $period$',
  * }
  *
  * @param base_id the base ID, e.g. "energy_production"
@@ -1880,7 +1874,6 @@ export const TECHNOLOGY_IDS = Object.keys(TECHNOLOGIES);
  * @param variable_desc the description of the variable, e.g. "$resources.energy$ from $buildings.power_plant$ per $period$"
  * @param requirement the requirement for the first step, default undefined
  * @param multiplierIncrement the amount to increase the multiplier by each step, default +0.05
- * @param exponentialBase the base of the exponential, default 2
  * @param count the number of steps, default 3
  * @param startCost the cost of the first step, default 1
  */
@@ -1890,7 +1883,6 @@ function generate_sequence(
   variable: Variable | Variable[],
   {
     multiplierIncrement = +0.05,
-    exponentialBase = 2,
     count = 3,
     startCost = 1,
   } = {},
@@ -1899,9 +1891,8 @@ function generate_sequence(
   const variables = Array.isArray(variable) ? variable : [variable];
   const result: Record<string, Technology> = {};
   for (let index = 1; index <= count; index++) {
-    const exponential = exponentialBase ** (index - 1);
     const cost = startCost + (index - 1);
-    const multiplier = 1 + multiplierIncrement * exponential;
+    const multiplier = 1 + multiplierIncrement * index;
     const id = base_id + '_' + index;
     result[id] = {
       id,
