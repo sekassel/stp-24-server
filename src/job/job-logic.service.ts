@@ -1,4 +1,10 @@
-import {BadRequestException, ForbiddenException, Injectable, NotFoundException} from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {EmpireDocument} from '../empire/empire.schema';
 import {ResourceName} from '../game-logic/resources';
 import {CreateJobDto} from './job.dto';
@@ -34,6 +40,9 @@ export class JobLogicService {
     switch (dto.type as JobType) {
       case JobType.BUILDING: {
         if (!system) notFound(dto.system);
+        if (!empire._id.equals(system.owner)) {
+          throw new ForbiddenException('You can only build buildings in your own systems.');
+        }
         const building = dto.building;
         if (!building) {
           throw new BadRequestException('Building name is required for this job type.');
@@ -49,6 +58,10 @@ export class JobLogicService {
         };
       }
       case JobType.DISTRICT: {
+        if (!system) notFound(dto.system);
+        if (!empire._id.equals(system.owner)) {
+          throw new ForbiddenException('You can only build buildings in your own systems.');
+        }
         const district = dto.district;
         if (!district) {
           throw new BadRequestException('District name is required for this job type.');
@@ -66,7 +79,7 @@ export class JobLogicService {
       case JobType.UPGRADE: {
         if (!system) notFound(dto.system);
         if (!empire._id.equals(system.owner) && system.upgrade !== 'unexplored' && system.upgrade !== 'explored') {
-          throw new BadRequestException('You can only upgrade systems you own.');
+          throw new ForbiddenException('You can only upgrade systems you own.');
         }
         const nextUpgrade = SYSTEM_UPGRADES[system.upgrade]?.next;
         if (!nextUpgrade) {
@@ -109,6 +122,13 @@ export class JobLogicService {
       case JobType.SHIP: {
         if (!dto.ship || !dto.fleet) {
           throw new BadRequestException('Ship type and fleet id are required for this job type.');
+        }
+        if (!system) notFound(dto.system);
+        if (!empire._id.equals(system.owner)) {
+          throw new ForbiddenException('You can only build ships in your own systems.');
+        }
+        if (!system.buildings.includes('shipyard')) {
+          throw new ConflictException('You must have a shipyard in the system to build ships.');
         }
         const ship = SHIP_TYPES[dto.ship as ShipTypeName] ?? notFound(dto.ship as ShipTypeName);
         const time = this.empireLogicService.getShipTime(empire, ship);

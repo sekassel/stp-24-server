@@ -27,14 +27,16 @@ export class ShipService extends MongooseRepository<Ship> {
 
   async buildShip(system: SystemDocument, job: JobDocument) {
     const fleet = await this.fleetService.find(job.fleet!);
-    if (!fleet || fleet.location.toString() !== system._id.toString()) {
+    // The system where the ship is being built may no longer match the original owner of the fleet.
+    const realOwner = system.owner;
+    if (!fleet || !fleet.location.equals(system._id) || !fleet.empire?.equals(realOwner)) {
       const newFleet = await this.fleetService.upsert({
         game: job.game,
-        empire: job.empire,
+        empire: realOwner,
         location: system._id,
       },{
         game: job.game,
-        empire: job.empire,
+        empire: realOwner,
         location: system._id,
         name: 'New Fleet',
         size: {[job.ship as ShipTypeName]: 1},
@@ -42,7 +44,7 @@ export class ShipService extends MongooseRepository<Ship> {
         _private: {},
         _public: {},
       });
-      await this.create(this.createShip(newFleet._id, job.empire, job.ship!, job.game));
+      await this.create(this.createShip(newFleet._id, realOwner, job.ship!, job.game));
     } else {
       await this.create(this.createShip(fleet._id, job.empire, job.ship!, job.game));
     }
@@ -55,7 +57,7 @@ export class ShipService extends MongooseRepository<Ship> {
     })));
   }
 
-  createShip(fleet: Types.ObjectId, empire: Types.ObjectId, type: ShipTypeName, game: Types.ObjectId): Omit<Ship, keyof GlobalSchema> {
+  createShip(fleet: Types.ObjectId, empire: Types.ObjectId | undefined, type: ShipTypeName, game: Types.ObjectId): Omit<Ship, keyof GlobalSchema> {
     return {
       game,
       empire,
