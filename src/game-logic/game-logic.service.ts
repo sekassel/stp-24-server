@@ -94,7 +94,7 @@ export class GameLogicService {
     await this.jobService.deleteMany({game: game._id, $expr: {$gte: ['$progress', '$total']}});
     const jobs = await this.jobService.findAll({game: game._id}, {sort: {priority: 1, createdAt: 1}});
     await this.updateEmpires(empires, systems, jobs, ships);
-    await this.updateFleets(empires, systems, fleets, ships, wars);
+    await this.updateFleets(empires, systems, fleets, ships, wars, jobs);
 
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
@@ -368,7 +368,14 @@ export class GameLogicService {
     system.population = population + growth;
   }
 
-  private async updateFleets(empires: EmpireDocument[], systems: SystemDocument[], fleets: FleetDocument[], ships: ShipDocument[], wars: WarDocument[]) {
+  private async updateFleets(
+    empires: EmpireDocument[],
+    systems: SystemDocument[],
+    fleets: FleetDocument[],
+    ships: ShipDocument[],
+    wars: WarDocument[],
+    jobs: JobDocument[],
+  ) {
     const groupedBySystem = fleets.reduce<Record<string, FleetDocument[]>>((acc, fleet) => {
       (acc[fleet.location.toString()] ??= []).push(fleet);
       return acc;
@@ -437,7 +444,7 @@ export class GameLogicService {
             this.healShip(ship, numShipyards, variables);
           } else {
             // Attack the system
-            this.attackSystem(ship, system, systemDefense[systemId] ?? 1, variables);
+            this.attackSystem(ship, system, systemDefense[systemId] ?? 1, variables, jobs);
           }
         }
       }
@@ -507,15 +514,38 @@ export class GameLogicService {
     );
   }
 
-  private attackSystem(ship: ShipDocument, system: SystemDocument, defense: number, variables: Partial<Record<Variable, number>>) {
+  private attackSystem(
+    ship: ShipDocument,
+    system: SystemDocument,
+    defense: number,
+    variables: Partial<Record<Variable, number>>,
+    jobs: JobDocument[],
+  ) {
     const attack = variables[`ships.${ship.type}.damage.system` as Variable] ?? variables[`ships.${ship.type}.damage.default` as Variable] ?? 0;
     // The damage is calculated using A.attack.system / system.defense + log(A.experience)
     const damage = Math.max(attack / defense + Math.log(ship.experience), 0);
     system.health -= damage;
-    if (system.health <= 0) {
-      system.health = 0;
-      // If the system falls to 0 HP, the owner changes to the attacker.
-      system.owner = ship.empire;
+    if (system.health > 0) {
+      return;
+    }
+
+    // The system is destroyed - change the owner
+    system.health = 0;
+    system.owner = ship.empire;
+    for (const job of jobs) {
+      // We need to update all jobs that are related to this system.
+      if (!system._id.equals(job.system)) {
+        continue;
+      }
+      if (ship.empire) {
+        // This is a system or ship job. The new buildings or ship should belong to the attacker empire.
+        // If the ship is rogue, the job will still continue.
+        job.empire = ship.empire;
+      }
+      if (job.fleet) {
+        // This is probably a ship job. The new ships should belong to the attacker fleet.
+        job.fleet = ship.fleet;
+      }
     }
   }
 
