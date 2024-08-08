@@ -116,7 +116,7 @@ export class SystemLogicService {
       // This also allows custom variables to add new district chances
       const segments = type.split('.');
       // Custom variables might also add completely unrelated things, so we need to double check
-      if (segments.length === 4 && segments[0] === 'districts' && segments[1] in DISTRICTS && segments[2] === 'chance' && segments[4] === system.type) {
+      if (segments.length === 4 && segments[0] === 'districts' && segments[1] in DISTRICTS && segments[2] === 'chance' && segments[3] === system.type) {
         const district = segments[1] as DistrictName;
         system.districtSlots[district] = (system.districtSlots[district] ?? 0) + 1;
       }
