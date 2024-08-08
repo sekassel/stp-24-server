@@ -1,5 +1,17 @@
-import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, Query} from '@nestjs/common';
 import {
+  Body,
+  ConflictException,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
@@ -8,7 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {Types} from 'mongoose';
-import {notFound, NotFound, ObjectIdPipe, OptionalObjectIdPipe} from '@mean-stream/nestx';
+import {exceptionDesc, notFound, NotFound, ObjectIdPipe, OptionalObjectIdPipe} from '@mean-stream/nestx';
 import {Validated} from '../util/validated.decorator';
 import {Throttled} from '../util/throttled.decorator';
 import {Auth, AuthUser} from '../auth/auth.decorator';
@@ -96,7 +108,16 @@ export class JobController {
   @Auth()
   @ApiOperation({description: 'Create a new job for your empire.'})
   @ApiCreatedResponse({type: Job})
-  @ApiForbiddenResponse({description: 'You can only create jobs for your own empire.'})
+  @ApiConflictResponse({description: exceptionDesc(ConflictException,
+      JobService.prototype.createJob,
+      JobLogicService.prototype.getCostAndDuration,
+  )})
+  @ApiForbiddenResponse({description: exceptionDesc(ForbiddenException,
+      JobController.prototype.checkUserWrite,
+      JobService.prototype.createJob,
+      JobLogicService.prototype.getCostAndDuration,
+      JobLogicService.prototype.throwForbiddenException,
+  )})
   @NotFound()
   async createJob(
     @Param('game', ObjectIdPipe) game: Types.ObjectId,

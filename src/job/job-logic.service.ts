@@ -60,7 +60,7 @@ export class JobLogicService {
       case JobType.DISTRICT: {
         if (!system) notFound(dto.system);
         if (!empire._id.equals(system.owner)) {
-          throw new ForbiddenException('You can only build buildings in your own systems.');
+          throw new ForbiddenException('You can only build districts in your own systems.');
         }
         const district = dto.district;
         if (!district) {
@@ -83,7 +83,7 @@ export class JobLogicService {
         }
         const nextUpgrade = SYSTEM_UPGRADES[system.upgrade]?.next;
         if (!nextUpgrade) {
-          throw new BadRequestException('System cannot be upgraded further.');
+          throw new ConflictException('System cannot be upgraded further.');
         }
         const variables: Partial<Record<Variable, number>> = {
           ...flatten(SYSTEM_UPGRADES[nextUpgrade].cost, `systems.${nextUpgrade}.cost.`),
@@ -133,7 +133,7 @@ export class JobLogicService {
         const ship = SHIP_TYPES[dto.ship as ShipTypeName] ?? notFound(dto.ship as ShipTypeName);
         const time = this.empireLogicService.getShipTime(empire, ship);
         if (!time) {
-          throw new BadRequestException('This ship type is not unlocked yet (build_time=0).');
+          throw new ConflictException('This ship type is not unlocked yet (build_time=0).');
         }
         return {
           ...this.empireLogicService.getShipCost(empire, ship),
@@ -145,10 +145,10 @@ export class JobLogicService {
           throw new BadRequestException('Path and fleet id are required for this job type.');
         }
         if (!ships || ships.length === 0) {
-          throw new NotFoundException('There are no ships available to travel in this fleet.');
+          throw new ConflictException('There are no ships available to travel in this fleet.');
         }
         if (!systemPaths[0]._id.equals(fleet.location)) {
-          throw new BadRequestException('Path must start with the fleet\'s current location.');
+          throw new ConflictException('Path must start with the fleet\'s current location.');
         }
         return {
           time: this.systemLogicService.getTravelTime(systemPaths, fleet, ships, empire)
@@ -224,7 +224,7 @@ export class JobLogicService {
     this.throwForbiddenException(shipType);
   }
 
-  private throwForbiddenException(shipType: ShipTypeName): never {
+  throwForbiddenException(shipType: ShipTypeName): never {
     throw new ForbiddenException(`You must have a fleet with ship '${shipType}' in the system to upgrade it.`);
   }
 }
