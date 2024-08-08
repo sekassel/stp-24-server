@@ -18,6 +18,7 @@ import {ShipService} from '../ship/ship.service';
 import {SystemService} from '../system/system.service';
 import {ResourceName} from '../game-logic/resources';
 import {SystemLogicService} from '../system/system-logic.service';
+import {Ship} from '../ship/ship.schema';
 
 @Injectable()
 @EventRepository()
@@ -38,6 +39,7 @@ export class JobService extends MongooseRepository<Job> {
 
   async createJob(dto: CreateJobDto, empire: EmpireDocument, system?: SystemDocument): Promise<Job | null> {
     // Check fleet access
+    let shipToDelete: Ship | undefined;
     if (dto.type === JobType.UPGRADE) {
       if (!system) {
         throw new NotFoundException('System not found.');
@@ -50,8 +52,7 @@ export class JobService extends MongooseRepository<Job> {
           this.jobLogicService.checkFleet('explorer', fleets, ships);
         } else if (system.upgrade === 'explored') {
           // check and delete colonizer
-          const ship = this.jobLogicService.checkFleet('colonizer', fleets, ships);
-          await this.shipService.deleteOne(ship._id);
+          shipToDelete = this.jobLogicService.checkFleet('colonizer', fleets, ships);
         }
       }
     }
@@ -81,6 +82,8 @@ export class JobService extends MongooseRepository<Job> {
 
     // Deduct resources from the empire
     this.empireLogicService.deductResources(empire, cost);
+
+    shipToDelete && await this.shipService.deleteOne(shipToDelete._id);
 
     const jobData: Omit<Job, keyof GlobalSchema> = {
       empire: empire._id,
