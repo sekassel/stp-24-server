@@ -8,33 +8,33 @@ export const RESOURCES = {
   population: {
     starting: 25,
   },
+  research: {
+    starting: 300,
+  },
   // raw resources
   energy: {
-    starting: 100,
+    starting: 500,
     credit_value: 1,
   },
   minerals: {
-    starting: 100,
+    starting: 500,
     credit_value: 1,
   },
   food: {
-    starting: 100,
+    starting: 500,
     credit_value: 1,
   },
   // processed resources
   fuel: {
-    starting: 20,
+    starting: 100,
     credit_value: 5,
   },
-  research: {
-    starting: 20,
-  },
   alloys: {
-    starting: 20,
+    starting: 100,
     credit_value: 8,
   },
   consumer_goods: {
-    starting: 20,
+    starting: 100,
     credit_value: 6,
   },
 } as const satisfies Record<string, Resource>;
