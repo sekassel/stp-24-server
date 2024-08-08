@@ -1,6 +1,6 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
-import {Document, Model} from 'mongoose';
+import {Document, Model, Types} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 import {Empire, EmpireDocument} from './empire.schema';
 import {EmpireTemplate, ReadEmpireDto, UpdateEmpireDto} from './empire.dto';
@@ -39,6 +39,10 @@ export class EmpireService extends MongooseRepository<Empire> {
     }
     const {resources, technologies, traits, _private, ...rest} = empire;
     return rest;
+  }
+
+  async isSpectator(user: Types.ObjectId, game: Types.ObjectId): Promise<boolean> {
+    return !(await this.exists({game, user}));
   }
 
   updateEmpire(empire: EmpireDocument, dto: UpdateEmpireDto, free: boolean) {

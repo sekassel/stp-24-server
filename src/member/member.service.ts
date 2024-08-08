@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
-import {Model, Types} from 'mongoose';
+import {Model} from 'mongoose';
 import {EventRepository, EventService, MongooseRepository} from '@mean-stream/nestx';
 
 import {Game} from '../game/game.schema';
@@ -20,11 +20,6 @@ export class MemberService extends MongooseRepository<Member, never, MemberDocum
 
   async checkPassword(game: Game, member: CreateMemberDto): Promise<boolean> {
     return bcrypt.compare(member.password, game.passwordHash);
-  }
-
-  async isSpectator(game: Types.ObjectId, user: Types.ObjectId): Promise<boolean> {
-    const member = await this.findOne({game, user});
-    return !!member && !member.empire;
   }
 
   private emit(event: string, member: Member): void {

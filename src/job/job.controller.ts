@@ -33,7 +33,6 @@ import {JobType} from './job-type.enum';
 import {EmpireDocument} from '../empire/empire.schema';
 import {SystemService} from '../system/system.service';
 import {JobLogicService} from './job-logic.service';
-import {MemberService} from '../member/member.service';
 import {MONGO_ID_FORMAT} from '../util/schema';
 
 @Controller('games/:game/empires/:empire/jobs')
@@ -45,7 +44,6 @@ export class JobController {
     private readonly jobService: JobService,
     private readonly jobLogicService: JobLogicService,
     private readonly empireService: EmpireService,
-    private readonly memberService: MemberService,
     private readonly systemService: SystemService,
   ) {
   }
@@ -185,7 +183,7 @@ export class JobController {
     if (requestedEmpire.user.equals(user._id)) {
       return;
     }
-    if (await this.memberService.isSpectator(requestedEmpire.game, user._id)) {
+    if (await this.empireService.isSpectator(user._id, requestedEmpire.game)) {
       return;
     }
     throw new ForbiddenException('You can only read jobs for your own empire.');

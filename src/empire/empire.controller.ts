@@ -71,9 +71,13 @@ export class EmpireController {
     @Param('empire', ObjectIdPipe) id: Types.ObjectId,
   ): Promise<Empire | ReadEmpireDto | null> {
     const empire = await this.empireService.find(id) ?? notFound(id);
-    return currentUser._id.equals(empire.user) || await this.memberService.isSpectator(empire.game, currentUser._id)
-      ? empire
-      : this.empireService.mask(empire);
+    if (currentUser._id.equals(empire.user)) {
+      return empire;
+    }
+    if (await this.empireService.isSpectator(currentUser._id, empire.game)) {
+      return empire;
+    }
+    return this.empireService.mask(empire);
   }
 
   @Patch(':empire')

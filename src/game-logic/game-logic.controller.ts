@@ -6,14 +6,12 @@ import {Auth, AuthUser} from '../auth/auth.decorator';
 import {User} from '../user/user.schema';
 import {Types} from 'mongoose';
 import {EmpireService} from '../empire/empire.service';
-import {SystemService} from '../system/system.service';
 import {Validated} from '../util/validated.decorator';
 import {Throttled} from '../util/throttled.decorator';
 import {ExplainedVariable, Variable} from './types';
 import {explainVariable, getEmpireEffectSources} from './variables';
 import {AggregateService} from './aggregate.service';
 import {EmpireDocument} from '../empire/empire.schema';
-import {MemberService} from '../member/member.service';
 
 @Controller('games/:game/empires/:empire')
 @ApiTags('Game Logic')
@@ -22,9 +20,7 @@ import {MemberService} from '../member/member.service';
 @Throttled()
 export class GameLogicController {
   constructor(
-    private readonly memberService: MemberService,
     private readonly empireService: EmpireService,
-    private readonly systemService: SystemService,
     private readonly aggregateService: AggregateService,
   ) {
   }
@@ -111,7 +107,7 @@ ${Object.entries(aggregate.optionalParams ?? {}).map(([param, desc]) => `- \`${p
     if (currentUser._id.equals(empire.user)) {
       return true;
     }
-    if (await this.memberService.isSpectator(empire.game, currentUser._id)) {
+    if (await this.empireService.isSpectator(currentUser._id, empire.game)) {
       // user is a spectator
       return true;
     }
