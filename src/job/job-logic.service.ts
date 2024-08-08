@@ -195,6 +195,7 @@ export class JobLogicService {
           throw new BadRequestException('Fleet and ship type are required for this job type.');
         }
         await this.shipService.buildShip(system ?? notFound(job.system), job);
+        break;
 
       case JobType.TRAVEL:
         if (!job.fleet || !job.path) {
