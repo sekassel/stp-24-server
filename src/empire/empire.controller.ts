@@ -1,7 +1,8 @@
 import {Body, Controller, ForbiddenException, Get, Param, ParseBoolPipe, Patch, Post, Query} from '@nestjs/common';
 import {
   ApiCreatedResponse,
-  ApiForbiddenResponse, ApiNotFoundResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -17,8 +18,8 @@ import {Empire} from './empire.schema';
 import {EmpireService} from './empire.service';
 import {notFound, NotFound, ObjectIdPipe} from '@mean-stream/nestx';
 import {Types} from 'mongoose';
-import {MemberService} from '../member/member.service';
 import {GameService} from '../game/game.service';
+import {EmpireLogicService} from './empire-logic.service';
 
 @Controller('games/:game/empires')
 @ApiTags('Game Empires')
@@ -28,8 +29,8 @@ import {GameService} from '../game/game.service';
 export class EmpireController {
   constructor(
     private readonly gameService: GameService,
-    private readonly memberService: MemberService,
     private readonly empireService: EmpireService,
+    private readonly empireLogicService: EmpireLogicService,
   ) {
   }
 
@@ -50,6 +51,11 @@ export class EmpireController {
       ...dto,
       game,
       user: currentUser._id,
+      // Although dto may specify the resources, there might be some missing. Ensure it is a complete record.
+      resources: {
+        ...this.empireLogicService.getInitialResources(dto),
+        ...dto.resources,
+      },
     });
   }
 

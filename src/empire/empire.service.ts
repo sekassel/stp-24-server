@@ -70,7 +70,7 @@ export class EmpireService extends MongooseRepository<Empire> {
         game: member.game,
         user: member.user,
         technologies: [],
-        resources: this.empireLogicService.getInitialResources(member.empire!),
+        resources: this.empireLogicService.getInitialResources({traits: member.empire!.traits, technologies: []}),
         homeSystem: undefined, // set in a later stage of game initialization
       });
     }));

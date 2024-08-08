@@ -3,7 +3,13 @@ import {Empire, EmpireDocument} from './empire.schema';
 import {TECH_CATEGORIES, TECHNOLOGIES} from '../game-logic/technologies';
 import {notFound} from '@mean-stream/nestx';
 import {ShipType, Technology, TechnologyTag, Variable} from '../game-logic/types';
-import {calculateVariable, calculateVariables, flatten, getVariables} from '../game-logic/variables';
+import {
+  calculateVariable,
+  calculateVariables,
+  EmpireEffectSources,
+  flatten,
+  getVariables,
+} from '../game-logic/variables';
 import {RESOURCE_NAMES, ResourceName} from '../game-logic/resources';
 import {AggregateResult} from '../game-logic/aggregates';
 import {EMPIRE_VARIABLES} from '../game-logic/empire-variables';
@@ -56,12 +62,9 @@ export class EmpireLogicService {
     empire.markModified('resources');
   }
 
-  getInitialResources(empire: EmpireTemplate): Record<ResourceName, number> {
+  getInitialResources(empire: EmpireEffectSources): Record<ResourceName, number> {
     const resourceVariables: Record<Variable, number> = getVariables('resources');
-    calculateVariables(resourceVariables, {
-      traits: empire.traits,
-      technologies: [],
-    });
+    calculateVariables(resourceVariables, empire);
     const resources: any = {};
     for (const resource of RESOURCE_NAMES) {
       resources[resource] = resourceVariables[`resources.${resource}.starting`];
