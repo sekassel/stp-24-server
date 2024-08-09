@@ -521,9 +521,10 @@ export class GameLogicService {
     variables: Partial<Record<Variable, number>>,
     jobs: JobDocument[],
   ) {
-    const attack = variables[`ships.${ship.type}.damage.system` as Variable] ?? variables[`ships.${ship.type}.damage.default` as Variable] ?? 0;
+    const attack = variables[`ships.${ship.type}.attack.system` as Variable] ?? variables[`ships.${ship.type}.attack.default` as Variable] ?? 0;
     // The damage is calculated using A.attack.system / system.defense + log(A.experience)
-    const damage = Math.max(attack / defense + Math.log(ship.experience), 0);
+    const damage = Math.max(attack / defense + Math.log1p(ship.experience), 0);
+    ship.experience += damage;
     system.health -= damage;
     if (system.health > 0) {
       return;
