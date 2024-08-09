@@ -371,3 +371,24 @@
 * It is no longer possible to build ships if their `build_time` is 0 (this indicates they must be researched first).
 * Reduced the chance to generate overlapping systems. [#27](https://github.com/sekassel/stp-24-server-tracker/issues/27)
 * Ships no longer spawn twice when starting a game. [#29](https://github.com/sekassel/stp-24-server-tracker/issues/29)
+
+# v4.3.1 (2024-08-09)
+
+## Balancing
+* Adjusted the default starting resource amounts.
+
+## Bugfixes
+* Explorer ships are no longer deleted when exploring a system.
+* Colonizer ships are no longer deleted when colonizing a system fails due to missing resources.
+* District slots are properly generated again.
+* Jobs are now properly deleted when an empire is deleted.
+* When a system claimed by another empire, all jobs on that system now also belong to the new owner.
+* Building, district and ship jobs now check if the empire actually owns the system before starting.
+* Ship jobs now check for shipyards.
+* If a ship job completes on a system with a different owner, a New Fleet spawns for that owner.
+* Users that lost their empire can now spectate the game.
+* Creating an empire with incomplete resources no longer results in a `500 Internal Server Error`. [#30](https://github.com/sekassel/stp-24-server-tracker/issues/30)
+* Ships can now properly attack systems and gain experience.
+
+## Documentation
+* Properly documented all possible job creation errors.
