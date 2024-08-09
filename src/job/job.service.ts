@@ -1,4 +1,4 @@
-import {ForbiddenException, HttpException, Injectable, NotFoundException} from '@nestjs/common';
+import {BadRequestException, ConflictException, HttpException, Injectable, NotFoundException} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Job, JobDocument} from './job.schema';
 import {Model, Types} from 'mongoose';
@@ -61,20 +61,24 @@ export class JobService extends MongooseRepository<Job> {
 
     if (dto.type === JobType.TRAVEL) {
       if (!dto.path || !dto.fleet) {
-        return null;
+        throw new BadRequestException('Path and fleet are required for travel jobs.');
       }
-      const travelJobs = await this.findAll({fleet: new Types.ObjectId(dto.fleet), type: JobType.TRAVEL});
-      if (travelJobs.length > 0) {
-        throw new ForbiddenException('Fleet is already traveling.');
+      const travelJobs = await this.exists({fleet: new Types.ObjectId(dto.fleet), type: JobType.TRAVEL});
+      if (travelJobs) {
+        throw new ConflictException('Fleet is already traveling.');
       }
       const systemInPath = await this.systemService.findAll({_id: {$in: dto.path}});
       const systemPaths = dto.path.map((id, index) => systemInPath.find(s => s._id.equals(id)) ?? notFound(`System at path[${index}] ${id}`));
-      const fleet = await this.fleetService.find(dto.fleet);
-      if (!fleet) {
-        return null;
+      const fleet = await this.fleetService.find(dto.fleet) ?? notFound(`Fleet ${dto.fleet}`);
+      if (!systemPaths[0]._id.equals(fleet.location)) {
+        throw new ConflictException('Path must start with the fleet\'s current location.');
       }
       const ships = await this.shipService.findAll({fleet: fleet._id});
-      ({time, ...cost} = this.jobLogicService.getCostAndDuration(dto, empire, system, systemPaths, fleet, ships));
+      if (!ships.length) {
+        throw new ConflictException('There are no ships available to travel in this fleet.');
+      }
+      time = this.systemLogicService.getTravelTime(systemPaths, fleet, ships, empire);
+      cost = {};
     } else {
       // Calculate resource requirements for the job
       ({time, ...cost} = this.jobLogicService.getCostAndDuration(dto, empire, system));

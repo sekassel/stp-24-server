@@ -140,20 +140,6 @@ export class JobLogicService {
           time,
         };
       }
-      case JobType.TRAVEL: {
-        if (!systemPaths || !fleet) {
-          throw new BadRequestException('Path and fleet id are required for this job type.');
-        }
-        if (!ships || ships.length === 0) {
-          throw new ConflictException('There are no ships available to travel in this fleet.');
-        }
-        if (!systemPaths[0]._id.equals(fleet.location)) {
-          throw new ConflictException('Path must start with the fleet\'s current location.');
-        }
-        return {
-          time: this.systemLogicService.getTravelTime(systemPaths, fleet, ships, empire)
-        };
-      }
       default:
         throw new BadRequestException('Invalid job type.');
     }
