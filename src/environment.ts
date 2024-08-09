@@ -41,8 +41,8 @@ export const environment = {
     servers: process.env.NATS_URL || 'nats://localhost:4222',
   },
   sentry: {
-    enabled: process.env.SENTRY_ENABLED === 'true' || process.env.NODE_ENV === 'production',
-    dsn: process.env.SENTRY_DSN || 'https://a054a73a604ddbb1ffd73f6dbf5e6136@sentry.uniks.de/2',
+    enabled: !!process.env.SENTRY_DSN && (process.env.SENTRY_ENABLED === 'true' || process.env.NODE_ENV === 'production'),
+    dsn: process.env.SENTRY_DSN,
     tracesSampleRate: +(process.env.SENTRY_TRACES_SAMPLE_RATE || 1),
   },
 };
