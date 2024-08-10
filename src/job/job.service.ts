@@ -191,7 +191,7 @@ export class JobService extends MongooseRepository<Job> {
           if (!fleet || !ships) {
             continue;
           }
-          const slowestShipSpeed = this.systemLogicService.getSlowestShipSpeed(ships, empire);
+          const slowestShipSpeed = this.systemLogicService.getSlowestShipSpeed(fleet, ships, empire);
 
           let linkTimeSum = 0;
           for (let i = 1; i < job.path.length; i++) {

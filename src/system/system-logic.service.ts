@@ -261,7 +261,7 @@ export class SystemLogicService {
   }
 
   getTravelTime(paths: SystemDocument[], fleet: FleetDocument, ships: ShipDocument[], empire: EmpireDocument): number {
-    const slowestShipSpeed = this.getSlowestShipSpeed(ships, empire);
+    const slowestShipSpeed = this.getSlowestShipSpeed(fleet, ships, empire);
     let totalTravelTime = 0;
     for (let i = 1; i < paths.length; i++) {
       const fromSystem = paths[i - 1];
@@ -283,16 +283,14 @@ export class SystemLogicService {
     return linkTime !== undefined ? linkTime / slowestShipSpeed : null;
   }
 
-  getSlowestShipSpeed(ships: ShipDocument[], empire: EmpireDocument): number {
+  getSlowestShipSpeed(fleet: FleetDocument, ships: ShipDocument[], empire: EmpireDocument): number {
     if (!ships || ships.length === 0) {
       throw new NotFoundException('No ships in the fleet.');
     }
     let slowestSpeed = Infinity;
-    for (const ship of ships) {
-      const variableKey = `ships.${ship.type}.speed` as keyof typeof speedVariables;
-      const speedVariables: Partial<Record<Variable, number>> = {[variableKey]: SHIP_TYPES[ship.type].speed};
-      calculateVariables(speedVariables, empire);
-      const calculatedSpeed = speedVariables[variableKey];
+    const shipTypes = new Set(ships.map(s => s.type));
+    for (const shipType of shipTypes) {
+      const calculatedSpeed = calculateVariable(`ships.${shipType}.speed`, empire, fleet);
       if (calculatedSpeed !== undefined && calculatedSpeed < slowestSpeed) {
         slowestSpeed = calculatedSpeed;
       }
