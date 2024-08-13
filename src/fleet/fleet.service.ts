@@ -57,8 +57,8 @@ export class FleetService extends MongooseRepository<Fleet> {
       const shipCount = 5 + Math.randInt(11);
       const size: Fleet['size'] = {};
       for (let i = 0; i < shipCount; i++) {
-        // weighted selection of ship types by speed - smaller ships are more likely
-        const shipType = shipTypes.randomWeighted(type => SHIP_TYPES[type].speed);
+        // weighted selection of ship types by speed^2 - smaller ships are much more likely
+        const shipType = shipTypes.randomWeighted(type => SHIP_TYPES[type].speed ** 2);
         size[shipType] = (size[shipType] || 0) + 1;
       }
       return ({
