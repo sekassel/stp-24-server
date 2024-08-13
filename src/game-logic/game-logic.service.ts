@@ -58,7 +58,11 @@ export class GameLogicService {
 
     // Create fleets (ships are spawned automatically due to the fleet created handler
     await this.fleetService.generateFleets(empires);
-    await this.fleetService.generateRogueFleets(game, systems.filter(s => !homeSystems.has(s._id.toString())));
+    await this.fleetService.generateRogueFleets(game, systems.filter(s =>
+      // Exclude systems that are home systems or have a link to a home system
+      !homeSystems.has(s._id.toString())
+      && !Object.keys(s.links).some(neighbor => homeSystems.has(neighbor)),
+    ));
 
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
