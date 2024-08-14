@@ -188,7 +188,7 @@ export class JobService extends MongooseRepository<Job> {
           const fleet = await this.fleetService.find(job.fleet);
           const ships = await this.shipService.findAll({fleet: new Types.ObjectId(job.fleet)});
           const systems = await this.systemService.findAll({_id: {$in: job.path}});
-          if (!fleet || !ships) {
+          if (!fleet || !ships.length) {
             continue;
           }
           const slowestShipSpeed = this.systemLogicService.getSlowestShipSpeed(fleet, ships, empire);
@@ -197,11 +197,11 @@ export class JobService extends MongooseRepository<Job> {
           for (let i = 1; i < job.path.length; i++) {
             const fromSystem = systems.find(system => system._id.equals(job.path![i - 1]));
             const toSystem = systems.find(system => system._id.equals(job.path![i]));
-
             if (!fromSystem || !toSystem) {
               continue;
             }
-            linkTimeSum += Math.round(this.systemLogicService.getLinkTime(fromSystem, toSystem, slowestShipSpeed)!);
+
+            linkTimeSum += this.systemLogicService.getLinkTime(fromSystem, toSystem, slowestShipSpeed)!;
 
             if (job.progress + 1 >= linkTimeSum) {
               fleet.location = toSystem._id;
