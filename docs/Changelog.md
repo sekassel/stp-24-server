@@ -392,3 +392,13 @@
 
 ## Documentation
 * Properly documented all possible job creation errors.
+
+# v4.3.2 (2024-08-14)
+
+## Balancing
+* Adjusted the speed of most ships.
+
+## Bugfixes
+* Travel jobs now respect fleet effects in time calculations.
+* Rogue fleets no longer spawn right next to home systems.
+* Reduced the chance to spawn large ships in rogue fleets.
