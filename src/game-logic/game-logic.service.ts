@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {HttpStatus, Injectable} from '@nestjs/common';
 import {EmpireService} from '../empire/empire.service';
 import {SystemService} from '../system/system.service';
 import {EmpireDocument} from '../empire/empire.schema';
@@ -8,9 +8,7 @@ import {Variable} from './types';
 import {RESOURCE_NAMES, ResourceName} from './resources';
 import {AggregateResult} from './aggregates';
 import {Game} from '../game/game.schema';
-import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from './constants';
 import {MemberService} from '../member/member.service';
-import {SYSTEM_UPGRADES} from './system-upgrade';
 import {JobService} from '../job/job.service';
 import {JobDocument} from '../job/job.schema';
 import {SystemLogicService} from '../system/system-logic.service';
@@ -22,7 +20,7 @@ import {Ship, ShipDocument} from '../ship/ship.schema';
 import {War, WarDocument} from '../war/war.schema';
 import {Types} from 'mongoose';
 import {BUILDINGS} from './buildings';
-import {Member} from '../member/member.schema';
+import {JobType} from '../job/job-type.enum';
 
 @Injectable()
 export class GameLogicService {
@@ -98,7 +96,7 @@ export class GameLogicService {
     await this.jobService.deleteMany({game: game._id, $expr: {$gte: ['$progress', '$total']}});
     const jobs = await this.jobService.findAll({game: game._id}, {sort: {priority: 1, createdAt: 1}});
     await this.updateEmpires(empires, systems, jobs, ships);
-    await this.updateFleets(empires, systems, fleets, ships, wars, jobs);
+    this.updateFleets(empires, systems, fleets, ships, wars, jobs);
 
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
@@ -372,7 +370,7 @@ export class GameLogicService {
     system.population = population + growth;
   }
 
-  private async updateFleets(
+  private updateFleets(
     empires: EmpireDocument[],
     systems: SystemDocument[],
     fleets: FleetDocument[],
@@ -437,6 +435,8 @@ export class GameLogicService {
           if (bestShip.health < 0) {
             bestShip.health = 0;
           }
+          this.cancelTravelJobs(ship.fleet, jobs);
+          this.cancelTravelJobs(bestShip.fleet, jobs);
         } else if (system && system.owner) { // Unowned systems are never attacked.
           const variables = fleetVariables[ship.fleet.toString()];
           if (system.owner.equals(ship.empire)) {
@@ -449,6 +449,7 @@ export class GameLogicService {
           } else {
             // Attack the system
             this.attackSystem(ship, system, systemDefense[systemId] ?? 1, variables, jobs);
+            this.cancelTravelJobs(ship.fleet, jobs);
           }
         }
       }
@@ -560,6 +561,19 @@ export class GameLogicService {
     const maxHealth = variables[`ships.${ship.type}.health`]!;
     const shipyardHeal = healingRate * shipyards * maxHealth;
     ship.health = Math.min(maxHealth, ship.health + shipyardHeal);
+  }
+
+  private cancelTravelJobs(fleet: Types.ObjectId, jobs: JobDocument[]) {
+    for (const job of jobs) {
+      if (job.type === JobType.TRAVEL && fleet.equals(job.fleet) && job.progress < job.total) {
+        job.progress = job.total;
+        job.result = {
+          statusCode: HttpStatus.CONFLICT,
+          error: 'Conflict',
+          message: 'Travel cancelled because the fleet entered a battle',
+        };
+      }
+    }
   }
 
   private async deleteDestroyedShipsAndFleets(fleets: FleetDocument[], ships: ShipDocument[]) {
