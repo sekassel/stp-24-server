@@ -47,3 +47,10 @@ All delete operations, whether manual, cleanup or cascading, trigger the same ev
 | Game          | All Members                         |
 | Game          | All Systems                         |
 | Game          | All Jobs                            |
+| Game          | All Fleets                          |
+| Game          | All Wars                            |
+| Empire        | All Fleets owned by the Empire      |
+| Empire        | All Jobs started by the Empire      |
+| Empire        | All Wars related to the Empire      |
+| Fleet         | All Ships within the Fleet          |
+| Fleet         | All `travel` Jobs                   |
