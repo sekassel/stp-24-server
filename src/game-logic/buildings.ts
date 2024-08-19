@@ -9,10 +9,10 @@ export const BUILDINGS = {
     },
     upkeep: {
       energy: 5, // efficient_buildings tech tree
-      consumer_goods: 5, // efficient_buildings tech tree
+      consumer_goods: 4, // efficient_buildings tech tree
     },
     production: {
-      credits: 20, // improved_production tech tree
+      credits: 15, // improved_production tech tree
     },
   },
   // basic resource buildings. cost should be around 75, upkeep around 5, production around 10
@@ -23,10 +23,10 @@ export const BUILDINGS = {
       minerals: 75, // silicon solar collectors // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 2, // efficient_resources tech tree
+      minerals: 3, // efficient_resources tech tree
     },
     production: {
-      energy: 20, // energy_production tech tree
+      energy: 18, // energy_production tech tree
     },
   },
   mine: { // cheap_buildings, efficient_buildings, improved_production tech trees
@@ -37,11 +37,10 @@ export const BUILDINGS = {
       energy: 25, // digging the mine // cheap_buildings tech tree
     },
     upkeep: {
-      energy: 2, // powering the mine // efficient_buildings tech tree
-      fuel: 2, // efficient_buildings tech tree
+      energy: 3, // powering the mine // efficient_buildings tech tree
     },
     production: {
-      minerals: 24, // mineral_production tech tree
+      minerals: 18, // mineral_production tech tree
     },
   },
   farm: { // cheap_buildings, efficient_buildings, improved_production tech trees
@@ -51,11 +50,10 @@ export const BUILDINGS = {
       energy: 75, // tilling the soil // cheap_buildings tech tree
     },
     upkeep: {
-      energy: 2, // watering the crops // efficient_buildings tech tree
-      fuel: 2, // efficient_buildings tech tree
+      energy: 3, // watering the crops // efficient_buildings tech tree
     },
     production: {
-      food: 24, // food_production tech tree
+      food: 18, // food_production tech tree
     },
   },
   // advanced resource buildings. cost should be around 100, upkeep around 20, production around 10
@@ -66,11 +64,11 @@ export const BUILDINGS = {
       minerals: 100, // building the lab // cheap_buildings tech tree
     },
     upkeep: {
-      energy: 10, // powering the lab // efficient_buildings tech tree
+      energy: 5, // powering the lab // efficient_buildings tech tree
       consumer_goods: 5, // efficient_buildings tech tree
     },
     production: {
-      research: 10, // research_production tech tree
+      research: 20, // research_production tech tree
     },
   },
   foundry: { // cheap_buildings, efficient_buildings, improved_production tech trees
@@ -80,11 +78,11 @@ export const BUILDINGS = {
       minerals: 100, // building the foundry // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 15, // the processed materials
-      energy: 10, // powering the foundry // efficient_buildings tech tree
+      minerals: 5, // the processed materials
+      energy: 4, // powering the foundry // efficient_buildings tech tree
     },
     production: {
-      alloys: 10, // alloy_production tech tree
+      alloys: 8, // alloy_production tech tree
     },
   },
   factory: {
@@ -94,11 +92,11 @@ export const BUILDINGS = {
       minerals: 100, // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 15, // efficient_buildings tech tree
-      energy: 10, // efficient_buildings tech tree
+      minerals: 5, // efficient_buildings tech tree
+      energy: 4, // efficient_buildings tech tree
     },
     production: {
-      consumer_goods: 10, // improved_production tech tree
+      consumer_goods: 12, // improved_production tech tree
     },
   },
   refinery: { // cheap_buildings, efficient_buildings, improved_production tech trees
@@ -108,8 +106,8 @@ export const BUILDINGS = {
       minerals: 100, // building the refinery // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 10, // the crude oil
-      energy: 15, // powering the refinery // efficient_buildings tech tree
+      minerals: 5, // the crude oil
+      energy: 4, // powering the refinery // efficient_buildings tech tree
     },
     production: {
       fuel: 10, // fuel_production tech tree
@@ -124,10 +122,10 @@ export const BUILDINGS = {
       alloys: 75, // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 10, // efficient_buildings tech tree
-      energy: 5, // efficient_buildings tech tree
-      fuel: 5, // efficient_buildings tech tree
-      alloys: 10, // efficient_buildings tech tree
+      minerals: 3, // efficient_buildings tech tree
+      energy: 2, // efficient_buildings tech tree
+      fuel: 1, // efficient_buildings tech tree
+      alloys: 5, // efficient_buildings tech tree
     },
     production: {
     },
@@ -142,10 +140,10 @@ export const BUILDINGS = {
       alloys: 75, // cheap_buildings tech tree
     },
     upkeep: {
-      minerals: 5, // efficient_buildings tech tree
-      energy: 8, // efficient_buildings tech tree
-      fuel: 8, // efficient_buildings tech tree
-      alloys: 5, // efficient_buildings tech tree
+      minerals: 2, // efficient_buildings tech tree
+      energy: 3, // efficient_buildings tech tree
+      fuel: 5, // efficient_buildings tech tree
+      alloys: 1, // efficient_buildings tech tree
     },
     production: {
     },

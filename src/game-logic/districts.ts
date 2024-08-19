@@ -9,8 +9,8 @@ export const DISTRICTS = {
       minerals: 100, // city_structure tech tree
     },
     upkeep: {
-      energy: 5, // efficient_city tech tree
-      consumer_goods: 2, // efficient_city tech tree
+      energy: 3, // efficient_city tech tree
+      consumer_goods: 4, // efficient_city tech tree
     },
     production: {
       credits: 12, // city_production tech tree
@@ -34,7 +34,7 @@ export const DISTRICTS = {
       minerals: 2,
     },
     production: { // energetic_terraforming tech tree
-      energy: 30,
+      energy: 12,
     },
   },
   mining: {
@@ -52,11 +52,10 @@ export const DISTRICTS = {
       energy: 25, // nano_excavator_optimization tech tree
     },
     upkeep: { // autonomous_mining_protocols tech tree
-      energy: 4,
-      fuel: 2,
+      energy: 2,
     },
     production: { //improved_extraction_tech_1 tech tree
-      minerals: 24,
+      minerals: 12,
     },
   },
   agriculture: {
@@ -71,10 +70,9 @@ export const DISTRICTS = {
     },
     upkeep: {
       energy: 2, // self_replenishment tech tree
-      fuel: 3,
     },
     production: {
-      food: 16, // superior_crops tech tree
+      food: 12, // superior_crops tech tree
     },
   },
   // advanced resource districts. cost should be around 100, upkeep around 20, production around 10
@@ -86,13 +84,13 @@ export const DISTRICTS = {
       minerals: 100, // industry_structure tech tree
     },
     upkeep: {
-      energy: 6, // efficient_industry tech tree
-      minerals: 8, // efficient_industry tech tree
+      energy: 3, // efficient_industry tech tree
+      minerals: 4, // efficient_industry tech tree
     },
     production: {
-      alloys: 5, // improved_industry tech tree
-      consumer_goods: 5, // improved_industry tech tree
-      fuel: 5, // improved_industry tech tree
+      alloys: 4, // improved_industry tech tree
+      consumer_goods: 8, // improved_industry tech tree
+      fuel: 6, // improved_industry tech tree
     },
   },
   research_site: {
@@ -108,11 +106,11 @@ export const DISTRICTS = {
       minerals: 100, // effective_lab_building tech tree
     },
     upkeep: {
-      energy: 15, // automated_research_archives tech tree
-      consumer_goods: 5,
+      energy: 3, // automated_research_archives tech tree
+      consumer_goods: 3,
     },
     production: {
-      research: 10, // research_accelerators tech tree
+      research: 15, // research_accelerators tech tree
     },
   },
   ancient_foundry: {
@@ -128,11 +126,11 @@ export const DISTRICTS = {
       minerals: 100, // ancient_crafting_techniques tech tree
     },
     upkeep: {
-      minerals: 10, // timeless_fabrication_methods tech tree
-      energy: 5, // timeless_fabrication_methods tech tree
+      minerals: 3, // timeless_fabrication_methods tech tree
+      energy: 2, // timeless_fabrication_methods tech tree
     },
     production: {
-      alloys: 10, // mythic_alloy_crafting tech tree
+      alloys: 8, // mythic_alloy_crafting tech tree
     },
   },
   ancient_factory: {
@@ -148,11 +146,11 @@ export const DISTRICTS = {
       minerals: 100,
     },
     upkeep: {
-      energy: 5,
-      minerals: 10,
+      energy: 3,
+      minerals: 2,
     },
     production: {
-      consumer_goods: 10,
+      consumer_goods: 12,
     },
   },
   ancient_refinery: {
@@ -168,8 +166,8 @@ export const DISTRICTS = {
       minerals: 100, // traditional_refining_wisdom tech tree
     },
     upkeep: {
-      minerals: 5, // ageless_refining_techniques tech tree
-      energy: 10, // ageless_refining_techniques tech tree
+      minerals: 3, // ageless_refining_techniques tech tree
+      energy: 2, // ageless_refining_techniques tech tree
     },
     production: {
       fuel: 10, // ancient_alchemy tech tree

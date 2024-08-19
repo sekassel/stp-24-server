@@ -421,10 +421,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         variable: 'buildings.factory.upkeep.energy',
         multiplier: 0.85,
       },
-      {
-        variable: 'buildings.farm.upkeep.fuel',
-        multiplier: 0.85,
-      },
     ],
   },
   efficient_buildings_2: { // reduced advanced building energy upkeep
@@ -447,10 +443,6 @@ export const TECHNOLOGIES: Record<string, Technology> = {
       },
       {
         variable: 'buildings.exchange.upkeep.energy',
-        multiplier: 0.85,
-      },
-      {
-        variable: 'buildings.mine.upkeep.fuel',
         multiplier: 0.85,
       },
       {
