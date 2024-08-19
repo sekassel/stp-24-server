@@ -13,7 +13,7 @@ export const SHIP_TYPES = {
     speed: 15, // ship_speed tech tree
     attack: {},
     defense: {
-      default: 10,
+      default: 50,
     },
     cost: { // cheap_ships tech tree
       alloys: 75,
@@ -33,7 +33,7 @@ export const SHIP_TYPES = {
     speed: 15, // ship_speed tech tree
     attack: {},
     defense: {
-      default: 10,
+      default: 50,
     },
     cost: { // cheap_ships tech tree
       alloys: 100,
@@ -57,14 +57,11 @@ export const SHIP_TYPES = {
     health: 100, // armor_plating tech tree
     speed: 14, // ship_speed tech tree
     attack: { // small_fighters tech tree
-      default: 10,
-      fighter: 30,
-      corvette: 30,
+      default: 20,
       bomber: 30,
-      frigate: 30,
     },
     defense: { // small_ship_defense tech tree
-      default: 10,
+      default: 20,
     },
     cost: { // cheap_ships tech tree
       alloys: 75,
@@ -83,14 +80,10 @@ export const SHIP_TYPES = {
     health: 100, // armor_plating tech tree
     speed: 12, // ship_speed tech tree
     attack: { // small_fighters tech tree
-      default: 10,
-      interceptor: 30,
-      corvette: 50,
-      bomber: 50,
-      frigate: 50,
+      default: 20,
     },
     defense: { // small_ship_defense tech tree
-      default: 10,
+      default: 20,
     },
     cost: { // cheap_ships tech tree
       alloys: 75,
@@ -133,9 +126,7 @@ export const SHIP_TYPES = {
     health: 150, // armor_plating tech tree
     speed: 10, // ship_speed tech tree
     attack: { // small_fighters tech tree
-      default: 30,
-      corvette: 50,
-      frigate: 50,
+      default: 25,
       system: 50,
     },
     defense: { // small_ship_defense tech tree
@@ -158,10 +149,10 @@ export const SHIP_TYPES = {
     health: 150, // armor_plating tech tree
     speed: 8, // ship_speed tech tree
     attack: { // small_fighters tech tree
-      default: 50,
+      default: 40,
     },
     defense: { // small_ship_defense tech tree
-      default: 50,
+      default: 40,
     },
     cost: { // cheap_ships tech tree
       alloys: 125,
@@ -207,10 +198,10 @@ export const SHIP_TYPES = {
     health: 300, // armor_plating tech tree
     speed: 6, // ship_speed tech tree
     attack: { // medium_fighters tech tree
-      default: 100,
+      default: 80,
     },
     defense: { // medium_ship_defense tech tree
-      default: 100,
+      default: 80,
     },
     cost: { // cheap_ships tech tree
       alloys: 250,
@@ -230,10 +221,10 @@ export const SHIP_TYPES = {
     health: 300, // armor_plating tech tree
     speed: 6, // ship_speed tech tree
     attack: { // medium_fighters tech tree
-      default: 150,
+      default: 100,
     },
     defense: { // medium_ship_defense tech tree
-      default: 150,
+      default: 100,
     },
     cost: { // cheap_ships tech tree
       alloys: 300,
@@ -253,10 +244,10 @@ export const SHIP_TYPES = {
     health: 300, // armor_plating tech tree
     speed: 6, // ship_speed tech tree
     attack: { // medium_fighters tech tree
-      default: 200,
+      default: 120,
     },
     defense: { // medium_ship_defense tech tree
-      default: 200,
+      default: 120,
     },
     cost: { // cheap_ships tech tree
       alloys: 350,
@@ -280,10 +271,10 @@ export const SHIP_TYPES = {
     health: 600, // armor_plating tech tree
     speed: 5, // ship_speed tech tree
     attack: { // large_fighters tech tree
-      default: 250,
+      default: 200,
     },
     defense: { // large_ship_defense tech tree
-      default: 250,
+      default: 200,
     },
     cost: { // cheap_ships tech tree
       alloys: 750,
@@ -302,10 +293,10 @@ export const SHIP_TYPES = {
     health: 800, // armor_plating tech tree
     speed: 4, // ship_speed tech tree
     attack: { // large_fighters tech tree
-      default: 300,
+      default: 250,
     },
     defense: { // large_ship_defense tech tree
-      default: 300,
+      default: 250,
     },
     cost: { // cheap_ships tech tree
       alloys: 800,

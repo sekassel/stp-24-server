@@ -1599,39 +1599,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 1.1,
       },
       {
-        variable: 'ships.interceptor.attack.fighter',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'ships.interceptor.attack.corvette',
-        multiplier: 1.1,
-      },
-      {
         variable: 'ships.interceptor.attack.bomber',
         multiplier: 1.1,
       },
       {
-        variable: 'ships.interceptor.attack.frigate',
-        multiplier: 1.1,
-      },
-      {
         variable: 'ships.fighter.attack.default',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'ships.fighter.attack.interceptor',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'ships.fighter.attack.corvette',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'ships.fighter.attack.bomber',
-        multiplier: 1.1,
-      },
-      {
-        variable: 'ships.fighter.attack.frigate',
         multiplier: 1.1,
       },
       {
@@ -1659,39 +1631,11 @@ export const TECHNOLOGIES: Record<string, Technology> = {
         multiplier: 1.2,
       },
       {
-        variable: 'ships.interceptor.attack.fighter',
-        multiplier: 1.2,
-      },
-      {
-        variable: 'ships.interceptor.attack.corvette',
-        multiplier: 1.2,
-      },
-      {
         variable: 'ships.interceptor.attack.bomber',
         multiplier: 1.2,
       },
       {
-        variable: 'ships.interceptor.attack.frigate',
-        multiplier: 1.2,
-      },
-      {
         variable: 'ships.fighter.attack.default',
-        multiplier: 1.2,
-      },
-      {
-        variable: 'ships.fighter.attack.interceptor',
-        multiplier: 1.2,
-      },
-      {
-        variable: 'ships.fighter.attack.corvette',
-        multiplier: 1.2,
-      },
-      {
-        variable: 'ships.fighter.attack.bomber',
-        multiplier: 1.2,
-      },
-      {
-        variable: 'ships.fighter.attack.frigate',
         multiplier: 1.2,
       },
       {
