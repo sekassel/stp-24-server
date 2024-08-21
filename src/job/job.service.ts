@@ -191,7 +191,6 @@ export class JobService extends MongooseRepository<Job> {
           if (!fleet || !shipTypes.length) {
             continue;
           }
-          const slowestShipSpeed = this.systemLogicService.getSlowestShipSpeed(fleet, shipTypes, empire);
           const currentSystem = await this.systemService.find(fleet.location);
           if (!currentSystem) {
             // What?
@@ -209,6 +208,7 @@ export class JobService extends MongooseRepository<Job> {
           }
 
           const nextSystemId = job.path[currentPathIndex + 1];
+          const slowestShipSpeed = this.systemLogicService.getSlowestShipSpeed(fleet, shipTypes, empire);
           const linkTime = this.systemLogicService.getLinkTime(currentSystem, nextSystemId, slowestShipSpeed)!;
           if (!linkTime) {
             continue;
