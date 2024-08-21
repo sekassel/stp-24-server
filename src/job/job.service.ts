@@ -63,8 +63,8 @@ export class JobService extends MongooseRepository<Job> {
       if (!dto.path || !dto.fleet) {
         throw new BadRequestException('Path and fleet are required for travel jobs.');
       }
-      const travelJobs = await this.exists({fleet: new Types.ObjectId(dto.fleet), type: JobType.TRAVEL});
-      if (travelJobs) {
+      const travelJobs = await this.findAll({fleet: new Types.ObjectId(dto.fleet), type: JobType.TRAVEL});
+      if (travelJobs.some(j => j.progress !== j.total)) {
         throw new ConflictException('Fleet is already traveling.');
       }
       const systemInPath = await this.systemService.findAll({_id: {$in: dto.path}});
