@@ -12,7 +12,7 @@ import {EmpireLogicService} from '../empire/empire-logic.service';
 import {AggregateResult} from '../game-logic/aggregates';
 import {FleetDocument} from '../fleet/fleet.schema';
 import {ShipDocument} from '../ship/ship.schema';
-import {SHIP_TYPES} from '../game-logic/ships';
+import {SHIP_TYPES, ShipTypeName} from '../game-logic/ships';
 import {Member} from '../member/member.schema';
 import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from '../game-logic/constants';
 import {Types} from 'mongoose';
@@ -261,8 +261,8 @@ export class SystemLogicService {
     return total;
   }
 
-  getTravelTime(paths: SystemDocument[], fleet: FleetDocument, ships: ShipDocument[], empire: EmpireDocument): number {
-    const slowestShipSpeed = this.getSlowestShipSpeed(fleet, ships, empire);
+  getTravelTime(paths: SystemDocument[], fleet: FleetDocument, shipTypes: ShipTypeName[], empire: EmpireDocument): number {
+    const slowestShipSpeed = this.getSlowestShipSpeed(fleet, shipTypes, empire);
     let totalTravelTime = 0;
     for (let i = 1; i < paths.length; i++) {
       const fromSystem = paths[i - 1];
@@ -287,12 +287,11 @@ export class SystemLogicService {
     return Math.max(Math.round(linkTime / slowestShipSpeed), 1);
   }
 
-  getSlowestShipSpeed(fleet: FleetDocument, ships: ShipDocument[], empire: EmpireDocument): number {
-    if (!ships || ships.length === 0) {
+  getSlowestShipSpeed(fleet: FleetDocument, shipTypes: ShipTypeName[], empire: EmpireDocument): number {
+    if (!shipTypes.length) {
       throw new NotFoundException('No ships in the fleet.');
     }
     let slowestSpeed = Infinity;
-    const shipTypes = new Set(ships.map(s => s.type));
     for (const shipType of shipTypes) {
       const calculatedSpeed = calculateVariable(`ships.${shipType}.speed`, empire, fleet);
       if (calculatedSpeed !== undefined && calculatedSpeed < slowestSpeed) {

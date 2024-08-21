@@ -73,11 +73,11 @@ export class JobService extends MongooseRepository<Job> {
       if (!systemPaths[0]._id.equals(fleet.location)) {
         throw new ConflictException('Path must start with the fleet\'s current location.');
       }
-      const ships = await this.shipService.findAll({fleet: fleet._id});
-      if (!ships.length) {
+      const shipTypes = await this.shipService.distinct('type', {fleet: fleet._id});
+      if (!shipTypes.length) {
         throw new ConflictException('There are no ships available to travel in this fleet.');
       }
-      time = this.systemLogicService.getTravelTime(systemPaths, fleet, ships, empire);
+      time = this.systemLogicService.getTravelTime(systemPaths, fleet, shipTypes, empire);
       cost = {};
     } else {
       // Calculate resource requirements for the job
@@ -187,11 +187,11 @@ export class JobService extends MongooseRepository<Job> {
             continue;
           }
           const fleet = await this.fleetService.find(job.fleet);
-          const ships = await this.shipService.findAll({fleet: job.fleet});
-          if (!fleet || !ships.length) {
+          const shipTypes = await this.shipService.distinct('type', {fleet: job.fleet});
+          if (!fleet || !shipTypes.length) {
             continue;
           }
-          const slowestShipSpeed = this.systemLogicService.getSlowestShipSpeed(fleet, ships, empire);
+          const slowestShipSpeed = this.systemLogicService.getSlowestShipSpeed(fleet, shipTypes, empire);
           const currentSystem = await this.systemService.find(fleet.location);
           if (!currentSystem) {
             // What?
