@@ -117,6 +117,7 @@ export class JobService extends MongooseRepository<Job> {
         case JobType.TRAVEL:
           jobData.path = dto.path;
           jobData.fleet = dto.fleet;
+          jobData.periodsInCurrentSystem = 0;
           break;
       }
     }
@@ -182,33 +183,47 @@ export class JobService extends MongooseRepository<Job> {
           break;
         }
         case JobType.TRAVEL: {
-          if (!job.fleet || !job.path) {
+          if (!job.fleet || !job.path || job.periodsInCurrentSystem === undefined) {
             continue;
           }
           const fleet = await this.fleetService.find(job.fleet);
-          const ships = await this.shipService.findAll({fleet: new Types.ObjectId(job.fleet)});
-          const systems = await this.systemService.findAll({_id: {$in: job.path}});
+          const ships = await this.shipService.findAll({fleet: job.fleet});
           if (!fleet || !ships.length) {
             continue;
           }
           const slowestShipSpeed = this.systemLogicService.getSlowestShipSpeed(fleet, ships, empire);
-
-          let linkTimeSum = 0;
-          for (let i = 1; i < job.path.length; i++) {
-            const fromSystem = systems.find(system => system._id.equals(job.path![i - 1]));
-            const toSystem = systems.find(system => system._id.equals(job.path![i]));
-            if (!fromSystem || !toSystem) {
-              continue;
-            }
-
-            linkTimeSum += this.systemLogicService.getLinkTime(fromSystem, toSystem, slowestShipSpeed)!;
-
-            if (job.progress + 1 >= linkTimeSum) {
-              fleet.location = toSystem._id;
-            }
+          const currentSystem = await this.systemService.find(fleet.location);
+          if (!currentSystem) {
+            // What?
+            continue;
           }
-          await this.fleetService.saveAll([fleet]);
-          await this.progressJob(job, empire);
+
+          const currentPathIndex = job.path.findIndex(p => p.equals(fleet.location));
+          if (currentPathIndex < 0) {
+            // What?
+            continue;
+          }
+          if (currentPathIndex === job.path.length - 1) {
+            await this.completeJob(job, empire);
+            continue;
+          }
+
+          const nextSystemId = job.path[currentPathIndex + 1];
+          const linkTime = this.systemLogicService.getLinkTime(currentSystem, nextSystemId, slowestShipSpeed)!;
+          if (!linkTime) {
+            continue;
+          }
+
+          if (job.periodsInCurrentSystem + 1 >= linkTime) {
+            fleet.location = nextSystemId;
+            await this.fleetService.saveAll([fleet]);
+            job.periodsInCurrentSystem = 0;
+          } else {
+            job.periodsInCurrentSystem += 1;
+          }
+
+          job.progress += 1;
+          break;
         }
       }
     }

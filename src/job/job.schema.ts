@@ -116,6 +116,11 @@ export class Job extends GlobalSchema {
   @ArrayMinSize(2)
   path?: Types.ObjectId[];
 
+  /** The number of periods the fleet has been in the current system */
+  @Prop({transform: (v: number) => undefined})
+  @IsNumber()
+  periodsInCurrentSystem?: number;
+
   @Prop({type: Object, default: {}})
   @ApiPropertyOptional({
     description: 'Initial cost of resources for the job',

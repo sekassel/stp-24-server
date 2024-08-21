@@ -15,6 +15,7 @@ import {ShipDocument} from '../ship/ship.schema';
 import {SHIP_TYPES} from '../game-logic/ships';
 import {Member} from '../member/member.schema';
 import {HOMESYSTEM_BUILDINGS, HOMESYSTEM_DISTRICT_COUNT, HOMESYSTEM_DISTRICTS} from '../game-logic/constants';
+import {Types} from 'mongoose';
 
 @Injectable()
 export class SystemLogicService {
@@ -266,21 +267,24 @@ export class SystemLogicService {
     for (let i = 1; i < paths.length; i++) {
       const fromSystem = paths[i - 1];
       const toSystem = paths[i];
-      const linkTime = this.getLinkTime(fromSystem, toSystem, slowestShipSpeed);
+      const linkTime = this.getLinkTime(fromSystem, toSystem._id, slowestShipSpeed);
       if (linkTime === null) {
         throw new ConflictException(`No link from ${fromSystem._id} to ${toSystem._id}`);
       }
       totalTravelTime += linkTime;
     }
-    return Math.round(totalTravelTime);
+    return totalTravelTime;
   }
 
-  getLinkTime(fromSystem: SystemDocument, toSystem: SystemDocument, slowestShipSpeed: number): number | null {
+  getLinkTime(fromSystem: SystemDocument, toSystem: Types.ObjectId, slowestShipSpeed: number): number | null {
     if (fromSystem._id.equals(toSystem._id)) {
       return 0;
     }
-    const linkTime = fromSystem.links[toSystem._id.toString()];
-    return linkTime !== undefined ? linkTime / slowestShipSpeed : null;
+    const linkTime = fromSystem.links[toSystem.toString()];
+    if (!linkTime) {
+      return null;
+    }
+    return Math.max(Math.round(linkTime / slowestShipSpeed), 1);
   }
 
   getSlowestShipSpeed(fleet: FleetDocument, ships: ShipDocument[], empire: EmpireDocument): number {
