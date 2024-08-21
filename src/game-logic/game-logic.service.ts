@@ -95,8 +95,9 @@ export class GameLogicService {
 
     await this.jobService.deleteMany({game: game._id, $expr: {$gte: ['$progress', '$total']}});
     const jobs = await this.jobService.findAll({game: game._id}, {sort: {priority: 1, createdAt: 1}});
-    await this.updateEmpires(empires, systems, jobs, ships);
+    await this.updateEmpires(empires, systems, ships);
     this.updateFleets(empires, systems, fleets, ships, wars, jobs);
+    await this.updateJobs(empires, jobs, systems);
 
     await this.empireService.saveAll(empires);
     await this.systemService.saveAll(systems);
@@ -107,12 +108,17 @@ export class GameLogicService {
     await this.deleteEmpiresWithoutSystems(empires, systems);
   }
 
-  private async updateEmpires(empires: EmpireDocument[], systems: SystemDocument[], jobs: JobDocument[], ships: ShipDocument[]) {
+  private async updateJobs(empires: EmpireDocument[], jobs: JobDocument[], systems: SystemDocument[]) {
+    for (const empire of empires) {
+      const empireJobs = jobs.filter(job => job.empire.equals(empire._id));
+      await this.jobService.updateJobs(empire, empireJobs, systems);
+    }
+  }
+
+  private async updateEmpires(empires: EmpireDocument[], systems: SystemDocument[], ships: ShipDocument[]) {
     for (const empire of empires) {
       const empireSystems = systems.filter(system => system.owner?.equals(empire._id));
-      const empireJobs = jobs.filter(job => job.empire.equals(empire._id));
       const empireShips = ships.filter(ship => ship.empire?.equals(empire._id));
-      await this.jobService.updateJobs(empire, empireJobs, systems);
       this.updateEmpire(empire, empireSystems, empireShips);
     }
   }
