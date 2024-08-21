@@ -402,3 +402,14 @@
 * Travel jobs now respect fleet effects in time calculations.
 * Rogue fleets no longer spawn right next to home systems.
 * Reduced the chance to spawn large ships in rogue fleets.
+
+# v4.3.3 (2024-08-20)
+
+## Balancing
+* Adjusted upkeep and production for all buildings, districts and ships.
+* Adjusted attack and defense for all ships.
+
+## Bugfixes
+* When deleting a fleet, existing travel jobs for that fleet will also be deleted.
+* When a fleet enters combat, their travel jobs immediately stop so they cannot bypass defenses.
+* Fixed various rounding issues related to travel jobs.
